@@ -27,7 +27,7 @@ $wherecatina = array();
 if ($_GET["incldead"] == 1)
 {
 	$addparam .= "incldead=1&amp;";
-	if (!isset($CURUSER) || get_user_class < UC_ADMINISTRATOR)
+	if (!isset($CURUSER) || get_user_class() < UC_ADMINISTRATOR)
 		$wherea[] = "banned != 'yes'";
 }
 elseif ($_GET["incldead"] == 2)
