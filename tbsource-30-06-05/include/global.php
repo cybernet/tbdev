@@ -450,13 +450,13 @@ function format_comment($text, $strip_html = true)
 	return $s;
 }
 
-define (UC_USER, 0);
-define (UC_POWER_USER, 1);
-define (UC_VIP, 2);
-define (UC_UPLOADER, 3);
-define (UC_MODERATOR, 4);
-define (UC_ADMINISTRATOR, 5);
-define (UC_SYSOP, 6);
+define ('UC_USER', 0);
+define ('UC_POWER_USER', 1);
+define ('UC_VIP', 2);
+define ('UC_UPLOADER', 3);
+define ('UC_MODERATOR', 4);
+define ('UC_ADMINISTRATOR', 5);
+define ('UC_SYSOP', 6);
 
 function get_user_class()
 {

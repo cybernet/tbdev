@@ -48,7 +48,7 @@ function maketable($res)
   return $ret;
 }
 
-$id = $_GET["id"];
+$id = 0 + $_GET["id"];
 
 if (!is_valid_id($id))
   bark("Bad ID $id.");
