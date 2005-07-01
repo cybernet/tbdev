@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	<? } ?>
 	<table border=1 cellspacing=0 cellpadding=5>
 	<tr><td colspan="2"><div align="center">
-	<textarea name=msg cols=80 rows=15><?=$body?></textarea>
+	<textarea name=msg cols=80 rows=15><?=htmlspecialchars($body)?></textarea>
 	</div></td></tr>
 	<tr><td colspan="2"><div align="center"><b>Comment:&nbsp;&nbsp;</b>
   <input name="comment" type="text" size="70">
