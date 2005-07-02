@@ -101,9 +101,9 @@ $secret = mksecret();
 $wantpasshash = md5($secret . $wantpassword . $secret);
 $editsecret = mksecret();
 
-$ret = mysql_query("INSERT INTO users (username, passhash, secret, editsecret, email, status, added) VALUES (" .
-		implode(",", array_map("sqlesc", array($wantusername, $wantpasshash, $secret, $editsecret, $email, 'pending'))) .
-		",'" . get_date_time() . "')");
+$ret = mysql_query("INSERT INTO users (username, passhash, secret, editsecret, email, status, ". (!$arr[0]?"class, ":"") ."added) VALUES (" .
+		implode(",", array_map("sqlesc", array($wantusername, $wantpasshash, $secret, $editsecret, $email, (!$arr[0]?'confirmed':'pending')))).
+		", ". (!$arr[0]?UC_SYSOP.", ":""). "'". get_date_time() ."')");
 
 if (!$ret) {
 	if (mysql_errno() == 1062)
@@ -132,9 +132,13 @@ After you do this, you will be able to use your new account. If you fail to
 do this, you account will be deleted within a few days. We urge you to read
 the RULES and FAQ before you start using torrentbits.
 EOD;
-mail($email, "$SITENAME user registration confirmation", $body, "From: $SITEEMAIL", "-f$SITEEMAIL");
 
-header("Refresh: 0; url=ok.php?type=signup&email=" . urlencode($email));
+if($arr[0])
+  mail($email, "$SITENAME user registration confirmation", $body, "From: $SITEEMAIL", "-f$SITEEMAIL");
+else 
+  logincookie($id, $wantpasshash);
+
+header("Refresh: 0; url=ok.php?type=". (!$arr[0]?"sysop":("signup&email=" . urlencode($email))));
 
 hit_end();
 
