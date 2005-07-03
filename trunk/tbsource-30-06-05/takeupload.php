@@ -2,7 +2,7 @@
 
 require_once("include/benc.php");
 require_once("include/bittorrent.php");
-require "rconpasswords.php";
+
 
 hit_start();
 
@@ -179,15 +179,6 @@ move_uploaded_file($tmpname, "$torrent_dir/$id.torrent");
 write_log("Torrent $id ($torrent) was uploaded by " . $CURUSER["username"]);
 
 
-/* Game server notif  */
-
-$f = fsockopen("udp://62.212.84.221", 28960);
-socket_set_timeout($f, 1);
-fwrite($f, "\xFF\xFF\xFF\xFFrcon $rconpassword say Torrent uploaded: $torrent\n");
-fread($f, 8192);
-fclose($f);
-
-
 
 /* RSS feeds */
 
@@ -211,7 +202,7 @@ if (($fd1 = @fopen("rss.xml", "w")) && ($fd2 = fopen("rssdd.xml", "w")))
 		@fwrite($fd2, $s);
 		@fwrite($fd1, "<link>$DEFAULTBASEURL/details.php?id=$a[id]&amp;hit=1</link>\n</item>\n");
 		$filename = htmlspecialchars($a["filename"]);
-		@fwrite($fd2, "<link>$DEFAULTBASEURL/download/$a[id]/$filename</link>\n</item>\n");
+		@fwrite($fd2, "<link>$DEFAULTBASEURL/download.php/$a[id]/$filename</link>\n</item>\n");
 	}
 	$s = "</channel>\n</rss>\n";
 	@fwrite($fd1, $s);
