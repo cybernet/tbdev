@@ -277,7 +277,7 @@ while ($arr = mysql_fetch_row($res))
 }
 *******************/
 
-header("Location : $BASEURL/details.php?id=$id&uploaded=1");
+header("Location: $BASEURL/details.php?id=$id&uploaded=1");
 
 hit_end();
 

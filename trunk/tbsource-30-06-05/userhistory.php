@@ -25,7 +25,7 @@ if ($action == "viewposts")
 {
 	$select_is = "COUNT(DISTINCT p.id)";
 
-	$from_is = "posts AS p JOIN topics as t ON p.topicid = t.id JOIN forums AS f ON t.forumid = f.id";
+	$from_is = "posts AS p LEFT JOIN topics as t ON p.topicid = t.id LEFT JOIN forums AS f ON t.forumid = f.id";
 
 	$where_is = "p.userid = $userid AND f.minclassread <= " . $CURUSER['class'];
 
@@ -58,7 +58,7 @@ if ($action == "viewposts")
 
 	//------ Get posts
 
- 	$from_is = "posts AS p JOIN topics as t ON p.topicid = t.id JOIN forums AS f ON t.forumid = f.id LEFT JOIN readposts as r ON p.topicid = r.topicid AND p.userid = r.userid";
+ 	$from_is = "posts AS p LEFT JOIN topics as t ON p.topicid = t.id LEFT JOIN forums AS f ON t.forumid = f.id LEFT LEFT JOIN readposts as r ON p.topicid = r.topicid AND p.userid = r.userid";
 
 	$select_is = "f.id AS f_id, f.name, t.id AS t_id, t.subject, t.lastpost, r.lastpostread, p.*";
 
@@ -145,7 +145,7 @@ if ($action == "viewcomments")
 	$select_is = "COUNT(*)";
 
 	// LEFT due to orphan comments
-	$from_is = "comments AS c LEFT JOIN torrents as t
+	$from_is = "comments AS c LEFT LEFT JOIN torrents as t
 	            ON c.torrent = t.id";
 
 	$where_is = "c.user = $userid";
