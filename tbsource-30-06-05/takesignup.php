@@ -99,7 +99,7 @@ hit_count();
 
 $secret = mksecret();
 $wantpasshash = md5($secret . $wantpassword . $secret);
-$editsecret = mksecret();
+$editsecret = (!$arr[0]?"":mksecret());
 
 $ret = mysql_query("INSERT INTO users (username, passhash, secret, editsecret, email, status, ". (!$arr[0]?"class, ":"") ."added) VALUES (" .
 		implode(",", array_map("sqlesc", array($wantusername, $wantpasshash, $secret, $editsecret, $email, (!$arr[0]?'confirmed':'pending')))).
