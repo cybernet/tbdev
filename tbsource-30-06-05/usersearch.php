@@ -739,7 +739,7 @@ if (count($_GET) > 0 && !$_GET['h'])
   if ($disabled)
   {
   	$distinct = "DISTINCT ";
-    $join_is .= " JOIN users AS u2 ON u.ip = u2.ip";
+    $join_is .= " LEFT JOIN users AS u2 ON u.ip = u2.ip";
 		$where_is .= ((isset($where_is))?" AND ":"")."u2.enabled = 'no'";
     $q .= ($q ? "&amp;" : "") . "dip=$disabled";
   }
@@ -749,7 +749,7 @@ if (count($_GET) > 0 && !$_GET['h'])
   if ($active == "1")
   {
   	$distinct = "DISTINCT ";
-    $join_is .= " JOIN peers AS p ON u.id = p.userid";
+    $join_is .= " LEFT JOIN peers AS p ON u.id = p.userid";
     $q .= ($q ? "&amp;" : "") . "ac=$active";
   }
 
@@ -840,16 +840,16 @@ if (count($_GET) > 0 && !$_GET['h'])
       $pul = $array['pul'];
       $pdl = $array['pdl'];
 
-      $auxres = mysql_query("SELECT COUNT(DISTINCT p.id) FROM posts AS p JOIN topics as t ON p.topicid = t.id
-      	JOIN forums AS f ON t.forumid = f.id WHERE p.userid = " . $user['id'] . " AND f.minclassread <= " .
+      $auxres = mysql_query("SELECT COUNT(DISTINCT p.id) FROM posts AS p LEFT JOIN topics as t ON p.topicid = t.id
+      	LEFT JOIN forums AS f ON t.forumid = f.id WHERE p.userid = " . $user['id'] . " AND f.minclassread <= " .
       	$CURUSER['class']) or sqlerr(__FILE__, __LINE__);
 
       $n = mysql_fetch_row($auxres);
       $n_posts = $n[0];
 
       $auxres = mysql_query("SELECT COUNT(id) FROM comments WHERE user = ".$user['id']) or sqlerr(__FILE__, __LINE__);
-			// Use JOIN to exclude orphan comments
-      // $auxres = mysql_query("SELECT COUNT(c.id) FROM comments AS c JOIN torrents as t ON c.torrent = t.id WHERE c.user = '".$user['id']."'") or sqlerr(__FILE__, __LINE__);
+			// Use LEFT JOIN to exclude orphan comments
+      // $auxres = mysql_query("SELECT COUNT(c.id) FROM comments AS c LEFT JOIN torrents as t ON c.torrent = t.id WHERE c.user = '".$user['id']."'") or sqlerr(__FILE__, __LINE__);
       $n = mysql_fetch_row($auxres);
       $n_comments = $n[0];
 
