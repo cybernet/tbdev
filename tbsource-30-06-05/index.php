@@ -229,7 +229,7 @@ if ($voted)
 
 <?
 }
-
+?>
 
 <h2>Stats</h2>
 <table width=100% border=1 cellspacing=0 cellpadding=10><tr><td align=center>
