@@ -12,7 +12,7 @@ $fields = "info_hash, times_completed, seeders, leechers";
 if (!isset($_GET["info_hash"]))
 	$query = "SELECT $fields FROM torrents ORDER BY info_hash";
 else
-	$query = "SELECT $fields FROM torrents WHERE " . hash_where("info_hash", $_GET["info_hash"]);
+	$query = "SELECT $fields FROM torrents WHERE " . hash_where("info_hash", unesc($_GET["info_hash"]));
 
 $res = mysql_query($query);
 
