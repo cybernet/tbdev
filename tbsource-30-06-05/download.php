@@ -4,17 +4,12 @@ require_once("include/bittorrent.php");
 
 dbconn();
 
-hit_start();
-
 if (!preg_match(':^/(\d{1,10})/(.+)\.torrent$:', $_SERVER["PATH_INFO"], $matches))
 	httperr();
 
 $id = 0 + $matches[1];
 if (!$id)
 	httperr();
-
-
-hit_count();
 
 $res = mysql_query("SELECT name FROM torrents WHERE id = $id") or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_assoc($res);
@@ -30,7 +25,5 @@ mysql_query("UPDATE torrents SET hits = hits + 1 WHERE id = $id");
 header("Content-Type: application/x-bittorrent");
 
 readfile($fn);
-
-hit_end();
 
 ?>

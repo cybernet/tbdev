@@ -3,7 +3,7 @@
 require "include/bittorrent.php";
 dbconn();
 
-$id = 0 + $HTTP_GET_VARS["id"];
+$id = 0 + $_GET["id"];
 if (!$id)
 	stderr("Error", "Bad or missing ID.");
 
@@ -13,27 +13,27 @@ $username = $arr["username"];
 if ($arr["class"] < UC_MODERATOR)
 	stderr("Error", "The gateway can only be used to e-mail staff members.");
 
-if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
+if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
 	$to = $arr["email"];
 
-	$from = substr(trim($HTTP_POST_VARS["from"]), 0, 80);
+	$from = substr(trim($_POST["from"]), 0, 80);
 	if ($from == "") $from = "Anonymous";
 
-	$from_email = substr(trim($HTTP_POST_VARS["from_email"]), 0, 80);
+	$from_email = substr(trim($_POST["from_email"]), 0, 80);
 	if ($from_email == "") $from_email = "noreply@torrentbits.org";
 	if (!strpos($from_email, "@")) stderr("Error", "The entered e-mail address does not seem to be valid.");
 
 	$from = "$from <$from_email>";
 
-	$subject = substr(trim($HTTP_POST_VARS["subject"]), 0, 80);
+	$subject = substr(trim($_POST["subject"]), 0, 80);
 	if ($subject == "") $subject = "(No subject)";
 	$subject = "Fw: $subject";
 
-	$message = trim($HTTP_POST_VARS["message"]);
+	$message = trim($_POST["message"]);
 	if ($message == "") stderr("Error", "No message text!");
 
-	$message = "Message submitted from $HTTP_SERVER_VARS[REMOTE_ADDR] at " . gmdate("Y-m-d H:i:s") . " GMT.\n" .
+	$message = "Message submitted from $_SERVER[REMOTE_ADDR] at " . gmdate("Y-m-d H:i:s") . " GMT.\n" .
 		"Note: By replying to this e-mail you will reveal your e-mail address.\n" .
 		"---------------------------------------------------------------------\n\n" .
 		$message . "\n\n" .

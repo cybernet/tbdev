@@ -688,7 +688,7 @@ if ($CURUSER)
 
  	print("In <a class=altlink href=userdetails.php?id=" . $CURUSER['id'] . ">your</a> particular case, ");
 
-	if ($wait)
+	if (isset($wait))
 	{
 	  $byboth = $byratio && $byul;
 	    print(

@@ -2,8 +2,6 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 if (!preg_match(':^/(\d{1,10})/([\w]{32})/(.+)$:', $_SERVER["PATH_INFO"], $matches))
 	httperr();
 
@@ -16,7 +14,6 @@ if (!$id)
 
 dbconn();
 
-hit_count();
 
 $res = mysql_query("SELECT editsecret FROM users WHERE id = $id");
 $row = mysql_fetch_array($res);
@@ -37,6 +34,5 @@ if (!mysql_affected_rows())
 
 header("Refresh: 0; url=../../../my.php?emailch=1");
 
-hit_end();
 
 ?>

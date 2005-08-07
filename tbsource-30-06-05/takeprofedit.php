@@ -2,15 +2,11 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 function bark($msg) {
 	genbark($msg, "Update failed!");
 }
 
 dbconn();
-
-hit_count();
 
 loggedinorreturn();
 
@@ -132,7 +128,5 @@ EOD;
 mysql_query("UPDATE users SET " . implode(",", $updateset) . " WHERE id = " . $CURUSER["id"]) or sqlerr(__FILE__,__LINE__);
 
 header("Location: $BASEURL/my.php?edited=1" . $urladd);
-
-hit_end();
 
 ?>

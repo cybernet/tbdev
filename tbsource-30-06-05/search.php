@@ -1,9 +1,9 @@
 <?
 require "include/bittorrent.php";
-hit_start();
+
 dbconn();
 loggedinorreturn();
-hit_count();
+
 stdhead("Search");
 ?>
 <table width=750 class=main border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>
@@ -41,7 +41,7 @@ $deadchkbox .= " /> including dead torrents\n";
 </form>
 </td></tr></table>
 <?
-hit_end();
+
 stdfoot();
 
 ?>

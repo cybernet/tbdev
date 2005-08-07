@@ -7,7 +7,7 @@
 
   loggedinorreturn();
 
-  $action = $HTTP_GET_VARS["action"];
+  $action = $_GET["action"];
 
   function catch_up()
   {
@@ -594,7 +594,7 @@
 
 	    print("<form method=post action=?action=setsticky>\n");
 	    print("<input type=hidden name=topicid value=$topicid>\n");
-	    print("<input type=hidden name=returnto value=$BASEURL$HTTP_SERVER_VARS[REQUEST_URI]>\n");
+	    print("<input type=hidden name=returnto value=$BASEURL$_SERVER[REQUEST_URI]>\n");
 	    print("<tr><td class=embedded align=right>Sticky:</td>\n");
 	    print("<td class=embedded><input type=radio name=sticky value='yes' " . ($sticky ? " checked" : "") . "> Yes <input type=radio name=sticky value='no' " . (!$sticky ? " checked" : "") . "> No\n");
 	    print("<input type=submit value='Set'></td></tr>");
@@ -602,7 +602,7 @@
 
 	    print("<form method=post action=?action=setlocked>\n");
 	    print("<input type=hidden name=topicid value=$topicid>\n");
-	    print("<input type=hidden name=returnto value=$BASEURL$HTTP_SERVER_VARS[REQUEST_URI]>\n");
+	    print("<input type=hidden name=returnto value=$BASEURL$_SERVER[REQUEST_URI]>\n");
 	    print("<tr><td class=embedded align=right>Locked:</td>\n");
 	    print("<td class=embedded><input type=radio name=locked value='yes' " . ($locked ? " checked" : "") . "> Yes <input type=radio name=locked value='no' " . (!$locked ? " checked" : "") . "> No\n");
 	    print("<input type=submit value='Set'></td></tr>");
@@ -610,7 +610,7 @@
 
 	    print("<form method=post action=?action=renametopic>\n");
 	    print("<input type=hidden name=topicid value=$topicid>\n");
-	    print("<input type=hidden name=returnto value=$BASEURL$HTTP_SERVER_VARS[REQUEST_URI]>\n");
+	    print("<input type=hidden name=returnto value=$BASEURL$_SERVER[REQUEST_URI]>\n");
 	    print("<tr><td class=embedded align=right>Rename topic:</td><td class=embedded><input type=text name=subject size=60 maxlength=$maxsubjectlength value=\"" . htmlspecialchars($subject) . "\">\n");
 	    print("<input type=submit value='Okay'></td></tr>");
 	    print("</form>\n");
@@ -797,7 +797,7 @@
 
   if ($action == "editpost")
   {
-    $postid = $HTTP_GET_VARS["postid"];
+    $postid = $_GET["postid"];
 
     if (!is_valid_id($postid))
       die;
@@ -820,9 +820,9 @@
     if (($CURUSER["id"] != $arr["userid"] || $locked) && get_user_class() < UC_MODERATOR)
       stderr("Error", "Denied!");
 
-    if ($HTTP_SERVER_VARS['REQUEST_METHOD'] == 'POST')
+    if ($_SERVER['REQUEST_METHOD'] == 'POST')
     {
-    	$body = $HTTP_POST_VARS['body'];
+    	$body = $_POST['body'];
 
     	if ($body == "")
     	  stderr("Error", "Body cannot be empty!");
@@ -833,7 +833,7 @@
 
       mysql_query("UPDATE posts SET body=$body, editedat=$editedat, editedby=$CURUSER[id] WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
 
-		$returnto = $HTTP_POST_VARS["returnto"];
+		$returnto = $_POST["returnto"];
 
 			if ($returnto != "")
 			{
@@ -849,7 +849,7 @@
     print("<h1>Edit Post</h1>\n");
 
     print("<form method=post action=?action=editpost&postid=$postid>\n");
-    print("<input type=hidden name=returnto value=\"" . htmlspecialchars($HTTP_SERVER_VARS["HTTP_REFERER"]) . "\">\n");
+    print("<input type=hidden name=returnto value=\"" . htmlspecialchars($_SERVER["HTTP_REFERER"]) . "\">\n");
 
     print("<table border=1 cellspacing=0 cellpadding=5>\n");
 
@@ -970,15 +970,15 @@
 
   if ($action == "setlocked")
   {
-    $topicid = 0 + $HTTP_POST_VARS["topicid"];
+    $topicid = 0 + $_POST["topicid"];
 
     if (!$topicid || get_user_class() < UC_MODERATOR)
       die;
 
-	$locked = sqlesc($HTTP_POST_VARS["locked"]);
+	$locked = sqlesc($_POST["locked"]);
     mysql_query("UPDATE topics SET locked=$locked WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
-    header("Location: $HTTP_POST_VARS[returnto]");
+    header("Location: $_POST[returnto]");
 
     die;
   }
@@ -987,15 +987,15 @@
 
   if ($action == "setsticky")
   {
-    $topicid = 0 + $HTTP_POST_VARS["topicid"];
+    $topicid = 0 + $_POST["topicid"];
 
     if (!topicid || get_user_class() < UC_MODERATOR)
       die;
 
-	$sticky = sqlesc($HTTP_POST_VARS["sticky"]);
+	$sticky = sqlesc($_POST["sticky"]);
     mysql_query("UPDATE topics SET sticky=$sticky WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
-    header("Location: $HTTP_POST_VARS[returnto]");
+    header("Location: $_POST[returnto]");
 
     die;
   }
@@ -1007,12 +1007,12 @@
   	if (get_user_class() < UC_MODERATOR)
   	  die;
 
-  	$topicid = $HTTP_POST_VARS['topicid'];
+  	$topicid = $_POST['topicid'];
 
   	if (!is_valid_id($topicid))
   	  die;
 
-  	$subject = $HTTP_POST_VARS['subject'];
+  	$subject = $_POST['subject'];
 
   	if ($subject == '')
   	  stderr('Error', 'You must enter a new title!');
@@ -1021,7 +1021,7 @@
 
   	mysql_query("UPDATE topics SET subject=$subject WHERE id=$topicid") or sqlerr();
 
-  	$returnto = $HTTP_POST_VARS['returnto'];
+  	$returnto = $_POST['returnto'];
 
   	if ($returnto)
   	  header("Location: $returnto");
@@ -1380,11 +1380,11 @@ if ($action == "search")
 {
 	stdhead("Forum Search");
 	print("<h1>Forum Search (<font color=red>BETA</font>)</h1>\n");
-	$keywords = trim($HTTP_GET_VARS["keywords"]);
+	$keywords = trim($_GET["keywords"]);
 	if ($keywords != "")
 	{
 		$perpage = 50;
-		$page = max(1, 0 + $HTTP_GET_VARS["page"]);
+		$page = max(1, 0 + $_GET["page"]);
 		$ekeywords = sqlesc($keywords);
 		print("<p><b>Searched for \"" . htmlspecialchars($keywords) . "\"</b></p>\n");
 		$res = mysql_query("SELECT COUNT(*) FROM posts WHERE MATCH (body) AGAINST ($ekeywords)") or sqlerr(__FILE__, __LINE__);

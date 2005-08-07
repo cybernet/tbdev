@@ -179,11 +179,11 @@
   begin_main_frame();
 //  $r = mysql_query("SELECT * FROM users ORDER BY donated DESC, username LIMIT 100") or die;
 //  donortable($r, "Top 10 Donors");
-	$type = 0 + $_GET["type"];
-	if (!in_array($type,array(1,2,3,4)))
+	$type = isset($_GET["type"]) ? 0 + $_GET["type"] : 0;
+	if (!in_array($type,array(1,2,3)))
 		$type = 1;
-	$limit = 0 + $_GET["lim"];
-	$subtype = $_GET["subtype"];
+	$limit = isset($_GET["lim"]) ? 0 + $_GET["lim"] : false;
+	$subtype = isset($_GET["subtype"]) ? $_GET["subtype"] : false;
 
 	print("<p align=center>"  .
 		($type == 1 && !$limit ? "<b>Users</b>" : "<a href=topten.php?type=1>Users</a>") .	" | " .
@@ -206,28 +206,28 @@
   	if ($limit == 10 || $subtype == "ul")
   	{
 			$order = "uploaded DESC";
-			$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+			$r = mysql_query($mainquery . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
 	  	usertable($r, "Top $limit Uploaders" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=ul>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=ul>Top 250</a>]</font>" : ""));
 	  }
 
     if ($limit == 10 || $subtype == "dl")
   	{
 			$order = "downloaded DESC";
-		  $r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+		  $r = mysql_query($mainquery . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
 		  usertable($r, "Top $limit Downloaders" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=dl>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=dl>Top 250</a>]</font>" : ""));
 	  }
 
     if ($limit == 10 || $subtype == "uls")
   	{
 			$order = "upspeed DESC";
-			$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+			$r = mysql_query($mainquery . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
 	  	usertable($r, "Top $limit Fastest Uploaders <font class=small>(average, includes inactive time)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=uls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=uls>Top 250</a>]</font>" : ""));
 	  }
 
     if ($limit == 10 || $subtype == "dls")
   	{
 			$order = "downspeed DESC";
-			$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+			$r = mysql_query($mainquery . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
 	  	usertable($r, "Top $limit Fastest Downloaders <font class=small>(average, includes inactive time)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=dls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=dls>Top 250</a>]</font>" : ""));
 	  }
 

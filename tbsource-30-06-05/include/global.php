@@ -513,6 +513,8 @@ function is_valid_id($id)
 
   function begin_frame($caption = "", $center = false, $padding = 10)
   {
+    $tdextra = "";
+    
     if ($caption)
       print("<h2>$caption</h2>\n");
 
@@ -535,8 +537,10 @@ function is_valid_id($id)
 
   function begin_table($fullwidth = false, $padding = 5)
   {
+    $width = "";
+    
     if ($fullwidth)
-      $width = " width=100%";
+      $width .= " width=100%";
     print("<table class=main$width border=1 cellspacing=0 cellpadding=$padding>\n");
   }
 

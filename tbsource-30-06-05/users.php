@@ -5,8 +5,8 @@ dbconn();
 
 loggedinorreturn();
 
-$search = trim($HTTP_GET_VARS['search']);
-$class = $HTTP_GET_VARS['class'];
+$search = trim($_GET['search']);
+$class = $_GET['class'];
 if ($class == '-' || !is_valid_id($class))
   $class = '';
 

@@ -2,14 +2,10 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 if (!mkglobal("username:password"))
 	die();
 
 dbconn();
-
-hit_count();
 
 function bark($text = "Username or password incorrect")
 {
@@ -34,7 +30,5 @@ if (!empty($_POST["returnto"]))
 	header("Location: $BASEURL$_POST[returnto]");
 else
 	header("Location: $BASEURL/my.php");
-
-hit_end();
 
 ?>

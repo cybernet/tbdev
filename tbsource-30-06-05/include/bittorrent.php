@@ -2,9 +2,7 @@
 
 function local_user()
 {
-  global $HTTP_SERVER_VARS;
-
-  return $HTTP_SERVER_VARS["SERVER_ADDR"] == $HTTP_SERVER_VARS["REMOTE_ADDR"];
+  return $_SERVER["SERVER_ADDR"] == $_SERVER["REMOTE_ADDR"];
 }
 //$FUNDS = "$2,610.31";
 
@@ -29,9 +27,9 @@ $announce_urls[] = "http://torrentbits.org:81/announce.php";
 $announce_urls[] = "http://torrentbits.org:82/announce.php";
 $announce_urls[] = "http://torrentbits.org:83/announce.php";
 
-if ($HTTP_SERVER_VARS["HTTP_HOST"] == "")
-  $HTTP_SERVER_VARS["HTTP_HOST"] = $HTTP_SERVER_VARS["SERVER_NAME"];
-$BASEURL = "http://" . $HTTP_SERVER_VARS["HTTP_HOST"];
+if ($_SERVER["HTTP_HOST"] == "")
+  $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
+$BASEURL = "http://" . $_SERVER["HTTP_HOST"];
 
 // Set this to your site URL... No ending slash!
 $DEFAULTBASEURL = "http://torrentbits.org";
@@ -89,20 +87,19 @@ function validip($ip)
 // Patched function to detect REAL IP address if it's valid
 function getip()
 {
-	global $HTTP_SERVER_VARS;
-	if (validip($HTTP_SERVER_VARS['HTTP_CLIENT_IP'])) return $HTTP_SERVER_VARS['HTTP_CLIENT_IP'];
-	elseif ($HTTP_SERVER_VARS['HTTP_X_FORWARDED_FOR']!="")
+	if (validip($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
+	elseif ($_SERVER['HTTP_X_FORWARDED_FOR']!="")
 	{
-		$forwarded=str_replace(",","",$HTTP_SERVER_VARS['HTTP_X_FORWARDED_FOR']);
+		$forwarded=str_replace(",","",$_SERVER['HTTP_X_FORWARDED_FOR']);
 		$forwarded_array=split(" ",$forwarded);
 		foreach($forwarded_array as $value)	if (validip($value)) return $value;
 	}
-	return $HTTP_SERVER_VARS['REMOTE_ADDR'];
+	return $_SERVER['REMOTE_ADDR'];
 }
 
 function dbconn($autoclean = false)
 {
-    global $mysql_host, $mysql_user, $mysql_pass, $mysql_db, $HTTP_SERVER_VARS;
+    global $mysql_host, $mysql_user, $mysql_pass, $mysql_db;
 
     if (!@mysql_connect($mysql_host, $mysql_user, $mysql_pass))
     {
@@ -110,8 +107,8 @@ function dbconn($autoclean = false)
 	  {
 		case 1040:
 		case 2002:
-			if ($HTTP_SERVER_VARS[REQUEST_METHOD] == "GET")
-				die("<html><head><meta http-equiv=refresh content=\"5 $HTTP_SERVER_VARS[REQUEST_URI]\"></head><body><table border=0 width=100% height=100%><tr><td><h3 align=center>The server load is very high at the moment. Retrying, please wait...</h3></td></tr></table></body></html>");
+			if ($_SERVER[REQUEST_METHOD] == "GET")
+				die("<html><head><meta http-equiv=refresh content=\"5 $_SERVER[REQUEST_URI]\"></head><body><table border=0 width=100% height=100%><tr><td><h3 align=center>The server load is very high at the moment. Retrying, please wait...</h3></td></tr></table></body></html>");
 			else
 				die("Too many users. Please press the Refresh button in your browser to retry.");
         default:
@@ -129,7 +126,7 @@ function dbconn($autoclean = false)
 
 
 function userlogin() {
-    global $HTTP_SERVER_VARS, $SITE_ONLINE;
+    global $SITE_ONLINE;
     unset($GLOBALS["CURUSER"]);
 
     $ip = getip();
@@ -300,7 +297,7 @@ function parsedescr($d, $html) {
 }
 
 function stdhead($title = "", $msgalert = true) {
-    global $CURUSER, $HTTP_SERVER_VARS, $PHP_SELF, $SITE_ONLINE, $FUNDS, $SITENAME;
+    global $CURUSER, $SITE_ONLINE, $FUNDS, $SITENAME;
 
   if (!$SITE_ONLINE)
     die("Site is down for maintenance, please check back again later... thanks<br>");
@@ -365,14 +362,14 @@ function stdhead($title = "", $msgalert = true) {
 <?php
 
 $w = "width=100%";
-//if ($HTTP_SERVER_VARS["REMOTE_ADDR"] == $HTTP_SERVER_VARS["SERVER_ADDR"]) $w = "width=984";
+//if ($_SERVER["REMOTE_ADDR"] == $_SERVER["SERVER_ADDR"]) $w = "width=984";
 
 ?>
 <table class=mainouter <?=$w; ?> border="1" cellspacing="0" cellpadding="10">
 
 <!------------- MENU ------------------------------------------------------------------------>
 
-<? $fn = substr($PHP_SELF, strrpos($PHP_SELF, "/") + 1); ?>
+<? $fn = substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], "/") + 1); ?>
 <tr><td class=outer align=center>
 <table class=main width=700 cellspacing="0" cellpadding="5" border="0">
 <tr>
@@ -601,7 +598,7 @@ function downloaderdata($res) {
 
 function commenttable($rows)
 {
-	global $CURUSER, $HTTP_SERVER_VARS;
+	global $CURUSER;
 	begin_main_frame();
 	begin_frame();
 	$count = 0;
@@ -861,7 +858,7 @@ print("</td>\n");
 
     return $rows;
 }
-
+/*
 function hit_start() {
     return;
     global $RUNTIME_START, $RUNTIME_TIMES;
@@ -899,7 +896,7 @@ function hit_end() {
     $user = ($ts["utime"] - $RUNTIME_TIMES["utime"]) / 100;
     mysql_query("UPDATE hits SET runs = runs + 1, runtime = runtime + $runtime, user_cpu = user_cpu + $user, sys_cpu = sys_cpu + $sys WHERE $RUNTIME_CLAUSE");
 }
-
+*/
 function hash_pad($hash) {
     return str_pad($hash, 20);
 }

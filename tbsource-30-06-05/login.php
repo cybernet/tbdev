@@ -2,11 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 dbconn();
-
-hit_count();
 
 stdhead("Login");
 
@@ -39,7 +35,5 @@ if (isset($returnto))
 <?
 
 stdfoot();
-
-hit_end();
 
 ?>

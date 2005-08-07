@@ -2,11 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 dbconn(false);
-
-hit_count();
 
 loggedinorreturn();
 $res = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location IN ('in', 'both')") or print(mysql_error());
@@ -165,7 +161,5 @@ else
 
 print("<p><a href=users.php><b>Find User/Browse User List</b></a></p>");
 stdfoot();
-
-hit_end();
 
 ?>

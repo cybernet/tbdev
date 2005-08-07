@@ -2,11 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 dbconn();
-
-hit_count();
 
 function bark($msg) {
 	genbark($msg, "Rating failed!");
@@ -45,7 +41,5 @@ if (!$res) {
 mysql_query("UPDATE torrents SET numratings = numratings + 1, ratingsum = ratingsum + $rating WHERE id = $id");
 
 header("Refresh: 0; url=details.php?id=$id&rated=1");
-
-hit_end();
 
 ?>

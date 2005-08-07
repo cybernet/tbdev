@@ -3,8 +3,6 @@
 require_once("include/bittorrent.php");
 require_once("include/benc.php");
 
-hit_start();
-
 dbconn(false);
 
 $r = "d" . benc_str("files") . "d";
@@ -30,7 +28,5 @@ $r .= "ee";
 
 header("Content-Type: text/plain");
 print($r);
-
-hit_end();
 
 ?>

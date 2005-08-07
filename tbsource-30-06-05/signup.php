@@ -18,7 +18,7 @@ stdhead("Signup");
 <b><font color=red>Important - please read:</font></b> We do not accept users connecting through public proxies. When you
 submit the form below we will check whether any commonly used proxy ports on your computer is open. If you have a firewall it may alert of you of port
 scanning activity originating from <b>69.10.142.42</b> (torrentbits.org). This is only our proxy-detector in action.
-<b>The check takes up to 30 seconds to complete, please be patient.</b> The IP address we will test is <b><?= $HTTP_SERVER_VARS["REMOTE_ADDR"]; ?></b>.
+<b>The check takes up to 30 seconds to complete, please be patient.</b> The IP address we will test is <b><?= $_SERVER["REMOTE_ADDR"]; ?></b>.
 By proceeding with submitting the form below you grant us permission to scan certain ports on this computer.
 </td></tr></table>
 <p>

@@ -9,18 +9,18 @@ loggedinorreturn();
 if (get_user_class() < UC_MODERATOR)
   die;
 
-$remove = $HTTP_GET_VARS['remove'];
+$remove = $_GET['remove'];
 if (is_valid_id($remove))
 {
   mysql_query("DELETE FROM bans WHERE id=$remove") or sqlerr();
   write_log("Ban $remove was removed by $CURUSER[id] ($CURUSER[username])");
 }
 
-if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST" && get_user_class() >= UC_ADMINISTRATOR)
+if ($_SERVER["REQUEST_METHOD"] == "POST" && get_user_class() >= UC_ADMINISTRATOR)
 {
-	$first = trim($HTTP_POST_VARS["first"]);
-	$last = trim($HTTP_POST_VARS["last"]);
-	$comment = trim($HTTP_POST_VARS["comment"]);
+	$first = trim($_POST["first"]);
+	$last = trim($_POST["last"]);
+	$comment = trim($_POST["comment"]);
 	if (!$first || !$last || !$comment)
 		stderr("Error", "Missing form data.");
 	$first = ip2long($first);
@@ -30,7 +30,7 @@ if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST" && get_user_class() >= UC_ADMI
 	$comment = sqlesc($comment);
 	$added = sqlesc(get_date_time());
 	mysql_query("INSERT INTO bans (added, addedby, first, last, comment) VALUES($added, $CURUSER[id], $first, $last, $comment)") or sqlerr(__FILE__, __LINE__);
-	header("Location: $BASEURL$HTTP_SERVER_VARS[REQUEST_URI]");
+	header("Location: $BASEURL$_SERVER[REQUEST_URI]");
 	die;
 }
 
