@@ -4,7 +4,7 @@ require "include/bittorrent.php";
 
 dbconn();
 
-if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
+if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
   $email = trim($_POST["email"]);
   if (!$email)
@@ -24,7 +24,7 @@ if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
 Someone, hopefully you, requested that the password for the account
 associated with this email address ($email) be reset.
 
-The request originated from {$HTTP_SERVER_VARS["REMOTE_ADDR"]}.
+The request originated from {$_SERVER["REMOTE_ADDR"]}.
 
 If you did not do this ignore this email. Please do not reply.
 

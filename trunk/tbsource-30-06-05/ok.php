@@ -2,11 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 dbconn();
-
-hit_count();
 
 if (!mkglobal("type"))
 	die();
@@ -49,7 +45,5 @@ elseif ($type == "confirm") {
 }
 else
 	die();
-
-hit_end();
 
 ?>

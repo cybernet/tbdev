@@ -2,13 +2,11 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
 
 $action = $_GET["action"];
 
 dbconn(false);
 
-hit_count();
 
 loggedinorreturn();
 
@@ -38,8 +36,6 @@ if ($action == "add")
 	  mysql_query("UPDATE torrents SET comments = comments + 1 WHERE id = $torrentid");
 
 	  header("Refresh: 0; url=details.php?id=$torrentid&viewcomm=$newid#comm$newid");
-
-    hit_end();
 	  die;
 	}
 
@@ -72,7 +68,6 @@ if ($action == "add")
 	}
 
   stdfoot();
-  hit_end();
 	die;
 }
 elseif ($action == "edit")
@@ -107,8 +102,6 @@ elseif ($action == "edit")
 	  	header("Location: $returnto");
 		else
 		  header("Location: $BASEURL/");      // change later ----------------------
-
-  	hit_end();
 		die;
 	}
 
@@ -122,7 +115,6 @@ elseif ($action == "edit")
 	print("<p><input type=\"submit\" class=btn value=\"Do it!\" /></p></form>\n");
 
 	stdfoot();
-  hit_end();
 	die;
 }
 elseif ($action == "delete")
@@ -162,8 +154,6 @@ elseif ($action == "delete")
 	  header("Location: $returnto");
 	else
 	  header("Location: $BASEURL/");      // change later ----------------------
-
-  hit_end();
 	die;
 }
 elseif ($action == "vieworiginal")
@@ -196,7 +186,6 @@ elseif ($action == "vieworiginal")
  		print("<p><font size=small>(<a href=$returnto>back</a>)</font></p>\n");
 
 	stdfoot();
-  hit_end();
 	die;
 }
 else

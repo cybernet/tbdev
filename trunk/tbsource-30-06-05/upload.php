@@ -1,11 +1,8 @@
 <?
 
 require_once("include/bittorrent.php");
-hit_start();
 
 dbconn(false);
-
-hit_count();
 
 loggedinorreturn();
 
@@ -48,7 +45,5 @@ tr("Type", $s, 1);
 <?
 
 stdfoot();
-
-hit_end();
 
 ?>

@@ -4,15 +4,15 @@ dbconn();
 loggedinorreturn();
 if (get_user_class() < UC_ADMINISTRATOR)
 	stderr("Error", "Access denied.");
-if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
+if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-	if ($HTTP_POST_VARS["username"] == "" || $HTTP_POST_VARS["password"] == "" || $HTTP_POST_VARS["email"] == "")
+	if ($_POST["username"] == "" || $_POST["password"] == "" || $_POST["email"] == "")
 		stderr("Error", "Missing form data.");
-	if ($HTTP_POST_VARS["password"] != $HTTP_POST_VARS["password2"])
+	if ($_POST["password"] != $_POST["password2"])
 		stderr("Error", "Passwords mismatch.");
-	$username = sqlesc($HTTP_POST_VARS["username"]);
-	$password = $HTTP_POST_VARS["password"];
-	$email = sqlesc($HTTP_POST_VARS["email"]);
+	$username = sqlesc($_POST["username"]);
+	$password = $_POST["password"];
+	$email = sqlesc($_POST["email"]);
 	$secret = mksecret();
 	$passhash = sqlesc(md5($secret . $password . $secret));
   $secret = sqlesc($secret);

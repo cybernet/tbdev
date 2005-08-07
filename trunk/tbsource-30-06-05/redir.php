@@ -1,6 +1,6 @@
 <?php
   $url = '';
-  while (list($var,$val) = each($HTTP_GET_VARS))
+  while (list($var,$val) = each($_GET))
     $url .= "&$var=$val";
 $i = strpos($url, "&url=");
 if ($i !== false)

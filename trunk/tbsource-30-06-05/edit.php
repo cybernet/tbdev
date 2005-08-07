@@ -2,8 +2,6 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 if (!mkglobal("id"))
 	die();
 
@@ -12,8 +10,6 @@ if (!$id)
 	die();
 
 dbconn();
-
-hit_count();
 
 loggedinorreturn();
 
@@ -82,7 +78,5 @@ else
 }
 
 stdfoot();
-
-hit_end();
 
 ?>

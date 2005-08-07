@@ -4,7 +4,7 @@ ob_start("ob_gzhandler");
 require "include/bittorrent.php";
 
 dbconn(true);
-if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
+if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
   $choice = $_POST["choice"];
   if ($CURUSER && $choice != "" && $choice < 256 && $choice == floor($choice))
@@ -274,6 +274,4 @@ It is your own responsibility to adhere to these terms.</font></p>
 
 <?
 stdfoot();
-
-hit_end();
 ?>

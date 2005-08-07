@@ -4,7 +4,6 @@ ob_start("ob_gzhandler");
 
 require_once("include/bittorrent.php");
 
-hit_start();
 
 function getagent($httpagent)
 {
@@ -100,8 +99,6 @@ dbconn(false);
 
 loggedinorreturn();
 
-hit_count();
-
 $id = $_GET["id"];
 $id = 0 + $id;
 if (!isset($id) || !$id)
@@ -133,7 +130,6 @@ else {
 			header("Location: $BASEURL/details.php?id=$id&dllist=1#leechers");
 		else
 			header("Location: $BASEURL/details.php?id=$id");
-		hit_end();
 		exit();
 	}
 
@@ -384,7 +380,5 @@ $s.="<tr><td class=colhead>Path</td><td class=colhead align=right>Size</td></tr>
 }
 
 stdfoot();
-
-hit_end();
 
 ?>

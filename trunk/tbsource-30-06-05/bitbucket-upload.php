@@ -7,9 +7,9 @@ loggedinorreturn();
 $maxfilesize = 256 * 1024;
 
 
-if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
+if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-	$file = $HTTP_POST_FILES["file"];
+	$file = $_POST["file"];
 	if (!isset($file) || $file["size"] < 1)
 		stderr("Upload failed", "Nothing received!");
 	if ($file["size"] > $maxfilesize)

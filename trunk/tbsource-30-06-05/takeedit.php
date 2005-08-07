@@ -2,8 +2,6 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 function bark($msg) {
 	genbark($msg, "Edit failed!");
 }
@@ -16,8 +14,6 @@ if (!$id)
 	die();
 
 dbconn();
-
-hit_count();
 
 loggedinorreturn();
 
@@ -75,6 +71,5 @@ if (isset($_POST["returnto"]))
 	$returl .= "&returnto=" . urlencode($_POST["returnto"]);
 header("Refresh: 0; url=$returl");
 
-hit_end();
 
 ?>

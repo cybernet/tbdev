@@ -5,12 +5,11 @@ ob_start("ob_gzhandler");
 require_once("include/bittorrent.php");
 require_once("include/benc.php");
 
-hit_start();
+
 
 function err($msg)
 {
 	benc_resp(array("failure reason" => array(type => "string", value => $msg)));
-	hit_end();
 	exit();
 }
 
@@ -85,7 +84,6 @@ $seeder = ($left == 0) ? "yes" : "no";
 
 dbconn(false);
 
-hit_count();
 
 $res = mysql_query("SELECT id, banned, seeders + leechers AS numpeers, UNIX_TIMESTAMP(added) AS ts FROM torrents WHERE " . hash_where("info_hash", $info_hash));
 
@@ -275,6 +273,5 @@ if (count($updateset))
 
 benc_resp_raw($resp);
 
-hit_end();
 
 ?>

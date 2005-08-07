@@ -2,8 +2,6 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
 dbconn();
 
 $res = mysql_query("SELECT COUNT(*) FROM users") or sqlerr(__FILE__, __LINE__);
@@ -38,8 +36,7 @@ function validusername($username)
 
 function isportopen($port)
 {
-	global $HTTP_SERVER_VARS;
-	$sd = @fsockopen($HTTP_SERVER_VARS["REMOTE_ADDR"], $port, $errno, $errstr, 1);
+	$sd = @fsockopen($_SERVER["REMOTE_ADDR"], $port, $errno, $errstr, 1);
 	if ($sd)
 	{
 		fclose($sd);
@@ -82,7 +79,7 @@ if (!validusername($wantusername))
 	bark("Invalid username.");
 
 // make sure user agrees to everything...
-if ($HTTP_POST_VARS["rulesverify"] != "yes" || $HTTP_POST_VARS["faqverify"] != "yes" || $HTTP_POST_VARS["ageverify"] != "yes")
+if ($HTTP_POST_VARS["rulesverify"] != "yes" || $_POST["faqverify"] != "yes" || $_POST["ageverify"] != "yes")
 	stderr("Signup failed", "Sorry, you're not qualified to become a member of this site.");
 
 // check if email addy is already in use
@@ -95,7 +92,6 @@ if ($a[0] != 0)
 if (isproxy())
 	bark("You appear to be connecting through a proxy server. Your organization or ISP may use a transparent caching HTTP proxy. Please try and access the site on <a href=http://torrentbits.org:81/signup.php>port 81</a> (this should bypass the proxy server). <p><b>Note:</b> if you run an Internet-accessible web server on the local machine you need to shut it down until the sign-up is complete.");
 */
-hit_count();
 
 $secret = mksecret();
 $wantpasshash = md5($secret . $wantpassword . $secret);
@@ -139,7 +135,5 @@ else
   logincookie($id, $wantpasshash);
 
 header("Refresh: 0; url=ok.php?type=". (!$arr[0]?"sysop":("signup&email=" . urlencode($email))));
-
-hit_end();
 
 ?>

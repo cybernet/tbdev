@@ -3,9 +3,6 @@
 require_once("include/benc.php");
 require_once("include/bittorrent.php");
 
-
-hit_start();
-
 ini_set("upload_max_filesize",$max_torrent_size);
 
 function bark($msg) {
@@ -13,8 +10,6 @@ function bark($msg) {
 }
 
 dbconn(); 
-
-hit_count();
 
 loggedinorreturn();
 
@@ -269,7 +264,5 @@ while ($arr = mysql_fetch_row($res))
 *******************/
 
 header("Location: $BASEURL/details.php?id=$id&uploaded=1");
-
-hit_end();
 
 ?>

@@ -4,12 +4,11 @@ ob_start("ob_gzhandler");
 
 require_once("include/bittorrent.php");
 
-hit_start();
 
 dbconn(false);
 
 loggedinorreturn();
-hit_count();
+
 
 $cats = genrelist();
 
@@ -258,5 +257,4 @@ else {
 
 stdfoot();
 
-hit_end();
 ?>
