@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	<input type=hidden name=returnto value=<?=$_GET["returnto"] ? $_GET["returnto"] : $_SERVER["HTTP_REFERER"]?>>
 	<? } ?>
 	<table border=1 cellspacing=0 cellpadding=5>
-	<tr><td<?=$replyto?" colspan=2":""?>><textarea name=msg cols=80 rows=15><?=$body?></textarea></td></tr>
+	<tr><td<?=$replyto?" colspan=2":""?>><textarea name=msg cols=80 rows=15><?=htmlspecialchars($body)?></textarea></td></tr>
 	<tr>
 	<? if ($replyto) { ?>
 	<td align=center><input type=checkbox name='delete' value='yes' <?=$CURUSER['deletepms'] == 'yes'?"checked":""?>>Delete message you are replying to
