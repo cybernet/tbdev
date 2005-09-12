@@ -4,7 +4,7 @@ require_once("include/bittorrent.php");
 
 
 $id = 0 + $_GET["id"];
-$md5 = $GET["secret"];
+$md5 = $_GET["secret"];
 
 if (!$id)
 	httperr();

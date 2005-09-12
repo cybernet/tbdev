@@ -58,7 +58,7 @@ if ($action == "viewposts")
 
 	//------ Get posts
 
- 	$from_is = "posts AS p LEFT JOIN topics as t ON p.topicid = t.id LEFT JOIN forums AS f ON t.forumid = f.id LEFT LEFT JOIN readposts as r ON p.topicid = r.topicid AND p.userid = r.userid";
+ 	$from_is = "posts AS p LEFT JOIN topics as t ON p.topicid = t.id LEFT JOIN forums AS f ON t.forumid = f.id LEFT JOIN readposts as r ON p.topicid = r.topicid AND p.userid = r.userid";
 
 	$select_is = "f.id AS f_id, f.name, t.id AS t_id, t.subject, t.lastpost, r.lastpostread, p.*";
 

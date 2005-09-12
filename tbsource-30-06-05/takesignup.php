@@ -79,7 +79,7 @@ if (!validusername($wantusername))
 	bark("Invalid username.");
 
 // make sure user agrees to everything...
-if ($HTTP_POST_VARS["rulesverify"] != "yes" || $_POST["faqverify"] != "yes" || $_POST["ageverify"] != "yes")
+if ($_POST["rulesverify"] != "yes" || $_POST["faqverify"] != "yes" || $_POST["ageverify"] != "yes")
 	stderr("Signup failed", "Sorry, you're not qualified to become a member of this site.");
 
 // check if email addy is already in use
