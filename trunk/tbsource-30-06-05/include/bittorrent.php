@@ -85,17 +85,41 @@ function validip($ip)
 }
 
 // Patched function to detect REAL IP address if it's valid
+/*
 function getip()
 {
-	if (validip($_SERVER['HTTP_CLIENT_IP'])) return $_SERVER['HTTP_CLIENT_IP'];
-	elseif ($_SERVER['HTTP_X_FORWARDED_FOR']!="")
-	{
-		$forwarded=str_replace(",","",$_SERVER['HTTP_X_FORWARDED_FOR']);
-		$forwarded_array=split(" ",$forwarded);
-		foreach($forwarded_array as $value)	if (validip($value)) return $value;
-	}
-	return $_SERVER['REMOTE_ADDR'];
+        //global $HTTP_SERVER_VARS;
+        if (validip($_SERVER["HTTP_CLIENT_IP"])) return $_SERVER["HTTP_CLIENT_IP"];
+        elseif ($_SERVER["HTTP_X_FORWARDED_FOR"]!="")
+        {
+                $forwarded=str_replace(",","",$_SERVER["HTTP_X_FORWARDED_FOR"]);
+                $forwarded_array=split(" ",$forwarded);
+                foreach($forwarded_array as $value)        if (validip($value)) return $value;
+        }
+        return $_SERVER["REMOTE_ADDR"];
 }
+*/
+function getip() {
+    if (isset($_SERVER)) {
+      if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+      } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+      } else {
+        $ip = $_SERVER['REMOTE_ADDR'];
+      }
+    } else {
+      if (getenv('HTTP_X_FORWARDED_FOR')) {
+        $ip = getenv('HTTP_X_FORWARDED_FOR');
+      } elseif (getenv('HTTP_CLIENT_IP')) {
+        $ip = getenv('HTTP_CLIENT_IP');
+      } else {
+        $ip = getenv('REMOTE_ADDR');
+      }
+    }
+
+    return $ip;
+  }
 
 function dbconn($autoclean = false)
 {

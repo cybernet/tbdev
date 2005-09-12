@@ -99,8 +99,8 @@ dbconn(false);
 
 loggedinorreturn();
 
-$id = $_GET["id"];
-$id = 0 + $id;
+$id = 0 + $_GET["id"];
+
 if (!isset($id) || !$id)
 	die();
 

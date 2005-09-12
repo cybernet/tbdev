@@ -54,7 +54,7 @@ $rows = mysql_num_rows($r);
 for ($i = 0; $i < $rows; ++$i)
 {
 	$a = mysql_fetch_assoc($r);
-	if ($HTTP_POST_VARS["cat$a[id]"] == 'yes')
+	if ($_POST["cat$a[id]"] == 'yes')
 	  $notifs .= "[cat$a[id]]";
 }
 $avatar = $_POST["avatar"];
