@@ -116,22 +116,26 @@ if (mysql_num_rows($res) > 0)
 </td></tr></table>
 */ ?>
 
-<? if ($CURUSER)
+
+ if ($CURUSER)
 {
   // Get current poll
   $res = mysql_query("SELECT * FROM polls ORDER BY added DESC LIMIT 1") or sqlerr();
-  $arr = mysql_fetch_assoc($res);
-  $pollid = $arr["id"];
-  $userid = $CURUSER["id"];
-  $question = $arr["question"];
-  $o = array($arr["option0"], $arr["option1"], $arr["option2"], $arr["option3"], $arr["option4"],
-    $arr["option5"], $arr["option6"], $arr["option7"], $arr["option8"], $arr["option9"],
-    $arr["option10"], $arr["option11"], $arr["option12"], $arr["option13"], $arr["option14"],
-    $arr["option15"], $arr["option16"], $arr["option17"], $arr["option18"], $arr["option19"]);
+  if($pollok=(mysql_num_rows($res)))
+  {
+  	$arr = mysql_fetch_assoc($res);
+  	$pollid = $arr["id"];
+  	$userid = $CURUSER["id"];
+  	$question = $arr["question"];
+  	$o = array($arr["option0"], $arr["option1"], $arr["option2"], $arr["option3"], $arr["option4"],
+    	$arr["option5"], $arr["option6"], $arr["option7"], $arr["option8"], $arr["option9"],
+    	$arr["option10"], $arr["option11"], $arr["option12"], $arr["option13"], $arr["option14"],
+    	$arr["option15"], $arr["option16"], $arr["option17"], $arr["option18"], $arr["option19"]);
 
   // Check if user has already voted
-  $res = mysql_query("SELECT * FROM pollanswers WHERE pollid=$pollid && userid=$userid") or sqlerr();
-  $arr2 = mysql_fetch_assoc($res);
+  	$res = mysql_query("SELECT * FROM pollanswers WHERE pollid=$pollid AND userid=$userid") or sqlerr();
+  	$arr2 = mysql_fetch_assoc($res);
+  }
 
   print("<h2>Poll");
 
@@ -139,86 +143,89 @@ if (mysql_num_rows($res) > 0)
   {
   	print("<font class=small>");
 		print(" - [<a class=altlink href=makepoll.php?returnto=main><b>New</b></a>]\n");
-  	print(" - [<a class=altlink href=makepoll.php?action=edit&pollid=$arr[id]&returnto=main><b>Edit</b></a>]\n");
-		print(" - [<a class=altlink href=polls.php?action=delete&pollid=$arr[id]&returnto=main><b>Delete</b></a>]");
+		if($pollok) {
+  		print(" - [<a class=altlink href=makepoll.php?action=edit&pollid=$arr[id]&returnto=main><b>Edit</b></a>]\n");
+			print(" - [<a class=altlink href=polls.php?action=delete&pollid=$arr[id]&returnto=main><b>Delete</b></a>]");
+		}
 		print("</font>");
 	}
 	print("</h2>\n");
-	print("<table width=100% border=1 cellspacing=0 cellpadding=10><tr><td align=center>\n");
-  print("<table class=main border=1 cellspacing=0 cellpadding=0><tr><td class=text>");
-  print("<p align=center><b>$question</b></p>\n");
-  $voted = $arr2;
-  if ($voted)
-  {
-    // display results
-    if ($arr["selection"])
-      $uservote = $arr["selection"];
-    else
-      $uservote = -1;
-		// we reserve 255 for blank vote.
-    $res = mysql_query("SELECT selection FROM pollanswers WHERE pollid=$pollid AND selection < 20") or sqlerr();
+	if($pollok) {
+		print("<table width=100% border=1 cellspacing=0 cellpadding=10><tr><td align=center>\n");
+  	print("<table class=main border=1 cellspacing=0 cellpadding=0><tr><td class=text>");
+  	print("<p align=center><b>$question</b></p>\n");
+  	$voted = $arr2;
+  	if ($voted)
+  	{
+    	// display results
+    	if ($arr["selection"])
+      	$uservote = $arr["selection"];
+    	else
+      	$uservote = -1;
+			// we reserve 255 for blank vote.
+    	$res = mysql_query("SELECT selection FROM pollanswers WHERE pollid=$pollid AND selection < 20") or sqlerr();
 
-    $tvotes = mysql_num_rows($res);
+    	$tvotes = mysql_num_rows($res);
 
-    $vs = array(); // array of
-    $os = array();
+    	$vs = array(); // array of
+    	$os = array();
 
-    // Count votes
-    while ($arr2 = mysql_fetch_row($res))
-      $vs[$arr2[0]] += 1;
+    	// Count votes
+    	while ($arr2 = mysql_fetch_row($res))
+      	$vs[$arr2[0]] += 1;
 
-    reset($o);
-    for ($i = 0; $i < count($o); ++$i)
-      if ($o[$i])
-        $os[$i] = array($vs[$i], $o[$i]);
+    	reset($o);
+    	for ($i = 0; $i < count($o); ++$i)
+      	if ($o[$i])
+        	$os[$i] = array($vs[$i], $o[$i]);
 
-    function srt($a,$b)
-    {
-      if ($a[0] > $b[0]) return -1;
-      if ($a[0] < $b[0]) return 1;
-      return 0;
-    }
+    	function srt($a,$b)
+    	{
+      	if ($a[0] > $b[0]) return -1;
+      	if ($a[0] < $b[0]) return 1;
+      	return 0;
+    	}
 
-    // now os is an array like this: array(array(123, "Option 1"), array(45, "Option 2"))
-    if ($arr["sort"] == "yes")
-    	usort($os, srt);
+    	// now os is an array like this: array(array(123, "Option 1"), array(45, "Option 2"))
+    	if ($arr["sort"] == "yes")
+    		usort($os, srt);
 
-    print("<table class=main width=100% border=0 cellspacing=0 cellpadding=0>\n");
-    $i = 0;
-    while ($a = $os[$i])
-    {
-      if ($i == $uservote)
-        $a[1] .= "&nbsp;*";
-      if ($tvotes == 0)
-      	$p = 0;
-      else
-      	$p = round($a[0] / $tvotes * 100);
-      if ($i % 2)
-        $c = "";
-      else
-        $c = " bgcolor=#ECE9D8";
-      print("<tr><td width=1% class=embedded$c><nobr>" . $a[1] . "&nbsp;&nbsp;</nobr></td><td width=99% class=embedded$c>" .
-        "<img src=/pic/bar_left.gif><img src=/pic/bar.gif height=9 width=" . ($p * 3) .
-        "><img src=/pic/bar_right.gif> $p%</td></tr>\n");
-      ++$i;
-    }
-    print("</table>\n");
-	$tvotes = number_format($tvotes);
-    print("<p align=center>Votes: $tvotes</p>\n");
-  }
-  else
-  {
-    print("<form method=post action=index.php>\n");
-    $i = 0;
-    while ($a = $o[$i])
-    {
-      print("<input type=radio name=choice value=$i>$a<br>\n");
-      ++$i;
-    }
-    print("<br>");
-    print("<input type=radio name=choice value=255>Blank vote (a.k.a. \"I just want to see the results!\")<br>\n");
-    print("<p align=center><input type=submit value='Vote!' class=btn></p>");
-  }
+    	print("<table class=main width=100% border=0 cellspacing=0 cellpadding=0>\n");
+    	$i = 0;
+    	while ($a = $os[$i])
+    	{
+      	if ($i == $uservote)
+        	$a[1] .= "&nbsp;*";
+      	if ($tvotes == 0)
+      		$p = 0;
+      	else
+      		$p = round($a[0] / $tvotes * 100);
+      	if ($i % 2)
+        	$c = "";
+      	else
+        	$c = " bgcolor=#ECE9D8";
+      	print("<tr><td width=1% class=embedded$c><nobr>" . $a[1] . "&nbsp;&nbsp;</nobr></td><td width=99% class=embedded$c>" .
+        	"<img src=/pic/bar_left.gif><img src=/pic/bar.gif height=9 width=" . ($p * 3) .
+        	"><img src=/pic/bar_right.gif> $p%</td></tr>\n");
+      	++$i;
+    	}
+    	print("</table>\n");
+			$tvotes = number_format($tvotes);
+    	print("<p align=center>Votes: $tvotes</p>\n");
+  	}
+  	else
+  	{
+    	print("<form method=post action=index.php>\n");
+    	$i = 0;
+    	while ($a = $o[$i])
+    	{
+      	print("<input type=radio name=choice value=$i>$a<br>\n");
+      	++$i;
+    	}
+    	print("<br>");
+    	print("<input type=radio name=choice value=255>Blank vote (a.k.a. \"I just want to see the results!\")<br>\n");
+    	print("<p align=center><input type=submit value='Vote!' class=btn></p>");
+  	}
 ?>
 </td></tr></table>
 <?
@@ -228,9 +235,13 @@ if ($voted)
 </td></tr></table>
 
 <?
+	} else {
+		echo "<table width=100% border=1 cellspacing=0 cellpadding=10><tr><td align=center>\n";
+  	echo "<table class=main border=1 cellspacing=0 cellpadding=0><tr><td class=text>";
+  	echo"<p align=center><H3>No Active Polls</h3></p>\n";
+  	echo "</td></tr></table></td></tr></table>";
+	}
 }
-?>
-
 <h2>Stats</h2>
 <table width=100% border=1 cellspacing=0 cellpadding=10><tr><td align=center>
 <table class=main border=1 cellspacing=0 cellpadding=5>
