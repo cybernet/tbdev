@@ -114,8 +114,7 @@ if (mysql_num_rows($res) > 0)
 <table width=100% border=1 cellspacing=0 cellpadding=10><tr><td class=text>
 <?=$activeusers?>
 </td></tr></table>
-*/ ?>
-
+*/
 
  if ($CURUSER)
 {
@@ -242,6 +241,8 @@ if ($voted)
   	echo "</td></tr></table></td></tr></table>";
 	}
 }
+?>
+
 <h2>Stats</h2>
 <table width=100% border=1 cellspacing=0 cellpadding=10><tr><td align=center>
 <table class=main border=1 cellspacing=0 cellpadding=5>
