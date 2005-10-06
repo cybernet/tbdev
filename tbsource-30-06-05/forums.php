@@ -989,7 +989,7 @@
   {
     $topicid = 0 + $_POST["topicid"];
 
-    if (!topicid || get_user_class() < UC_MODERATOR)
+    if (!$topicid || get_user_class() < UC_MODERATOR)
       die;
 
 	$sticky = sqlesc($_POST["sticky"]);
