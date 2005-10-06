@@ -7,22 +7,24 @@ if (get_user_class() < UC_MODERATOR)
   stderr("Error","Permission denied.");
 
 $action = $_GET["action"];
-$pollid = $_GET["pollid"];
+$pollid = (int)$_GET["pollid"];
 
 if ($action == "edit")
 {
 	if (!is_valid_id($pollid))
-		stderr("Error","Invalid ID $pollid.");
+		stderr("Error","Invalid ID.");
 	$res = mysql_query("SELECT * FROM polls WHERE id = $pollid")
 			or sqlerr(__FILE__, __LINE__);
 	if (mysql_num_rows($res) == 0)
-		stderr("Error","No poll found with ID $pollid.");
+		stderr("Error","No poll found with ID.");
 	$poll = mysql_fetch_array($res);
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-	$pollid = $_POST["pollid"];
+	$pollid = (int)$_POST["pollid"];
+	if (!is_valid_id($pollid))
+		stderr("Error","Invalid ID.");
   $question = $_POST["question"];
   $option0 = $_POST["option0"];
   $option1 = $_POST["option1"];
@@ -44,8 +46,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   $option17 = $_POST["option17"];
   $option18 = $_POST["option18"];
   $option19 = $_POST["option19"];
-  $sort = $_POST["sort"];
-  $returnto = $_POST["returnto"];
+  $sort = (int)$_POST["sort"];
+  $returnto = htmlentities($_POST["returnto"]);
 
   if (!$question || !$option0 || !$option1)
     stderr("Error", "Missing form data!");

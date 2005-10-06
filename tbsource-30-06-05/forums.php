@@ -175,7 +175,7 @@
 	   $res = mysql_query("SELECT posts.*, users.username FROM posts JOIN users ON posts.userid = users.id WHERE posts.id=$postid") or sqlerr(__FILE__, __LINE__);
 
 	   if (mysql_num_rows($res) != 1)
-	     stderr("Error", "No post with ID $postid.");
+	     stderr("Error", "No post with ID.");
 
 	   $arr = mysql_fetch_assoc($res);
     }
@@ -689,7 +689,7 @@
 		$topicid = $_GET["topicid"];
 
 		if (!is_valid_id($topicid))
-			stderr("Error", "Invalid topic ID $topicid.");
+			stderr("Error", "Invalid topic ID.");
 
     stdhead("Post reply");
 
@@ -805,7 +805,7 @@
     $res = mysql_query("SELECT * FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
 
 		if (mysql_num_rows($res) != 1)
-			stderr("Error", "No post with ID $postid.");
+			stderr("Error", "No post with ID.");
 
 		$arr = mysql_fetch_assoc($res);
 
@@ -813,7 +813,7 @@
 		$arr2 = mysql_fetch_assoc($res2);
 
  		if (mysql_num_rows($res) != 1)
-			stderr("Error", "No topic associated with post ID $postid.");
+			stderr("Error", "No topic associated with post ID.");
 
 		$locked = ($arr2["locked"] == 'yes');
 
@@ -1458,7 +1458,7 @@ if ($action == "search")
   //-------- Handle unknown action
 
   if ($action != "")
-    stderr("Forum Error", "Unknown action '$action'.");
+    stderr("Forum Error", "Unknown action.");
 
   //-------- Default action: View forums
 

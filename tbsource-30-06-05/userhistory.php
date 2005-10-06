@@ -4,7 +4,7 @@ require "include/bittorrent.php";
 dbconn(false);
 loggedinorreturn();
 
-$userid = $_GET["id"];
+$userid = (int)$_GET["id"];
 
 if (!is_valid_id($userid)) stderr("Error", "Invalid ID");
 
@@ -250,7 +250,7 @@ if ($action == "viewcomments")
 //-------- Handle unknown action
 
 if ($action != "")
-	stderr("History Error", "Unknown action '$action'.");
+	stderr("History Error", "Unknown action.");
 
 //-------- Any other case
 

@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 	{
 		$ext = strtolower(substr($filename, $i));
 		if (($it == IMAGETYPE_GIF && $ext != ".gif") || ($it == IMAGETYPE_JPEG && $ext != ".jpg") || ($it == IMAGETYPE_PNG && $ext != ".png"))
-			stderr("Error", "Invalid file name extension: <b>$ext</b>");
+			stderr("Error", "Invalid file name extension: <b>GIF, JPG or PNG only!</b>");
 	}
 	else
 		stderr("Error", "File name needs an extension.");

@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   if (!$email)
     stderr("Error", "You must enter an email address");
   $res = mysql_query("SELECT * FROM users WHERE email=" . sqlesc($email) . " LIMIT 1") or sqlerr();
-  $arr = mysql_fetch_assoc($res) or stderr("Error", "The email address <b>$email</b> was not found in the database.\n");
+  $arr = mysql_fetch_assoc($res) or stderr("Error", "The email address was not found in the database.\n");
 
 	$sec = mksecret();
 
@@ -43,8 +43,8 @@ EOD;
 
   @mail($arr["email"], "$SITENAME password reset confirmation", $body, "From: $SITEEMAIL", "-f$SITEEMAIL")
     or stderr("Error", "Unable to send mail. Please contact an administrator about this error.");
-  stderr("Success", "A confirmation email has been mailed to <b>$email</b>.\n" .
-    "Please allow a few minutes for the mail to arrive.");
+  stderr("Success", "A confirmation email has been mailed.\n" .
+    " Please allow a few minutes for the mail to arrive.");
 }
 elseif($_GET)
 {

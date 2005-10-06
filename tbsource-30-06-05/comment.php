@@ -16,12 +16,12 @@ if ($action == "add")
   {
     $torrentid = 0 + $_POST["tid"];
 	  if (!is_valid_id($torrentid))
-			stderr("Error", "Invalid ID $torrentid.");
+			stderr("Error", "Invalid ID.");
 
 		$res = mysql_query("SELECT name FROM torrents WHERE id = $torrentid") or sqlerr(__FILE__,__LINE__);
 		$arr = mysql_fetch_array($res);
 		if (!$arr)
-		  stderr("Error", "No torrent with ID $torrentid.");
+		  stderr("Error", "No torrent with ID.");
 
 	  $text = trim($_POST["text"]);
 	  if (!$text)
@@ -41,12 +41,12 @@ if ($action == "add")
 
   $torrentid = 0 + $_GET["tid"];
   if (!is_valid_id($torrentid))
-		stderr("Error", "Invalid ID $torrentid.");
+		stderr("Error", "Invalid ID.");
 
 	$res = mysql_query("SELECT name FROM torrents WHERE id = $torrentid") or sqlerr(__FILE__,__LINE__);
 	$arr = mysql_fetch_array($res);
 	if (!$arr)
-	  stderr("Error", "No torrent with ID $torrentid.");
+	  stderr("Error", "No torrent with ID.");
 
 	stdhead("Add a comment to \"" . $arr["name"] . "\"");
 
@@ -74,12 +74,12 @@ elseif ($action == "edit")
 {
   $commentid = 0 + $_GET["cid"];
   if (!is_valid_id($commentid))
-		stderr("Error", "Invalid ID $commentid.");
+		stderr("Error", "Invalid ID.");
 
   $res = mysql_query("SELECT c.*, t.name FROM comments AS c JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
   $arr = mysql_fetch_array($res);
   if (!$arr)
-  	stderr("Error", "Invalid ID $commentid.");
+  	stderr("Error", "Invalid ID.");
 
 	if ($arr["user"] != $CURUSER["id"] && get_user_class() < UC_MODERATOR)
 		stderr("Error", "Permission denied.");
@@ -125,7 +125,7 @@ elseif ($action == "delete")
   $commentid = 0 + $_GET["cid"];
 
   if (!is_valid_id($commentid))
-		stderr("Error", "Invalid ID $commentid.");
+		stderr("Error", "Invalid ID.");
 
   $sure = $_GET["sure"];
 
@@ -164,7 +164,7 @@ elseif ($action == "vieworiginal")
   $commentid = 0 + $_GET["cid"];
 
   if (!is_valid_id($commentid))
-		stderr("Error", "Invalid ID $commentid.");
+		stderr("Error", "Invalid ID.");
 
   $res = mysql_query("SELECT c.*, t.name FROM comments AS c JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
   $arr = mysql_fetch_array($res);
@@ -189,7 +189,7 @@ elseif ($action == "vieworiginal")
 	die;
 }
 else
-	stderr("Error", "Unknown action $action");
+	stderr("Error", "Unknown action");
 
 die;
 ?>

@@ -4,30 +4,30 @@ require "include/bittorrent.php";
 dbconn(false);
 loggedinorreturn();
 
-$userid = $_GET['id'];
+$userid = (int)$_GET['id'];
 $action = $_GET['action'];
 
 if (!$userid)
 	$userid = $CURUSER['id'];
 
 if (!is_valid_id($userid))
-	stderr("Error", "Invalid ID $userid.");
+	stderr("Error", "Invalid ID.");
 
 if ($userid != $CURUSER["id"])
 	stderr("Error", "Access denied.");
 
 $res = mysql_query("SELECT * FROM users WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
-$user = mysql_fetch_array($res) or stderr("Error", "No user with ID $userid.");
+$user = mysql_fetch_array($res) or stderr("Error", "No user with ID.");
 
 // action: add -------------------------------------------------------------
 
 if ($action == 'add')
 {
-	$targetid = $_GET['targetid'];
+	$targetid = (int)$_GET['targetid'];
 	$type = $_GET['type'];
 
   if (!is_valid_id($targetid))
-		stderr("Error", "Invalid ID $$targetid.");
+		stderr("Error", "Invalid ID.");
 
   if ($type == 'friend')
   {
@@ -40,11 +40,11 @@ if ($action == 'add')
     $field_is = 'blockid';
   }
 	else
-		stderr("Error", "Unknown type $type");
+		stderr("Error", "Unknown type.");
 
   $r = mysql_query("SELECT id FROM $table_is WHERE userid=$userid AND $field_is=$targetid") or sqlerr(__FILE__, __LINE__);
   if (mysql_num_rows($r) == 1)
-		stderr("Error", "User ID $targetid is already in your $table_is list.");
+		stderr("Error", "User ID is already in your ".htmlentities($table_is)." list.");
 
 	mysql_query("INSERT INTO $table_is VALUES (0,$userid, $targetid)") or sqlerr(__FILE__, __LINE__);
   header("Location: $BASEURL/friends.php?id=$userid#$frag");
@@ -55,12 +55,12 @@ if ($action == 'add')
 
 if ($action == 'delete')
 {
-	$targetid = $_GET['targetid'];
-	$sure = $_GET['sure'];
-	$type = $_GET['type'];
+	$targetid = (int)$_GET['targetid'];
+	$sure = htmlentities($_GET['sure']);
+	$type = htmlentities($_GET['type']);
 
   if (!is_valid_id($targetid))
-		stderr("Error", "Invalid ID $userid.");
+		stderr("Error", "Invalid ID.");
 
   if (!$sure)
     stderr("Delete $type","Do you really want to delete a $type? Click\n" .
@@ -70,18 +70,18 @@ if ($action == 'delete')
   {
     mysql_query("DELETE FROM friends WHERE userid=$userid AND friendid=$targetid") or sqlerr(__FILE__, __LINE__);
     if (mysql_affected_rows() == 0)
-      stderr("Error", "No friend found with ID $targetid");
+      stderr("Error", "No friend found with ID");
     $frag = "friends";
   }
   elseif ($type == 'block')
   {
     mysql_query("DELETE FROM blocks WHERE userid=$userid AND blockid=$targetid") or sqlerr(__FILE__, __LINE__);
     if (mysql_affected_rows() == 0)
-      stderr("Error", "No block found with ID $targetid");
+      stderr("Error", "No block found with ID");
     $frag = "blocks";
   }
   else
-    stderr("Error", "Unknown type $type");
+    stderr("Error", "Unknown type.");
 
   header("Location: $BASEURL/friends.php?id=$userid#$frag");
   die;

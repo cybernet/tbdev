@@ -81,7 +81,7 @@
 	  $res = mysql_query("SELECT acceptpms, notifs, UNIX_TIMESTAMP(last_access) as la FROM users WHERE id=$receiver") or sqlerr(__FILE__, __LINE__);
 	  $user = mysql_fetch_assoc($res);
 	  if (!$user)
-	    stderr("Error", "No user with ID $receiver.");
+	    stderr("Error", "No user with ID.");
 
 	  //Make sure recipient wants this message
 		if (get_user_class() < UC_MODERATOR)

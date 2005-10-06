@@ -37,7 +37,7 @@ elseif ($_GET["incldead"] == 2)
 	else
 		$wherea[] = "visible = 'yes'";
 
-$category = $_GET["cat"];
+$category = (int)$_GET["cat"];
 
 $all = $_GET["all"];
 
@@ -58,7 +58,7 @@ if (!$all)
 	elseif ($category)
 	{
 	  if (!is_valid_id($category))
-	    stderr("Error", "Invalid category ID $category.");
+	    stderr("Error", "Invalid category ID.");
 	  $wherecatina[] = $category;
 	  $addparam .= "cat=$category&amp;";
 	}
