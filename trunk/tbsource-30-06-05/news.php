@@ -14,11 +14,11 @@ $action = $_GET["action"];
 
 if ($action == 'delete')
 {
-	$newsid = $_GET["newsid"];
+	$newsid = (int)$_GET["newsid"];
   if (!is_valid_id($newsid))
   	stderr("Error","Invalid news item ID - Code 1.");
 
-  $returnto = $_GET["returnto"];
+  $returnto = htmlentities($_GET["returnto"]);
 
   $sure = $_GET["sure"];
   if (!$sure)
@@ -59,7 +59,7 @@ if ($action == 'add')
 if ($action == 'edit')
 {
 
-	$newsid = $_GET["newsid"];
+	$newsid = (int)$_GET["newsid"];
 
   if (!is_valid_id($newsid))
   	stderr("Error","Invalid news item ID - Code 2.");
@@ -67,7 +67,7 @@ if ($action == 'edit')
   $res = mysql_query("SELECT * FROM news WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
 
 	if (mysql_num_rows($res) != 1)
-	  stderr("Error", "No news item with ID $newsid.");
+	  stderr("Error", "No news item with ID.");
 
 	$arr = mysql_fetch_array($res);
 
@@ -84,7 +84,7 @@ if ($action == 'edit')
 
     mysql_query("UPDATE news SET body=$body WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
 
-    $returnto = $_POST['returnto'];
+    $returnto = htmlentities($_POST['returnto']);
 
 		if ($returnto != "")
 			header("Location: $returnto");
@@ -93,7 +93,7 @@ if ($action == 'edit')
   }
   else
   {
- 	 	$returnto = $_GET['returnto'];
+ 	 	$returnto = htmlentities($_GET['returnto']);
 	  stdhead();
 	  print("<h1>Edit News Item</h1>\n");
 	  print("<form method=post action=?action=edit&newsid=$newsid>\n");

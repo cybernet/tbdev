@@ -116,7 +116,7 @@ $owned = $moderator = 0;
 //}
 
 if (!$row || ($row["banned"] == "yes" && !$moderator))
-	stderr("Error", "No torrent with ID $id.");
+	stderr("Error", "No torrent with ID.");
 else {
 	if ($_GET["hit"]) {
 		mysql_query("UPDATE torrents SET views = views + 1 WHERE id = $id");

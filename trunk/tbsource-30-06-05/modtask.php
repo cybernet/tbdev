@@ -103,7 +103,7 @@ if ($action == "edituser")
   $updateset[] = "title = " . sqlesc($title);
   $updateset[] = "modcomment = " . sqlesc($modcomment);
   mysql_query("UPDATE users SET  " . implode(", ", $updateset) . " WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
-  $returnto = $_POST["returnto"];
+  $returnto = htmlentities($_POST["returnto"]);
 
   header("Location: $BASEURL/$returnto");
   die;

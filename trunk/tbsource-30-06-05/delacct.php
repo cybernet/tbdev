@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
   $res = mysql_query("DELETE FROM users WHERE id=$id") or sqlerr();
   if (mysql_affected_rows() != 1)
     stderr("Error", "Unable to delete the account.");
-  stderr("Success", "The account <b>$username</b> was deleted.");
+  stderr("Success", "The account was deleted.");
 }
 stdhead("Delete account");
 ?>
