@@ -75,6 +75,7 @@ INSERT INTO countries VALUES (66,'Turkmenistan','turkmenistan.gif');
 INSERT INTO countries VALUES (67,'Bosnia Herzegovina','bosniaherzegovina.gif');
 INSERT INTO countries VALUES (68,'Andorra','andorra.gif');
 INSERT INTO countries VALUES (69,'Lithuania','lithuania.gif');
+INSERT INTO countries VALUES (70,'Macedonia','macedonia.gif');
 INSERT INTO countries VALUES (71,'Netherlands Antilles','nethantilles.gif');
 INSERT INTO countries VALUES (72,'Ukraine','ukraine.gif');
 INSERT INTO countries VALUES (73,'Venezuela','venezuela.gif');
