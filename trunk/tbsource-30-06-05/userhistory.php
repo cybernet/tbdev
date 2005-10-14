@@ -145,7 +145,7 @@ if ($action == "viewcomments")
 	$select_is = "COUNT(*)";
 
 	// LEFT due to orphan comments
-	$from_is = "comments AS c LEFT LEFT JOIN torrents as t
+	$from_is = "comments AS c LEFT JOIN torrents as t
 	            ON c.torrent = t.id";
 
 	$where_is = "c.user = $userid";
