@@ -52,6 +52,9 @@ $pic_base_url = "/pic/";
 require_once("secrets.php");
 require_once("cleanup.php");
 
+//Do not modify -- versioning system
+//This will help identify code for support issues at tbdev.net
+define ('TBVERSION','TBDEV.NET-12-09-05');
 
 /**** validip/getip courtesy of manolete <manolete@myway.com> ****/
 
@@ -329,9 +332,9 @@ function stdhead($title = "", $msgalert = true) {
     header("Content-Type: text/html; charset=iso-8859-1");
     //header("Pragma: No-cache");
     if ($title == "")
-        $title = $SITENAME;
+        $title = $SITENAME .(isset($_GET['tbv'])?" (".TBVERSION.")":'');
     else
-        $title = "$SITENAME :: " . htmlspecialchars($title);
+        $title = $SITENAME .(isset($_GET['tbv'])?" (".TBVERSION.")":''). " :: " . htmlspecialchars($title);
   if ($CURUSER)
   {
     $ss_a = @mysql_fetch_array(@mysql_query("select uri from stylesheets where id=" . $CURUSER["stylesheet"]));
