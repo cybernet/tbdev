@@ -172,7 +172,7 @@
        if (!is_valid_id($postid))
          die;
 
-	   $res = mysql_query("SELECT posts.*, users.username FROM posts JOIN users ON posts.userid = users.id WHERE posts.id=$postid") or sqlerr(__FILE__, __LINE__);
+	   $res = mysql_query("SELECT posts.*, users.username FROM posts LEFT JOIN users ON posts.userid = users.id WHERE posts.id=$postid") or sqlerr(__FILE__, __LINE__);
 
 	   if (mysql_num_rows($res) != 1)
 	     stderr("Error", "No post with ID.");

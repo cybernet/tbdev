@@ -76,7 +76,7 @@ elseif ($action == "edit")
   if (!is_valid_id($commentid))
 		stderr("Error", "Invalid ID.");
 
-  $res = mysql_query("SELECT c.*, t.name FROM comments AS c JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
+  $res = mysql_query("SELECT c.*, t.name FROM comments AS c LEFT JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
   $arr = mysql_fetch_array($res);
   if (!$arr)
   	stderr("Error", "Invalid ID.");
@@ -166,7 +166,7 @@ elseif ($action == "vieworiginal")
   if (!is_valid_id($commentid))
 		stderr("Error", "Invalid ID.");
 
-  $res = mysql_query("SELECT c.*, t.name FROM comments AS c JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
+  $res = mysql_query("SELECT c.*, t.name FROM comments AS c LEFT JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
   $arr = mysql_fetch_array($res);
   if (!$arr)
   	stderr("Error", "Invalid ID $commentid.");

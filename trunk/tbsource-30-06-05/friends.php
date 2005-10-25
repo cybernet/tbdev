@@ -109,7 +109,7 @@ print("<table width=750 border=1 cellspacing=0 cellpadding=5><tr><td>");
 
 $i = 0;
 
-$res = mysql_query("SELECT f.friendid as id, u.username AS name, u.class, u.avatar, u.title, u.donor, u.warned, u.enabled, u.last_access FROM friends AS f JOIN users as u ON f.friendid = u.id WHERE userid=$userid ORDER BY name") or sqlerr(__FILE__, __LINE__);
+$res = mysql_query("SELECT f.friendid as id, u.username AS name, u.class, u.avatar, u.title, u.donor, u.warned, u.enabled, u.last_access FROM friends AS f LEFT JOIN users as u ON f.friendid = u.id WHERE userid=$userid ORDER BY name") or sqlerr(__FILE__, __LINE__);
 if(mysql_num_rows($res) == 0)
 	$friends = "<em>Your friends list is empty.</em>";
 else
@@ -150,7 +150,7 @@ if ($i % 2 == 1)
 print($friends);
 print("</td></tr></table>\n");
 
-$res = mysql_query("SELECT b.blockid as id, u.username AS name, u.donor, u.warned, u.enabled, u.last_access FROM blocks AS b JOIN users as u ON b.blockid = u.id WHERE userid=$userid ORDER BY name") or sqlerr(__FILE__, __LINE__);
+$res = mysql_query("SELECT b.blockid as id, u.username AS name, u.donor, u.warned, u.enabled, u.last_access FROM blocks AS b LEFT JOIN users as u ON b.blockid = u.id WHERE userid=$userid ORDER BY name") or sqlerr(__FILE__, __LINE__);
 if(mysql_num_rows($res) == 0)
 	$blocks = "<em>Your blocked users list is empty.</em>";
 else
