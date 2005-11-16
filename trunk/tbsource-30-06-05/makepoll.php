@@ -22,8 +22,7 @@ if ($action == "edit")
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-	$pollid = (int)$_POST["pollid"];
-	if (!is_valid_id($pollid))
+	if ($action=='edit' && !is_valid_id($pollid))
 		stderr("Error","Invalid ID.");
   $question = $_POST["question"];
   $option0 = $_POST["option0"];
@@ -171,6 +170,7 @@ else
 </table>
 <p><font color=red>*</font> required</p>
 <input type=hidden name=pollid value=<?=$poll["id"]?>>
+<input type=hidden name=action value=<?=$pollid?'edit':'create'?>
 <input type=hidden name=returnto value=<?=$_GET["returnto"]?>>
 </form>
 
