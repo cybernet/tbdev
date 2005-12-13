@@ -305,16 +305,18 @@ function utime()
 			$pdef[$key]=($value[1]=='aurl' ? explode('\n',$value[5]):$value[5]);
 		}
 	}
-	
 	// If this is a submitted form, fill in our form defaults
-	if($_POST['Submit']=='Submit') {
+	if($_POST['action']=='submit') 
+	{
 		$submission=true;
   	foreach($_POST as $pkey => $pvalue)
-  		if(isset($plkp[$pkey])) {
+  		if(isset($plkp[$pkey])) 
+  		{
   			$key=$plkp[$pkey];
   		  $pdef[$key] = ($ptyp[$key]=='aurl' ? explode("\n",$pvalue) : $pvalue);
   		}
-  }  else
+  } else
+	
 	// Read our config.php file and get valid contents
 	// replace form defaults if option exists
 	if($fh=fopen(ConfigFN,'r'))
@@ -368,6 +370,7 @@ function utime()
   			tr($options[$key][4],'<input name="luser" type="text" size="83" maxlength="80">',1);
   			tr($options[$key2][4],'<input name="lpass" type="password" size="83" maxlength="80">',1);
 				end_table();
+				echo '	<center><input type="submit" name="Submit" value="Submit">	</center>';
 				end_frame();
 				end_main_frame();
 				stdfoot();
@@ -455,6 +458,7 @@ function utime()
 ?>
 	<br>
 	<center>
+	<input name="action" type="hidden" value="submit" readonly>
 	<input type="submit" name="Submit" value="Submit">
 	&nbsp;&nbsp;&nbsp;
   <input type="reset" name="Reset" value="Reset">
