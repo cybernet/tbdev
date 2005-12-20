@@ -321,7 +321,7 @@ function utime()
 	// replace form defaults if option exists
 	if($fh=fopen(ConfigFN,'r'))
 	{
-		$config=fread($fh,filesize(ConfigFN));
+		$config=fread($fh,filesize(ConfigFN)+1);
 		fclose($fh);
 		$haveconfig=true;
 		preg_match_all("/^define\s*\(\s*[\x22\x27](.+)[\x22\x27]\s*,\s*(\d+|.+)\s*\)\s*;$/m",$config,$defines);
