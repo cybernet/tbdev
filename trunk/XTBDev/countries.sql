@@ -33,8 +33,8 @@ INSERT INTO countries VALUES (23,'Spain','spain.gif');
 INSERT INTO countries VALUES (24,'Portugal','portugal.gif');
 INSERT INTO countries VALUES (25,'Mexico','mexico.gif');
 INSERT INTO countries VALUES (26,'Singapore','singapore.gif');
-INSERT INTO countries VALUES (70,'India','india.gif');
-INSERT INTO countries VALUES (65,'Albania','albania.gif');
+INSERT INTO countries VALUES (27,'India','india.gif');
+INSERT INTO countries VALUES (28,'Albania','albania.gif');
 INSERT INTO countries VALUES (29,'South Africa','southafrica.gif');
 INSERT INTO countries VALUES (30,'South Korea','southkorea.gif');
 INSERT INTO countries VALUES (31,'Jamaica','jamaica.gif');
@@ -109,5 +109,4 @@ INSERT INTO countries VALUES (101,'Latvia','latvia.gif');
 INSERT INTO countries VALUES (102,'Costa Rica','costarica.gif');
 INSERT INTO countries VALUES (103,'Egypt','egypt.gif');
 INSERT INTO countries VALUES (104,'Bulgaria','bulgaria.gif');
-INSERT INTO countries VALUES (105,'Isla de Muerte','jollyroger.gif');
-
+INSERT INTO countries VALUES (105,'Isla de Muerte','jollyroger.gif');[/codebox]
