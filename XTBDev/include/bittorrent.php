@@ -915,6 +915,20 @@ function get_user_icons($arr, $big = false)
 	return $pics;
 }
 
+function verify_passkey($passkey)
+{
+  global $CURUSER;
+  if (strlen($CURUSER['passkey']) != 32) 
+  {
+  	do {
+ 			$CURUSER['passkey'] = md5($CURUSER['username'].get_date_time().$CURUSER['passhash']);
+			$notok=mysql_query("UPDATE users SET passkey='$CURUSER[passkey]' WHERE id=$CURUSER[id]") === FALSE;
+		} while($notok);
+	}
+	
+	return($CURUSER['passkey']==$passkey);
+}
+
 require "global.php";
 
 ?>
