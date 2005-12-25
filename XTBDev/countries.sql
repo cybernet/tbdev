@@ -109,4 +109,4 @@ INSERT INTO countries VALUES (101,'Latvia','latvia.gif');
 INSERT INTO countries VALUES (102,'Costa Rica','costarica.gif');
 INSERT INTO countries VALUES (103,'Egypt','egypt.gif');
 INSERT INTO countries VALUES (104,'Bulgaria','bulgaria.gif');
-INSERT INTO countries VALUES (105,'Isla de Muerte','jollyroger.gif');[/codebox]
+INSERT INTO countries VALUES (105,'Isla de Muerte','jollyroger.gif');
