@@ -2,7 +2,7 @@
 ob_start("ob_gzhandler");
 
 require "include/bittorrent.php";
-dbconn(false);
+
 stdhead("FAQ");
 ?>
 

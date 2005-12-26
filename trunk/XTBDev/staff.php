@@ -1,6 +1,6 @@
 <?
 require "include/bittorrent.php";
-dbconn();
+
 stdhead("Staff");
 begin_main_frame();
 ?>

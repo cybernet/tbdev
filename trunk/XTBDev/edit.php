@@ -9,7 +9,7 @@ $id = 0 + $id;
 if (!$id)
 	die();
 
-dbconn();
+
 
 loggedinorreturn();
 

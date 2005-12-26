@@ -6,7 +6,7 @@
 
   $type = $_GET["type"];
 
-  dbconn(false);
+  
   loggedinorreturn();
   if ($type == 'in')
   {

@@ -4,7 +4,7 @@
   if ($_SERVER["REQUEST_METHOD"] != "POST")
     stderr("Error", "Method");
 
-  dbconn();
+  
 
   loggedinorreturn();
   $n_pms = $_POST["n_pms"];

@@ -1,7 +1,7 @@
 <?php
 
 require "include/bittorrent.php";
-dbconn();
+
 
 $nick = ($CURUSER ? $CURUSER["username"] : ("Guest" . rand(1000, 9999)));
 

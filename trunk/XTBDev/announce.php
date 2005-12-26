@@ -88,7 +88,7 @@ if (!isset($event))
 
 $seeder = ($left == 0) ? "yes" : "no";
 
-dbconn(false);
+
 
 
 $res = mysql_query("SELECT id, banned, seeders + leechers AS numpeers, UNIX_TIMESTAMP(added) AS ts FROM torrents WHERE " . hash_where("info_hash", $info_hash));

@@ -1,3 +1,6 @@
+2005-12-25 - xam - Removal of dbconn from all files and moved into bittorrent.php (no longer a function)
+                   Use LEFT JOIN in inbox.php and remove the extra queries
+2005-12-24 - adrenalin - Add in missing country Moldova into countries.sql
 2005-12-21 - Triton - Fixed countries.sql
 2005-12-20 - laffin - fixed bittorrent.php line 14, and admincp.php line 324 (errors)
 2005-12-07 - laffin -

@@ -2,7 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-dbconn();
+
 
 function bark($msg) {
 	genbark($msg, "Rating failed!");

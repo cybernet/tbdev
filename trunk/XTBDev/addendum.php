@@ -2,7 +2,7 @@
 
 require "include/bittorrent.php";
 
-dbconn(false);
+
 stdhead();
 ?>
 

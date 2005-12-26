@@ -1,6 +1,6 @@
 <?php
 require "include/bittorrent.php";
-dbconn(false);
+
 loggedinorreturn();
 
 // Standard Administrative PM Replies

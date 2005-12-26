@@ -2,7 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-dbconn();
+
 
 stdhead("Login");
 

@@ -2,7 +2,7 @@
 
 require "include/bittorrent.php";
 
-dbconn(false);
+
 stdhead("Video Formats");
 ?>
 <table class=main width=750 border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>
