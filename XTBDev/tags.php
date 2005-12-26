@@ -1,6 +1,6 @@
 <?
 require "include/bittorrent.php";
-dbconn();
+
 
 function insert_tag($name, $description, $syntax, $example, $remarks)
 {

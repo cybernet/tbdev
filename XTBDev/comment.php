@@ -5,7 +5,7 @@ require_once("include/bittorrent.php");
 
 $action = $_GET["action"];
 
-dbconn(false);
+
 
 
 loggedinorreturn();

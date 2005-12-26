@@ -3,7 +3,7 @@
 
   require "include/bittorrent.php";
 
-  dbconn(false);
+  
 
   loggedinorreturn();
 

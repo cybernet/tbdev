@@ -2,7 +2,7 @@
 
 require "include/bittorrent.php";
 
-dbconn();
+
 loggedinorreturn();
 
 if (get_user_class() < UC_ADMINISTRATOR)

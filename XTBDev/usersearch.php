@@ -28,7 +28,7 @@ function get_user_icons($arr, $big = false)
 }
 */
 
-dbconn();
+
 loggedinorreturn();
 
 if (get_user_class() < UC_MODERATOR)

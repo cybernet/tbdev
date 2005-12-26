@@ -2,7 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-dbconn(false);
+
 stdhead("Links");
 
 

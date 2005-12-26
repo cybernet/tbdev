@@ -3,7 +3,7 @@
 
 require "include/bittorrent.php";
 
-dbconn();
+
 
 header("Content-type: text/plain");
 

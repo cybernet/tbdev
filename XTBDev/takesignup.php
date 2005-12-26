@@ -2,7 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-dbconn();
+
 
 $res = mysql_query("SELECT COUNT(*) FROM users") or sqlerr(__FILE__, __LINE__);
 $arr = mysql_fetch_row($res);

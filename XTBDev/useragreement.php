@@ -1,6 +1,6 @@
 <?
 require "include/bittorrent.php";
-dbconn();
+
 stdhead();
 begin_main_frame();
 begin_frame("torrentbits.org user agreement");

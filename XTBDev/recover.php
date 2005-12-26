@@ -2,7 +2,7 @@
 
 require "include/bittorrent.php";
 
-dbconn();
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {

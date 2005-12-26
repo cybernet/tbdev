@@ -9,7 +9,7 @@ function bark($msg) {
 	genbark($msg, "Upload failed!");
 }
 
-dbconn(); 
+ 
 
 loggedinorreturn();
 

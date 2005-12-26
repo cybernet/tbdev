@@ -9,7 +9,7 @@ $md5 = $_GET["secret"];
 if (!$id)
 	httperr();
 
-dbconn();
+
 
 
 $res = mysql_query("SELECT passhash, editsecret, status FROM users WHERE id = $id");

@@ -4,7 +4,7 @@ require_once("include/bittorrent.php");
 require_once("include/benc.php");
 ob_start("ob_gzhandler");
 
-dbconn(false);
+
 
 $r = "d" . benc_str("files") . "d";
 

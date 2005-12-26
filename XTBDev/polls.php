@@ -1,6 +1,6 @@
 <?php
   require "include/bittorrent.php";
-  dbconn(false);
+  
   loggedinorreturn();
 
   $action = $_GET["action"];

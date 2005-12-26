@@ -95,7 +95,7 @@ $mod = get_user_class() >= UC_MODERATOR;
 	return $s;
 }
 
-dbconn(false);
+
 
 loggedinorreturn();
 

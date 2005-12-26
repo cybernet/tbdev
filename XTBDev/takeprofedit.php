@@ -6,7 +6,7 @@ function bark($msg) {
 	genbark($msg, "Update failed!");
 }
 
-dbconn();
+
 
 loggedinorreturn();
 

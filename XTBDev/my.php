@@ -2,7 +2,7 @@
 
 require_once("include/bittorrent.php");
 
-dbconn(false);
+
 
 loggedinorreturn();
 $res = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location IN ('in', 'both')") or print(mysql_error());

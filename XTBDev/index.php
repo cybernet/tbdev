@@ -3,7 +3,6 @@ ob_start("ob_gzhandler");
 
 require "include/bittorrent.php";
 
-dbconn(true);
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
   $choice = $_POST["choice"];

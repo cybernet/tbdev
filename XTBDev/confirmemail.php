@@ -12,7 +12,7 @@ $email = urldecode($matches[3]);
 if (!$id)
 	httperr();
 
-dbconn();
+
 
 
 $res = mysql_query("SELECT editsecret FROM users WHERE id = $id");

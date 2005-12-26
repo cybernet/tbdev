@@ -1,6 +1,6 @@
 <?
   require "include/bittorrent.php";
-  dbconn(false);
+  
   loggedinorreturn();
 	$out = $_GET['out'];
   if ($out)		// Sentbox
@@ -9,15 +9,16 @@
 		print("<table class=main width=750 border=0 cellspacing=0 cellpadding=10><tr><td class=embedded>\n");
   	print("<h1 align=center>Sentbox</h1>\n");
    	print("<div align=center>(<a href=" . $_SERVER['PHP_SELF'] . ">Inbox</a>)</div>\n");
-	  $res = mysql_query("SELECT * FROM messages WHERE sender=" . $CURUSER["id"] . " AND location IN ('out','both') ORDER BY added DESC") or die("barf!");
+	  // $res = mysql_query("SELECT * FROM messages WHERE sender=" . $CURUSER["id"] . " AND location IN ('out','both') ORDER BY added DESC") or die("barf!");
+	  $res = mysql_query("SELECT messages.id, messages.msg, messages.receiver, messages.added, messages.unread, users.username FROM messages LEFT JOIN users ON messages.receiver = users.id WHERE sender=$CURUSER[id] AND location IN ('out','both') ORDER BY added DESC") or die("barf!");
 	  if (mysql_num_rows($res) == 0)
       stdmsg("Information","Your Sentbox is empty!");
 	  else
 	  while ($arr = mysql_fetch_assoc($res))
 	  {
- 	  	$res2 = mysql_query("SELECT username FROM users WHERE id=" . $arr["receiver"]) or sqlerr();
-	    $arr2 = mysql_fetch_assoc($res2);
-	    $receiver = "<a href=userdetails.php?id=" . $arr["receiver"] . ">" . $arr2["username"] . "</a>";
+ 	  	// $res2 = mysql_query("SELECT username FROM users WHERE id=" . $arr["receiver"]) or sqlerr();
+	    // $arr2 = mysql_fetch_assoc($res2);
+	    $receiver = "<a href=userdetails.php?id=" . $arr["receiver"] . ">" . $arr["username"] . "</a>";
 	  	$elapsed = get_elapsed_time(sql_timestamp_to_unix_timestamp($arr["added"]));
 	    print("<p><table width=100% border=1 cellspacing=0 cellpadding=10><tr><td class=text>\n");
 	    print("To <b>$receiver</b> at\n" . $arr["added"] . " ($elapsed ago) GMT\n");
@@ -37,7 +38,7 @@
 		print("<table class=main width=750 border=0 cellspacing=0 cellpadding=10><tr><td class=embedded>\n");
   	print("<h1 align=center>Inbox</h1>\n");
    	print("<div align=center>(<a href=" . $_SERVER['PHP_SELF'] . "?out=1>Sentbox</a>)</div>\n");
-  	$res = mysql_query("SELECT * FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location IN ('in','both') ORDER BY added DESC") or die("barf!");
+  	$res = mysql_query("SELECT messages.id, messages.sender, messages.receiver, messages.added, messages.unread, users.username FROM messages LEFT JOIN users on messages.receiver=users.id WHERE receiver=$CURUSER[id] AND location IN ('in','both') ORDER BY added DESC") or die("barf!");
 	  if (mysql_num_rows($res) == 0)
       stdmsg("Information","Your Inbox is empty!");
 	  else
@@ -45,9 +46,9 @@
 	    {
 	      if (is_valid_id($arr["sender"]))
 	      {
-	        $res2 = mysql_query("SELECT username FROM users WHERE id=" . $arr["sender"]) or sqlerr();
-	        $arr2 = mysql_fetch_assoc($res2);
-	        $sender = "<a href=userdetails.php?id=" . $arr["sender"] . ">" . ($arr2["username"]?$arr2["username"]:"[Deleted]") . "</a>";
+	        // $res2 = mysql_query("SELECT username FROM users WHERE id=" . $arr["sender"]) or sqlerr();
+	        // $arr2 = mysql_fetch_assoc($res2);
+	        $sender = "<a href=userdetails.php?id=" . $arr["sender"] . ">" . ($arr["username"]?$arr["username"]:"[Deleted]") . "</a>";
 	      }
 	      else
 	        $sender = "System";

@@ -1,7 +1,7 @@
 <?
 
 require "include/bittorrent.php";
-dbconn();
+
 
 $id = 0 + $_GET["id"];
 if (!$id)

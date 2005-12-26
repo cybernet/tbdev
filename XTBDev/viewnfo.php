@@ -1,6 +1,6 @@
 <?
 require "include/bittorrent.php";
-dbconn(false);
+
 loggedinorreturn();
 $id = 0 + $_GET["id"];
 if (get_user_class() < UC_POWER_USER || !is_valid_id($id))

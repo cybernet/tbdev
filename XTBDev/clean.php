@@ -1,7 +1,7 @@
 <?
 require "include/bittorrent.php";
 if (!local_user()) die;
-dbconn();
+
 $res = mysql_query("SELECT id,torrent FROM peers") or sqlerr();
 $n = 0;
 while ($arr =  mysql_fetch_assoc($res))

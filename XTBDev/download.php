@@ -3,7 +3,7 @@
 require_once("include/bittorrent.php");
 require_once("include/benc.php");
 
-dbconn();
+
 
 if (!preg_match(':^/(\d{1,10})/(.+)\.torrent$:', $_SERVER["PATH_INFO"], $matches))
 	httperr();

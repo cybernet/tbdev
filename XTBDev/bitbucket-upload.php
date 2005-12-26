@@ -1,7 +1,7 @@
 <?
 
 require "include/bittorrent.php";
-dbconn();
+
 loggedinorreturn();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
