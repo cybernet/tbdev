@@ -1,3 +1,4 @@
+2005-12-27 - masklin - Fixed cleanup.php missing global
 2005-12-25 - xam - Removal of dbconn from all files and moved into bittorrent.php (no longer a function)
                    Use LEFT JOIN in inbox.php and remove the extra queries
 2005-12-24 - adrenalin - Add in missing country Moldova into countries.sql

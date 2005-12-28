@@ -3,7 +3,7 @@
 require_once("bittorrent.php");
 
 function docleanup() {
-	global $torrent_dir, $signup_timeout, $max_dead_torrent_time, $autoclean_interval;
+	global $torrent_dir, $signup_timeout, $max_dead_torrent_time, $autoclean_interval, $max_dead_user_time;
 
 	set_time_limit(0);
 	ignore_user_abort(1);
