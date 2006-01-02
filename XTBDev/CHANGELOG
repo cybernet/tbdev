@@ -1,3 +1,4 @@
+2006-01-02 - plextor - Fixed inbox.php mysql query
 2005-12-27 - masklin - Fixed cleanup.php missing global
 2005-12-25 - xam - Removal of dbconn from all files and moved into bittorrent.php (no longer a function)
                    Use LEFT JOIN in inbox.php and remove the extra queries

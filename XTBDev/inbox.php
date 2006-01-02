@@ -58,7 +58,7 @@
 	      if ($arr["unread"] == "yes")
 	      {
 	        print("<b>(<font color=red>NEW!</font>)</b>");
-	        mysql_query("UPDATE messages SET unread='false' WHERE id=" . $arr["id"]) or die("arghh");
+	        mysql_query("UPDATE messages SET unread='no' WHERE id=" . $arr["id"]) or die("arghh");
 	      }
 	      print("<p><table class=main width=100% border=1 cellspacing=0 cellpadding=10><tr><td class=text>\n");
 	      print(format_comment($arr["msg"]));
