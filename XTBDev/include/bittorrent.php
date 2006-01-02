@@ -13,6 +13,7 @@ if(empty($mysql_user) && empty($mysql_pass))
 
 require_once('config.php');
 require_once('cleanup.php');
+require_once('global.php');
 
 
 /**** validip/getip courtesy of manolete <manolete@myway.com> ****/
@@ -927,7 +928,5 @@ function verify_passkey($passkey)
 
     if (basename($_SERVER['SCRIPT_FILENAME']) == 'index.php')
         register_shutdown_function("autoclean");
-
-require "global.php";
 
 ?>
