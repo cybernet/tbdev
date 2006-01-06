@@ -1,3 +1,4 @@
+2006-01-06 - masklin & laffin - more missing globals found in cleanup.php
 2006-01-02 - laffin - moved line in bittorrent.php (require 'global.php') from bottom to near top (php5/mysql5 problem)
 2006-01-02 - plextor12 - Fixed inbox.php mysql query
 2005-12-27 - masklin - Fixed cleanup.php missing global
