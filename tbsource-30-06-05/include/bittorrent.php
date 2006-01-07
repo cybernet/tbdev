@@ -17,22 +17,27 @@ $minvotes = 1;
 $max_dead_torrent_time = 6 * 3600;
 
 // Max users on site
-$maxusers = 75000;
+$maxusers = 75000; // LoL Who we kiddin' here?
 
-$torrent_dir = "/var/tb/torrents";    # must be writable for httpd user
+// Max users on site
+$maxusers = 5000;
+
+// ONLY USE ONE OF THE FOLLOWING DEPENDING ON YOUR O/S!!!
+$torrent_dir = "/var/tb/torrents";    # FOR UNIX ONLY - must be writable for httpd user
+//$torrent_dir = "C:/web/Apache2/htdocs/tbsource/torrents";    # FOR WINDOWS ONLY - must be writable for httpd user
 
 # the first one will be displayed on the pages
 $announce_urls = array();
-$announce_urls[] = "http://torrentbits.org:81/announce.php";
-$announce_urls[] = "http://torrentbits.org:82/announce.php";
-$announce_urls[] = "http://torrentbits.org:83/announce.php";
+$announce_urls[] = "http://domain.com:81/announce.php";
+$announce_urls[] = "http://domain.com:82/announce.php";
+$announce_urls[] = "http://domain.com:83/announce.php";
 
 if ($_SERVER["HTTP_HOST"] == "")
   $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
 $BASEURL = "http://" . $_SERVER["HTTP_HOST"];
 
 // Set this to your site URL... No ending slash!
-$DEFAULTBASEURL = "http://torrentbits.org";
+$DEFAULTBASEURL = "http://domain.com";
 
 //set this to true to make this a tracker that only registered users may use
 $MEMBERSONLY = true;
@@ -42,9 +47,9 @@ $MEMBERSONLY = true;
 $PEERLIMIT = 50000;
 
 // Email for sender/return path.
-$SITEEMAIL = "noreply@torrentbits.org";
+$SITEEMAIL = "noreply@domain.com";
 
-$SITENAME = "TorrentBits";
+$SITENAME = "TBDEV.NET";
 
 $autoclean_interval = 900;
 $pic_base_url = "/pic/";
@@ -61,7 +66,7 @@ define ('TBVERSION','TBDEV.NET-12-09-05');
 // IP Validation
 function validip($ip)
 {
-	if (!empty($ip) && ip2long($ip)!=-1)
+	if (!empty($ip) && $ip == long2ip(ip2long($ip)))
 	{
 		// reserved IANA IPv4 addresses
 		// http://www.iana.org/assignments/ipv4-address-space
@@ -88,41 +93,27 @@ function validip($ip)
 }
 
 // Patched function to detect REAL IP address if it's valid
-/*
-function getip()
-{
-        //global $HTTP_SERVER_VARS;
-        if (validip($_SERVER["HTTP_CLIENT_IP"])) return $_SERVER["HTTP_CLIENT_IP"];
-        elseif ($_SERVER["HTTP_X_FORWARDED_FOR"]!="")
-        {
-                $forwarded=str_replace(",","",$_SERVER["HTTP_X_FORWARDED_FOR"]);
-                $forwarded_array=split(" ",$forwarded);
-                foreach($forwarded_array as $value)        if (validip($value)) return $value;
-        }
-        return $_SERVER["REMOTE_ADDR"];
-}
-*/
 function getip() {
-    if (isset($_SERVER)) {
-      if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-        $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-      } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-        $ip = $_SERVER['HTTP_CLIENT_IP'];
-      } else {
-        $ip = $_SERVER['REMOTE_ADDR'];
-      }
-    } else {
-      if (getenv('HTTP_X_FORWARDED_FOR')) {
-        $ip = getenv('HTTP_X_FORWARDED_FOR');
-      } elseif (getenv('HTTP_CLIENT_IP')) {
-        $ip = getenv('HTTP_CLIENT_IP');
-      } else {
-        $ip = getenv('REMOTE_ADDR');
-      }
-    }
+   if (isset($_SERVER)) {
+     if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && validip($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+       $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+     } elseif (isset($_SERVER['HTTP_CLIENT_IP']) && validip($_SERVER['HTTP_CLIENT_IP'])) {
+       $ip = $_SERVER['HTTP_CLIENT_IP'];
+     } else {
+       $ip = $_SERVER['REMOTE_ADDR'];
+     }
+   } else {
+     if (getenv('HTTP_X_FORWARDED_FOR') && validip(getenv('HTTP_X_FORWARDED_FOR'))) {
+       $ip = getenv('HTTP_X_FORWARDED_FOR');
+     } elseif (getenv('HTTP_CLIENT_IP') && validip(getenv('HTTP_CLIENT_IP'))) {
+       $ip = getenv('HTTP_CLIENT_IP');
+     } else {
+       $ip = getenv('REMOTE_ADDR');
+     }
+   }
 
-    return $ip;
-  }
+   return $ip;
+ }
 
 function dbconn($autoclean = false)
 {
@@ -178,7 +169,7 @@ function userlogin() {
     $sec = hash_pad($row["secret"]);
     if ($_COOKIE["pass"] !== $row["passhash"])
         return;
-    mysql_query("UPDATE users SET last_access='" . get_date_time() . "', ip='$ip' WHERE id=" . $row["id"]);// or die(mysql_error());
+    mysql_query("UPDATE users SET last_access='" . get_date_time() . "', ip=".sqlesc($ip)." WHERE id=" . $row["id"]);// or die(mysql_error());
     $row['ip'] = $ip;
     $GLOBALS["CURUSER"] = $row;
 }
@@ -885,45 +876,7 @@ print("</td>\n");
 
     return $rows;
 }
-/*
-function hit_start() {
-    return;
-    global $RUNTIME_START, $RUNTIME_TIMES;
-    $RUNTIME_TIMES = posix_times();
-    $RUNTIME_START = gettimeofday();
-}
 
-function hit_count() {
-    return;
-    global $RUNTIME_CLAUSE;
-    if (preg_match(',([^/]+)$,', $_SERVER["SCRIPT_NAME"], $matches))
-        $path = $matches[1];
-    else
-        $path= "(unknown)";
-    $period = date("Y-m-d H") . ":00:00";
-    $RUNTIME_CLAUSE = "page = " . sqlesc($path) . " AND period = '$period'";
-    $update = "UPDATE hits SET count = count + 1 WHERE $RUNTIME_CLAUSE";
-    mysql_query($update);
-    if (mysql_affected_rows())
-        return;
-    $ret = mysql_query("INSERT INTO hits (page, period, count) VALUES (" . sqlesc($path) . ", '$period', 1)");
-    if (!$ret)
-        mysql_query($update);
-}
-
-function hit_end() {
-    return;
-    global $RUNTIME_START, $RUNTIME_CLAUSE, $RUNTIME_TIMES;
-    if (empty($RUNTIME_CLAUSE))
-        return;
-    $now = gettimeofday();
-    $runtime = ($now["sec"] - $RUNTIME_START["sec"]) + ($now["usec"] - $RUNTIME_START["usec"]) / 1000000;
-    $ts = posix_times();
-    $sys = ($ts["stime"] - $RUNTIME_TIMES["stime"]) / 100;
-    $user = ($ts["utime"] - $RUNTIME_TIMES["utime"]) / 100;
-    mysql_query("UPDATE hits SET runs = runs + 1, runtime = runtime + $runtime, user_cpu = user_cpu + $user, sys_cpu = sys_cpu + $sys WHERE $RUNTIME_CLAUSE");
-}
-*/
 function hash_pad($hash) {
     return str_pad($hash, 20);
 }
