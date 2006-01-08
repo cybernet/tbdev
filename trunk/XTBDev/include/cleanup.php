@@ -120,7 +120,7 @@ function docleanup() {
 	mysql_query("DELETE FROM users WHERE status='confirmed' AND class <= $maxclass AND last_access < $dt");
 
 	// lock topics where last post was made more than x days ago
-	$res = mysql_query("SELECT topics.id FROM topics LEFT JOIN posts ON topics.lastpost = posts.id AND topics.sticky = 'no' WHERE " . gmtime() . " - UNIX_TIMESTAMP(posts.added) > 	$secs = $max_dead_topic_time") or sqlerr(__FILE__, __LINE__);
+	$res = mysql_query("SELECT topics.id FROM topics LEFT JOIN posts ON topics.lastpost = posts.id AND topics.sticky = 'no' WHERE " . gmtime() . " - UNIX_TIMESTAMP(posts.added) > $max_dead_topic_time") or sqlerr(__FILE__, __LINE__);
 	while ($arr = mysql_fetch_assoc($res))
 		mysql_query("UPDATE topics SET locked='yes' WHERE id=$arr[id]") or sqlerr(__FILE__, __LINE__);
 
