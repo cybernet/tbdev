@@ -3,7 +3,7 @@
 require_once("bittorrent.php");
 
 function docleanup() {
-	global $torrent_dir, $signup_timeout, $max_dead_torrent_time, $autoclean_interval, $max_dead_user_time, $max_dead_topic_time, $ad_ratio, $ap_time, $torrent_ttl;
+	global $torrent_dir, $signup_timeout, $max_dead_torrent_time, $autoclean_interval, $max_dead_user_time, $max_dead_topic_time, $ad_ratio, $ap_time, $ap_limit, $ap_ratio, $torrent_ttl;
 
 	set_time_limit(0);
 	ignore_user_abort(1);
@@ -120,7 +120,7 @@ function docleanup() {
 	mysql_query("DELETE FROM users WHERE status='confirmed' AND class <= $maxclass AND last_access < $dt");
 
 	// lock topics where last post was made more than x days ago
-	$res = mysql_query("SELECT topics.id FROM topics LEFT JOIN posts ON topics.lastpost = posts.id AND topics.sticky = 'no' WHERE " . gmtime() . " - UNIX_TIMESTAMP(posts.added) > $max_dead_topic_time") or sqlerr(__FILE__, __LINE__);
+	$res = mysql_query("SELECT topics.id FROM topics LEFT JOIN posts ON topics.lastpost = posts.id AND topics.sticky = 'no' WHERE " . gmtime() . " - UNIX_TIMESTAMP(posts.added) > 	$secs = $max_dead_topic_time") or sqlerr(__FILE__, __LINE__);
 	while ($arr = mysql_fetch_assoc($res))
 		mysql_query("UPDATE topics SET locked='yes' WHERE id=$arr[id]") or sqlerr(__FILE__, __LINE__);
 
