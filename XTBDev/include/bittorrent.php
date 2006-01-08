@@ -11,7 +11,6 @@ require_once('config.php');
 if(empty($mysql_user) && empty($mysql_pass))
 	    die("Site is down for maintenance, please check back again later... thanks<br>");
 
-require_once('config.php');
 require_once('cleanup.php');
 require_once('global.php');
 
@@ -928,5 +927,10 @@ function verify_passkey($passkey)
 
     if (basename($_SERVER['SCRIPT_FILENAME']) == 'index.php')
         register_shutdown_function("autoclean");
+
+// Empty dbconn for compatibility
+function dbconn()
+{
+}
 
 ?>
