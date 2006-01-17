@@ -1,5 +1,5 @@
 2006-01-17 - Triton - fixed bittorrent.php in include/config.php missing include/
-2006-01-17 - laffin - fixed admincp true/false checkbox entries
+2006-01-17 - laffin - fixed admincp true/false checkbox entries. Thanx Cronner for finding this bug
 2006-01-07 - laffin - removed extra require once from bittorrent.php and added one more globals to cleanup.php (thanx to firewolf for debug session) 
 2006-01-06 - masklin & laffin - more missing globals found in cleanup.php
 2006-01-02 - laffin - moved line in bittorrent.php (require 'global.php') from bottom to near top (php5/mysql5 problem)
