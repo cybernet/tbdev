@@ -7,7 +7,7 @@ function local_user()
 
 if(!file_exists('include/config.php'))
 	    die("Site is down for maintenance, please check back again later... thanks<br>");
-require_once('config.php');
+require_once('include/config.php');
 if(empty($mysql_user) && empty($mysql_pass))
 	    die("Site is down for maintenance, please check back again later... thanks<br>");
 
