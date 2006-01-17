@@ -261,7 +261,7 @@ function utime()
 	}
 	function fixup($val)
 	{
-		if($val[0]=='"')
+		if($val[0]=='"' || $val[0]=="'")
 			$val=substr($val,1,strlen($val)-2);
 		return stripslashes(trim($val));
 	}
@@ -288,10 +288,6 @@ function utime()
 		$bytes=$val-($kb*$ml);
 		return "<br>&nbsp;&nbsp;&nbsp;$tb TB, $gb GB, $mb MB, $kb KB, $bytes Bytes";
 	}
-	function addqslashes($val)
-	{
-		return str_replace('"','\"',$val);
-	}
 // Setup array of Reference Values for quicker lookups	
 	foreach($options as $key => $value)
 	{
@@ -309,12 +305,20 @@ function utime()
 	if($_POST['action']=='submit') 
 	{
 		$submission=true;
+		foreach($ptyp as $pkey => $val)
+			if($val=='tf')
+				$pdef[$pkey]=0;
   	foreach($_POST as $pkey => $pvalue)
+		{
+	  	echo "<!-- $pkey = $pvalue -->\n";
   		if(isset($plkp[$pkey])) 
   		{
   			$key=$plkp[$pkey];
-  		  $pdef[$key] = ($ptyp[$key]=='aurl' ? explode("\n",$pvalue) : $pvalue);
+  		  $pdef[$key] = ($ptyp[$key]=='aurl' ? explode("\n",$pvalue) : ($ptyp[$key]=='tf' ? 1 :$pvalue));
+  		  echo "  <!-- $key -->\n";
   		}
+  		
+  	}
   } else
 	
 	// Read our config.php file and get valid contents
@@ -342,16 +346,22 @@ function utime()
   }
   
   // Validate the form entries
+  echo "\n";
   foreach($pdef as $key => $val)
   {
+  	echo "<!-- $key = '$val' -->\n";
 		if(!empty($templates[$ptyp[$key]][2]))
 		{
+			echo "  <!-- $prep[$key] ($ptyp[$key]) -->\n";
 			if($pnum[$key])
 				eval("\$val = (". ($ptyp[$key]=='float'?'float':'int') .")($val);");
 			else
 				$val=($ptyp[$key]=='aurl' ? check_aurl($val):fixup($val));
 			// Use the defaults if validation fails
+			
 			$pdef[$key]=(!call_user_func($templates[$ptyp[$key]][2],$val) ? ($ptyp[$key]=='aurl' ? explode("\n",$options[$key][5]):$options[$key][5]) : $val);
+			echo "  <!-- $pdef[$key] -->\n";
+
 		}
   }
   // Simple login validation check
@@ -387,21 +397,14 @@ function utime()
   		foreach($options as $okey => $oval)
   			if(is_array($oval))
   			{
-  					$val=$pdef[$okey];
   					$config.="// ". $oval[4] ."\n";
-						if($pnum[$okey])
-							$q='';
-						else
-							$q='"';
-						if($oval[3][0]!='$')
-							$add=true;
-						else
-							$add=false;
+  					$q=($pnum[$okey] ? '' : '"');
+						$add=($oval[3][0]!='$' ? true : false);
 						if(!is_array($pdef[$okey]))
-							$config.= ($add ? "define ('":''). $oval[3] .($add ? "',":' = '). $q .($pnum[$okey] ? $pdef[$okey]:addqslashes($pdef[$okey])). $q .($add ? ')':'') .";\n";
+							$config.= ($add ? "define ('":''). $oval[3] .($add ? "',":' = '). $q . addcslashes(stripslashes($pdef[$okey]),"\0..\37\"$\\\177..\377"). $q .($add ? ')':'') .";\n";
 						else
 							foreach($pdef[$okey] as $val)
-								$config.=($add ? "define ('":''). $oval[3] .($add ? "',":' = ') . $q. ($pnum[$okey] ? $val:addqslashes($val)) .$q .($add ? ')':'') .";\n";
+								$config.=($add ? "define ('":''). $oval[3] .($add ? "',":' = ') . $q. addcslashes(stripslashes($val),"\0..\37\"$\\\177..\377") .$q .($add ? ')':'') .";\n";
   			}
   		$config.="?>\n";
   		fwrite($fh,$config);	
