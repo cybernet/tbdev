@@ -310,12 +310,10 @@ function utime()
 				$pdef[$pkey]=0;
   	foreach($_POST as $pkey => $pvalue)
 		{
-	  	echo "<!-- $pkey = $pvalue -->\n";
   		if(isset($plkp[$pkey])) 
   		{
   			$key=$plkp[$pkey];
   		  $pdef[$key] = ($ptyp[$key]=='aurl' ? explode("\n",$pvalue) : ($ptyp[$key]=='tf' ? 1 :$pvalue));
-  		  echo "  <!-- $key -->\n";
   		}
   		
   	}
@@ -346,13 +344,10 @@ function utime()
   }
   
   // Validate the form entries
-  echo "\n";
   foreach($pdef as $key => $val)
   {
-  	echo "<!-- $key = '$val' -->\n";
 		if(!empty($templates[$ptyp[$key]][2]))
 		{
-			echo "  <!-- $prep[$key] ($ptyp[$key]) -->\n";
 			if($pnum[$key])
 				eval("\$val = (". ($ptyp[$key]=='float'?'float':'int') .")($val);");
 			else
@@ -360,7 +355,6 @@ function utime()
 			// Use the defaults if validation fails
 			
 			$pdef[$key]=(!call_user_func($templates[$ptyp[$key]][2],$val) ? ($ptyp[$key]=='aurl' ? explode("\n",$options[$key][5]):$options[$key][5]) : $val);
-			echo "  <!-- $pdef[$key] -->\n";
 
 		}
   }
