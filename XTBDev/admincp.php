@@ -187,7 +187,7 @@ function utime()
 			array('Signup Timeout','sec','tsignupto','$singup_timeout','How long to wait before deleting unconfirmed accts.','86400 * 3'),
 			array('Dead Torrent Time','sec','tdeadtorrent','$max_dead_torrent_time','How long to wait to make torrents invisible (no seeds/no peers)..','6 * 3600'),
 			array('Dead User Time','sec','tdeaduser','$max_dead_user_time','How long to wait before deleting inactive user accounts..','42*86400'),
-			array('Dead Topic Time','sec','tdeadtopic','$max_dead_topic_time','How long to wait before deleting inactive user accounts..','7*86400'),
+			array('Dead Topic Time','sec','tdeadtopic','$max_dead_topic_time','How long to wait before setting inactive forum topics locked..','7*86400'),
 			array('Torrent TTL','sec','ttorrentttl','$torrent_ttl','How long do torrents live for.','28*86400'),
 		'Auto Promote Users',
 			array('Transfer Limit','bytes','aplimit','$ap_limit','Uploaded amount for promotion','25*1024*1024*1024'),
