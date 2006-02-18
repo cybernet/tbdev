@@ -157,9 +157,9 @@ if (!isset($self))
 		if ($valid[0] >= 1 && $seeder == 'no') 
 			err("Connection limit exceeded! You may only leech from one location at a time.");
 		if ($valid[0] >= 3 && $seeder == 'yes') 
-			err("Connection limit exceeded!");$rz = mysql_query("SELECT id, uploaded, downloaded, class FROM users WHERE ip='$ip' AND enabled = 'yes' ". (ENA_PASSKEY ? "AND passkey=$passkey ":''). "ORDER BY last_access DESC LIMIT 1") or err("Tracker error 2");
+			err("Connection limit exceeded!");
 	}
-	$rz = mysql_query("SELECT id, uploaded, downloaded, class FROM users WHERE ". (ENA_PASSKEY ?"passkey=$passkey":"ip=$ip") ." AND enabled = 'yes' ORDER BY last_access DESC LIMIT 1") or err("Tracker error 2");
+	$rz = mysql_query("SELECT id, uploaded, downloaded, class FROM users WHERE ip='$ip' AND enabled = 'yes' ". (ENA_PASSKEY ? "AND passkey=$passkey ":''). "ORDER BY last_access DESC LIMIT 1") or err("Tracker error 2");
 	if ($MEMBERSONLY && mysql_num_rows($rz) == 0)
 		err("Unrecognized host ($ip). Please go to $BASEURL to sign-up or login.");
 	$az = mysql_fetch_assoc($rz);

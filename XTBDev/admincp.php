@@ -168,6 +168,7 @@ function utime()
 		'Switches',
 			array('Site Online','tf','bonline','$SITE_ONLINE','Site Open for business?','true'),
 			array('Members Only','tf','bmembers','$MEMBERSONLY','Only registered users may use','true'),
+			array('Email Confirmation','tf','bconfirm','ENA_EMAIL_CONFIRM','Use Email Confirmation','true'),
 			array('Alternate Announce','tf','baltann','ENA_ALTANNOUNCE','Enable Alternate Announce/scrape urls','true'),
 			array('Passkey System','tf','bpasskey','ENA_PASSKEY','Enable Passkey System','true'),
 			array('--- &nbsp;Limit Connections','tf','bplc','ENA_PASSKEYLIMITCONNECTIONS','Limit Amount of connections (Required: Passkey System)','false'),
