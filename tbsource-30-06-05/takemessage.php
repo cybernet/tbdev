@@ -78,7 +78,7 @@
 
 	  $location = ($save == 'yes') ? "both" : "in";
 
-	  $res = mysql_query("SELECT acceptpms, notifs, UNIX_TIMESTAMP(last_access) as la FROM users WHERE id=$receiver") or sqlerr(__FILE__, __LINE__);
+	  $res = mysql_query("SELECT acceptpms, email, notifs, UNIX_TIMESTAMP(last_access) as la FROM users WHERE id=$receiver") or sqlerr(__FILE__, __LINE__);
 	  $user = mysql_fetch_assoc($res);
 	  if (!$user)
 	    stderr("Error", "No user with ID.");
