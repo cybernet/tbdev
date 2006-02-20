@@ -1,3 +1,4 @@
+2006-02-19 - Bainsy - Fixed takemessage.php missing email from mysql query
 2006-02-18 - Laffin - Fixed announce.php passkeys locked to ip's
              Laffin - Added 'Use Email Confirmation' to admincp.php, takesignup.php, ok.php
 2006-01-18 - Triton - edited message line 190 in admincp
