@@ -125,6 +125,7 @@ tr("Email address", "<input type=\"text\" name=\"email\" size=50 value=\"" . htm
 print("<tr><td colspan=\"2\" align=left><b>Note:</b> In order to change your email address, you will receive another<br>confirmation email to your new address.</td></tr>\n");
 tr("Change password", "<input type=\"password\" name=\"chpassword\" size=\"50\" />", 1);
 tr("Type password again", "<input type=\"password\" name=\"passagain\" size=\"50\" />", 1);
+tr("Reset passkey","<input type=checkbox name=resetpasskey value=1 /><br><font class=small>Any active torrents must be downloaded again to continue leeching/seeding.</font>", 1);  
 
 function priv($name, $descr) {
 	global $CURUSER;
