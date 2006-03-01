@@ -1,3 +1,4 @@
+2006-02-28 - Tornado2003 - Noticed passkey reset option missing from (my.php,takeprofedit.php,userdetails.php,modtask.php)
 2006-02-19 - Bainsy - Fixed takemessage.php missing email from mysql query
 2006-02-18 - Laffin - Fixed announce.php passkeys locked to ip's
              Laffin - Added 'Use Email Confirmation' to admincp.php, takesignup.php, ok.php

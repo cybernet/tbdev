@@ -27,7 +27,9 @@ if ($action == "edituser")
   $warnpm = $_POST["warnpm"];
   $donor = $_POST["donor"];
   $modcomment = $_POST["modcomment"];
-
+	
+	if ($_POST['resetpasskey']) 
+		$updateset[] = "passkey=''"; 
   $class = 0 + $_POST["class"];
   if (!is_valid_id($userid) || !is_valid_user_class($class))
     stderr("Error", "Bad user ID or class ID.");

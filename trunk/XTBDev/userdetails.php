@@ -266,6 +266,7 @@ if (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class())
 	  for ($i = 0; $i <= $maxclass; ++$i)
 	    print("<option value=$i" . ($user["class"] == $i ? " selected" : "") . ">$prefix" . get_user_class_name($i) . "\n");
 	  print("</select></td></tr>\n");
+		print("<tr><td class=rowhead>Passkey</td><td colspan=2 align=left><input name=resetkey value=1 type=checkbox> Reset passkey</td></tr>n");
 	}
 
 	$modcomment = htmlspecialchars($user["modcomment"]);

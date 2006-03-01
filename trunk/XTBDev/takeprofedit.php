@@ -64,6 +64,8 @@ $avatars = ($_POST["avatars"] != "" ? "yes" : "no");
 $info = $_POST["info"];
 $stylesheet = $_POST["stylesheet"];
 $country = $_POST["country"];
+if ($_POST['resetpasskey']) 
+	$updateset[] = "passkey=''";
 //$timezone = 0 + $_POST["timezone"];
 //$dst = ($_POST["dst"] != "" ? "yes" : "no");
 
