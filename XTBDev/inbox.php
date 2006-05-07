@@ -38,7 +38,7 @@
 		print("<table class=main width=750 border=0 cellspacing=0 cellpadding=10><tr><td class=embedded>\n");
   	print("<h1 align=center>Inbox</h1>\n");
    	print("<div align=center>(<a href=" . $_SERVER['PHP_SELF'] . "?out=1>Sentbox</a>)</div>\n");
-  	$res = mysql_query("SELECT messages.id, messages.sender, messages.receiver, messages.added, messages.unread, users.username FROM messages LEFT JOIN users on messages.receiver=users.id WHERE receiver=$CURUSER[id] AND location IN ('in','both') ORDER BY added DESC") or die("barf!");
+  	$res = mysql_query("SELECT messages.id, messages.msg, messages.sender, messages.receiver, messages.added, messages.unread, users.username FROM messages LEFT JOIN users on messages.sender=users.id WHERE receiver=$CURUSER[id] AND location IN ('in','both') ORDER BY added DESC") or die("barf!");
 	  if (mysql_num_rows($res) == 0)
       stdmsg("Information","Your Inbox is empty!");
 	  else
