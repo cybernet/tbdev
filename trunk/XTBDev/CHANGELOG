@@ -1,3 +1,6 @@
+2006-04-28 - Laffin - Fixed announce.php.... compact mode support had a flaw returned 0 peers... And ip function checks for validity (now enabled)... removal of uncommented items as well... Thanx go to _NANO_ for the debug session....
+2006-04-28 - Laffin - Fixed announce url list in admincp. It saved announces fine, but would not read them back then it use the default
+2006-04-04 - dodgy - Fixed Problem in inbox.php (It was just causing your own name to appear in the From: field in the Inbox, and messages not to appear (which was already sorted for the sentbox))
 2006-02-28 - Tornado2003 - Noticed passkey reset option missing from (my.php,takeprofedit.php,userdetails.php,modtask.php)
 2006-02-19 - Bainsy - Fixed takemessage.php missing email from mysql query
 2006-02-18 - Laffin - Fixed announce.php passkeys locked to ip's

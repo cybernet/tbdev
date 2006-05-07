@@ -48,7 +48,7 @@ if (ENA_PASSKEY && (
 		strlen($passkey) != 32 && 
 		@mysql_num_rows(@mysql_query("SELECT id FROM users WHERE passkey=" . sqlesc($passkey))) != 1))
 	err("Invalid passkey! Re-download the .torrent from $BASEURL ($passkey)");
-$passkey=sqlesc($passkey);	
+$passkey=sqlesc($passkey);
 
 foreach (array("info_hash","peer_id") as $x)
 {
@@ -56,7 +56,7 @@ foreach (array("info_hash","peer_id") as $x)
 		err("invalid $x (" . strlen($GLOBALS[$x]) . " - " . urlencode($GLOBALS[$x]) . ")");
 }
 
-//if (empty($ip) || !preg_match('/^(\d{1,3}\.){3}\d{1,3}$/s', $ip))
+if (empty($ip) || !preg_match('/^(2[0-4]\d|25[0-5]|[01]?\d\d?)\.(2[0-4]\d|25[0-5]|[01]?\d\d?)\.(2[0-4]\d|25[0-5]|[01]?\d\d?)\.(2[0-4]\d|25[0-5]|[01]?\d\d?)$/s',$ip))
 	$ip = getip();
 
 $port = 0 + $port;
@@ -77,8 +77,8 @@ foreach(array("num want", "numwant", "num_want") as $k)
 $agent = $_SERVER["HTTP_USER_AGENT"];
 
 // Deny access made with a browser...
-//if (ereg("^Mozilla\\/", $agent) || ereg("^Opera\\/", $agent) || ereg("^Links ", $agent) || ereg("^Lynx\\/", $agent))
-//	err("torrent not registered with this tracker");
+if (ereg("^Mozilla\\/", $agent) || ereg("^Opera\\/", $agent) || ereg("^Links ", $agent) || ereg("^Lynx\\/", $agent))
+	err("torrent not registered with this tracker");
 
 if (!$port || $port > 0xffff)
 	err("invalid port");
@@ -107,7 +107,7 @@ if ($numpeers > $rsize)
 	$limit = "ORDER BY RAND() LIMIT $rsize";
 $res = mysql_query("SELECT $fields FROM peers WHERE torrent = $torrentid AND connectable = 'yes' $limit");
 
-$resp = 'd' . benc_str('interval') . 'i' . $announce_interval . 'e' . benc_str('peers') . (($compact = ($_GET['compact'] == 1))?'':'l');
+$resp = 'd' . benc_str('interval') . 'i' . $announce_interval . 'e' . benc_str('peers') . (($compact = intval($_GET['compact'])) == 1 ?'':'l');
 unset($self);
 while ($row = mysql_fetch_assoc($res))
 {
@@ -154,9 +154,9 @@ if (!isset($self))
 	if(ENA_PASSKEY && ENA_PASSKEYLIMITCONNECTIONS)
 	{
 		$valid = @mysql_num_rows(@mysql_query("SELECT id FROM peers WHERE torrent=$torrentid AND passkey=$passkey"));
-		if ($valid[0] >= 1 && $seeder == 'no') 
+		if ($valid >= 1 && $seeder == 'no') 
 			err("Connection limit exceeded! You may only leech from one location at a time.");
-		if ($valid[0] >= 3 && $seeder == 'yes') 
+		if (($valid >= 3 && $seeder == 'yes') || ($valid===FALSE))
 			err("Connection limit exceeded!");
 	}
 	$rz = mysql_query("SELECT id, uploaded, downloaded, class FROM users WHERE ip='$ip' AND enabled = 'yes' ". (ENA_PASSKEY ? "AND passkey=$passkey ":''). "ORDER BY last_access DESC LIMIT 1") or err("Tracker error 2");

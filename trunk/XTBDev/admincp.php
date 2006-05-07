@@ -244,11 +244,11 @@ function utime()
 	}
 	function is_numformula($val)
 	{
-		return ((preg_match("/^[0-9\s-\x2b\x28\x29\x2a]+$/",$val)==1) ? true:false);
+		return ((preg_match("/^[\s0-9-\x2b\x28\x29\x2a]+$/",$val)==1) ? true:false);
 	}
 	function is_floatformula($val)
 	{
-		return ((preg_match("/^[0-9\s-\x2b\x28\x29\x2a\x2e]+$/",$val)==1) ? true:false);
+		return ((preg_match("/^[\s0-9-\x2b\x28\x29\x2a\x2e]+$/",$val)==1) ? true:false);
 	}
 	function check_aurl($val)
 	{
@@ -328,20 +328,22 @@ function utime()
 		fclose($fh);
 		$haveconfig=true;
 		preg_match_all("/^define\s*\(\s*[\x22\x27](.+)[\x22\x27]\s*,\s*(\d+|.+)\s*\)\s*;$/m",$config,$defines);
-  	preg_match_all("/^([$][a-zA-Z0-9\x5f]+)\s*=\s*(\d+|[\x22\x27].+[\x22\x27])\s*;$/m",$config,$vars);
+  		preg_match_all("/^([$][a-zA-Z0-9\x5f]+[\x5b]?[\x5d]?)\s*=\s*(\d+|[\x22\x27].+[\x22\x27])\s*;$/m",$config,$vars);
   	unset ($config);
   	$config[0]=array_merge($defines[1],$vars[1]);
   	$config[1]=array_merge($defines[2],$vars[2]);
-  	foreach($config[0] as $ck => $val)
-  		if(!(($key=array_search($val,$pvar))==FALSE))
-  		{
+  	foreach($config[0] as $ck => $val) {
+  		if(!(($key=array_search($val,$pvar))==FALSE)) {
   			if($config[1][$ck][0]!='"')
   				$pdef[$key]=$config[1][$ck];
   			else if($ptyp[$key]!='aurl')
   				$pdef[$key]=substr($config[1][$ck],1,strlen($config[1][$ck])-2);
-  			else
+  			else {
   				$pdef[$key][]=substr($config[1][$ck],1,strlen($config[1][$ck])-2);
+  				unset($pdef[$key][0]);
+  			}
   		}
+  	}
   }
   
   // Validate the form entries
