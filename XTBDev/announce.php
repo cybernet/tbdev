@@ -132,7 +132,7 @@ while ($row = mysql_fetch_assoc($res))
 	}
 }
 
-$resp .= ($compact ? benc_str($plist):''). "ee";
+$resp .= ($compact ? benc_str($plist):'e'). 'e';
 
 $selfwhere = "torrent = $torrentid AND ". (ENA_PASSKEY ?"passkey=$passkey AND ":'') . hash_where("peer_id", $peer_id);
 
