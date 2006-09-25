@@ -225,10 +225,10 @@ function get_row_count($table, $suffix = "")
 
 function stdmsg($heading, $text)
 {
-  print("<table class=main width=750 border=0 cellpadding=0 cellspacing=0><tr><td class=embedded>\n");
+  print("<table id=torrenttable border=0 cellpadding=0 cellspacing=0><tr><td>\n");
   if ($heading)
     print("<h2>$heading</h2>\n");
-  print("<table width=100% border=1 cellspacing=0 cellpadding=10><tr><td class=text>\n");
+  print("<table width=100% border=0 cellspacing=0 cellpadding=10><tr><td class=text>\n");
   print($text . "</td></tr></table></td></tr></table>\n");
 }
 
@@ -308,6 +308,8 @@ function _strlastpos ($haystack, $needle, $offset = 0)
 
 function format_quotes($s)
 {
+  $old_s = '';
+  
   while ($old_s != $s)
   {
   	$old_s = $s;
@@ -374,10 +376,12 @@ function format_comment($text, $strip_html = true)
 	$s = preg_replace("/\[u\]((\s|.)+?)\[\/u\]/i", "<u>\\1</u>", $s);
 
 	// [img]http://www/image.gif[/img]
-	$s = preg_replace("/\[img\]([^\s'\"<>]+?)\[\/img\]/i", "<img border=0 src=\"\\1\">", $s);
+	//$s = preg_replace("/\[img\]([^\s'\"<>]+?)\[\/img\]/i", "<img border=0 src=\"\\1\">", $s);
+	$s = preg_replace("/\[img\](http:\/\/[^\s'\"<>]+(\.(jpg|gif|png)))\[\/img\]/i", "<IMG border=\"0\" src=\"\\1\">", $s);
 
 	// [img=http://www/image.gif]
-	$s = preg_replace("/\[img=([^\s'\"<>]+?)\]/i", "<img border=0 src=\"\\1\">", $s);
+	//$s = preg_replace("/\[img=([^\s'\"<>]+?)\]/i", "<img border=0 src=\"\\1\">", $s);
+	$s = preg_replace("/\[img=(http:\/\/[^\s'\"<>]+(\.(gif|jpg|png)))\]/i", "<IMG border=\"0\" src=\"\\1\">", $s);
 
 	// [color=blue]Text[/color]
 	$s = preg_replace(
@@ -408,7 +412,10 @@ function format_comment($text, $strip_html = true)
 	$s = preg_replace(
 		"/\[font=([a-zA-Z ,]+)\]((\s|.)+?)\[\/font\]/i",
 		"<font face=\"\\1\">\\2</font>", $s);
-
+	// [center]Center[/center]
+	$s = preg_replace("/\[center\]((\s|.)+?)\[\/center\]/", "<center>\\1</center>", $s);
+	
+		
 //  //[quote]Text[/quote]
 //  $s = preg_replace(
 //    "/\[quote\]\s*((\s|.)+?)\s*\[\/quote\]\s*/i",
@@ -441,11 +448,11 @@ function format_comment($text, $strip_html = true)
 
 	reset($smilies);
 	while (list($code, $url) = each($smilies))
-		$s = str_replace($code, "<img border=0 src=\"/pic/smilies/$url\" alt=\"" . htmlspecialchars($code) . "\">", $s);
+		$s = str_replace($code, "<img border=0 src=\"".SMILIES."/$url\" alt=\"" . htmlspecialchars($code) . "\">", $s);
 
 	reset($privatesmilies);
 	while (list($code, $url) = each($privatesmilies))
-		$s = str_replace($code, "<img border=0 src=\"/pic/smilies/$url\">", $s);
+		$s = str_replace($code, "<img border=0 src=\"".SMILIES."/$url\">", $s);
 
 	return $s;
 }
@@ -500,8 +507,8 @@ function is_valid_id($id)
 
   function begin_main_frame()
   {
-    print("<table class=main width=750 border=0 cellspacing=0 cellpadding=0>" .
-      "<tr><td class=embedded>\n");
+    print("<table id=torrenttable border=1 cellspacing=0 cellpadding=10>" .
+      "<tr><td>\n");
   }
 
   //-------- Ends a main frame
@@ -521,7 +528,7 @@ function is_valid_id($id)
     if ($center)
       $tdextra .= " align=center";
 
-    print("<table width=100% border=1 cellspacing=0 cellpadding=$padding><tr><td$tdextra>\n");
+    print("<table id=torrenttable border=1 cellspacing=0 cellpadding=$padding><tr><td$tdextra>\n");
 
   }
 
@@ -541,7 +548,7 @@ function is_valid_id($id)
     
     if ($fullwidth)
       $width .= " width=100%";
-    print("<table class=main$width border=1 cellspacing=0 cellpadding=$padding>\n");
+    print("<table id=torrenttable $width border=1 cellspacing=0 cellpadding=$padding>\n");
   }
 
   function end_table()
