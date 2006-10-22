@@ -76,6 +76,7 @@ function dict_check($d, $s) {
 	$a = explode(":", $s);
 	$dd = $d["value"];
 	$ret = array();
+	$t='';
 	foreach ($a as $k) {
 		unset($t);
 		if (preg_match('/^(.*)\((.*)\)$/', $k, $m)) {
