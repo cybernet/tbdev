@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 
@@ -27,7 +27,7 @@ if ($row["enabled"] == "no")
 logincookie($row["id"], $row["passhash"]);
 
 if (!empty($_POST["returnto"]))
-	header("Location: $BASEURL$_POST[returnto]");
+	header("Location: $_POST[returnto]");
 else
 	header("Location: $BASEURL/my.php");
 

@@ -1,3 +1,6 @@
+2007-09-08 - Laffin - Fixed a couple of security issues
+			 Laffin - Fixed download.php - Sorry File not found error
+			 Laffin - Fixed Nearly all files - hardcoded pathing - XTBDev now can go into subdirs :)
 2006-05-11 - Dodgy - Fixed announce.php.... bug with the announce response in compact mode...
 2006-04-30 - Laffin - Fixed announce.php.... compact mode support had a flaw returned 0 peers... And ip function checks for validity (now enabled)... removal of uncommented items as well... Thanx go to _NANO_ for the debug session....
 2006-04-28 - Laffin - Fixed announce url list in admincp. It saved announces fine, but would not read them back then it use the default

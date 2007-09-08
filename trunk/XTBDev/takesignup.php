@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 
@@ -97,9 +97,13 @@ $secret = mksecret();
 $wantpasshash = md5($secret . $wantpassword . $secret);
 $editsecret = (!$arr[0]?"": ENA_EMAIL_CONFIRM?mksecret():"");
 
-$ret = mysql_query("INSERT INTO users (username, passhash, secret, editsecret, email, status, ". (!$arr[0]?"class, ":"") ."added) VALUES (" .
-		implode(",", array_map("sqlesc", array($wantusername, $wantpasshash, $secret, $editsecret, $email, (!$arr[0] || !ENA_EMAIL_CONFIRM?'confirmed':'pending')))).
-		", ". (!$arr[0]?UC_SYSOP.", ":""). "'". get_date_time() ."')");
+$ret = mysql_query($q=("INSERT INTO users (username, passhash, secret, editsecret, email, added, status" .
+		(!$arr[0]?", class":"") . (!ENA_EMAIL_CONFIRM?", last_access, enabled":"") . ") VALUES (" .
+		implode(",", array_map("sqlesc", 
+			array($wantusername, $wantpasshash, $secret, $editsecret, $email, get_date_time()))) .
+			",'" . (!$arr[0] || !ENA_EMAIL_CONFIRM?'confirmed':'pending') ."'" .
+			(!$arr[0]?', '.UC_SYSOP:''). 
+			(!ENA_EMAIL_CONFIRM?", '". get_date_time() ."', 'yes'":'') .')'));
 
 if (!$ret) {
 	if (mysql_errno() == 1062)

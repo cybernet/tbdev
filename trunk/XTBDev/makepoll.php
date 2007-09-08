@@ -1,4 +1,4 @@
-<?
+<?php
 require "include/bittorrent.php";
 
 loggedinorreturn();
@@ -7,7 +7,7 @@ if (get_user_class() < UC_MODERATOR)
   stderr("Error","Permission denied.");
 
 $action = $_GET["action"];
-$pollid = (int)$_GET["pollid"];
+$pollid = 0+$_GET["pollid"];
 
 if ($action == "edit")
 {

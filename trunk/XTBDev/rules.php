@@ -1,4 +1,4 @@
-<?
+<?php
 
 ob_start("ob_gzhandler");
 
@@ -18,7 +18,7 @@ begin_main_frame();
 <ul>
 <li>Do not defy the moderators expressed wishes!</li>
 <li>Do not upload our torrents to other trackers! (See the <a href=faq.php#up3 class=altlink><b>FAQ</b></a> for details.)</li>
-<li><a name="warning"></a>Disruptive behaviour in the forums or on the game server will result in a warning (<img src="pic/warned.gif"> ).<br>
+<li><a name="warning"></a>Disruptive behaviour in the forums or on the game server will result in a warning (<img src="<?=$pic_base_url?>warned.gif"> ).<br>
 You will only get <b>one</b> warning! After that it's bye bye Kansas!</li>
 
 <? end_frame(); ?>
@@ -88,7 +88,7 @@ If you have something interesting that somehow violate these rules (e.g. not ISO
  	25 GB and have a share ratio above 1.05. Moderator changes of status last only until the next execution of the script.</td>
 </tr>
 <tr>
-	<td class=embedded bgcolor="#F5F4EA" valign=top>&nbsp; <b><img src="pic/star.gif"></b></td>
+	<td class=embedded bgcolor="#F5F4EA" valign=top>&nbsp; <b><img src="<?=$pic_base_url?>star.gif"></b></td>
 	<td class=embedded width=5>&nbsp;</td>
 	<td class=embedded>This status is given ONLY by Redbeard since he is the only one who can verify that they actually donated something.</td>
 </tr>

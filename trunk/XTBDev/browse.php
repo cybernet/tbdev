@@ -1,11 +1,8 @@
-<?
+<?php
 
 ob_start("ob_gzhandler");
 
 require_once("include/bittorrent.php");
-
-
-
 
 loggedinorreturn();
 

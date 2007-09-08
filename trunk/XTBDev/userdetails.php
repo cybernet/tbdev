@@ -1,4 +1,4 @@
-<?
+<?php
 require "include/bittorrent.php";
 
 
@@ -15,6 +15,8 @@ function bark($msg)
 
 function maketable($res)
 {
+	global $pic_base_url;
+	
   $ret = "<table class=main border=1 cellspacing=0 cellpadding=5>" .
     "<tr><td class=colhead align=center>Type</td><td class=colhead>Name</td><td class=colhead align=center>TTL</td><td class=colhead align=center>Size</td><td class=colhead align=right>Se.</td><td class=colhead align=right>Le.</td><td class=colhead align=center>Upl.</td>\n" .
     "<td class=colhead align=center>Downl.</td><td class=colhead align=center>Ratio</td></tr>\n";
@@ -30,8 +32,11 @@ function maketable($res)
         $ratio = "Inf.";
       else
         $ratio = "---";
-	$catimage = htmlspecialchars($arr["image"]);
+	$catimage = "{$pic_base_url}{$arr[image]);
 	$catname = htmlspecialchars($arr["catname"]);
+	$catimage=((is_file($catimage) && is_readable($catimage))?
+		"<img src=\"".htmlspecialchars($catimage) ."\" alt=\"$catname\" width=42 height=42>":
+		$catname);
 	$ttl = (28*24) - floor((gmtime() - sql_timestamp_to_unix_timestamp($arr["added"])) / 3600);
 	if ($ttl == 1) $ttl .= "<br>hour"; else $ttl .= "<br>hours";
 	$size = str_replace(" ", "<br>", mksize($arr["size"]));
@@ -39,7 +44,7 @@ function maketable($res)
 	$downloaded = str_replace(" ", "<br>", mksize($arr["downloaded"]));
 	$seeders = number_format($arr["seeders"]);
 	$leechers = number_format($arr["leechers"]);
-    $ret .= "<tr><td style='padding: 0px'><img src=\"pic/$catimage\" alt=\"$catname\" width=42 height=42></td>\n" .
+		$ret .= "<tr><td style='padding: 0px'>$catimage</td>\n" .
 		"<td><a href=details.php?id=$arr[torrent]&amp;hit=1><b>" . htmlspecialchars($arr["torrentname"]) .
 		"</b></a></td><td align=center>$ttl</td><td align=center>$size</td><td align=right>$seeders</td><td align=right>$leechers</td><td align=center>$uploaded</td>\n" .
 		"<td align=center>$downloaded</td><td align=center>$ratio</td></tr>\n";
@@ -65,7 +70,7 @@ if (mysql_num_rows($r) > 0)
   {
 		$r2 = mysql_query("SELECT name, image FROM categories WHERE id=$a[category]") or sqlerr(__FILE__, __LINE__);
 		$a2 = mysql_fetch_assoc($r2);
-		$cat = "<img src=\"/pic/$a2[image]\" alt=\"$a2[name]\">";
+		$cat = "<img src=\"{$pic_base_url}{$a2[image]}\" alt=\"$a2[name]\">";
       $torrents .= "<tr><td style='padding: 0px'>$cat</td><td><a href=details.php?id=" . $a["id"] . "&hit=1><b>" . htmlspecialchars($a["name"]) . "</b></a></td>" .
         "<td align=right>$a[seeders]</td><td align=right>$a[leechers]</td></tr>\n";
   }
@@ -101,25 +106,25 @@ else
 {
   $lastseen .= " (" . get_elapsed_time(sql_timestamp_to_unix_timestamp($lastseen)) . " ago)";
 }
-  $res = mysql_query("SELECT COUNT(*) FROM comments WHERE user=" . $user[id]) or sqlerr();
-  $arr3 = mysql_fetch_row($res);
-  $torrentcomments = $arr3[0];
-  $res = mysql_query("SELECT COUNT(*) FROM posts WHERE userid=" . $user[id]) or sqlerr();
-  $arr3 = mysql_fetch_row($res);
-  $forumposts = $arr3[0];
+$res = mysql_query("SELECT COUNT(*) FROM comments WHERE user=" . $user[id]) or sqlerr();
+$arr3 = mysql_fetch_row($res);
+$torrentcomments = $arr3[0];
+$res = mysql_query("SELECT COUNT(*) FROM posts WHERE userid=" . $user[id]) or sqlerr();
+$arr3 = mysql_fetch_row($res);
+$forumposts = $arr3[0];
 
 //if ($user['donated'] > 0)
-//  $don = "<img src=pic/starbig.gif>";
+//  $don = "<img src={$pic_base_url}starbig.gif>";
 
 $res = mysql_query("SELECT name,flagpic FROM countries WHERE id=$user[country] LIMIT 1") or sqlerr();
 if (mysql_num_rows($res) == 1)
 {
   $arr = mysql_fetch_assoc($res);
-  $country = "<td class=embedded><img src=/pic/flag/$arr[flagpic] alt=\"$arr[name]\" style='margin-left: 8pt'></td>";
+	$country = "<td class=embedded><img src=\"{$pic_base_url}flag/{$arr[flagpic]}\" alt=\"". htmlspecialchars($arr[name]) ."\" style='margin-left: 8pt'></td>";
 }
 
-//if ($user["donor"] == "yes") $donor = "<td class=embedded><img src=pic/starbig.gif alt='Donor' style='margin-left: 4pt'></td>";
-//if ($user["warned"] == "yes") $warned = "<td class=embedded><img src=pic/warnedbig.gif alt='Warned' style='margin-left: 4pt'></td>";
+//if ($user["donor"] == "yes") $donor = "<td class=embedded><img src={$pic_base_url}starbig.gif alt='Donor' style='margin-left: 4pt'></td>";
+//if ($user["warned"] == "yes") $warned = "<td class=embedded><img src=\"{$pic_base_url}warnedbig.gif\" alt='Warned' style='margin-left: 4pt'></td>";
 
 $res = mysql_query("SELECT torrent,added,uploaded,downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers LEFT JOIN torrents ON peers.torrent = torrents.id LEFT JOIN categories ON torrents.category = categories.id WHERE userid=$id AND seeder='no'") or sqlerr();
 if (mysql_num_rows($res) > 0)
@@ -186,7 +191,7 @@ if ($user["downloaded"] > 0)
   else
     $s = "cry";
   $sr = floor($sr * 1000) / 1000;
-  $sr = "<table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded><font color=" . get_ratio_color($sr) . ">" . number_format($sr, 3) . "</font></td><td class=embedded>&nbsp;&nbsp;<img src=/pic/smilies/$s.gif></td></tr></table>";
+	$sr = "<table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded><font color=" . get_ratio_color($sr) . ">" . number_format($sr, 3) . "</font></td><td class=embedded>&nbsp;&nbsp;<img src=\"{$pic_base_url}smilies/{$s}.gif\"></td></tr></table>";
   print("<tr><td class=rowhead style='vertical-align: middle'>Share ratio</td><td align=left valign=center style='padding-top: 1px; padding-bottom: 0px'>$sr</td></tr>\n");
 }
 //}
@@ -194,7 +199,7 @@ if ($user["downloaded"] > 0)
 //if ($user['donated'] > 0 && (get_user_class() >= UC_MODERATOR || $CURUSER["id"] == $user["id"]))
 //  print("<tr><td class=rowhead>Donated</td><td align=left>$$user[donated]</td></tr>\n");
 if ($user["avatar"])
-	print("<tr><td class=rowhead>Avatar</td><td align=left><img src=\"" . htmlspecialchars($user["avatar"]) . "\"></td></tr>\n");
+print("<tr><td class=rowhead>Avatar</td><td align=left><img src=\"" . htmlspecialchars($user["avatar"]) . "\"></td></tr>\n");
 print("<tr><td class=rowhead>Class</td><td align=left>" . get_user_class_name($user["class"]) . "</td></tr>\n");
 print("<tr><td class=rowhead>Torrent&nbsp;comments</td>");
 if ($torrentcomments && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || get_user_class() >= UC_MODERATOR))
@@ -235,7 +240,7 @@ if ($showpmbutton)
 
 print("</table>\n");
 
-if (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class())
+if ((get_user_class() == UC_SYSOP) || (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()))
 {
   begin_frame("Edit User", true);
   print("<form method=post action=modtask.php>\n");
@@ -259,10 +264,7 @@ if (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class())
 	else
 	{
 	  print("<tr><td class=rowhead>Class</td><td colspan=2 align=left><select name=class>\n");
-	  if (get_user_class() == UC_MODERATOR)
-	    $maxclass = UC_VIP;
-	  else
-	    $maxclass = get_user_class() - 1;
+		$maxclass=(get_user_class()==UC_SYSOP?UC_SYSOP:(get_user_class()==UC_MODERATOR?UC_VIP:get_user_class()-1));
 	  for ($i = 0; $i <= $maxclass; ++$i)
 	    print("<option value=$i" . ($user["class"] == $i ? " selected" : "") . ">$prefix" . get_user_class_name($i) . "\n");
 	  print("</select></td></tr>\n");

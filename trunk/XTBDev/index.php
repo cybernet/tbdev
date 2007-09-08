@@ -1,4 +1,4 @@
-<?
+<?php
 ob_start("ob_gzhandler");
 
 require "include/bittorrent.php";
@@ -78,7 +78,7 @@ while ($arr = mysql_fetch_assoc($res))
   else
     $activeusers .= "<b>$arr[username]</b>";
   if ($donator)
-    $activeusers .= "<img src=/pic/star.gif alt='Donated $$arr[donated]'></nobr>";
+    $activeusers .= "<img src=\"{$pic_base_url}star.gif\" alt='Donated $$arr[donated]'></nobr>";
 }
 if (!$activeusers)
   $activeusers = "There have been no active users in the last 15 minutes.";
@@ -203,8 +203,8 @@ if (mysql_num_rows($res) > 0)
       	else
         	$c = " bgcolor=#ECE9D8";
       	print("<tr><td width=1% class=embedded$c><nobr>" . $a[1] . "&nbsp;&nbsp;</nobr></td><td width=99% class=embedded$c>" .
-        	"<img src=/pic/bar_left.gif><img src=/pic/bar.gif height=9 width=" . ($p * 3) .
-        	"><img src=/pic/bar_right.gif> $p%</td></tr>\n");
+        	"<img src=\"{$pic_base_url}bar_left.gif\"><img src=\"{$pic_base_url}bar.gif\" height=9 width=" . ($p * 3) .
+        	"><img src=\"{$pic_base_url}bar_right.gif\"> $p%</td></tr>\n");
       	++$i;
     	}
     	print("</table>\n");
@@ -260,13 +260,13 @@ if ($voted)
 <? /*
 <h2>Server load</h2>
 <table width=100% border=1 cellspacing=0 cellpadding=10><tr><td align=center>
-<table class=main border=0 width=402><tr><td style='padding: 0px; background-image: url(/pic/loadbarbg.gif); background-repeat: repeat-x'>
+<table class=main border=0 width=402><tr><td style='padding: 0px; background-image: url("<?=$pic_base_url?>loadbarbg.gif"); background-repeat: repeat-x'>
 <? $percent = min(100, round(exec('ps ax | grep -c apache') / 256 * 100));
 if ($percent <= 70) $pic = "loadbargreen.gif";
 elseif ($percent <= 90) $pic = "loadbaryellow.gif";
 else $pic = "loadbarred.gif";
 $width = $percent * 4;
-print("<img height=15 width=$width src=\"/pic/$pic\" alt='$percent%'>"); ?>
+print("<img height=15 width=$width src=\"{$pic_base_url}{$pic}\" alt='$percent%'>"); ?>
 </td></tr></table>
 </td></tr></table>
 */ ?>
@@ -277,7 +277,7 @@ You may not use this site to distribute or download any material when you do not
 It is your own responsibility to adhere to these terms.</font></p>
 
 <p align=center>
-<a href=http://www.downhillbattle.org/defense/><img src=/pic/supportfilesharing.gif border=0 alt="P2P Legal Defense Fund"></a>
+<a href=http://www.downhillbattle.org/defense/><img src="<?=$pic_base_url?>supportfilesharing.gif" border=0 alt="P2P Legal Defense Fund"></a>
 </p>
 
 

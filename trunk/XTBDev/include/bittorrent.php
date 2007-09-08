@@ -1,4 +1,4 @@
-<?
+<?php
 
 function local_user()
 {
@@ -13,7 +13,6 @@ if(empty($mysql_user) && empty($mysql_pass))
 
 require_once('cleanup.php');
 require_once('global.php');
-
 
 /**** validip/getip courtesy of manolete <manolete@myway.com> ****/
 
@@ -204,11 +203,18 @@ function mkglobal($vars) {
     if (!is_array($vars))
         $vars = explode(":", $vars);
     foreach ($vars as $v) {
+		if ($v[0] == "!")
+		{
+			$v = substr($v, 1);
+			$opt = true;
+		}
+		else
+			$opt = false;
         if (isset($_GET[$v]))
             $GLOBALS[$v] = unesc($_GET[$v]);
         elseif (isset($_POST[$v]))
             $GLOBALS[$v] = unesc($_POST[$v]);
-        else
+        elseif (!$opt)
             return 0;
     }
     return 1;
@@ -257,7 +263,7 @@ function parsedescr($d, $html) {
 }
 
 function stdhead($title = "", $msgalert = true) {
-    global $CURUSER, $SITE_ONLINE, $FUNDS, $SITENAME;
+    global $CURUSER, $SITE_ONLINE, $FUNDS, $SITENAME, $BASEURL, $pic_base_url;
 
   if (!$SITE_ONLINE)
     die("Site is down for maintenance, please check back again later... thanks<br>");
@@ -273,7 +279,7 @@ function stdhead($title = "", $msgalert = true) {
     $ss_a = @mysql_fetch_array(@mysql_query("select uri from stylesheets where id=" . $CURUSER["stylesheet"]));
     if ($ss_a) $ss_uri = $ss_a["uri"];
   }
-  if (!$ss_uri)
+  if (!isset($ss_uri))
   {
     ($r = mysql_query("SELECT uri FROM stylesheets WHERE id=1")) or die(mysql_error());
     ($a = mysql_fetch_array($r)) or die(mysql_error());
@@ -288,7 +294,7 @@ function stdhead($title = "", $msgalert = true) {
 ?>
 <html><head>
 <title><?= $title ?></title>
-<link rel="stylesheet" href="/<?=$ss_uri?>" type="text/css">
+<link rel="stylesheet" href="<?=$ss_uri?>" type="text/css">
 </head>
 <body>
 
@@ -300,7 +306,7 @@ function stdhead($title = "", $msgalert = true) {
 <tr>
 
 <td class=clear>
-<img src=/pic/star20.gif style='margin-right: 10px'>
+<img src="<?=$pic_base_url?>star20.gif" style='margin-right: 10px'>
 </td>
 <td class=clear>
 <font color=white><b>Current funds: <?=$FUNDS?></b></font>
@@ -312,7 +318,7 @@ function stdhead($title = "", $msgalert = true) {
 </td>
 <td class=clear>
 <div align=center>
-<img src=/pic/logo.gif align=center>
+<img src="<?=$pic_base_url?>logo.gif" align=center>
 </div>
 </td>
 <td class=clear width=49% align=right>
@@ -334,26 +340,26 @@ $w = "width=100%";
 <table class=main width=700 cellspacing="0" cellpadding="5" border="0">
 <tr>
 
-<td align="center" class="navigation"><a href=/>Home</a></td>
-<td align="center" class="navigation"><a href=/browse.php>Browse</a></td>
-<td align="center" class="navigation"><a href=/search.php>Search</a></td>
-<td align="center" class="navigation"><a href=/upload.php>Upload</a></td>
+<td align="center" class="navigation"><a href=index.php>Home</a></td>
+<td align="center" class="navigation"><a href=browse.php>Browse</a></td>
+<td align="center" class="navigation"><a href=search.php>Search</a></td>
+<td align="center" class="navigation"><a href=upload.php>Upload</a></td>
 <? if (!$CURUSER) { ?>
 <td align="center" class="navigation">
-<a href=login.php>Login</a> / <a href=/signup.php>Signup</a>
+<a href=login.php>Login</a> / <a href=signup.php>Signup</a>
 </td>
 <? } else { ?>
-<td align="center" class="navigation"><a href=/my.php>Profile</a></td>
+<td align="center" class="navigation"><a href=my.php>Profile</a></td>
 <? } ?>
-<td align="center" class="navigation"><a href=/chat.php>Chat</a></td>
-<td align="center" class="navigation"><a href=/forums.php>Forums</a></td>
-<td align="center" class="navigation"><a href=/misc/dox.php>DOX</a></td>
-<td align="center" class="navigation"><a href=/topten.php>Top 10</a></td>
-<td align="center" class="navigation"><a href=/log.php>Log</a></td>
-<td align="center" class="navigation"><a href=/rules.php>Rules</a></td>
-<td align="center" class="navigation"><a href=/faq.php>FAQ</a></td>
-<td align="center" class="navigation"><a href=/links.php>Links</a></td>
-<td align="center" class="navigation"><a href=/staff.php>Staff</a></td>
+<td align="center" class="navigation"><a href=chat.php>Chat</a></td>
+<td align="center" class="navigation"><a href=forums.php>Forums</a></td>
+<td align="center" class="navigation"><a href=misc/dox.php>DOX</a></td>
+<td align="center" class="navigation"><a href=topten.php>Top 10</a></td>
+<td align="center" class="navigation"><a href=log.php>Log</a></td>
+<td align="center" class="navigation"><a href=rules.php>Rules</a></td>
+<td align="center" class="navigation"><a href=faq.php>FAQ</a></td>
+<td align="center" class="navigation"><a href=links.php>Links</a></td>
+<td align="center" class="navigation"><a href=staff.php>Staff</a></td>
 </tr>
 </table>
 </td>
@@ -361,7 +367,7 @@ $w = "width=100%";
 <tr><td align=center class=outer style="padding-top: 20px; padding-bottom: 20px">
 <?
 
-if ($unread)
+if (isset($unread) && $unread)
 {
   print("<p><table border=0 cellspacing=0 cellpadding=10 bgcolor=red><tr><td style='padding: 10px; background: red'>\n");
   print("<b><a href=$BASEURL/inbox.php><font color=white>You have $unread new message" . ($unread > 1 ? "s" : "") . "!</font></a></b>");
@@ -371,9 +377,10 @@ if ($unread)
 } // stdhead
 
 function stdfoot() {
+  global $pic_base_url;
   print("</td></tr></table>\n");
   print("<table class=bottom width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>\n");
-  print("<td class=bottom align=left width=49%><img src=/pic/bottom_left.gif></td><td width=49% align=right class=bottom><img src=/pic/bottom_right.gif></td>\n");
+  print("<td class=bottom align=left width=49%><img src=\"{$pic_base_url}bottom_left.gif\"></td><td width=49% align=right class=bottom><img src=\"{$pic_base_url}bottom_right.gif\"></td>\n");
   print("</tr></table>\n");
   print("</body></html>\n");
 }
@@ -432,9 +439,9 @@ function logoutcookie() {
 }
 
 function loggedinorreturn() {
-    global $CURUSER;
+    global $CURUSER,$BASEURL;
     if (!$CURUSER) {
-        header("Location: $BASEURL/login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]));
+        header("Location: $BASEURL/login.php?returnto=" . urlencode($_SERVER['PHP_SELF']));
         exit();
     }
 }
@@ -558,7 +565,7 @@ function downloaderdata($res) {
 
 function commenttable($rows)
 {
-	global $CURUSER;
+	global $CURUSER,$pic_base_url;
 	begin_main_frame();
 	begin_frame();
 	$count = 0;
@@ -574,8 +581,8 @@ function commenttable($rows)
 				$title = htmlspecialchars($title);
         print("<a name=comm". $row["id"] .
         	" href=userdetails.php?id=" . $row["user"] . "><b>" .
-        	htmlspecialchars($row["username"]) . "</b></a>" . ($row["donor"] == "yes" ? "<img src=pic/star.gif alt='Donor'>" : "") . ($row["warned"] == "yes" ? "<img src=".
-    			"/pic/warned.gif alt=\"Warned\">" : "") . " ($title)\n");
+        	htmlspecialchars($row["username"]) . "</b></a>" . ($row["donor"] == "yes" ? "<img src=\"{$pic_base_url}star.gif\" alt='Donor'>" : "") . ($row["warned"] == "yes" ? "<img src=".
+    			"\"{$pic_base_url}warned.gif\" alt=\"Warned\">" : "") . " ($title)\n");
 		}
 		else
    		print("<a name=\"comm" . $row["id"] . "\"><i>(orphaned)</i></a>\n");
@@ -586,13 +593,13 @@ function commenttable($rows)
 			($row["editedby"] && get_user_class() >= UC_MODERATOR ? "- [<a href=comment.php?action=vieworiginal&amp;cid=$row[id]>View original</a>]" : "") . "</p>\n");
 		$avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($row["avatar"]) : "");
 		if (!$avatar)
-			$avatar = "/pic/default_avatar.gif";
+			$avatar = "{$pic_base_url}default_avatar.gif";
 		$text = format_comment($row["text"]);
     if ($row["editedby"])
     	$text .= "<p><font size=1 class=small>Last edited by <a href=userdetails.php?id=$row[editedby]><b>$row[username]</b></a> at $row[editedat] GMT</font></p>\n";
 		begin_table(true);
 		print("<tr valign=top>\n");
-		print("<td align=center width=150 style='padding: 0px'><img width=150 src=$avatar></td>\n");
+		print("<td align=center width=150 style='padding: 0px'><img width=150 src=\"$avatar\"></td>\n");
 		print("<td class=text>$text</td>\n");
 		print("</tr>\n");
      end_table();
@@ -626,7 +633,7 @@ function ratingpic($num) {
     $r = round($num * 2) / 2;
     if ($r < 1 || $r > 5)
         return;
-    return "<img src=\"$pic_base_url$r.gif\" border=\"0\" alt=\"rating: $num / 5\" />";
+    return "<img src=\"{$pic_base_url}{$r}.gif\" border=\"0\" alt=\"rating: $num / 5\" />";
 }
 
 function torrenttable($res, $variant = "index") {
@@ -690,7 +697,7 @@ function torrenttable($res, $variant = "index") {
         if (isset($row["cat_name"])) {
             print("<a href=\"browse.php?cat=" . $row["category"] . "\">");
             if (isset($row["cat_pic"]) && $row["cat_pic"] != "")
-                print("<img border=\"0\" src=\"$pic_base_url" . $row["cat_pic"] . "\" alt=\"" . $row["cat_name"] . "\" />");
+                print("<img border=\"0\" src=\"{$pic_base_url}{$row[cat_pic]}\" alt=\"" . $row["cat_name"] . "\" />");
             else
                 print($row["cat_name"]);
             print("</a>");
@@ -714,7 +721,7 @@ function torrenttable($res, $variant = "index") {
 	        if ($elapsed < $wait)
 	        {
 	          $color = dechex(floor(127*($wait - $elapsed)/48 + 128)*65536);
-	          print("<td align=center><nobr><a href=\"/faq.php#dl8\"><font color=\"$color\">" . number_format($wait - $elapsed) . " h</font></a></nobr></td>\n");
+	          print("<td align=center><nobr><a href=\"faq.php#dl8\"><font color=\"$color\">" . number_format($wait - $elapsed) . " h</font></a></nobr></td>\n");
 	        }
 	        else
 	          print("<td align=center><nobr>None</nobr></td>\n");
@@ -722,9 +729,9 @@ function torrenttable($res, $variant = "index") {
 
 /*
         if ($row["nfoav"] && get_user_class() >= UC_POWER_USER)
-          print("<a href=viewnfo.php?id=$row[id]><img src=pic/viewnfo.gif border=0 alt='View NFO'></a>\n");
+          print("<a href=viewnfo.php?id=$row[id]><img src={$pic_base_url}viewnfo.gif border=0 alt='View NFO'></a>\n");
         if ($variant == "index")
-            print("<a href=\"download.php/$id/" . rawurlencode($row["filename"]) . "\"><img src=pic/download.gif border=0 alt=Download></a>\n");
+            print("<a href=\"download.php/$id/" . rawurlencode($row["filename"]) . "\"><img src={$pic_base_url}download.gif border=0 alt=Download></a>\n");
 
         else */ if ($variant == "mytorrents")
             print("<td align=\"center\"><a href=\"edit.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]) . "&amp;id=" . $row["id"] . "\">edit</a>\n");
@@ -868,6 +875,8 @@ function hash_where($name, $hash) {
 
 function get_user_icons($arr, $big = false)
 {
+	global $pic_base_url;
+	
 	if ($big)
 	{
 		$donorpic = "starbig.gif";
@@ -882,11 +891,11 @@ function get_user_icons($arr, $big = false)
 		$disabledpic = "disabled.gif";
 		$style = "style=\"margin-left: 2pt\"";
 	}
-	$pics = $arr["donor"] == "yes" ? "<img src=pic/$donorpic alt='Donor' border=0 $style>" : "";
+	$pics = $arr["donor"] == "yes" ? "<img src=\"{$pic_base_url}{$donorpic}\" alt='Donor' border=0 $style>" : "";
 	if ($arr["enabled"] == "yes")
-		$pics .= $arr["warned"] == "yes" ? "<img src=pic/$warnedpic alt=\"Warned\" border=0 $style>" : "";
+		$pics .= $arr["warned"] == "yes" ? "<img src=\"{$pic_base_url}{$warnedpic}\" alt=\"Warned\" border=0 $style>" : "";
 	else
-		$pics .= "<img src=pic/$disabledpic alt=\"Disabled\" border=0 $style>\n";
+		$pics .= "<img src=\"{$pic_base_url}{$disabledpic}\" alt=\"Disabled\" border=0 $style>\n";
 	return $pics;
 }
 

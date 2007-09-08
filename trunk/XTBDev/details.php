@@ -1,4 +1,4 @@
-<?
+<?php
 
 ob_start("ob_gzhandler");
 
@@ -175,7 +175,8 @@ $s=$row["name"];
 //			$s .= " $spacer<$editlink>[Edit torrent]</a>";
 //		tr("Name", $s, 1);
 
-		print("<tr><td class=rowhead width=1%>Download</td><td width=99% align=left><a class=\"index\" href=\"download.php/$id/" . rawurlencode($row["filename"]) . "\">" . htmlspecialchars($row["filename"]) . "</a></td></tr>");
+		print("<tr><td class=rowhead width=1%>Download</td><td width=99% align=left><a class=\"index\" href=\"download.php".
+		(ENA_ALTANNOUNCE?("/$id/" . rawurlencode($row["filename"])):("?id=$id&name=". rawurlencode($row["filename"]))) . "\">" . htmlspecialchars($row["filename"]) . "</a></td></tr>");
 //		tr("Downloads&nbsp;as", $row["save_as"]);
 
 		function hex_esc($matches) {

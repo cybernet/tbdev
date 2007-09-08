@@ -1,10 +1,10 @@
-<?
+<?php
 
 require "include/bittorrent.php";
 
 loggedinorreturn();
 
-$userid = (int)$_GET['id'];
+$userid = 0+$_GET['id'];
 $action = $_GET['action'];
 
 if (!$userid)
@@ -23,7 +23,7 @@ $user = mysql_fetch_array($res) or stderr("Error", "No user with ID.");
 
 if ($action == 'add')
 {
-	$targetid = (int)$_GET['targetid'];
+	$targetid = 0+$_GET['targetid'];
 	$type = $_GET['type'];
 
   if (!is_valid_id($targetid))
@@ -55,7 +55,7 @@ if ($action == 'add')
 
 if ($action == 'delete')
 {
-	$targetid = (int)$_GET['targetid'];
+	$targetid = 0+$_GET['targetid'];
 	$sure = htmlentities($_GET['sure']);
 	$type = htmlentities($_GET['type']);
 
@@ -91,8 +91,8 @@ if ($action == 'delete')
 
 stdhead("Personal lists for " . $user['username']);
 
-if ($user["donor"] == "yes") $donor = "<td class=embedded><img src=pic/starbig.gif alt='Donor' style='margin-left: 4pt'></td>";
-if ($user["warned"] == "yes") $warned = "<td class=embedded><img src=pic/warnedbig.gif alt='Warned' style='margin-left: 4pt'></td>";
+if ($user["donor"] == "yes") $donor = "<td class=embedded><img src={$pic_base_url}starbig.gif alt='Donor' style='margin-left: 4pt'></td>";
+if ($user["warned"] == "yes") $warned = "<td class=embedded><img src={$pic_base_url}warnedbig.gif alt='Warned' style='margin-left: 4pt'></td>";
 
 print("<p><table class=main border=0 cellspacing=0 cellpadding=0>".
 "<tr><td class=embedded><h1 style='margin:0px'><font color=red> - BETA - </font></h1></td></tr></table></p>\n");
@@ -125,7 +125,7 @@ else
 			"<br><br><a href=sendmessage.php?receiver=" . $friend['id'] . ">Send PM</a>";
     $avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($friend["avatar"]) : "");
 		if (!$avatar)
-			$avatar = "/pic/default_avatar.gif";
+			$avatar = "{$pic_base_url}default_avatar.gif";
     if ($i % 2 == 0)
     	print("<table width=100% style='padding: 0px'><tr><td class=bottom style='padding: 5px' width=50% align=center>");
     else

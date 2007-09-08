@@ -145,7 +145,7 @@ EOD;
 	      }
       }
    	  if (!$returnto)
-   	  	$returnto = "$BASEURL/inbox.php";
+   	  	$returnto = "inbox.php";
 	  }
 
     if ($returnto)

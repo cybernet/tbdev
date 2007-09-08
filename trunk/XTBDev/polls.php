@@ -4,7 +4,7 @@
   loggedinorreturn();
 
   $action = $_GET["action"];
-  $pollid = $_GET["pollid"];
+  $pollid = 0+$_GET["pollid"];
   $returnto = $_GET["returnto"];
 
   if ($action == "delete")
@@ -106,7 +106,7 @@
       else
         $c = " bgcolor=#ECE9D8";
       print("<tr><td class=embedded$c>" . $a[1] . "&nbsp;&nbsp;</td><td class=embedded$c>" .
-        "<img src=/pic/bar_left.gif><img src=/pic/bar.gif height=9 width=" . ($p * 3) . "><img src=/pic/bar_right.gif> $p%</td></tr>\n");
+        "<img src=\"{$pic_base_url}bar_left.gif\"><img src=\"{$pic_base_url}bar.gif\" height=9 width=" . ($p * 3) . "><img src=\"{$pic_base_url}bar_right.gif\"> $p%</td></tr>\n");
       ++$i;
     }
     print("</table>\n");

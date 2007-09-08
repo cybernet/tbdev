@@ -1,4 +1,4 @@
-<?
+<?php
 define ('ConfigFN','include/config.php');
 define ('TBVERSION','XTBDev 0.10 Beta');
 
@@ -15,7 +15,7 @@ function stdhead($title = "") {
 ?>
 <html><head>
 <title><?= $title ?></title>
-<link rel="stylesheet" href="/<?=$ss_uri?>" type="text/css">
+<link rel="stylesheet" href="<?=$ss_uri?>" type="text/css">
 </head>
 <body>
 
@@ -27,7 +27,7 @@ function stdhead($title = "") {
 <tr>
 
 <td class=clear>
-<img src=/pic/star20.gif style='margin-right: 10px'>
+<img src="<?=$pic_base_url?>star20.gif" style='margin-right: 10px'>
 </td>
 <td class=clear>
 </td>
@@ -38,7 +38,7 @@ function stdhead($title = "") {
 </td>
 <td class=clear>
 <div align=center>
-<img src=/pic/logo.gif align=center>
+<img src="<?=$pic_base_url?>logo.gif" align=center>
 </div>
 </td>
 <td class=clear width=49% align=right>
@@ -58,22 +58,22 @@ $w = "width=100%";
 <table class=main width=700 cellspacing="0" cellpadding="5" border="0">
 <tr>
 
-<td align="center" class="navigation"><a href=/>Home</a></td>
-<td align="center" class="navigation"><a href=/browse.php>Browse</a></td>
-<td align="center" class="navigation"><a href=/search.php>Search</a></td>
-<td align="center" class="navigation"><a href=/upload.php>Upload</a></td>
+<td align="center" class="navigation"><a href=index.php>Home</a></td>
+<td align="center" class="navigation"><a href=browse.php>Browse</a></td>
+<td align="center" class="navigation"><a href=search.php>Search</a></td>
+<td align="center" class="navigation"><a href=upload.php>Upload</a></td>
 <td align="center" class="navigation">
-<a href=login.php>Login</a> / <a href=/signup.php>Signup</a>
+<a href=login.php>Login</a> / <a href=signup.php>Signup</a>
 </td>
-<td align="center" class="navigation"><a href=/chat.php>Chat</a></td>
-<td align="center" class="navigation"><a href=/forums.php>Forums</a></td>
-<td align="center" class="navigation"><a href=/misc/dox.php>DOX</a></td>
-<td align="center" class="navigation"><a href=/topten.php>Top 10</a></td>
-<td align="center" class="navigation"><a href=/log.php>Log</a></td>
-<td align="center" class="navigation"><a href=/rules.php>Rules</a></td>
-<td align="center" class="navigation"><a href=/faq.php>FAQ</a></td>
-<td align="center" class="navigation"><a href=/links.php>Links</a></td>
-<td align="center" class="navigation"><a href=/staff.php>Staff</a></td>
+<td align="center" class="navigation"><a href=chat.php>Chat</a></td>
+<td align="center" class="navigation"><a href=forums.php>Forums</a></td>
+<td align="center" class="navigation"><a href=misc/dox.php>DOX</a></td>
+<td align="center" class="navigation"><a href=topten.php>Top 10</a></td>
+<td align="center" class="navigation"><a href=log.php>Log</a></td>
+<td align="center" class="navigation"><a href=rules.php>Rules</a></td>
+<td align="center" class="navigation"><a href=faq.php>FAQ</a></td>
+<td align="center" class="navigation"><a href=links.php>Links</a></td>
+<td align="center" class="navigation"><a href=staff.php>Staff</a></td>
 </tr>
 </table>
 </td>
@@ -87,7 +87,7 @@ $w = "width=100%";
 function stdfoot() {
   print("</td></tr></table>\n");
   print("<table class=bottom width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>\n");
-  print("<td class=bottom align=left width=49%><img src=/pic/bottom_left.gif></td><td width=49% align=right class=bottom><img src=/pic/bottom_right.gif></td>\n");
+  print("<td class=bottom align=left width=49%><img src=\"{$pic_base_url}bottom_left.gif\"></td><td width=49% align=right class=bottom><img src=\"{$pic_base_url}bottom_right.gif\"></td>\n");
   print("</tr></table>\n");
   print("</body></html>\n");
 }

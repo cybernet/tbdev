@@ -1,4 +1,4 @@
-<?
+<?php
 require "include/bittorrent.php";
 if (!local_user()) die;
 

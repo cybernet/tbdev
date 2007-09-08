@@ -1,6 +1,6 @@
-<?
+<?php
   require "include/bittorrent.php";
-  $id = $_GET["id"];
+  $id = 0+$_GET["id"];
   if (!is_numeric($id) || $id < 1 || floor($id) != $id)
     die;
 
