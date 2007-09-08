@@ -1,12 +1,14 @@
-<?
+<?php
 
 ob_start("ob_gzhandler");
 
 require_once("include/bittorrent.php");
 require_once("include/benc.php");
 
-
-
+function checkconnect($ip,$port)
+{
+	return (! (@fsockopen($ip, $port, $errno, $errstr, 5))) ? 'no':(@fclose($sockres)?'yes':'yes');
+}
 function err($msg)
 {
 	benc_resp(array("failure reason" => array(type => "string", value => $msg)));
@@ -25,16 +27,11 @@ function benc_resp_raw($x)
 	print($x);
 }
 
-$req = "info_hash:peer_id:!ip:port:uploaded:downloaded:left:!event:!passkey";
+$req = "info_hash:peer_id:!ip:port:uploaded:downloaded:left:!event:!passkey:!compact";
 foreach (explode(":", $req) as $x)
 {
-	if ($x[0] == "!")
-	{
-		$x = substr($x, 1);
-		$opt = 1;
-	}
-	else
-		$opt = 0;
+	$opt=($x[0]==='!'?1:0);
+	if($opt) $x=substr($x,1);
 	if (!isset($_GET[$x]))
 	{
 		if (!$opt)
@@ -43,17 +40,18 @@ foreach (explode(":", $req) as $x)
 	}
 	$GLOBALS[$x] = unesc($_GET[$x]);
 }
+$compact=($compact?1:0);
 
 if (ENA_PASSKEY && (
 		strlen($passkey) != 32 && 
 		@mysql_num_rows(@mysql_query("SELECT id FROM users WHERE passkey=" . sqlesc($passkey))) != 1))
-	err("Invalid passkey! Re-download the .torrent from $BASEURL ($passkey)");
+	err("Invalid passkey! Re-download the .torrent from $BASEURL");
 $passkey=sqlesc($passkey);
 
 foreach (array("info_hash","peer_id") as $x)
 {
 	if (strlen($GLOBALS[$x]) != 20)
-		err("invalid $x (" . strlen($GLOBALS[$x]) . " - " . urlencode($GLOBALS[$x]) . ")");
+		err("invalid $x");
 }
 
 if (empty($ip) || !preg_match('/^(2[0-4]\d|25[0-5]|[01]?\d\d?)\.(2[0-4]\d|25[0-5]|[01]?\d\d?)\.(2[0-4]\d|25[0-5]|[01]?\d\d?)\.(2[0-4]\d|25[0-5]|[01]?\d\d?)$/s',$ip))
@@ -144,13 +142,12 @@ if (!isset($self))
 	{
 		$userid = $row["userid"];
 		$self = $row;
+		if(($connectable=checkconnect($row['ip'],$row['port']))=='yes')
+  			mysql_query("UPDATE peers SET connectable='yes' $selfwhere");
 	}
-}
 
 //// Up/down stats ////////////////////////////////////////////////////////////
 
-if (!isset($self))
-{
 	if(ENA_PASSKEY && ENA_PASSKEYLIMITCONNECTIONS)
 	{
 		$valid = @mysql_num_rows(@mysql_query("SELECT id FROM peers WHERE torrent=$torrentid AND passkey=$passkey"));
@@ -258,16 +255,7 @@ else
 		if (portblacklisted($port))
 			err("Port $port is blacklisted.");
 		else
-		{
-			$sockres = @fsockopen($ip, $port, $errno, $errstr, 5);
-			if (!$sockres)
-				$connectable = "no";
-			else
-			{
-				$connectable = "yes";
-				@fclose($sockres);
-			}
-		}
+			$connectable=checkconnect($ip,$port);		
 
 		$ret = mysql_query("INSERT INTO peers (connectable, torrent, peer_id, ip, port, uploaded, downloaded, to_go, started, last_action, seeder, userid, agent, uploadoffset, downloadoffset, passkey) VALUES ('$connectable', $torrentid, " . sqlesc($peer_id) . ", " . sqlesc($ip) . ", $port, $uploaded, $downloaded, $left, NOW(), NOW(), '$seeder', $userid, " . sqlesc($agent) . ", $uploaded, $downloaded, $passkey)");
 		if ($ret)

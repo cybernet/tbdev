@@ -1,4 +1,4 @@
-<?
+<?php
 
 require "include/bittorrent.php";
 
@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 stdhead("E-mail gateway");
 ?>
 <p><table border=0 class=main cellspacing=0 cellpadding=0><tr>
-<td class=embedded><img src=/pic/email.gif></td>
+<td class=embedded><img src="<?=$pic_base_url?>email.gif"></td>
 <td class=embedded style='padding-left: 10px'><font size=3><b>Send e-mail to <?=$username;?></b></font></td>
 </tr></table></p>
 <table border=1 cellspacing=0 cellpadding=5>

@@ -126,7 +126,7 @@
 
   function countriestable($res, $frame_caption, $what)
   {
-    global $CURUSER;
+    global $CURUSER, $pic_base_url;
     begin_frame($frame_caption, true);
     begin_table();
 ?>
@@ -149,7 +149,7 @@
  	    elseif ($what == "Ratio")
  	    	$value = number_format($a["r"],2);
 	    print("<tr><td align=center>$num</td><td align=left><table border=0 class=main cellspacing=0 cellpadding=0><tr><td class=embedded>".
-	      "<img align=center src=/pic/flag/$a[flagpic]></td><td class=embedded style='padding-left: 5px'><b>$a[name]</b></td>".
+	      "<img align=center src=\"{pic_base_url}flag/{$a[flagpic]}\"></td><td class=embedded style='padding-left: 5px'><b>$a[name]</b></td>".
 	      "</tr></table></td><td align=right>$value</td></tr>\n");
 	  }
     end_table();

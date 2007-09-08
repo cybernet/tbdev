@@ -1,4 +1,4 @@
-<?
+<?php
 
 require "include/bittorrent.php";
 
@@ -9,7 +9,7 @@ loggedinorreturn();
 if (get_user_class() < UC_MODERATOR)
   die;
 
-$remove = $_GET['remove'];
+$remove = 0+$_GET['remove'];
 if (is_valid_id($remove))
 {
   mysql_query("DELETE FROM bans WHERE id=$remove") or sqlerr();

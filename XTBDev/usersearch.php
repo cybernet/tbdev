@@ -1,4 +1,4 @@
-<?
+<?php
 ob_start("ob_gzhandler");
 require "include/bittorrent.php";
 
@@ -19,11 +19,11 @@ function get_user_icons($arr, $big = false)
 		$warnedpic = "warned.gif";
 		$disabledpic = "disabled.gif";
 	}
-	$pics = $arr["donor"] == "yes" ? "<img src=pic/$donorpic alt='Donor' border=0 style=\"margin-left: 2pt\">" : "";
+	$pics = $arr["donor"] == "yes" ? "<img src=\"{$pic_base_url}$donorpic\" alt='Donor' border=0 style=\"margin-left: 2pt\">" : "";
 	if ($arr["enabled"] == "yes")
-		$pics .= $arr["warned"] == "yes" ? "<img src=pic/$warnedpic alt=\"Warned\" border=0>" : "";
+		$pics .= $arr["warned"] == "yes" ? "<img src=\"{$pic_base_url}$warnedpic\" alt=\"Warned\" border=0>" : "";
 	else
-		$pics .= "<img src=pic/$disabledpic alt=\"Disabled\" border=0 style=\"margin-left: 2pt\">\n";
+		$pics .= "<img src=\"{$pic_base_url}$disabledpic\" alt=\"Disabled\" border=0 style=\"margin-left: 2pt\">\n";
 	return $pics;
 }
 */
@@ -855,8 +855,8 @@ if (count($_GET) > 0 && !$_GET['h'])
 
     	echo "<tr><td><b><a href='userdetails.php?id=" . $user['id'] . "'>" .
       		$user['username']."</a></b>" . get_user_icons($user) . "</td>" .
-//      		($user["donor"] == "yes" ? "<img src=pic/star.gif alt=\"Donor\">" : "") .
-//					($user["warned"] == "yes" ? "<img src=\"/pic/warned.gif\" alt=\"Warned\">" : "") . "</td>
+//      		($user["donor"] == "yes" ? "<img src=\"{$pic_base_url}star.gif\" alt=\"Donor\">" : "") .
+//					($user["warned"] == "yes" ? "<img src=\"{$pic_base_url}warned.gif\" alt=\"Warned\">" : "") . "</td>
           "<td>" . ratios($user['uploaded'], $user['downloaded']) . "</td>
           <td>" . $ipstr . "</td><td>" . $user['email'] . "</td>
           <td><div align=center>" . $user['added'] . "</div></td>
@@ -866,8 +866,8 @@ if (count($_GET) > 0 && !$_GET['h'])
           <td><div align=center>" . ratios($pul,$pdl) . "</div></td>" .
           "<td><div align=right>" . mksize($pul) . "</div></td>
           <td><div align=right>" . mksize($pdl) . "</div></td>
-          <td><div align=center>".($n_posts?"<a href=/userhistory.php?action=viewposts&id=".$user['id'].">$n_posts</a>":$n_posts).
-          "|".($n_comments?"<a href=/userhistory.php?action=viewcomments&id=".$user['id'].">$n_comments</a>":$n_comments).
+          <td><div align=center>".($n_posts?"<a href=userhistory.php?action=viewposts&id=".$user['id'].">$n_posts</a>":$n_posts).
+          "|".($n_comments?"<a href=userhistory.php?action=viewcomments&id=".$user['id'].">$n_comments</a>":$n_comments).
           "</div></td></tr>\n";
     }
     echo "</table>";
@@ -876,7 +876,7 @@ if (count($_GET) > 0 && !$_GET['h'])
 
 	/*
     <br><br>
-    <form method=post action=/sendmessage.php>
+    <form method=post action=sendmessage.php>
       <table border="1" cellpadding="5" cellspacing="0">
         <tr>
           <td>

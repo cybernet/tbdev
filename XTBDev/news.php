@@ -145,7 +145,7 @@ if (mysql_num_rows($res) > 0)
     	$by = "unknown[$userid]";
     else
     	$by = "<a href=userdetails.php?id=$userid><b>$postername</b></a>" .
-    		($arr2["donor"] == "yes" ? "<img src=pic/star.gif alt='Donor'>" : "");
+    		($arr2["donor"] == "yes" ? "<img src=\"{$pic_base_url}star.gif\" alt='Donor'>" : "");
 
 	  print("<p class=sub><table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>");
     print("$added&nbsp;---&nbsp;by&nbsp$by");

@@ -1,4 +1,4 @@
-<?
+<?php
 require "include/bittorrent.php";
 
 loggedinorreturn();
@@ -28,7 +28,7 @@ if ($ip)
 	    $banstable .= "<tr><td>$first</td><td>$last</td><td>$comment</td></tr>\n";
 	  }
 	  $banstable .= "</table>\n";
-	  stderr("Result", "<table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded style='padding-right: 5px'><img src=pic/smilies/excl.gif></td><td class=embedded>The IP address <b>$ip</b> is banned:</td></tr></table><p>$banstable</p>");
+	  stderr("Result", "<table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded style='padding-right: 5px'><img src=\"{$pic_base_url}smilies/excl.gif\"></td><td class=embedded>The IP address <b>$ip</b> is banned:</td></tr></table><p>$banstable</p>");
 	}
 }
 stdhead();

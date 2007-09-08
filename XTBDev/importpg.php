@@ -1,4 +1,4 @@
-<?
+<?php
 // This script downloads/adds/updates peerguardian IP ranges in the bans table.
 
 require "include/bittorrent.php";

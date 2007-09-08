@@ -1,4 +1,4 @@
-<?
+<?php
 
 require "include/bittorrent.php";
 
@@ -56,7 +56,7 @@ if ($action == "edituser")
   }
 
   // some Helshad fun
-  $fun = ($CURUSER['id'] == 277) ? " Tremble in fear, mortal." : "";
+	// $fun = ($CURUSER['id'] == 277) ? " Tremble in fear, mortal." : "";
 
   if ($warned && $curwarned != $warned)
   {

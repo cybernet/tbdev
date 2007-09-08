@@ -1,11 +1,14 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 require_once("include/benc.php");
 
 
-
-if (!preg_match(':^/(\d{1,10})/(.+)\.torrent$:', $_SERVER["PATH_INFO"], $matches))
+if(!ENA_ALTANNOUNCE && isset($_GET['id']))
+{
+	$matches[1]=0+$_GET['id']);
+	$matches[0]=$_GET['name'];
+} elseif (!preg_match(':^/(\d{1,10})/(.+)\.torrent$:', $_SERVER["PATH_INFO"], $matches))
 	httperr();
 
 $id = 0 + $matches[1];
@@ -27,11 +30,11 @@ mysql_query("UPDATE torrents SET hits = hits + 1 WHERE id = $id");
 header("Content-Type: application/x-bittorrent");
 
 $dict = bdec_file($fn, filesize($fn));
-if(ENA_PASSKEY) {
+if(ENA_PASSKEY) 
 	verify_passkey($CURUSER['passkey']);
-	$dict['value']['announce'] = bdec(benc_str("$BASEURL/". (ENA_ALTANNOUNCE ? "tracker.php/$CURUSER[passkey]/announce":"announce.php?passkey=$CURUSER[passkey]")));
-} else if(ENA_ALTANNOUNCE)
-	$dict['value']['announce'] = bdec(benc_str("$BASEURL/tracker.php/announce"));
+$dict['announce']['value'] = "$BASEURL/". (ENA_ALTANNOUNCE? 
+	("tracker.php/". (ENA_PASSKEY?"$CURUSER[passkey]/":'') . "announce"):
+	("announce.php". (ENA_PASSKEY?"?$CURUSER[passkey]":''));
 
 print benc($dict);
 

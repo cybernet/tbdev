@@ -1,4 +1,4 @@
-<?
+<?php
 ob_start("ob_gzhandler");
 require "include/bittorrent.php";
 
@@ -100,11 +100,11 @@ if ($action == "viewposts")
 
 	    print("<p class=sub><table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>
 	    $added&nbsp;--&nbsp;<b>Forum:&nbsp;</b>
-	    <a href=/forums.php?action=viewforum&forumid=$forumid>$forumname</a>
+	    <a href=forums.php?action=viewforum&forumid=$forumid>$forumname</a>
 	    &nbsp;--&nbsp;<b>Topic:&nbsp;</b>
-	    <a href=/forums.php?action=viewtopic&topicid=$topicid>$topicname</a>
+	    <a href=forums.php?action=viewtopic&topicid=$topicid>$topicname</a>
       &nbsp;--&nbsp;<b>Post:&nbsp;</b>
-      #<a href=/forums.php?action=viewtopic&topicid=$topicid&page=p$postid#$postid>$postid</a>" .
+      #<a href=forums.php?action=viewtopic&topicid=$topicid&page=p$postid#$postid>$postid</a>" .
       ($newposts ? " &nbsp;<b>(<font color=red>NEW!</font>)</b>" : "") .
 	    "</td></tr></table></p>\n");
 
@@ -223,8 +223,8 @@ if ($action == "viewcomments")
 
 	  print("<p class=sub><table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>".
 	  "$added&nbsp;---&nbsp;<b>Torrent:&nbsp;</b>".
-	  ($torrent?("<a href=/details.php?id=$torrentid&tocomm=1>$torrent</a>"):" [Deleted] ").
-	  "&nbsp;---&nbsp;<b>Comment:&nbsp;</b>#<a href=/details.php?id=$torrentid&tocomm=1$page_url>$commentid</a>
+	  ($torrent?("<a href=details.php?id=$torrentid&tocomm=1>$torrent</a>"):" [Deleted] ").
+	  "&nbsp;---&nbsp;<b>Comment:&nbsp;</b>#<a href=details.php?id=$torrentid&tocomm=1$page_url>$commentid</a>
 	  </td></tr></table></p>\n");
 
 	  begin_table(true);

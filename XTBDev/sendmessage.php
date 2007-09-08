@@ -87,11 +87,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 	</form></div></td></tr></table>
   <?
 } else {                                                        ////////  PM  //
-	$receiver = $_GET["receiver"];
+	$receiver = 0+$_GET["receiver"];
 	if (!is_valid_id($receiver))
 	  die;
 
-	$replyto = $_GET["replyto"];
+	$replyto = 0+$_GET["replyto"];
 	if ($replyto && !is_valid_id($replyto))
 	  die;
 
