@@ -1,4 +1,4 @@
-<?
+<?php
 
 ob_start("ob_gzhandler");
 
@@ -18,7 +18,7 @@ begin_main_frame();
 <ul>
 <li>Do not defy the moderators expressed wishes!</li>
 <li>Do not upload our torrents to other trackers! (See the <a href=faq.php#up3 class=altlink><b>FAQ</b></a> for details.)</li>
-<li><a name="warning"></a>Disruptive behaviour in the forums or on the game server will result in a warning (<img src="pic/warned.gif"> ).<br>
+<li><a name="warning"></a>Disruptive behaviour in the forums or on the game server will result in a warning (<img src="<?=$pic_base_url?>warned.gif"> ).<br>
 You will only get <b>one</b> warning! After that it's bye bye Kansas!</li>
 
 <? end_frame(); ?>

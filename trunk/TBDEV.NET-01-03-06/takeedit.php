@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 
@@ -18,7 +18,7 @@ dbconn();
 loggedinorreturn();
 
 $res = mysql_query("SELECT owner, filename, save_as FROM torrents WHERE id = $id");
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_assoc($res);
 if (!$row)
 	die();
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 
@@ -13,7 +13,7 @@ dbconn();
 
 
 $res = mysql_query("SELECT passhash, editsecret, status FROM users WHERE id = $id");
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_assoc($res);
 
 if (!$row)
 	httperr();

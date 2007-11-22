@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 
@@ -19,7 +19,7 @@ if ($action == "add")
 			stderr("Error", "Invalid ID.");
 
 		$res = mysql_query("SELECT name FROM torrents WHERE id = $torrentid") or sqlerr(__FILE__,__LINE__);
-		$arr = mysql_fetch_array($res);
+		$arr = mysql_fetch_array($res,MYSQL_NUM);
 		if (!$arr)
 		  stderr("Error", "No torrent with ID.");
 
@@ -44,7 +44,7 @@ if ($action == "add")
 		stderr("Error", "Invalid ID.");
 
 	$res = mysql_query("SELECT name FROM torrents WHERE id = $torrentid") or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_array($res);
+	$arr = mysql_fetch_assoc($res);
 	if (!$arr)
 	  stderr("Error", "No torrent with ID.");
 
@@ -59,7 +59,7 @@ if ($action == "add")
 	$res = mysql_query("SELECT comments.id, text, comments.added, username, users.id as user, users.avatar FROM comments LEFT JOIN users ON comments.user = users.id WHERE torrent = $torrentid ORDER BY comments.id DESC LIMIT 5");
 
 	$allrows = array();
-	while ($row = mysql_fetch_array($res))
+	while ($row = mysql_fetch_assoc($res))
 	  $allrows[] = $row;
 
 	if (count($allrows)) {
@@ -77,7 +77,7 @@ elseif ($action == "edit")
 		stderr("Error", "Invalid ID.");
 
   $res = mysql_query("SELECT c.*, t.name FROM comments AS c LEFT JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
-  $arr = mysql_fetch_array($res);
+  $arr = mysql_fetch_assoc($res);
   if (!$arr)
   	stderr("Error", "Invalid ID.");
 
@@ -140,7 +140,7 @@ elseif ($action == "delete")
 
 
 	$res = mysql_query("SELECT torrent FROM comments WHERE id=$commentid")  or sqlerr(__FILE__,__LINE__);
-	$arr = mysql_fetch_array($res);
+	$arr = mysql_fetch_assoc($res);
 	if ($arr)
 		$torrentid = $arr["torrent"];
 
@@ -167,7 +167,7 @@ elseif ($action == "vieworiginal")
 		stderr("Error", "Invalid ID.");
 
   $res = mysql_query("SELECT c.*, t.name FROM comments AS c LEFT JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
-  $arr = mysql_fetch_array($res);
+  $arr = mysql_fetch_assoc($res);
   if (!$arr)
   	stderr("Error", "Invalid ID $commentid.");
 

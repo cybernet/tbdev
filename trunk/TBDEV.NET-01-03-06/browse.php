@@ -1,4 +1,4 @@
-<?
+<?php
 
 ob_start("ob_gzhandler");
 
@@ -105,7 +105,7 @@ if ($where != "")
 	$where = "WHERE $where";
 
 $res = mysql_query("SELECT COUNT(*) FROM torrents $where") or die(mysql_error());
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_array($res,MYSQL_NUM);
 $count = $row[0];
 
 if (!$count && isset($cleansearchstr)) {
@@ -129,7 +129,7 @@ if (!$count && isset($cleansearchstr)) {
 		if ($where != "")
 			$where = "WHERE $where";
 		$res = mysql_query("SELECT COUNT(*) FROM torrents $where");
-		$row = mysql_fetch_array($res);
+		$row = mysql_fetch_array($res,MYSQL_NUM);
 		$count = $row[0];
 	}
 }

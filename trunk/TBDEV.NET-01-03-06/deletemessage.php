@@ -1,6 +1,6 @@
-<?
+<?php
   require "include/bittorrent.php";
-  $id = $_GET["id"];
+  $id = 0+$_GET["id"];
   if (!is_numeric($id) || $id < 1 || floor($id) != $id)
     die;
 
@@ -12,7 +12,7 @@
   {
   	// make sure message is in CURUSER's Inbox
 	  $res = mysql_query("SELECT receiver, location FROM messages WHERE id=" . sqlesc($id)) or die("barf");
-	  $arr = mysql_fetch_array($res) or die("Bad message ID");
+	  $arr = mysql_fetch_assoc($res) or die("Bad message ID");
 	  if ($arr["receiver"] != $CURUSER["id"])
 	    die("I wouldn't do that if i were you...");
     if ($arr["location"] == 'in')
@@ -26,7 +26,7 @@
   {
    	// make sure message is in CURUSER's Sentbox
 	  $res = mysql_query("SELECT sender, location FROM messages WHERE id=" . sqlesc($id)) or die("barf");
-	  $arr = mysql_fetch_array($res) or die("Bad message ID");
+	  $arr = mysql_fetch_assoc($res) or die("Bad message ID");
 	  if ($arr["sender"] != $CURUSER["id"])
 	    die("I wouldn't do that if i were you...");
     if ($arr["location"] == 'out')

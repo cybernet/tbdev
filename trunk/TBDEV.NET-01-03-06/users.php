@@ -1,4 +1,4 @@
-<?
+<?php
 require "include/bittorrent.php";
 
 dbconn();
@@ -118,7 +118,7 @@ for ($i = 0; $i < $num; ++$i)
     if (mysql_num_rows($cres) == 1)
     {
       $carr = mysql_fetch_assoc($cres);
-      $country = "<td style='padding: 0px' align=center><img src=/pic/flag/$carr[flagpic] alt=\"$carr[name]\"></td>";
+      $country = "<td style='padding: 0px' align=center><img src=\"{$pic_base_url}flag/{$carr[flagpic]}\" alt=\"". htmlspecialchars($carr[name]) ."\"></td>";
     }
   }
   else
@@ -127,7 +127,7 @@ for ($i = 0; $i < $num; ++$i)
     $arr['added'] = '-';
   if ($arr['last_access'] == '0000-00-00 00:00:00')
     $arr['last_access'] = '-';
-  print("<tr><td align=left><a href=userdetails.php?id=$arr[id]><b>$arr[username]</b></a>" .($arr["donated"] > 0 ? "<img src=/pic/star.gif border=0 alt='Donor'>" : "")."</td>" .
+  print("<tr><td align=left><a href=userdetails.php?id=$arr[id]><b>$arr[username]</b></a>" .($arr["donated"] > 0 ? "<img src=\"{$pic_base_url}star.gif\" border=0 alt='Donor'>" : "")."</td>" .
   "<td>$arr[added]</td><td>$arr[last_access]</td>".
     "<td align=left>" . get_user_class_name($arr["class"]) . "</td>$country</tr>\n");
 }

@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 
@@ -13,7 +13,7 @@ function bark($text = "Username or password incorrect")
 }
 
 $res = mysql_query("SELECT id, passhash, secret, enabled FROM users WHERE username = " . sqlesc($username) . " AND status = 'confirmed'");
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_assoc($res);
 
 if (!$row)
 	bark();
@@ -27,8 +27,8 @@ if ($row["enabled"] == "no")
 logincookie($row["id"], $row["passhash"]);
 
 if (!empty($_POST["returnto"]))
-	header("Location: $BASEURL$_POST[returnto]");
+	header("Location: $_POST[returnto]");
 else
-	header("Location: $BASEURL/my.php");
+	header("Location: my.php");
 
 ?>

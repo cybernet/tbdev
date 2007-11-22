@@ -1,4 +1,4 @@
-<?
+<?php
 require "include/bittorrent.php";
 dbconn(false);
 loggedinorreturn();
@@ -68,7 +68,7 @@ else
 	<td class=colhead><a href=\"" . $_SERVER['PHP_SELF'] . "?uporder=peers&amp;catorder=$catorder\" class=colheadlink>Peers</a></td>\n
 	<td class=colhead>Perc.</td>\n
 	</tr>\n");
-	while ($uper = mysql_fetch_array($res))
+	while ($uper = mysql_fetch_assoc($res))
 	{
 		print("<tr><td><a href=userdetails.php?id=".$uper['id']."><b>".$uper['name']."</b></a></td>\n");
 		print("<td " . ($uper['last']?(">".$uper['last']." (".get_elapsed_time(sql_timestamp_to_unix_timestamp($uper['last']))." ago)"):"align=center>---") . "</td>\n");
@@ -106,7 +106,7 @@ else
 	<td class=colhead>Perc.</td>
 	<td class=colhead><a href=\"" . $_SERVER['PHP_SELF'] . "?uporder=$uporder&amp;catorder=peers\" class=colheadlink>Peers</a></td>
 	<td class=colhead>Perc.</td></tr>\n");
-	while ($cat = mysql_fetch_array($res))
+	while ($cat = mysql_fetch_assoc($res))
 	{
 		print("<tr><td class=rowhead>" . $cat['name'] . "</b></a></td>");
 		print("<td " . ($cat['last']?(">".$cat['last']." (".get_elapsed_time(sql_timestamp_to_unix_timestamp($cat['last']))." ago)"):"align = center>---") ."</td>");

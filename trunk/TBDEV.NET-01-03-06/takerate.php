@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 
@@ -23,7 +23,7 @@ if ($rating <= 0 || $rating > 5)
 	bark("invalid rating");
 
 $res = mysql_query("SELECT owner FROM torrents WHERE id = $id");
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_assoc($res);
 if (!$row)
 	bark("no such torrent");
 
