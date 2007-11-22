@@ -69,7 +69,7 @@ if ($action == 'edit')
 	if (mysql_num_rows($res) != 1)
 	  stderr("Error", "No news item with ID.");
 
-	$arr = mysql_fetch_array($res);
+	$arr = mysql_fetch_assoc($res);
 
   if ($_SERVER['REQUEST_METHOD'] == 'POST')
   {
@@ -129,7 +129,7 @@ if (mysql_num_rows($res) > 0)
  	begin_main_frame();
 	begin_frame();
 
-	while ($arr = mysql_fetch_array($res))
+	while ($arr = mysql_fetch_assoc($res))
 	{
 		$newsid = $arr["id"];
 		$body = $arr["body"];
@@ -137,7 +137,7 @@ if (mysql_num_rows($res) > 0)
 	  $added = $arr["added"] . " GMT (" . (get_elapsed_time(sql_timestamp_to_unix_timestamp($arr["added"]))) . " ago)";
 
     $res2 = mysql_query("SELECT username, donor FROM users WHERE id = $userid") or sqlerr(__FILE__, __LINE__);
-    $arr2 = mysql_fetch_array($res2);
+    $arr2 = mysql_fetch_assoc($res2);
 
     $postername = $arr2["username"];
 
@@ -145,7 +145,7 @@ if (mysql_num_rows($res) > 0)
     	$by = "unknown[$userid]";
     else
     	$by = "<a href=userdetails.php?id=$userid><b>$postername</b></a>" .
-    		($arr2["donor"] == "yes" ? "<img src=pic/star.gif alt='Donor'>" : "");
+    		($arr2["donor"] == "yes" ? "<img src=\"{$pic_base_url}star.gif\" alt='Donor'>" : "");
 
 	  print("<p class=sub><table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>");
     print("$added&nbsp;---&nbsp;by&nbsp$by");

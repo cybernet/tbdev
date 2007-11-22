@@ -38,7 +38,7 @@
 	    if (mysql_num_rows($res) > 0)
 	    {
 	      $l = 0;
-	      while ($user = mysql_fetch_array($res))
+	      while ($user = mysql_fetch_assoc($res))
 	      {
 	        unset($new);
 	        $old = $user['modcomment'];
@@ -145,7 +145,7 @@ EOD;
 	      }
       }
    	  if (!$returnto)
-   	  	$returnto = "$BASEURL/inbox.php";
+   	  	$returnto = "inbox.php";
 	  }
 
     if ($returnto)

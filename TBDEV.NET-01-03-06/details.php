@@ -1,4 +1,4 @@
-<?
+<?php
 
 ob_start("ob_gzhandler");
 
@@ -58,7 +58,7 @@ $mod = get_user_class() >= UC_MODERATOR;
                 // user/ip/port
                 // check if anyone has this ip
                 ($unr = mysql_query("SELECT username, privacy FROM users WHERE id=$e[userid] ORDER BY last_access DESC LIMIT 1")) or die;
-                $una = mysql_fetch_array($unr);
+                $una = mysql_fetch_assoc($unr);
 				if ($una["privacy"] == "strong") continue;
 		$s .= "<tr>\n";
                 if ($una["username"])
@@ -106,7 +106,7 @@ if (!isset($id) || !$id)
 
 $res = mysql_query("SELECT torrents.seeders, torrents.banned, torrents.leechers, torrents.info_hash, torrents.filename, LENGTH(torrents.nfo) AS nfosz, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(torrents.last_action) AS lastseed, torrents.numratings, torrents.name, IF(torrents.numratings < $minvotes, NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, torrents.owner, torrents.save_as, torrents.descr, torrents.visible, torrents.size, torrents.added, torrents.views, torrents.hits, torrents.times_completed, torrents.id, torrents.type, torrents.numfiles, categories.name AS cat_name, users.username FROM torrents LEFT JOIN categories ON torrents.category = categories.id LEFT JOIN users ON torrents.owner = users.id WHERE torrents.id = $id")
 	or sqlerr();
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_assoc($res);
 
 $owned = $moderator = 0;
 	if (get_user_class() >= UC_MODERATOR)
@@ -236,7 +236,7 @@ if (get_user_class() >= UC_POWER_USER && $row["nfosz"] > 0)
 			);
 			if (!$owned || $moderator) {
 				$xres = mysql_query("SELECT rating, added FROM ratings WHERE torrent = $id AND user = " . $CURUSER["id"]);
-				$xrow = mysql_fetch_array($xres);
+				$xrow = mysql_fetch_assoc($xres);
 				if ($xrow)
 					$s .= "(you rated this torrent as \"" . $xrow["rating"] . " - " . $ratings[$xrow["rating"]] . "\")";
 				else {
@@ -278,7 +278,7 @@ if (get_user_class() >= UC_POWER_USER && $row["nfosz"] > 0)
 
 				$subres = mysql_query("SELECT * FROM files WHERE torrent = $id ORDER BY id");
 $s.="<tr><td class=colhead>Path</td><td class=colhead align=right>Size</td></tr>\n";
-				while ($subrow = mysql_fetch_array($subres)) {
+				while ($subrow = mysql_fetch_assoc($subres)) {
 					$s .= "<tr><td>" . $subrow["filename"] .
                             "</td><td align=\"right\">" . mksize($subrow["size"]) . "</td></tr>\n";
 				}
@@ -293,7 +293,7 @@ $s.="<tr><td class=colhead>Path</td><td class=colhead align=right>Size</td></tr>
 			$subres = mysql_query("SELECT seeder, COUNT(*) FROM peers WHERE torrent = $id GROUP BY seeder");
 			$resarr = array(yes => 0, no => 0);
 			$sum = 0;
-			while ($subrow = mysql_fetch_array($subres)) {
+			while ($subrow = mysql_fetch_array($subres,MYSQL_NUM)) {
 				$resarr[$subrow[0]] = $subrow[1];
 				$sum += $subrow[1];
 			}
@@ -305,7 +305,7 @@ $s.="<tr><td class=colhead>Path</td><td class=colhead align=right>Size</td></tr>
 			$downloaders = array();
 			$seeders = array();
 			$subres = mysql_query("SELECT seeder, finishedat, downloadoffset, uploadoffset, ip, port, uploaded, downloaded, to_go, UNIX_TIMESTAMP(started) AS st, connectable, agent, UNIX_TIMESTAMP(last_action) AS la, userid FROM peers WHERE torrent = $id") or sqlerr();
-			while ($subrow = mysql_fetch_array($subres)) {
+			while ($subrow = mysql_fetch_assoc($subres)) {
 				if ($subrow["seeder"] == "yes")
 					$seeders[] = $subrow;
 				else
@@ -352,7 +352,7 @@ $s.="<tr><td class=colhead>Path</td><td class=colhead align=right>Size</td></tr>
 	$commentbar = "<p align=center><a class=index href=comment.php?action=add&amp;tid=$id>Add a comment</a></p>\n";
 
 	$subres = mysql_query("SELECT COUNT(*) FROM comments WHERE torrent = $id");
-	$subrow = mysql_fetch_array($subres);
+	$subrow = mysql_fetch_array($subres,MYSQL_NUM);
 	$count = $subrow[0];
 
 	if (!$count) {
@@ -365,7 +365,7 @@ $s.="<tr><td class=colhead>Path</td><td class=colhead align=right>Size</td></tr>
                   "username, title, class, donor FROM comments LEFT JOIN users ON comments.user = users.id WHERE torrent = " .
                   "$id ORDER BY comments.id $limit") or sqlerr(__FILE__, __LINE__);
 		$allrows = array();
-		while ($subrow = mysql_fetch_array($subres))
+		while ($subrow = mysql_fetch_assoc($subres))
 			$allrows[] = $subrow;
 
 		print($commentbar);

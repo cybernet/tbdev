@@ -1,4 +1,4 @@
-<?
+<?php
 require "include/bittorrent.php";
 dbconn();
 stdhead();
@@ -23,7 +23,7 @@ alt="Make payments with PayPal - it's fast, free and secure!" style='margin-top:
 <? begin_main_frame(); begin_frame(); ?>
 <table border=0 cellspacing=0 cellpadding=0><tr valign=top>
 <td class=embedded>
-<img src=pic/flag/sweden.gif style='margin-right: 10px'>
+<img src="<?=$pic_base_url?>flag/sweden.gif" style='margin-right: 10px'>
 </td>
 <td class=embedded>
 E du svensk och inte har något kreditkort? Då kan du sätta in önskat belopp på följande konto:

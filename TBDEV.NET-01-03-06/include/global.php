@@ -343,7 +343,7 @@ function format_quotes($s)
 
 function format_comment($text, $strip_html = true)
 {
-	global $smilies, $privatesmilies;
+	global $smilies, $privatesmilies, $pic_base_url;
 
 	$s = $text;
 
@@ -441,11 +441,11 @@ function format_comment($text, $strip_html = true)
 
 	reset($smilies);
 	while (list($code, $url) = each($smilies))
-		$s = str_replace($code, "<img border=0 src=\"/pic/smilies/$url\" alt=\"" . htmlspecialchars($code) . "\">", $s);
+		$s = str_replace($code, "<img border=0 src=\"{$pic_base_url}smilies/{$url}\" alt=\"" . htmlspecialchars($code) . "\">", $s);
 
 	reset($privatesmilies);
 	while (list($code, $url) = each($privatesmilies))
-		$s = str_replace($code, "<img border=0 src=\"/pic/smilies/$url\">", $s);
+		$s = str_replace($code, "<img border=0 src=\"{$pic_base_url}smilies/{$url}\">", $s);
 
 	return $s;
 }
@@ -554,7 +554,7 @@ function is_valid_id($id)
 
   function insert_smilies_frame()
   {
-    global $smilies, $BASEURL;
+    global $smilies, $BASEURL, $pic_base_url;
 
     begin_frame("Smilies", true);
 
@@ -563,7 +563,7 @@ function is_valid_id($id)
     print("<tr><td class=colhead>Type...</td><td class=colhead>To make a...</td></tr>\n");
 
     while (list($code, $url) = each($smilies))
-      print("<tr><td>$code</td><td><img src=$BASEURL/pic/smilies/$url></td>\n");
+      print("<tr><td>$code</td><td><img src=\"{$pic_base_url}smilies/{$url}></td>\n");
 
     end_table();
 

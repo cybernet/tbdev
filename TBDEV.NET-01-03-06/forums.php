@@ -1,4 +1,4 @@
-<?
+<?php
 	ob_start("ob_gzhandler");
 
   require "include/bittorrent.php";
@@ -126,7 +126,7 @@
 
   function insert_compose_frame($id, $newtopic = true, $quote = false)
   {
-    global $maxsubjectlength, $CURUSER;
+    global $maxsubjectlength, $CURUSER, $pic_base_url;
 
     if ($newtopic)
     {
@@ -168,7 +168,7 @@
 
     if ($quote)
     {
-       $postid = $_GET["postid"];
+       $postid = 0+$_GET["postid"];
        if (!is_valid_id($postid))
          die;
 
@@ -215,13 +215,13 @@
 //	    $avatar = $user["avatar"];
 
         if (!$avatar)
-          $avatar = "/pic/default_avatar.gif";
+          $avatar = "{$pic_base_url}default_avatar.gif";
 
         print("<p class=sub>#" . $post["id"] . " by " . $user["username"] . " at " . $post["added"] . " GMT</p>");
 
         begin_table(true);
 
-        print("<tr valign=top><td width=150 align=center style='padding: 0px'>" . ($avatar ? "<img width=150 src=$avatar>" : "").
+        print("<tr valign=top><td width=150 align=center style='padding: 0px'>" . ($avatar ? "<img width=150 src=\"$avatar\">" : "").
           "</td><td class=comment>" . format_comment($post["body"]) . "</td></tr>\n");
 
         end_table();
@@ -246,7 +246,7 @@
 
   if ($action == "newtopic")
   {
-    $forumid = $_GET["forumid"];
+    $forumid = 0+$_GET["forumid"];
 
     if (!is_valid_id($forumid))
       die;
@@ -363,9 +363,9 @@
 
   if ($action == "viewtopic")
   {
-    $topicid = $_GET["topicid"];
+    $topicid = 0+$_GET["topicid"];
 
-    $page = $_GET["page"];
+    $page = 0+$_GET["page"];
 
     if (!is_valid_id($topicid))
       die;
@@ -523,7 +523,7 @@
 //		if ($arr2["enabled"] == "yes")
 	        $avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($arr2["avatar"]) : "");
 //	    else
-//			$avatar = "/pic/disabled_avatar.gif";
+//			$avatar = "{$pic_base_url}disabled_avatar.gif";
 
         $title = $arr2["title"];
 
@@ -531,12 +531,12 @@
           $title = get_user_class_name($arr2["class"]);
 
         $by = "<a href=userdetails.php?id=$posterid><b>$postername</b></a>" . ($arr2["donor"] == "yes" ? "<img src=".
-        "/pic/star.gif alt='Donor'>" : "") . ($arr2["enabled"] == "no" ? "<img src=".
-        "/pic/disabled.gif alt=\"This account is disabled\" style='margin-left: 2px'>" : ($arr2["warned"] == "yes" ? "<a href=rules.php#warning class=altlink><img src=/pic/warned.gif alt=\"Warned\" border=0></a>" : "")) . " ($title)";
+        "\"{$pic_base_url}star.gif\" alt='Donor'>" : "") . ($arr2["enabled"] == "no" ? "<img src=\"".
+        "\"{$pic_base_url}disabled.gif\" alt=\"This account is disabled\" style='margin-left: 2px'>" : ($arr2["warned"] == "yes" ? "<a href=rules.php#warning class=altlink><img src=\"{$pic_base_url}warned.gif\" alt=\"Warned\" border=0></a>" : "")) . " ($title)";
       }
 
       if (!$avatar)
-        $avatar = "/pic/default_avatar.gif";
+        $avatar = "{$pic_base_url}default_avatar.gif";
 
       print("<a name=$postid>\n");
 
@@ -558,7 +558,7 @@
       if (get_user_class() >= UC_MODERATOR)
         print(" - [<a href=?action=deletepost&postid=$postid><b>Delete</b></a>]");
 
-      print("</td><td class=embedded width=1%><a href=#top><img src=/pic/top.gif border=0 alt='Top'></a></td></tr>");
+      print("</td><td class=embedded width=1%><a href=#top><img src=\"{$pic_base_url}top.gif\" border=0 alt='Top'></a></td></tr>");
 
       print("</table></p>\n");
 
@@ -624,7 +624,7 @@
 
 	    print("</select> <input type=submit value='Okay'></form></td></tr>\n");
 	    print("<tr><td class=embedded>Delete topic</td><td class=embedded>\n");
-	    print("<form method=get action=/forums>\n");
+	    print("<form method=get action=forums>\n");
 	    print("<input type=hidden name=action value=deletetopic>\n");
 	    print("<input type=hidden name=topicid value=$topicid>\n");
 	    print("<input type=hidden name=forumid value=$forumid>\n");
@@ -686,7 +686,7 @@
 
 	if ($action == "quotepost")
 	{
-		$topicid = $_GET["topicid"];
+		$topicid = 0+$_GET["topicid"];
 
 		if (!is_valid_id($topicid))
 			stderr("Error", "Invalid topic ID.");
@@ -708,7 +708,7 @@
 
   if ($action == "reply")
   {
-    $topicid = $_GET["topicid"];
+    $topicid = 0+$_GET["topicid"];
 
     if (!is_valid_id($topicid))
       die;
@@ -730,9 +730,9 @@
 
   if ($action == "movetopic")
   {
-    $forumid = $_POST["forumid"];
+    $forumid = 0+$_POST["forumid"];
 
-    $topicid = $_GET["topicid"];
+    $topicid = 0+$_GET["topicid"];
 
     if (!is_valid_id($forumid) || !is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
       die;
@@ -770,8 +770,8 @@
 
   if ($action == "deletetopic")
   {
-    $topicid = $_GET["topicid"];
-    $forumid = $_GET["forumid"];
+    $topicid = 0+$_GET["topicid"];
+    $forumid = 0+$_GET["forumid"];
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
       die;
@@ -797,7 +797,7 @@
 
   if ($action == "editpost")
   {
-    $postid = $_GET["postid"];
+    $postid = 0+$_GET["postid"];
 
     if (!is_valid_id($postid))
       die;
@@ -870,7 +870,7 @@
 
   if ($action == "deletepost")
   {
-    $postid = $_GET["postid"];
+    $postid = 0+$_GET["postid"];
 
     $sure = $_GET["sure"];
 
@@ -932,9 +932,9 @@
 
   if ($action == "locktopic")
   {
-    $forumid = $_GET["forumid"];
-    $topicid = $_GET["topicid"];
-    $page = $_GET["page"];
+    $forumid = 0+$_GET["forumid"];
+    $topicid = 0+$_GET["topicid"];
+    $page = 0+$_GET["page"];
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
       die;
@@ -950,11 +950,11 @@
 
   if ($action == "unlocktopic")
   {
-    $forumid = $_GET["forumid"];
+    $forumid = 0+$_GET["forumid"];
 
-    $topicid = $_GET["topicid"];
+    $topicid = 0+$_GET["topicid"];
 
-    $page = $_GET["page"];
+    $page = 0+$_GET["page"];
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
       die;
@@ -1033,12 +1033,12 @@
 
   if ($action == "viewforum")
   {
-    $forumid = $_GET["forumid"];
+    $forumid = 0+$_GET["forumid"];
 
     if (!is_valid_id($forumid))
       die;
 
-    $page = $_GET["page"];
+    $page = 0+$_GET["page"];
 
     $userid = $CURUSER["id"];
 
@@ -1185,7 +1185,7 @@
 
         if ($tpages > 1)
         {
-          $topicpages = " (<img src=/pic/multipage.gif>";
+          $topicpages = " (<img src=\"{$pic_base_url}multipage.gif\">";
 
           for ($i = 1; $i <= $tpages; ++$i)
             $topicpages .= " <a href=?action=viewtopic&topicid=$topicid&page=$i>$i</a>";
@@ -1247,7 +1247,7 @@
         encodehtml($topicarr["subject"]) . "</b></a>$topicpages";
 
         print("<tr><td align=left><table border=0 cellspacing=0 cellpadding=0><tr>" .
-        "<td class=embedded style='padding-right: 5px'><img src=/pic/$topicpic.gif>" .
+        "<td class=embedded style='padding-right: 5px'><img src=\"{$pic_base_url}{$topicpic}.gif\">" .
         "</td><td class=embedded align=left>\n" .
         "$subject</td></tr></table></td><td align=right>$replies</td>\n" .
         "<td align=right>$views</td><td align=left>$lpauthor</td>\n" .
@@ -1266,9 +1266,9 @@
 
     print("<p><table class=main border=0 cellspacing=0 cellpadding=0><tr valing=center>\n");
 
-    print("<td class=embedded><img src=/pic/unlockednew.gif style='margin-right: 5px'></td><td class=embedded>New posts</td>\n");
+    print("<td class=embedded><img src=\"{$pic_base_url}unlockednew.gif\" style='margin-right: 5px'></td><td class=embedded>New posts</td>\n");
 
-    print("<td class=embedded><img src=/pic/locked.gif style='margin-left: 10px; margin-right: 5px'>" .
+    print("<td class=embedded><img src=\"{$pic_base_url}locked.gif\" style='margin-left: 10px; margin-right: 5px'>" .
     "</td><td class=embedded>Locked topic</td>\n");
 
     print("</tr></table></p>\n");
@@ -1355,7 +1355,7 @@
       }
 
       print("<tr><td align=left><table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>" .
-      "<img src=/pic/unlockednew.gif style='margin-right: 5px'></td><td class=embedded>" .
+      "<img src=\"{$pic_base_url}unlockednew.gif\" style='margin-right: 5px'></td><td class=embedded>" .
       "<a href=?action=viewtopic&topicid=$topicid&page=last#last><b>" . htmlspecialchars($arr["subject"]) .
       "</b></a></td></tr></table></td><td align=left><a href=?action=viewforum&amp;forumid=$forumid><b>$forumname</b></a></td></tr>\n");
     }
@@ -1400,16 +1400,16 @@ if ($action == "search")
 				if ($page == $i)
 					$pagemenu1 .= "<font class=gray><b>$i</b></font>\n";
 				else
-					$pagemenu1 .= "<a href=\"/forums?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=$i\"><b>$i</b></a>\n";
+					$pagemenu1 .= "<a href=\"forums?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=$i\"><b>$i</b></a>\n";
 			if ($page == 1)
 				$pagemenu2 = "<font class=gray><b>&lt;&lt; Prev</b></font>\n";
 			else
-				$pagemenu2 = "<a href=\"/forums?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=" . ($page - 1) . "\"><b>&lt;&lt; Prev</b></a>\n";
+				$pagemenu2 = "<a href=\"forums?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=" . ($page - 1) . "\"><b>&lt;&lt; Prev</b></a>\n";
 			$pagemenu2 .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
 			if ($page == $pages)
 				$pagemenu2 .= "<font class=gray><b>Next &gt;&gt;</b></font>\n";
 			else
-				$pagemenu2 .= "<a href=\"/forums?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=" . ($page + 1) . "\"><b>Next &gt;&gt;</b></a>\n";
+				$pagemenu2 .= "<a href=\"forums?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=" . ($page + 1) . "\"><b>Next &gt;&gt;</b></a>\n";
 			$offset = ($page * $perpage) - $perpage;
 			$res = mysql_query("SELECT id, topicid,userid,added FROM posts WHERE MATCH (body) AGAINST ($ekeywords) LIMIT $offset,$perpage") or sqlerr(__FILE__, __LINE__);
 			$num = mysql_num_rows($res);
@@ -1443,7 +1443,7 @@ if ($action == "search")
 			print("<p><b>Search again</b></p>\n");
 		}
 	}
-	print("<form method=get action=/forums?>\n");
+	print("<form method=get action=forums?>\n");
 	print("<input type=hidden name=action value=search>\n");
 	print("<table border=1 cellspacing=0 cellpadding=5>\n");
 	print("<tr><td class=rowhead>Key words</td><td align=left><input type=text size=55 name=keywords value=\"" . htmlspecialchars($keywords) .
@@ -1556,7 +1556,7 @@ if ($action == "search")
       $img = "unlocked";
     }
     print("<tr><td align=left><table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded style='padding-right: 5px'><img src=".
-    "/pic/$img.gif></td><td class=embedded><a href=?action=viewforum&forumid=$forumid><b>$forumname</b></a><br>\n" .
+    "\"{$pic_base_url}$img.gif\"></td><td class=embedded><a href=?action=viewforum&forumid=$forumid><b>$forumname</b></a><br>\n" .
     "$forumdescription</td></tr></table></td><td align=right>$topiccount</td></td><td align=right>$postcount</td>" .
     "<td align=left>$lastpost</td></tr>\n");
   }

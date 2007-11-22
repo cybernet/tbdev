@@ -1,4 +1,4 @@
-<?
+<?php
 
 require_once("include/bittorrent.php");
 
@@ -17,7 +17,7 @@ elseif ($type == "sysop") {
 		stdhead("Sysop Account activation");
 		print("<h1>Sysop Account successfully activated!</h1>\n");
 	if (isset($CURUSER))
-		print("<p>Your account has been activated! You have been automatically logged in. You can now continue to the <a href=\"/\"><b>main page</b></a> and start using your account.</p>\n");
+		print("<p>Your account has been activated! You have been automatically logged in. You can now continue to the <a href=\"index.php\"><b>main page</b></a> and start using your account.</p>\n");
 	else
 		print("<p>Your account has been activated! However, it appears that you could not be logged in automatically. A possible reason is that you disabled cookies in your browser. You have to enable cookies to use your account. Please do that and then <a href=\"login.php\">log in</a> and try again.</p>\n");
 	stdfoot();
