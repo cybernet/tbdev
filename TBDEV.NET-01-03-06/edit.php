@@ -22,7 +22,7 @@ stdhead("Edit torrent \"" . $row["name"] . "\"");
 
 if (!isset($CURUSER) || ($CURUSER["id"] != $row["owner"] && get_user_class() < UC_MODERATOR)) {
 	print("<h1>Can't edit this torrent</h1>\n");
-	print("<p>You're not the rightful owner, or you're not <a href=\"login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]) . "&amp;nowarn=1\">logged in</a> properly.</p>\n");
+	print("<p>You're not the rightful owner, or you're not <a href=\"login.php?returnto=" . urlencode(substr($_SERVER["REQUEST_URI"],1)) . "&amp;nowarn=1\">logged in</a> properly.</p>\n");
 }
 else {
 	print("<form method=post action=takeedit.php enctype=multipart/form-data>\n");

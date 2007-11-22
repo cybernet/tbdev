@@ -114,7 +114,7 @@ else
   $forumposts = $arr3[0];
 
 //if ($user['donated'] > 0)
-//  $don = "<img src={$pic_base_url}starbig.gif>";
+//  $don = "<img src=\"{$pic_base_url}starbig.gif\">";
 
 $res = mysql_query("SELECT name,flagpic FROM countries WHERE id=$user[country] LIMIT 1") or sqlerr();
 if (mysql_num_rows($res) == 1)

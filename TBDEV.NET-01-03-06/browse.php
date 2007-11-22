@@ -184,7 +184,7 @@ foreach ($cats as $cat)
 	$i++;
 }
 
-$alllink = "<div align=left>(<a href=browse.php?all=1><b>Show all</b></a>)</div>";
+$alllink = "<div align=left>(<a href=\"browse.php?all=1\"><b>Show all</b></a>)</div>";
 
 $ncats = count($cats);
 $nrows = ceil($ncats/$catsperrow);

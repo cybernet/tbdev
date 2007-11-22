@@ -56,8 +56,8 @@ else
   	$a2 = mysql_fetch_assoc($r2);
 	$arr["first"] = long2ip($arr["first"]);
 	$arr["last"] = long2ip($arr["last"]);
- 	  print("<tr><td>$arr[added]</td><td align=left>$arr[first]</td><td align=left>$arr[last]</td><td align=left><a href=userdetails.php?id=$arr[addedby]>$a2[username]".
- 	    "</a></td><td align=left>$arr[comment]</td><td><a href=bans.php?remove=$arr[id]>Remove</a></td></tr>\n");
+ 	  print("<tr><td>$arr[added]</td><td align=left>$arr[first]</td><td align=left>{$arr['last']}</td><td align=left><a href=\"userdetails.php?id={$arr['addedby']}\">{$a2['username']}".
+ 	    "</a></td><td align=left>$arr[comment]</td><td><a href=\"bans.php?remove={$arr['id']}\">Remove</a></td></tr>\n");
   }
   print("</table>\n");
 }
