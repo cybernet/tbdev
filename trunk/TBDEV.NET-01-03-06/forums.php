@@ -531,7 +531,7 @@
           $title = get_user_class_name($arr2["class"]);
 
         $by = "<a href=userdetails.php?id=$posterid><b>$postername</b></a>" . ($arr2["donor"] == "yes" ? "<img src=".
-        "\"{$pic_base_url}star.gif\" alt='Donor'>" : "") . ($arr2["enabled"] == "no" ? "<img src=\"".
+        "\"{$pic_base_url}star.gif\" alt='Donor'>" : "") . ($arr2["enabled"] == "no" ? "<img src=".
         "\"{$pic_base_url}disabled.gif\" alt=\"This account is disabled\" style='margin-left: 2px'>" : ($arr2["warned"] == "yes" ? "<a href=rules.php#warning class=altlink><img src=\"{$pic_base_url}warned.gif\" alt=\"Warned\" border=0></a>" : "")) . " ($title)";
       }
 
@@ -578,7 +578,7 @@
 
 
       print("<tr valign=top><td width=150 align=center style='padding: 0px'>" .
-        ($avatar ? "<img width=150 src=\"$avatar\">" : ""). "</td><td class=comment>$body</td></tr>\n");
+        ($avatar ? "<img width=150 src=\"{$avatar}\">" : ""). "</td><td class=comment>$body</td></tr>\n");
 
       end_table();
     }

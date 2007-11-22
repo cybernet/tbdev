@@ -91,8 +91,8 @@ if ($action == 'delete')
 
 stdhead("Personal lists for " . $user['username']);
 
-if ($user["donor"] == "yes") $donor = "<td class=embedded><img src={$pic_base_url}starbig.gif alt='Donor' style='margin-left: 4pt'></td>";
-if ($user["warned"] == "yes") $warned = "<td class=embedded><img src={$pic_base_url}warnedbig.gif alt='Warned' style='margin-left: 4pt'></td>";
+if ($user["donor"] == "yes") $donor = "<td class=embedded><img src=\"{$pic_base_url}starbig.gif\" alt='Donor' style='margin-left: 4pt'></td>";
+if ($user["warned"] == "yes") $warned = "<td class=embedded><img src=\"{$pic_base_url}warnedbig.gif\" alt='Warned' style='margin-left: 4pt'></td>";
 
 print("<p><table class=main border=0 cellspacing=0 cellpadding=0>".
 "<tr><td class=embedded><h1 style='margin:0px'><font color=red> - BETA - </font></h1></td></tr></table></p>\n");
@@ -118,11 +118,11 @@ else
     $title = $friend["title"];
 		if (!$title)
 	    $title = get_user_class_name($friend["class"]);
-    $body1 = "<a href=userdetails.php?id=" . $friend['id'] . "><b>" . $friend['name'] . "</b></a>" .
+    $body1 = "<a href=userdetails.php?id={$friend['id']}><b>{$friend['name']}</b></a>" .
     	get_user_icons($friend) . " ($title)<br><br>last seen on " . $friend['last_access'] .
     	"<br>(" . get_elapsed_time(sql_timestamp_to_unix_timestamp($friend[last_access])) . " ago)";
 		$body2 = "<br><a href=friends.php?id=$userid&action=delete&type=friend&targetid=" . $friend['id'] . ">Remove</a>" .
-			"<br><br><a href=sendmessage.php?receiver=" . $friend['id'] . ">Send PM</a>";
+			"<br><br><a href=sendmessage.php?receiver={$friend['id']}>Send PM</a>";
     $avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($friend["avatar"]) : "");
 		if (!$avatar)
 			$avatar = "{$pic_base_url}default_avatar.gif";
@@ -162,7 +162,7 @@ else
 		if ($i % 6 == 0)
 			$blocks .= "<tr>";
     	$blocks .= "<td style='border: none; padding: 4px; spacing: 0px;'>[<font class=small><a href=friends.php?id=$userid&action=delete&type=block&targetid=" .
-				$block['id'] . ">D</a></font>] <a href=userdetails.php?id=" . $block['id'] . "><b>" . $block['name'] . "</b></a>" .
+				$block['id'] . ">D</a></font>] <a href=userdetails.php?id={$block['id']}><b>{$block['name']}</b></a>" .
 				get_user_icons($block) . "</td>";
 		if ($i % 6 == 5)
 			$blocks .= "</tr>";

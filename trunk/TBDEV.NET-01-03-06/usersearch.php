@@ -829,7 +829,7 @@ if (count($_GET) > 0 && !$_GET['h'])
     	  if ($array[0] == 0)
       		$ipstr = $user['ip'];
 	  	  else
-	      	$ipstr = "<a href='/testip.php?ip=" . $user['ip'] . "'><font color='#FF0000'><b>" . $user['ip'] . "</b></font></a>";
+	      	$ipstr = "<a href='testip.php?ip=" . $user['ip'] . "'><font color='#FF0000'><b>" . $user['ip'] . "</b></font></a>";
 			}
 			else
       	$ipstr = "---";

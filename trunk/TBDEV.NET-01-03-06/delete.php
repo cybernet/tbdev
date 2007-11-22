@@ -63,9 +63,9 @@ write_log("Torrent $id ($row[name]) was deleted by $CURUSER[username] ($reasonst
 stdhead("Torrent deleted!");
 
 if (isset($_POST["returnto"]))
-	$ret = "<a href=\"" . htmlspecialchars($_POST["returnto"]) . "\">Go back to whence you came</a>";
+	$ret = "<a href=\"" . htmlspecialchars("{$BASEURL}/{$_POST['returnto']}") . "\">Go back to whence you came</a>";
 else
-	$ret = "<a href=\"./\">Back to index</a>";
+	$ret = "<a href=\"index.php\">Back to index</a>";
 
 ?>
 <h2>Torrent deleted!</h2>

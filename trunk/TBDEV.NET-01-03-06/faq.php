@@ -686,7 +686,7 @@ if ($CURUSER)
 	  else $wait = 0;
 	}
 
- 	print("In <a class=altlink href=userdetails.php?id=" . $CURUSER['id'] . ">your</a> particular case, ");
+ 	print("In <a class=altlink href=userdetails.php?id={$CURUSER['id']}>your</a> particular case, ");
 
 	if (isset($wait))
 	{

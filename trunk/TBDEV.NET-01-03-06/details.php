@@ -62,7 +62,7 @@ $mod = get_user_class() >= UC_MODERATOR;
 				if ($una["privacy"] == "strong") continue;
 		$s .= "<tr>\n";
                 if ($una["username"])
-                  $s .= "<td><a href=userdetails.php?id=$e[userid]><b>$una[username]</b></a></td>\n";
+                  $s .= "<td><a href=\"userdetails.php?id=$e[userid]><b>$una[username]\"</b></a></td>\n";
                 else
                   $s .= "<td>" . ($mod ? $e["ip"] : preg_replace('/\.\d+$/', ".xxx", $e["ip"])) . "</td>\n";
 		$secs = max(1, ($now - $e["st"]) - ($now - $e["la"]));
@@ -150,7 +150,7 @@ else {
 		elseif ($_GET["edited"]) {
 			print("<h2>Successfully edited!</h2>\n");
 			if (isset($_GET["returnto"]))
-				print("<p><b>Go back to <a href=\"" . htmlspecialchars($_GET["returnto"]) . "\">whence you came</a>.</b></p>\n");
+				print("<p><b>Go back to <a href=\"" . htmlspecialchars("{$BASEURL}/{$_GET['returnto']}") . "\">whence you came</a>.</b></p>\n");
 		}
 		elseif (isset($_GET["searched"])) {
 			print("<h2>Your search for \"" . htmlspecialchars($_GET["searched"]) . "\" gave a single result:</h2>\n");
@@ -225,7 +225,7 @@ if (get_user_class() >= UC_POWER_USER && $row["nfosz"] > 0)
 		$s .= "\n";
 		$s .= "</td><td class=embedded>$spacer</td><td valign=\"top\" class=embedded>";
 		if (!isset($CURUSER))
-			$s .= "(<a href=\"login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]) . "&amp;nowarn=1\">Log in</a> to rate it)";
+			$s .= "(<a href=\"login.php?returnto=" . urlencode(substr($_SERVER["REQUEST_URI"],1)) . "&amp;nowarn=1\">Log in</a> to rate it)";
 		else {
 			$ratings = array(
 					5 => "Kewl!",

@@ -8,8 +8,8 @@
 	  stdhead("Sentbox", false);
 		print("<table class=main width=750 border=0 cellspacing=0 cellpadding=10><tr><td class=embedded>\n");
   	print("<h1 align=center>Sentbox</h1>\n");
-   	print("<div align=center>(<a href=" . $_SERVER['PHP_SELF'] . ">Inbox</a>)</div>\n");
-	  $res = mysql_query("SELECT * FROM messages WHERE sender=" . $CURUSER["id"] . " AND location IN ('out','both') ORDER BY added DESC") or die("barf!");
+   	print("<div align=center>(<a href={$_SERVER['PHP_SELF']}>Inbox</a>)</div>\n");
+	  $res = mysql_query("SELECT * FROM messages WHERE sender={$CURUSER['id']} AND location IN ('out','both') ORDER BY added DESC") or die("barf!");
 	  if (mysql_num_rows($res) == 0)
       stdmsg("Information","Your Sentbox is empty!");
 	  else
@@ -17,17 +17,17 @@
 	  {
  	  	$res2 = mysql_query("SELECT username FROM users WHERE id=" . $arr["receiver"]) or sqlerr();
 	    $arr2 = mysql_fetch_assoc($res2);
-	    $receiver = "<a href=userdetails.php?id=" . $arr["receiver"] . ">" . $arr2["username"] . "</a>";
+	    $receiver = "<a href=userdetails.php?id={$arr['receiver']}>{$arr2['username']}</a>";
 	  	$elapsed = get_elapsed_time(sql_timestamp_to_unix_timestamp($arr["added"]));
 	    print("<p><table width=100% border=1 cellspacing=0 cellpadding=10><tr><td class=text>\n");
-	    print("To <b>$receiver</b> at\n" . $arr["added"] . " ($elapsed ago) GMT\n");
+	    print("To <b>$receiver</b> at\n{$arr['added']} ($elapsed ago) GMT\n");
       if (get_user_class() >= UC_MODERATOR && $arr["unread"] == "yes")
 	    	print("<b>(<font color=red>Unread!</font>)</b>");
 	    print("<p><table class=main width=100% border=1 cellspacing=0 cellpadding=10><tr><td class=text>\n");
 	    print(format_comment($arr["msg"]));
 	    print("</td></tr></table></p>\n<p>");
 	    print("<table width=100%  border=0><tr><td class=embedded>\n");
-			print("<a href=deletemessage.php?id=" . $arr["id"] . "&type=out><b>Delete</b></a></td>\n");
+			print("<a href=deletemessage.php?id={$arr['id']}&type=out><b>Delete</b></a></td>\n");
 	    print("</tr></table></tr></table></p>\n");
 	  }
   }
@@ -47,7 +47,7 @@
 	      {
 	        $res2 = mysql_query("SELECT username FROM users WHERE id=" . $arr["sender"]) or sqlerr();
 	        $arr2 = mysql_fetch_assoc($res2);
-	        $sender = "<a href=userdetails.php?id=" . $arr["sender"] . ">" . ($arr2["username"]?$arr2["username"]:"[Deleted]") . "</a>";
+	        $sender = "<a href=userdetails.php?id={$arr['sender']}>" . ($arr2["username"]?$arr2["username"]:"[Deleted]") . "</a>";
 	      }
 	      else
 	        $sender = "System";
@@ -63,9 +63,9 @@
 	      print(format_comment($arr["msg"]));
 	      print("</td></tr></table></p>\n<p>");
 	      print("<table width=100%  border=0><tr><td class=embedded>\n");
-	      print(($arr["sender"] ? "<a href=sendmessage.php?receiver=" . $arr["sender"] . "&replyto=" . $arr["id"] .
+	      print(($arr["sender"] ? "<a href=sendmessage.php?receiver={$arr['sender']}&replyto={$arr['id']}" .
 	        "><b>Reply</b></a>" : "<font class=gray><b>Reply</b></font>") .
-	        " | <a href=deletemessage.php?id=" . $arr["id"] . "&type=in><b>Delete</b></a></td>\n");
+	        " | <a href=deletemessage.php?id={$arr['id']}&type=in><b>Delete</b></a></td>\n");
 				/*
 	      if (get_user_class() >= UC_MODERATOR)
 	      {
