@@ -3,11 +3,13 @@
 require_once("include/bittorrent.php");
 require_once("include/benc.php");
 
+loggedinorreturn();
+
 
 if(!ENA_ALTANNOUNCE && isset($_GET['id']))
 {
 	$matches[1]=0+$_GET['id'];
-	$matches[0]=$_GET['name'];
+	$matches[2]=$_GET['name'];
 } elseif (!preg_match(':^/(\d{1,10})/(.+)\.torrent$:', $_SERVER["PATH_INFO"], $matches))
 	httperr();
 
@@ -27,15 +29,24 @@ if (!$row || !is_file($fn) || !is_readable($fn))
 mysql_query("UPDATE torrents SET hits = hits + 1 WHERE id = $id");
 
 
-header("Content-Type: application/x-bittorrent");
-
 $dict = bdec_file($fn, filesize($fn));
 if(ENA_PASSKEY) 
 	verify_passkey($CURUSER['passkey']);
-$dict['announce']['value'] = "$BASEURL/". (ENA_ALTANNOUNCE? 
+$dict['value']['announce']=bdec(benc_str(  "$BASEURL/". (ENA_ALTANNOUNCE? 
 	("tracker.php/". (ENA_PASSKEY?"{$CURUSER['passkey']}/":'') . "announce"):
-	("announce.php". (ENA_PASSKEY?"?{$CURUSER['passkey']}":'')));
+	("announce.php". (ENA_PASSKEY?"?passkey={$CURUSER['passkey']}":'')))));
+	
+$dict = benc(bdec(benc($dict)));
 
-print benc($dict);
+header("Pragma: public"); // required
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+header("Cache-Control: private",false); // required for certain browsers
+header("Content-Transfer-Encoding: binary");
+header("Content-Length: " . strlen($dict));
+header("Content-Type: application/x-bittorrent");
+header("Content-Disposition: attachment; filename=\"{$matches[2]}\";" );
+
+print $dict;
 
 ?>
