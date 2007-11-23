@@ -10,8 +10,12 @@ if(!ENA_ALTANNOUNCE && isset($_GET['id']))
 {
 	$matches[1]=0+$_GET['id'];
 	$matches[2]=$_GET['name'];
-} elseif (!preg_match(':^/(\d{1,10})/(.+)\.torrent$:', $_SERVER["PATH_INFO"], $matches))
+} else {
+	if(!isset($_SERVER['PATH_INFO']))
+		$_SERVER['PATH_INFO']=(isset($_SERVER['ORIG_PATH_INFO']))?$_SERVER['ORIG_PATH_INFO']:$_SERVER['REQUEST_URI'];
+	if (!preg_match(':^/(\d{1,10})/(.+)\.torrent$:', $_SERVER["PATH_INFO"], $matches))
 	httperr();
+}
 
 $id = 0 + $matches[1];
 if (!$id)
