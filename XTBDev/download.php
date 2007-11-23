@@ -33,8 +33,8 @@ $dict = bdec_file($fn, filesize($fn));
 if(ENA_PASSKEY) 
 	verify_passkey($CURUSER['passkey']);
 $dict['announce']['value'] = "$BASEURL/". (ENA_ALTANNOUNCE? 
-	("tracker.php/". (ENA_PASSKEY?"$CURUSER[passkey]/":'') . "announce"):
-	("announce.php". (ENA_PASSKEY?"?$CURUSER[passkey]":'')));
+	("tracker.php/". (ENA_PASSKEY?"{$CURUSER['passkey']}/":'') . "announce"):
+	("announce.php". (ENA_PASSKEY?"?{$CURUSER['passkey']}":'')));
 
 print benc($dict);
 
