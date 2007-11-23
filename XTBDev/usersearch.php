@@ -814,7 +814,7 @@ if (count($_GET) > 0 && !$_GET['h'])
         "<td class=colhead>pUL</td>".
         "<td class=colhead>pDL</td>".
         "<td class=colhead>History</td></tr>";
-    while ($user = mysql_fetch_array($res))
+    while ($user = mysql_fetch_assoc($res))
     {
     	if ($user['added'] == '0000-00-00 00:00:00')
       	$user['added'] = '---';
@@ -835,7 +835,7 @@ if (count($_GET) > 0 && !$_GET['h'])
       	$ipstr = "---";
 
       $auxres = mysql_query("SELECT SUM(uploaded) AS pul, SUM(downloaded) AS pdl FROM peers WHERE userid = " . $user['id']) or sqlerr(__FILE__, __LINE__);
-      $array = mysql_fetch_array($auxres);
+      $array = mysql_fetch_assoc($auxres);
 
       $pul = $array['pul'];
       $pdl = $array['pdl'];

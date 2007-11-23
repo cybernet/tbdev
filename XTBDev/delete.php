@@ -22,7 +22,7 @@ if (!$id)
 loggedinorreturn();
 
 $res = mysql_query("SELECT name,owner,seeders FROM torrents WHERE id = $id");
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_assoc($res);
 if (!$row)
 	die();
 

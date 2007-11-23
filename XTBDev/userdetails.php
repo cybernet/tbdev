@@ -32,7 +32,7 @@ function maketable($res)
         $ratio = "Inf.";
       else
         $ratio = "---";
-	$catimage = "{$pic_base_url}{$arr[image]);
+	$catimage = "{$pic_base_url}{$arr['image']}";
 	$catname = htmlspecialchars($arr["catname"]);
 	$catimage=((is_file($catimage) && is_readable($catimage))?
 		"<img src=\"".htmlspecialchars($catimage) ."\" alt=\"$catname\" width=42 height=42>":
@@ -59,7 +59,7 @@ if (!is_valid_id($id))
   bark("Bad ID $id.");
 
 $r = @mysql_query("SELECT * FROM users WHERE id=$id") or sqlerr();
-$user = mysql_fetch_array($r) or bark("No user with ID $id.");
+$user = mysql_fetch_assoc($r) or bark("No user with ID $id.");
 if ($user["status"] == "pending") die;
 $r = mysql_query("SELECT id, name, seeders, leechers, category FROM torrents WHERE owner=$id ORDER BY name") or sqlerr();
 if (mysql_num_rows($r) > 0)
@@ -70,7 +70,7 @@ if (mysql_num_rows($r) > 0)
   {
 		$r2 = mysql_query("SELECT name, image FROM categories WHERE id=$a[category]") or sqlerr(__FILE__, __LINE__);
 		$a2 = mysql_fetch_assoc($r2);
-		$cat = "<img src=\"{$pic_base_url}{$a2[image]}\" alt=\"$a2[name]\">";
+		$cat = "<img src=\"". htmlspecialchars("{$pic_base_url}{$a2['image']}") ."\" alt=\"$a2[name]\">";
       $torrents .= "<tr><td style='padding: 0px'>$cat</td><td><a href=details.php?id=" . $a["id"] . "&hit=1><b>" . htmlspecialchars($a["name"]) . "</b></a></td>" .
         "<td align=right>$a[seeders]</td><td align=right>$a[leechers]</td></tr>\n";
   }
@@ -240,15 +240,15 @@ if ($showpmbutton)
 
 print("</table>\n");
 
-if ((get_user_class() == UC_SYSOP) || (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()))
+if (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class())
 {
   begin_frame("Edit User", true);
-  print("<form method=post action=modtask.php>\n");
-  print("<input type=hidden name='action' value='edituser'>\n");
-  print("<input type=hidden name='userid' value='$id'>\n");
-  print("<input type=hidden name='returnto' value='userdetails.php?id=$id'>\n");
-  print("<table class=main border=1 cellspacing=0 cellpadding=5>\n");
-  print("<tr><td class=rowhead>Title</td><td colspan=2 align=left><input type=text size=60 name=title value=\"" . htmlspecialchars($user[title]) . "\"></tr>\n");
+	echo ("<form method=post action=modtask.php>\n");
+	echo ("<input type=hidden name='action' value='edituser'>\n");
+	echo ("<input type=hidden name='userid' value='$id'>\n");
+	echo ("<input type=hidden name='returnto' value='userdetails.php?id=$id'>\n");
+	echo ("<table class='main' border='1' cellspacing='0' cellpadding='5'>\n");
+	echo ("<tr><td class=rowhead>Title</td><td colspan=2 align=left><input type=text size=60 name=title value=\"" . htmlspecialchars($user[title]) . "\"></tr>\n");
 	$avatar = htmlspecialchars($user["avatar"]);
   print("<tr><td class=rowhead>Avatar&nbsp;URL</td><td colspan=2 align=left><input type=text size=60 name=avatar value=\"$avatar\"></tr>\n");
 	// we do not want mods to be able to change user classes or amount donated...
@@ -268,7 +268,7 @@ if ((get_user_class() == UC_SYSOP) || (get_user_class() >= UC_MODERATOR && $user
 	  for ($i = 0; $i <= $maxclass; ++$i)
 	    print("<option value=$i" . ($user["class"] == $i ? " selected" : "") . ">$prefix" . get_user_class_name($i) . "\n");
 	  print("</select></td></tr>\n");
-		print("<tr><td class=rowhead>Passkey</td><td colspan=2 align=left><input name=resetkey value=1 type=checkbox> Reset passkey</td></tr>n");
+	  print("<tr><td class=rowhead>Passkey</td><td colspan=2 align=left><input name=resetkey value=1 type=checkbox> Reset passkey</td></tr>n");
 	}
 
 	$modcomment = htmlspecialchars($user["modcomment"]);

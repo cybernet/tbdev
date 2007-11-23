@@ -44,18 +44,18 @@ else
 /***********************
 
 $res = mysql_query("SELECT COUNT(*) FROM ratings WHERE user=" . $CURUSER["id"]);
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_array($res,MYSQL_NUM);
 tr("Ratings submitted", $row[0]);
 
 $res = mysql_query("SELECT COUNT(*) FROM comments WHERE user=" . $CURUSER["id"]);
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_array($res,MYSQL_NUM);
 tr("Written comments", $row[0]);
 
 ****************/
 
 $ss_r = mysql_query("SELECT * from stylesheets") or die;
 $ss_sa = array();
-while ($ss_a = mysql_fetch_array($ss_r))
+while ($ss_a = mysql_fetch_assoc($ss_r))
 {
   $ss_id = $ss_a["id"];
   $ss_name = $ss_a["name"];
@@ -71,7 +71,7 @@ while (list($ss_name, $ss_id) = each($ss_sa))
 
 $countries = "<option value=0>---- None selected ----</option>\n";
 $ct_r = mysql_query("SELECT id,name FROM countries ORDER BY name") or die;
-while ($ct_a = mysql_fetch_array($ct_r))
+while ($ct_a = mysql_fetch_assoc($ct_r))
   $countries .= "<option value=$ct_a[id]" . ($CURUSER["country"] == $ct_a['id'] ? " selected" : "") . ">$ct_a[name]</option>\n";
 
 function format_tz($a)

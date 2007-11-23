@@ -1,5 +1,5 @@
 <?php
-require "include/bittorrent.php";
+require_once "include/bittorrent.php";
 
 loggedinorreturn();
 if (get_user_class() < UC_ADMINISTRATOR)
@@ -10,12 +10,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		stderr("Error", "Missing form data.");
 	if ($_POST["password"] != $_POST["password2"])
 		stderr("Error", "Passwords mismatch.");
+	if (!is_valid_email($_POST['email']))
+		stderr("Error", "Not valid email");
+	
 	$username = sqlesc($_POST["username"]);
 	$password = $_POST["password"];
 	$email = sqlesc($_POST["email"]);
 	$secret = mksecret();
 	$passhash = sqlesc(md5($secret . $password . $secret));
-  $secret = sqlesc($secret);
+	$secret = sqlesc($secret);
 
 	mysql_query("INSERT INTO users (added, last_access, secret, username, passhash, status, email) VALUES(NOW(), NOW(), $secret, $username, $passhash, 'confirmed', $email)") or sqlerr(__FILE__, __LINE__);
 	$res = mysql_query("SELECT id FROM users WHERE username=$username");
@@ -28,6 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 stdhead("Add user");
 ?>
 <h1>Add user</h1>
+<br />
 <form method=post action=adduser.php>
 <table border=1 cellspacing=0 cellpadding=5>
 <tr><td class=rowhead>User name</td><td><input type=text name=username size=40></td></tr>

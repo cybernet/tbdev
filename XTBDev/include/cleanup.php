@@ -11,7 +11,7 @@ function docleanup() {
 	do {
 		$res = mysql_query("SELECT id FROM torrents");
 		$ar = array();
-		while ($row = mysql_fetch_array($res)) {
+		while ($row = mysql_fetch_array($res,MYSQL_NUM)) {
 			$id = $row[0];
 			$ar[$id] = 1;
 		}
@@ -51,7 +51,7 @@ function docleanup() {
 
 		$res = mysql_query("SELECT torrent FROM peers GROUP BY torrent");
 		$delids = array();
-		while ($row = mysql_fetch_array($res)) {
+		while ($row = mysql_fetch_array($res,MYSQL_NUM)) {
 			$id = $row[0];
 			if (isset($ar[$id]) && $ar[$id])
 				continue;
@@ -62,7 +62,7 @@ function docleanup() {
 
 		$res = mysql_query("SELECT torrent FROM files GROUP BY torrent");
 		$delids = array();
-		while ($row = mysql_fetch_array($res)) {
+		while ($row = mysql_fetch_array($res,MYSQL_NUM)) {
 			$id = $row[0];
 			if ($ar[$id])
 				continue;

@@ -10,7 +10,7 @@ stdhead($CURUSER["username"] . "'s torrents");
 
 $where = "WHERE owner = " . $CURUSER["id"] . " AND banned != 'yes'";
 $res = mysql_query("SELECT COUNT(*) FROM torrents $where");
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_array($res,MYSQL_NUM);
 $count = $row[0];
 
 if (!$count) {

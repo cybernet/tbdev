@@ -95,7 +95,7 @@ $res = mysql_query("SELECT * FROM news WHERE ADDDATE(added, INTERVAL 45 DAY) > N
 if (mysql_num_rows($res) > 0)
 {
 	print("<table width=100% border=1 cellspacing=0 cellpadding=10><tr><td class=text>\n<ul>");
-	while($array = mysql_fetch_array($res))
+	while($array = mysql_fetch_assoc($res))
 	{
 	  print("<li>" . gmdate("Y-m-d",strtotime($array['added'])) . " - " . $array['body']);
     if (get_user_class() >= UC_ADMINISTRATOR)
