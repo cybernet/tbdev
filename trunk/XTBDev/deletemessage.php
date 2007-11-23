@@ -17,7 +17,7 @@
 	    die("I wouldn't do that if i were you...");
     if ($arr["location"] == 'in')
 	  	mysql_query("DELETE FROM messages WHERE id=" . sqlesc($id)) or die('delete failed (error code 1).. this should never happen, contact an admin.');
-    else if ($arr["location"] == 'both')
+    elseif ($arr["location"] == 'both')
 			mysql_query("UPDATE messages SET location = 'out' WHERE id=" . sqlesc($id)) or die('delete failed (error code 2).. this should never happen, contact an admin.');
     else
     	die('The message is not in your Inbox.');
@@ -31,7 +31,7 @@
 	    die("I wouldn't do that if i were you...");
     if ($arr["location"] == 'out')
 	  	mysql_query("DELETE FROM messages WHERE id=" . sqlesc($id)) or die('delete failed (error code 3).. this should never happen, contact an admin.');
-    else if ($arr["location"] == 'both')
+    elseif ($arr["location"] == 'both')
 			mysql_query("UPDATE messages SET location = 'in' WHERE id=" . sqlesc($id)) or die('delete failed (error code 4).. this should never happen, contact an admin.');
     else
     	die('The message is not in your Sentbox.');

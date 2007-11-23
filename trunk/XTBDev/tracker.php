@@ -5,6 +5,8 @@
     print('<h1>Not Found</h1>\n');
     exit();
 	}
+	if(!isset($_SERVER['PATH_INFO']))
+		$_SERVER['PATH_INFO']=(isset($_SERVER['ORIG_PATH_INFO']))?$_SERVER['ORIG_PATH_INFO']:$_SERVER['REQUEST_URI'];
 	
 	if(ENA_PASSKEY)
 			$_GET['passkey']=$matches[1];

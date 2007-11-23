@@ -2,9 +2,15 @@
 define ('ConfigFN','include/config.php');
 define ('TBVERSION','XTBDev 0.10 Beta');
 
+if(file_exists(ConfigFN)) include_once(ConfigFN);
+else {
+	$pic_base_url='pic/';
+	$SITENAME='XTBDev';
+}
 require_once('include/global.php');
 
 function stdhead($title = "") {
+	global $SITENAME,$pic_base_url;
     header("Content-Type: text/html; charset=iso-8859-1");
     //header("Pragma: No-cache");
     if ($title == "")
@@ -22,19 +28,6 @@ function stdhead($title = "") {
 <table width=100% cellspacing=0 cellpadding=0 style='background: transparent'>
 <tr>
 <td class=clear width=49%>
-<!--
-<table border=0 cellspacing=0 cellpadding=0 style='background: transparent'>
-<tr>
-
-<td class=clear>
-<img src="<?=$pic_base_url?>star20.gif" style='margin-right: 10px'>
-</td>
-<td class=clear>
-</td>
-</tr>
-</table>
--->
-
 </td>
 <td class=clear>
 <div align=center>
@@ -53,7 +46,6 @@ $w = "width=100%";
 
 <!------------- MENU ------------------------------------------------------------------------>
 
-<? $fn = substr($_SERVER['PHP_SELF'], strrpos($_SERVER['PHP_SELF'], "/") + 1); ?>
 <tr><td class=outer align=center>
 <table class=main width=700 cellspacing="0" cellpadding="5" border="0">
 <tr>
@@ -85,6 +77,7 @@ $w = "width=100%";
 } // stdhead
 
 function stdfoot() {
+  global $pic_base_url;
   print("</td></tr></table>\n");
   print("<table class=bottom width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>\n");
   print("<td class=bottom align=left width=49%><img src=\"{$pic_base_url}bottom_left.gif\"></td><td width=49% align=right class=bottom><img src=\"{$pic_base_url}bottom_right.gif\"></td>\n");
@@ -220,7 +213,7 @@ function utime()
 			$val=(($val[0]=='/' && $rta==0) ? substr($val,1):$val);
 			if(!is_dir($val))
 				mkdir($val,0777);
-			else if(!$rta)
+			elseif(!$rta)
 				chmod($val,0777);
 			$ok=is_dir($val);
 		}
