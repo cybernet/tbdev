@@ -14,7 +14,7 @@ if (!$id)
 loggedinorreturn();
 
 $res = mysql_query("SELECT * FROM torrents WHERE id = $id");
-$row = mysql_fetch_array($res);
+$row = mysql_fetch_assoc($res);
 if (!$row)
 	die();
 

@@ -374,10 +374,10 @@ function format_comment($text, $strip_html = true)
 	$s = preg_replace("/\[u\]((\s|.)+?)\[\/u\]/i", "<u>\\1</u>", $s);
 
 	// [img]http://www/image.gif[/img]
-	$s = preg_replace("/\[img\]([^\s'\"<>]+?)\[\/img\]/i", "<img border=0 src=\"\\1\">", $s);
+	$s = preg_replace("/\[img\](http:\/\/[^\s'\"<>]+(\.(jpg|gif|png)))\[\/img\]/i", "<IMG border=\"0\" src=\"\\1\">", $s);
 
 	// [img=http://www/image.gif]
-	$s = preg_replace("/\[img=([^\s'\"<>]+?)\]/i", "<img border=0 src=\"\\1\">", $s);
+	$s = preg_replace("/\[img=(http:\/\/[^\s'\"<>]+(\.(gif|jpg|png)))\]/i", "<IMG border=\"0\" src=\"\\1\">", $s);
 
 	// [color=blue]Text[/color]
 	$s = preg_replace(

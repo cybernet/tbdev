@@ -17,7 +17,7 @@ if ($action == "edit")
 			or sqlerr(__FILE__, __LINE__);
 	if (mysql_num_rows($res) == 0)
 		stderr("Error","No poll found with ID.");
-	$poll = mysql_fetch_array($res);
+	$poll = mysql_fetch_assoc($res);
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")

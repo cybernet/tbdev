@@ -17,7 +17,7 @@ if ($userid != $CURUSER["id"])
 	stderr("Error", "Access denied.");
 
 $res = mysql_query("SELECT * FROM users WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
-$user = mysql_fetch_array($res) or stderr("Error", "No user with ID.");
+$user = mysql_fetch_assoc($res) or stderr("Error", "No user with ID.");
 
 // action: add -------------------------------------------------------------
 
@@ -113,7 +113,7 @@ $res = mysql_query("SELECT f.friendid as id, u.username AS name, u.class, u.avat
 if(mysql_num_rows($res) == 0)
 	$friends = "<em>Your friends list is empty.</em>";
 else
-	while ($friend = mysql_fetch_array($res))
+	while ($friend = mysql_fetch_assoc($res))
 	{
     $title = $friend["title"];
 		if (!$title)
@@ -157,7 +157,7 @@ else
 {
 	$i = 0;
 	$blocks = "<table width=100% cellspacing=0 cellpadding=0>";
-	while ($block = mysql_fetch_array($res))
+	while ($block = mysql_fetch_assoc($res))
 	{
 		if ($i % 6 == 0)
 			$blocks .= "<tr>";

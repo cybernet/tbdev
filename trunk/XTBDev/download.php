@@ -6,7 +6,7 @@ require_once("include/benc.php");
 
 if(!ENA_ALTANNOUNCE && isset($_GET['id']))
 {
-	$matches[1]=0+$_GET['id']);
+	$matches[1]=0+$_GET['id'];
 	$matches[0]=$_GET['name'];
 } elseif (!preg_match(':^/(\d{1,10})/(.+)\.torrent$:', $_SERVER["PATH_INFO"], $matches))
 	httperr();
@@ -34,7 +34,7 @@ if(ENA_PASSKEY)
 	verify_passkey($CURUSER['passkey']);
 $dict['announce']['value'] = "$BASEURL/". (ENA_ALTANNOUNCE? 
 	("tracker.php/". (ENA_PASSKEY?"$CURUSER[passkey]/":'') . "announce"):
-	("announce.php". (ENA_PASSKEY?"?$CURUSER[passkey]":''));
+	("announce.php". (ENA_PASSKEY?"?$CURUSER[passkey]":'')));
 
 print benc($dict);
 

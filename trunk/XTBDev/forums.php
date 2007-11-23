@@ -99,8 +99,6 @@
 
   function insert_quick_jump_menu($currentforum = 0)
   {
-  	global $pic_base_url;
-  	
     print("<p align=center><form method=get action=? name=jump>\n");
 
     print("<input type=hidden name=action value=viewforum>\n");

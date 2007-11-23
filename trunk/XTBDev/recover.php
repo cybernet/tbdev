@@ -61,7 +61,7 @@ elseif($_GET)
 	  httperr();
 
 	$res = mysql_query("SELECT username, email, passhash, editsecret FROM users WHERE id = $id");
-	$arr = mysql_fetch_array($res) or httperr();
+	$arr = mysql_fetch_assoc($res) or httperr();
 
   $email = $arr["email"];
 

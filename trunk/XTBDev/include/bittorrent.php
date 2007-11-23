@@ -104,7 +104,7 @@ function userlogin() {
     if (!$id || strlen($_COOKIE["pass"]) != 32)
         return;
     $res = mysql_query("SELECT * FROM users WHERE id = $id AND enabled='yes' AND status = 'confirmed'");// or die(mysql_error());
-    $row = mysql_fetch_array($res);
+    $row = mysql_fetch_assoc($res);
     if (!$row)
         return;
     $sec = hash_pad($row["secret"]);
@@ -122,7 +122,7 @@ function autoclean() {
     $docleanup = 0;
 
     $res = mysql_query("SELECT value_u FROM avps WHERE arg = 'lastcleantime'");
-    $row = mysql_fetch_array($res);
+    $row = mysql_fetch_array($res,MYSQL_NUM);
     if (!$row) {
         mysql_query("INSERT INTO avps (arg, value_u) VALUES ('lastcleantime',$now)");
         return;
@@ -276,13 +276,13 @@ function stdhead($title = "", $msgalert = true) {
         $title = $SITENAME .(isset($_GET['tbv'])?" (".TBVERSION.")":''). " :: " . htmlspecialchars($title);
   if ($CURUSER)
   {
-    $ss_a = @mysql_fetch_array(@mysql_query("select uri from stylesheets where id=" . $CURUSER["stylesheet"]));
+    $ss_a = @mysql_fetch_assoc(@mysql_query("select uri from stylesheets where id=" . $CURUSER["stylesheet"]));
     if ($ss_a) $ss_uri = $ss_a["uri"];
   }
   if (!isset($ss_uri))
   {
     ($r = mysql_query("SELECT uri FROM stylesheets WHERE id=1")) or die(mysql_error());
-    ($a = mysql_fetch_array($r)) or die(mysql_error());
+    ($a = mysql_fetch_assoc($r)) or die(mysql_error());
     $ss_uri = $a["uri"];
   }
   if ($msgalert && $CURUSER)
@@ -615,7 +615,7 @@ function searchfield($s) {
 function genrelist() {
     $ret = array();
     $res = mysql_query("SELECT id, name FROM categories ORDER BY name");
-    while ($row = mysql_fetch_array($res))
+    while ($row = mysql_fetch_assoc($res))
         $ret[] = $row;
     return $ret;
 }
