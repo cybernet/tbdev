@@ -32,9 +32,11 @@ $announce_urls[] = "http://domain.com:81/announce.php";
 $announce_urls[] = "http://domain.com:82/announce.php";
 $announce_urls[] = "http://domain.com:83/announce.php";
 
-if ($_SERVER["HTTP_HOST"] == "")
-  $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
-$BASEURL = "http://" . $_SERVER["HTTP_HOST"];
+if ($_SERVER["HTTP_HOST"] == "")                        // Root Based Installs Comment Out if in Sub-Dir
+  $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];      // Comment out for Sub-Dir Installs
+$BASEURL = "http://" . $_SERVER["HTTP_HOST"];           // Comment out for Sub-Dir Installs
+
+//$BASEURL = 'http://domain.com';                       // Uncomment for Sub-Dir Installs - No Ending Slash
 
 // Set this to your site URL... No ending slash!
 $DEFAULTBASEURL = "http://domain.com";
