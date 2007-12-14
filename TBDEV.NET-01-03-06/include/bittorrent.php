@@ -346,7 +346,7 @@ function stdhead($title = "", $msgalert = true) {
 ?>
 <html><head>
 <title><?= $title ?></title>
-<link rel="stylesheet" href="/<?=$ss_uri?>" type="text/css">
+<link rel="stylesheet" href="<?=$ss_uri?>" type="text/css">
 </head>
 <body>
 
