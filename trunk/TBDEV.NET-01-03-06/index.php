@@ -6,8 +6,8 @@ require "include/bittorrent.php";
 dbconn(true);
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
-  $choice = 0+$_POST["choice"];
-  if ($CURUSER && $choice != "" && $choice < 256 && $choice == floor($choice))
+  $choice = isset($_POST["choice"]) ? $_POST["choice"] : 257;
+  if ($CURUSER && ctype_digit($choice) && $choice < 256 && $choice == floor($choice))
   {
     $res = mysql_query("SELECT * FROM polls ORDER BY added DESC LIMIT 1") or sqlerr();
     $arr = mysql_fetch_assoc($res) or die("No poll");
