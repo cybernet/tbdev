@@ -1,0 +1,10 @@
+	<applet code=IRCApplet.class archive="irc.jar,pixx.jar" width=640 height=400>
+	<param name="CABINETS" value="irc.cab,securedirc.cab,pixx.cab">
+	<param name="nick" value="SBGuest???">
+	<param name="name" value="SceneBase JAVAIRC">
+	<param name="host" value="irc.thederka.com">
+	<param name="gui" value="pixx">
+        <param name="quitmessage" value="SceneBase JavaIRC http://www.scene-base.net">
+        <param name="fingerreply" value="SceneBase http://www.scene-base.net">
+        <param name="allowdccchat" value="false">
+	</applet>
