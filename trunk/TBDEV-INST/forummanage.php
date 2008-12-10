@@ -1,7 +1,7 @@
 <?php
 require ("include/bittorrent.php");
-//require ("include/user_functions.php");
-//require ("include/bbcode_functions.php");
+require ("include/user_functions.php");
+require ("include/bbcode_functions.php");
 dbconn();
 loggedinorreturn();
 

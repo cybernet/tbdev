@@ -42,6 +42,24 @@ By proceeding with submitting the form below you grant us permission to scan cer
 <table width=250 border=0 cellspacing=0 cellpadding=0><tr><td class=embedded><font class=small>The email address should always be valid.
 Your email address won't be publicly shown anywhere.</font></td></tr>
 </table>
+<?php
+                     $questions = array(
+                     array("id"=> "1", "question"=> "Mother's birthplace"),
+                     array("id"=> "2", "question"=> "Best childhood friend"),
+                     array("id"=> "3", "question"=> "Name of first pet"),
+                     array("id"=> "4", "question"=> "Favorite teacher"),
+                     array("id"=> "5", "question"=> "Favorite historical person"),
+                     array("id"=> "6", "question"=> "Grandfather's occupation")
+                     );
+                    
+                     foreach($questions as $sph){  
+                     $passhint .= "<option value=".$sph['id'].">".$sph['question']."</option>\n"; }
+                    
+                     tr("Question", "<select name=passhint>\n$passhint\n</select>",1);
+                     ?>
+                     <tr><td class=rowhead>Enter hint  answer:</td><td align=left><input type="text" size="40"  name="hintanswer" /><br/><font class=small>This answer  will be used to reset your password in case you forget  it.<br/>Make sure its something you will not  forget!</font></td></tr>
+
+
 </td></tr>
   <tr>
     <td>&nbsp;</td>

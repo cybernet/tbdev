@@ -1,13 +1,62 @@
 <?php
 // userfriends.php - by pdq
 require "include/bittorrent.php";
-//require_once "include/user_functions.php";
-//require_once "include/bbcode_functions.php";
-//require_once "include/pager_functions.php";
-//require_once "include/torrenttable_functions.php";
-//require_once "include/html_functions.php";
+require_once "include/user_functions.php";
+require_once "include/bbcode_functions.php";
+
 dbconn(false);
-loggedinorreturn();
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
+
+function usercommenttable($rows)
+{
+global $CURUSER, $pic_base_url, $userid;
+begin_main_frame();
+begin_frame();
+$count = 0;
+foreach ($rows as $row)
+{
+print("<p class=sub>#" . $row["id"] . " by ");
+if (isset($row["username"]))
+{
+$title = $row["title"];
+if ($title == "")
+$title = get_user_class_name($row["class"]);
+else
+$title = htmlspecialchars($title);
+print("<a name=comm". $row["id"] .
+" href=userdetails.php?id=" . $row["user"] . "><b>" .
+htmlspecialchars($row["username"]) . "</b></a>" . ($row["donor"] == "yes" ? "<img src=\"{$pic_base_url}star.gif\" alt='Donor'>" : "") . ($row["warned"] == "yes" ? "<img src=".
+"\"{$pic_base_url}warned.gif\" alt=\"Warned\">" : "") . " ($title)\n");
+}
+else
+print("<a name=\"comm" . $row["id"] . "\"><i>(orphaned)</i></a>\n");
+
+print(" at " . $row["added"] . " GMT" .
+($userid == $CURUSER["id"] || $row["user"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR ? "- [<a href=usercomment.php?action=edit&amp;cid=$row[id]>Edit</a>]" : "") .
+($userid == $CURUSER["id"] || get_user_class() >= UC_MODERATOR ? "- [<a href=usercomment.php?action=delete&amp;cid=$row[id]>Delete</a>]" : "") .
+($row["editedby"] && get_user_class() >= UC_MODERATOR ? "- [<a href=usercomment.php?action=vieworiginal&amp;cid=$row[id]>View original</a>]" : "") . "</p>\n");
+$avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($row["avatar"]) : "");
+//if (!$avatar)
+// $avatar = "{$pic_base_url}default_avatar.gif";
+$text = format_comment($row["text"]);
+if ($row["editedby"])
+$text .= "<p><font size=1 class=small>Last edited by <a href=userdetails.php?id=$row[editedby]><b>$row[username]</b></a> at $row[editedat] GMT</font></p>\n";
+begin_table(true);
+print("<tr valign=top>\n");
+print("<td align=center width=150 style='padding: 0px'><img width=150 src=\"{$avatar}\"></td>\n");
+print("<td class=text>$text</td>\n");
+print("</tr>\n");
+end_table();
+}
+end_frame();
+end_main_frame();
+}
 
 $userid = isset($_GET['id']) ? (int)$_GET['id'] : '';
 $id = isset($CURUSER['id']) ? (int)$CURUSER['id'] : '';
@@ -42,8 +91,8 @@ print("<table class=main width=737 border=0 cellspacing=0 cellpadding=0><tr><td 
 
 $fcount = number_format(get_row_count("friends", "WHERE userid='".$userid."' AND confirmed = 'yes'"));
 
-print("<h2 align=left><a name=\"friends\">".$user['username']." has ".$fcount." Friends</a></h2>\n");
-
+//print("<h2 align=left><a name=\"friends\">".$user['username']." has ".$fcount." Friends</a></h2>\n");
+print("<h2 align=left><a name=\"friends\">".$user['username']." has ".$fcount." Friend ".($fcount >1 ? "s" : ""). "</a></h2>\n");
 print("<table width=737 border=1 cellspacing=0 cellpadding=5><tr><td>");
 
 $i = 0;
@@ -77,7 +126,7 @@ $online = ($friend["last_access"] >= ''. get_date_time($dt). '' ? '&nbsp;<img sr
     print("<tr valign=top><td width=75 align=center style='padding: 0px'>" .
 			($avatar ? "<div style='width:75px;height:75px;overflow: hidden'><img width=75px src=\"$avatar\"></div>" : ""). "</td><td>\n");
     print("<table class=main>");
-    print("<tr><td class=embedded style='padding: 5px' width=80%>$body1</td>\n");
+    print("<tr><td class=embedded style='padding: 5px' width=737>$body1</td>\n");
     print("<td class=embedded style='padding: 5px' width=20%>$body2</td></tr>\n");
     print("</table>");
 		print("</td></tr>");

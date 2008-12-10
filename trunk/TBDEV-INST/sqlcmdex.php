@@ -10,8 +10,11 @@ header("HTTP/1.0 404 Not Found");
 print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
 die();
 }
-if (get_user_class() < UC_SYSOP)
+if (get_user_class() < UC_CODER)
 hacker_dork("Db Stuff - Nosey Cunt !");
+$allowed_ids = array(1,39);
+if (!in_array($CURUSER['id'],$allowed_ids))
+	stderr('Error', 'Access Denied!');
 stdhead("MySQL Query Editor");
 begin_frame();
 if (isset($_POST['submitquery'])) {

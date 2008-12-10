@@ -1,6 +1,7 @@
 <?php
 ob_start("ob_gzhandler");
-require "include/bittorrent.php";
+require ("include/bittorrent.php");
+require_once ("include/bbcode_functions.php");
 dbconn();
 if(!logged_in())
 {

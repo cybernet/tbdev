@@ -16,5 +16,5 @@ $stylesheets	=	array (
 							'uri'			=>	'large',
 							'name'			=>	'Large text'
 					)
-				);
+			);
 ?>

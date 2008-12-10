@@ -121,7 +121,7 @@ stderr("Error", "Permission denied.");
       }
       else
         $ratio = "Inf.";
-      print("<tr><td align=center>$num</td><td align=left><a href=details.php?id=" . $a["id"] . "&hit=1><b><font color='#".get_user_class_color($a['class'])."'>".safechar($a['name'])."</font></b><b>" . $a["name"] . "</b></a></td><td align=right>" . number_format($a["times_completed"]) .
+      print("<tr><td align=center>$num</td><td align=left><a href=details.php?id=" . $a["id"] . "&hit=1><b><font color='#".get_user_class_color($a['class'])."'>" . $a['name'] . "</font></b><b></b></a></td><td align=right>" . number_format($a["times_completed"]) .
 				"</td><td align=right>" . mksize($a["data"]) . "</td><td align=right>" . number_format($a["seeders"]) .
         "</td><td align=right>" . number_format($a["leechers"]) . "</td><td align=right>" . ($a["leechers"] + $a["seeders"]) .
         "</td><td align=right>$ratio</td>\n");
@@ -173,7 +173,7 @@ stderr("Error", "Permission denied.");
 		while ($arr = mysql_fetch_assoc($res))
 		{
       $highlight = $CURUSER["id"] == $arr["userid"] ? " bgcolor=#CF8474" : "";
-			print("<tr><td$highlight>$n</td><td$highlight><a href=userdetails.php?id=" . $arr["userid"] . "><b><font color='#".get_user_class_color($arr['class'])."'>".safechar($arr['username'])."</font></b></td><td$highlight>" . mksize($arr["uprate"]) . "/s</td><td$highlight>" . mksize($arr["downrate"]) . "/s</td></tr>\n");
+			print("<tr><td$highlight>$n</td><td$highlight><a href=userdetails.php?id=" . $arr["userid"] . "><b><font color='#".get_user_class_color($arr['class'])."'>" .$arr['username'] . "</font></b></td><td$highlight>" . mksize($arr["uprate"]) . "/s</td><td$highlight>" . mksize($arr["downrate"]) . "/s</td></tr>\n");
 			++$n;
 		}
 

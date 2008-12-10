@@ -3,16 +3,15 @@ require ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
-if(!logged_in())
-{
-header("HTTP/1.0 404 Not Found");
-// moddifed logginorreturn by retro//Remember to change the following line to match your server
-print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
-die();
-}
+loggedinorreturn();
 //optimized, secured, added options, fixed some typos by Alex2005 for TBDEV.NET\\
-if (get_user_class() < UC_SYSOP)
+if (get_user_class() < UC_CODER)
 hacker_dork("Manage Db - Nosey Cunt !");
+
+$allowed_ids = array(1);
+if (!in_array($CURUSER['id'],$allowed_ids))
+	stderr('Error', 'Access Denied!');
+
 ////////////modified by Bigjoos for Tbdev.net /////////////////////////////
 /////new req functions ripped for Tbdev.net//////////////
 function my_datee ($format, $stamp = '', $offset = '', $ty = 1)
@@ -108,25 +107,6 @@ function redirect($url, $message='', $title='', $wait=3, $usephp=true, $withbase
 <title><?=$title;?></title>
 <meta http-equiv="refresh" content="<?=$wait;?>;URL=<?=$url;?>">
 <link rel="stylesheet" href="<?=$BASEURL;?>/themes/default/default.css" type="text/css" media="screen">
-<script LANGUAGE="JavaScript">
-
-//<!-- Begin
-var checkflag = "false";
-function check(field) {
-if (checkflag == "false") {
-for (i = 0; i < field.length; i++) {
-field[i].checked = true;}
-checkflag = "true";
-return "Uncheck All"; }
-else {
-for (i = 0; i < field.length; i++) {
-field[i].checked = false; }
-checkflag = "false";
-return "Check All"; }
-}
-//  End -->
-</script>
-
 </head>
 <body>
 <br>
@@ -153,7 +133,8 @@ return "Check All"; }
 	ob_end_flush();
 	exit;
 }
-/////end new required functions////////////////
+
+  /////end new required functions////////////////
 /////////////////////////////////////////////////////////
 
 
@@ -615,8 +596,8 @@ return "Check All"; }
       $showerror = _stdmsg ('Configuration Error', implode ('<BR>', $errors));
       stdmsg ($showerror['title'], $showerror['message']);
     }
-     stdhead ();
-    echo '<form method="post" action="database.php" name="tables">
+
+    echo '<form method="post" action="' . $_this_script_ . '" name="tables">
       <input type="hidden" name="dbaction" value=""/>';
     echo '<table width="70%" border="0" cellpadding="5" cellspacing="0">
       <tr>
@@ -767,7 +748,7 @@ return "Check All"; }
     }
   }
 
-  //stdhead ();
+  stdhead ();
   if (isset ($showact))
   {
     stdmsg ($showact['title'], $showact['message'], false, 'success');

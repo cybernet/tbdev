@@ -2,20 +2,23 @@
 function deletetorrent($id) {
     global $torrent_dir;
     sql_query("DELETE FROM torrents WHERE id = $id");
-    foreach(explode(".","peers.files.comments.ratings") as $x)
+    foreach(explode(".","peers.files.comments.ratings.snatched") as $x)
         sql_query("DELETE FROM $x WHERE torrent = $id");
         sql_query("DELETE FROM coins WHERE torrentid = $id");
     unlink("$torrent_dir/$id.torrent");
 }
-/////make links clickable
-function make_link($string)
-{
-$string = ' ' . $string;
-$string = preg_replace("#(^|[\n ])([\w]+?://.*?[^ \"\n\r\t<]*)#is", "\\1<a href=\"\\2\">\\2</a>", $string);
-$string = substr($string, 1);
-return $string;
-}
-//////////make links clickable
+function mysql_fetch_all($query, $default_value=Array()){
+        $r=@mysql_query($query);
+        $result = Array();
+        if($err=mysql_error())return $err;
+        if(@mysql_num_rows($r))
+            while($row=mysql_fetch_array($r))$result[]=$row;
+        if(count($result)==0)
+            return $default_value;
+        return $result;
+    }
+
+
 function pager($rpp, $count, $href, $opts = array()) {
     $pages = ceil($count / $rpp);
 
@@ -751,10 +754,6 @@ function xss_detect( $html )
         return "<img src='$url' border='0' alt='Does my bum look big in this image?' onload='NcodeImageResizer.createOn(this);' />";
     }
 
-function auto_enter_cheater($userid, $rate, $upthis, $diff, $torrentid, $client, $ip, $last_up)
-{
-    sql_query("INSERT INTO cheaters (added, userid, client, rate, beforeup, upthis, timediff, userip, torrentid) VALUES(".sqlesc(get_date_time()).", ".sqlesc($userid).", ".sqlesc($client).", ".sqlesc($rate).", ".sqlesc($last_up).", ".sqlesc($upthis).", ".sqlesc($diff).", ".sqlesc($ip).", ".sqlesc($torrentid).")") or sqlerr(__FILE__, __LINE__);
-}
 
 function sql_timestamp_to_unix_timestamp($s)
 {
@@ -763,7 +762,7 @@ function sql_timestamp_to_unix_timestamp($s)
 
 function autoshout($msg = '') {
     $message = $msg;
-sql_query("INSERT INTO shoutbox (date, text, userid, username) VALUES (".implode(", ", array_map("sqlesc", array(time(), $message, '2','System'))).")") or sqlerr(__FILE__,__LINE__);
+sql_query("INSERT INTO shoutbox (date, text, userid, username) VALUES (".implode(", ", array_map("sqlesc", array(time(), $message, '2','SysBot'))).")") or sqlerr(__FILE__,__LINE__);
 }
 
 function write_log($text)
@@ -771,6 +770,13 @@ function write_log($text)
   $text = sqlesc($text);
   $added = sqlesc(get_date_time());
   sql_query("INSERT INTO sitelog (added, txt) VALUES($added, $text)") or sqlerr(__FILE__, __LINE__);
+}
+
+function write_info($text)
+{
+  $text = sqlesc($text);
+  $added = sqlesc(get_date_time());
+  mysql_query("INSERT INTO infolog (added, txt) VALUES($added, $text)") or sqlerr(__FILE__, __LINE__);
 }
 
 function get_elapsed_time($ts)

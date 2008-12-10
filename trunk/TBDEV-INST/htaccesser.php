@@ -1,26 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-
-<title>htaccess creator - Dot Htaccesser</title>
-<link rel="stylesheet" href="style.css" type="text/css" />
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<meta name="Keywords" content="Apache htaccess file generator">
-<meta name="Description" content="Apace htaccess file generator">
-<meta name="resource-type" content="document" />
-<meta http-equiv="author" content="bitesizeinc.net" />
-<meta name="Rating" content="general" />
-<meta name="Content-language" content="EN-US" />
-<meta http-equiv="distribution" content="Global" />
-
-<body>
-<div id="container">
-<div id="titlebar">
-<h1>Dot HTAccesser - .htaccess file generator</h1>
-<h2 id="subtitle">Sometimes it's easier online</h2>
-</div>
-<div id="text">
 <?php
 require_once("include/bittorrent.php");
 require_once "include/user_functions.php";
@@ -36,7 +13,7 @@ die();
 }
 
 if (get_user_class() < UC_CODER)
-hacker_dork("Mysql Overview - Nosey Cunt !");
+hacker_dork("htaccessor - Nosey Cunt !");
 
 if (isset($_REQUEST['submit']))
 {

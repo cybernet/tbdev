@@ -18,7 +18,7 @@ if (get_user_class() < UC_SYSOP){
 
 if($_GET['yes'] == 1){
 mysql_query("DELETE FROM shoutbox") or sqlerr(__FILE__, __LINE__);
-mysql_query("INSERT INTO shoutbox (userid, username, date, text) VALUES(2, 'Bot', UNIX_TIMESTAMP(NOW()), '::Your-Site::')");
+mysql_query("INSERT INTO shoutbox (userid, username, date, text) VALUES(2, 'Bot', UNIX_TIMESTAMP(NOW()), '".$SITENAME.")");
 echo "Threads in Shoutbox have been erased!";
 }
 else{

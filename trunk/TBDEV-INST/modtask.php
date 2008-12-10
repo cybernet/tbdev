@@ -1,4 +1,5 @@
 <?php
+//print_r($_POST); exit();
 /////////////////updated modtask by Retro//////////////////
 require "include/bittorrent.php";
 require_once("include/user_functions.php");
@@ -32,11 +33,49 @@ if (!is_valid_id($userid)) stderr("Error", "Bad user ID.");
 // Fetch current user data...
 $res = sql_query("SELECT * FROM users WHERE id=".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
 $user = mysql_fetch_assoc($res) or sqlerr(__FILE__, __LINE__);
-
+$curinvites = $user["invites"];
+$curseedbonus = $user["seedbonus"];
+$curinvite_on = $user["invite_on"];
+$cursignature = $user["signature"];
+$curtitle = $user["title"];
+$curemail = $user["email"];
+$curavatar = $user["avatar"];
+$curenabled = $user["enabled"];
+$curmaxseeds = $user["maxseeds"];
+$curmaxleeches = $user["maxleeches"];
+$curmaxtotal = $user["maxtotal"];
+$curdonor = $user["donor"];
+$curdonated = $user["donated"];
+$curuploadpos = $user["uploadpos"];
+$curchatpost = $user["chatpost"];
+$curcasinoban = $user["casinoban"];
+$curblackjackban = $user["blackjackban"];
+$curdownloadpos = $user["downloadpos"];
+$curforumpost = $user["forumpost"];
+$cursupport = $user["support"];
+$cursupportfor = $user["supportfor"];
+$curclass = $user["class"];
+$curwarned = $user["warned"];
+$curdownloaded = $user["downloaded"];
+$curuploaded = $user["uploaded"];
+$curwarned = $user["warned"];
+$percwarn = $_POST["warns"];
+$whywarned = $_POST["whywarn"];
+$warncomment = $user["whywarned"];
+$nowdlremoved = $user["dlremoveuntil"];
+$curpercwarn = $user["warns"];
+if ($_POST["warns"] == $user["warns"])
+$downloadpos = $_POST["downloadpos"];
+$immun = $_POST["immun"];
+$curimmun = $user["immun"];
+$nowupload = $user["uploaded"];
+$nowdownload = $user["downloaded"];
 $updateset = array();
+
 
 if ((isset($_POST['modcomment'])) && ($modcomment = $_POST['modcomment'])) ;
 else $modcomment = "";
+
 
 // Set class
 
@@ -54,84 +93,122 @@ $updateset[] = "class = ".sqlesc($class);
 
 $modcomment = gmdate("Y-m-d") . " - $what to '" . get_user_class_name($class) . "' by $CURUSER[username].\n". $modcomment;
 }
+//////////////////////torrent- limit mod////////////////
+// Slots  
 
-///////////////////Modified auto-leech warn sys/////////////////
-$warned = $_POST["warned"];
-$warnlength = 0 + $_POST["warnlength"];
-$warnpm = $_POST["warnpm"];
+switch ($_POST["limitmode"]) {
+     case "automatic":
+            $maxtotal = 0;
+            $maxseeds = 0;
+            $maxleeches = 0;
+            break;
 
-if (isset($_POST['warned']) && (($warned = $_POST['warned']) != $user['warned']))
+        case "unlimited":
+            $maxtotal = -1;
+            $maxseeds = 0;
+            $maxleeches = 0;
+            break;
+
+        case "manual":
+            $maxtotal = intval($_POST["maxtotal"]);
+            $maxseeds = intval($_POST["maxseeds"]);
+            $maxleeches = intval($_POST["maxleeches"]);
+
+            if ($maxseeds > $maxtotal) $maxseeds = $maxtotal;
+            if ($maxleeches > $maxtotal) $maxleeches = $maxtotal;
+            // Allow leeches to be set to 0, but not total and seeds.
+            if ($maxtotal <= 0 || $maxleeches < 0 || $maxseeds <= 0)
+                stderr("Doh", "You must specify a value in each box");
+
+            break;
+ }
+   if ($maxtotal <> intval($arr["tlimitall"]) || $maxseeds <> intval($arr["tlimitseeds"]) || $maxleeches <> intval($arr["tlimitleeches"])) {
+        $updateset[] = "tlimitall = " . $maxtotal;
+        $updateset[] = "tlimitseeds = " . $maxseeds;
+        $updateset[] = "tlimitleeches = " . $maxleeches;
+        $modcomment = gmdate("Y-m-d") . " - Torrent limit changed: " .$maxleeches." Leeches, ".$maxseeds. " Seeds, Total " .$maxtotal. ".\n". $modcomment;
+        $added = sqlesc(get_date_time());
+        $subject = sqlesc("Torrent limit changed.");
+        $msg = sqlesc("Torrent limit changed: " .$maxleeches." Leeches, ".$maxseeds. " Seeds, Total " .$maxtotal. " by ".$CURUSER[username] ."");
+        sql_query("INSERT INTO messages (sender, receiver, msg, added, subject) VALUES (0, $userid, $msg, $added, $subject)") or sqlerr(__FILE__, __LINE__);
+  }
+// End
+////////////////////new warning system///////////////////
+if ($curimmun == "no" && $immun == "no"){
+if ($percwarn != $curpercwarn)
 {
-$updateset[] = "warned = " . sqlesc($warned);
-$updateset[] = "warneduntil = '0000-00-00 00:00:00'";
-
-if ($warned == 'no')
+if (!isset($_POST["whywarn"]) || empty($_POST["whywarn"]))
+puke("You have to enter a reason for Warn Adjustment!");
+if ($percwarn > $curpercwarn)
 {
-$modcomment = gmdate("Y-m-d") . " - Warning removed by " . $CURUSER['username'] . ".\n". $modcomment;
-$msg = sqlesc("Your warning have been removed by" . $CURUSER['username'] . ".");
+if ($percwarn == "30")
+$dlremovetime = 3;
+elseif ($percwarn == "60")
+$dlremovetime = 6;
+elseif ($percwarn == "90")
+$dlremovetime = 9;
+if ($percwarn == "30" || $percwarn == "60" || $percwarn == "90")
+{
+if ($nowdlremoved != "0000-00-00 00:00:00")
+$dlremoveuntil = get_date_time(strtotime($nowdlremoved) + $dlremovetime * 86400);
+else
+$dlremoveuntil = get_date_time(gmtime() + $dlremovetime * 86400);
 }
-
+else
+$dlremoveuntil = $nowdlremoved;
+if ($dlremoveuntil != "0000-00-00 00:00:00")
+$downloadpos = "no";
+else
+$downloadpos = "yes";
+$newpercwarn = ($curpercwarn + 10);
+$subject = sqlesc("Warnlever set higher");
+$warncomm = "".date("d.m.Y")." - Warnlevel set to ".$newpercwarn." % by ".$CURUSER['username']." Reason : ".$_POST["whywarn"]." \n ".$warncomment."";
+$msg = sqlesc("Warn level set to ".$newpercwarn." % by " . $CURUSER['username'] . " Reason : ".$_POST["whywarn"].".\n ".($percwarn == 30 || $percwarn == 60 || $percwarn == 90?"Also your DL Rights are disabled until ".date("d.m.Y - H:i:s", strtotime($dlremoveuntil))." ":"")."");
+$modcomment = gmdate("Y-m-d") . " - Warning set to ".$newpercwarn." % by " . $CURUSER['username'] . ".\n". $modcomment;
 $added = sqlesc(get_date_time());
-sql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
-}
-elseif ($warnlength)
-{
-
-if ($warnlength == 255)
-{
-$modcomment = gmdate("Y-m-d") . " - Warned by " . $CURUSER['username'] . ".\nReason: $warnpm\n" . $modcomment;
-$msg = sqlesc("You have been warned by $CURUSER[username]." . ($warnpm ? "\n\nReason: $warnpm" : ""));
-$updateset[] = "warneduntil = '0000-00-00 00:00:00'";
-}else{
-$warneduntil = get_date_time(gmtime() + $warnlength * 604800);
-$dur = $warnlength . " week" . ($warnlength > 1 ? "s" : "");
-$msg = sqlesc("You have beenwarned for $dur by " . $CURUSER['username'] . "." . ($warnpm ? "\n\nReason: $warnpm" : ""));
-$modcomment = gmdate("Y-m-d") . " - Warned for $dur by " . $CURUSER['username'] . ".\nReason: $warnpm\n" . $modcomment;
-$updateset[] = "warneduntil = '$warneduntil'";
-}
-
-$added = sqlesc(get_date_time());
-sql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
-$updateset[] = "warned = 'yes', timeswarned = timeswarned+1, lastwarned=$added, warnedby=$CURUSER[id]";
-}
-//////////////end leechwarn section
-/////////////////disable download with duration///////////////////////////////
-$downloadpos = $_POST["downloadpos"];
-$disablelength = 0 + $_POST["disablelength"];
-$disablepm = $_POST["disablepm"];
-if (isset($_POST['downloadpos']) && (($downloadpos = $_POST['downloadpos']) != $user['downloadpos']))
-{
+$lastwarned = date("d.m.Y");
+sql_query("INSERT INTO messages (sender, receiver, msg, added, subject) VALUES (0, $userid, $msg, $added, $subject)") or sqlerr(__FILE__, __LINE__);
+$updateset[] = "lastwarned = '$lastwarned'";
+$updateset[] = "whywarned = " . sqlesc($warncomm);
+$updateset[] = "dlremoveuntil = " . sqlesc($dlremoveuntil);
+$updateset[] = "warns = " . sqlesc($newpercwarn);
 $updateset[] = "downloadpos = " . sqlesc($downloadpos);
-$updateset[] = "disableuntil = '0000-00-00 00:00:00'";
-if ($downloadpos == 'yes')
-{
-$modcomment = gmdate("Y-m-d") . " - Download rights enabled by" . $CURUSER['username'] . ".\n". $modcomment;
-$msg = sqlesc("Your download rights have been enabled by " . $CURUSER['username'] . ".");
+write_log("Member $editedusername was given a ".$percwarn." % warn level increase by $CURUSER[username]\n","99B200","user");
 }
+elseif ($percwarn < $curpercwarn)
+{
+$downloadpos = "yes";
+$newpercwarn = ($curpercwarn - 10);
+$subject = sqlesc("Warnlevel set lower");
+$warncomm = "".date("d.m.Y")." - Warnlevel set to ".$newpercwarn." % by ".$CURUSER['username']." Reason : ".$_POST["whywarn"]." \n ".$warncomment."";
+$msg = sqlesc("Warn level set to ".$newpercwarn." % by " . $CURUSER['username'] . " and your DL Rights are enabled.");
+$modcomment = gmdate("Y-m-d") . " - Warning set to ".$newpercwarn." % by " . $CURUSER['username'] . ".\n". $modcomment;
 $added = sqlesc(get_date_time());
-$subject = sqlesc("Download rights.");
 sql_query("INSERT INTO messages (sender, receiver, msg, added, subject) VALUES (0, $userid, $msg, $added, $subject)") or sqlerr(__FILE__, __LINE__);
+$updateset[] = "warns = " . sqlesc($newpercwarn);
+$updateset[] = "whywarned = " . sqlesc($warncomm);
+$updateset[] = "dlremoveuntil = '0000-00-00 00:00:00'";
+$updateset[] = "downloadpos = " . sqlesc($downloadpos);
+write_log("Member $editedusername was given a ".$percwarn." % warn level decrease by $CURUSER[username]\n","99B200","user");
 }
-elseif ($downloadpos && ($disablelength))
+}
+}
+if ($immun != $curimmun)
 {
-if ($downloadpos == no && ($disablelength == 255))
-{
-$modcomment = gmdate("Y-m-d") . " - Disabled by  " . $CURUSER['username'] . ".\nReason: $disablepm\n" . $modcomment;
-$msg = sqlesc("Your downloads have been disabled by $CURUSER[username]." . ($disablepm ? "\n\nReason: $disablepm" : ""));
-$updateset[] = "disableuntil = '0000-00-00 00:00:00'";
-}else{
-$disableuntil = get_date_time(gmtime() + $disablelength * 604800);
-$dur = $disablelength . " week" . ($disablelength > 1 ? "s" : "");
-$msg = sqlesc("Your downloads have been disabled for $dur by " . $CURUSER['username'] . "." . ($disablepm ? "\n\nReason: $disablepm" : ""));
-$modcomment = gmdate("Y-m-d") . " - Downloads disabled for $dur by " . $CURUSER['username'] . ".\nReason: $disablepm\n" . $modcomment;
-$updateset[] = "disableuntil = '$disableuntil'";
+if ($immun == 'yes')
+$modcomment = gmdate("Y-m-d") . " - Immunity set by " . $CURUSER['username'] . ".\n" . $modcomment;
+else
+$modcomment = gmdate("Y-m-d") . " - Immunity removed by " . $CURUSER['username'] . ".\n" . $modcomment;
+$updateset[] = "immun = " . sqlesc($immun);
 }
-$added = sqlesc(get_date_time());
-$subject = sqlesc("Download rights.");
-sql_query("INSERT INTO messages (sender, receiver, msg, added, subject) VALUES (0, $userid, $msg, $added, $subject)") or sqlerr(__FILE__, __LINE__);
-$updateset[] = "downloadpos = 'no'";
-}
-///////////////////End download disablement with duration///////////////
+//////////////////end warning system/////////////
+//////////boomarks/////////////////////////
+$addbookmark = $_POST["addbookmark"];
+$bookmcomment = $_POST["bookmcomment"];
+///////////////////////////////////////
+$updateset[] = "bookmcomment = " . sqlesc($bookmcomment);
+$updateset[] = "addbookmark = " . sqlesc($addbookmark);
+///////////////////end bookmarks/////////////////////////////
 //=== add donated amount to user and to funds table
 if ((isset($_POST['donated'])) && (($donated = $_POST['donated']) != $user['donated']))
 {
@@ -250,6 +327,7 @@ $updateset[] = "enabled = " . sqlesc($enabled);
         $updateset[] = "uploaded = " . sqlesc($uploaded);
     }
 
+
     // Change Downloaded Amount
     if (((isset($_POST['downloaded'])) && (isset($_POST['downloadbase'])) && (($downloaded = $_POST['downloaded']) != ($downloadbase = $_POST['downloadbase']))))
         {
@@ -260,7 +338,7 @@ $updateset[] = "enabled = " . sqlesc($enabled);
 
         $updateset[] = "downloaded = " . sqlesc($downloaded);
     }
-
+    
 //=== Enable / Disable chat box rights
 if ((isset($_POST['chatpost'])) && (($chatpost = $_POST['chatpost']) != $user['chatpost'])){
 $modcomment = gmdate("Y-m-d") . " - Chat post rights set to ".sqlesc($chatpost)." by " . $CURUSER['username'] . ".\n" . $modcomment;
@@ -501,6 +579,337 @@ $supportfor = $_POST['supportfor'];
 $updateset[] = "support = " . sqlesc($support);
 $updateset[] = "supportfor = ".sqlesc($supportfor);
 } 
+//////////////////////////////// dont change anything under here ///////////////////////////////
+
+# --------------------------------------------
+# download amount
+# --------------------------------------------
+if ($downloaded && $curdownloaded != $downloaded)
+{
+if ($downloaded)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) download amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------------------
+# upload amount
+# --------------------------------------------
+if ($uploaded && $curuploaded != $uploaded)
+{
+if ($uploaded)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) upload amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+/*
+# --------------------------------------------
+# warned
+# --------------------------------------------
+if ($warneduntil)
+{
+if ($warnlength)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) warned for $dur by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+elseif ($warnpm)
+{
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) warned for unlimited time by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------------------
+# un-warned
+# --------------------------------------------
+if ($warned && $curwarned != $warned)
+{
+if ($warned == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) un-warned by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+*/
+# --------------------------------------------
+# promote and demote
+# --------------------------------------------
+if ($curclass != $class)
+{
+if ($class > $curclass ? "promoted" : "demoted")
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) $what to '" . get_user_class_name($class) . "' by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# invites rights
+# --------------------------------
+if ($invite_on && $curinvite_on != $invite_on)
+{
+if ($invite_on == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) invites rights enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# invites rights
+# --------------------------------
+if ($invite_on && $curinvite_on != $invite_on)
+{
+if ($invite_on == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) invites rights removed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+# invites amount
+# --------------------------------
+if ($invites && $curinvites != $invites)
+{
+if ($invites)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) invites amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# seedbonus amount
+# --------------------------------
+if ($seedbonus && $curseedbonus != $seedbonus)
+{
+if ($seedbonus)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) seedbonus amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# maxseed amount
+# --------------------------------
+if ($maxseed && $curmaxseed != $maxseed)
+{
+if ($maxseed)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max seed amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# maxleech amount
+# --------------------------------
+if ($maxleeches && $curmaxleeches != $maxleeches)
+{
+if ($maxleeches)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max leech amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# maxtotal amount
+# --------------------------------
+if ($maxtotal && $curmaxtotal != $maxtotal)
+{
+if ($maxtotal)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max seed/leech total amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# add firstline support
+# --------------------------------
+if ($support && $cursupport != $support)
+{
+if ($support == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) added to FirstLine Support by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+# remove firstline support
+# --------------------------------
+if ($support && $cursupport != $support)
+{
+if ($support == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) removed from FirstLine Support by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+# changed support for
+# --------------------------------
+if ($supportfor && $cursupportfor != $supportfor)
+{
+if ($supportfor)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) support for info changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+
+# --------------------------------
+# enable forum post possible
+# --------------------------------
+if ($forumpost && $curforumpost != $forumpost)
+{
+if ($forumpost == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) forum posting enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# enable forum post possible
+# --------------------------------
+if ($forumpost && $curforumpost != $forumpost)
+{
+if ($forumpost == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) forum posting disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+# enable download possible
+# --------------------------------
+if ($downloadpos && $curdownloadpos != $downloadpos)
+{
+if ($downloadpos == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) downloads enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# disable download
+# --------------------------------
+if ($downloadpos && $curdownloadpos != $downloadpos)
+{
+if ($downloadpos == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) downloads disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+# enable upload possible
+# --------------------------------
+if ($uploadpos && $curuploadpos != $uploadpos)
+{
+if ($uploadpos == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) uploads enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# casino ban 
+# --------------------------------
+if ($casinoban && $curcasinoban != $casinoban)
+{
+if ($casinoban == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Casino rights removed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# casino ban remove
+# --------------------------------
+if ($casinoban && $curcasinoban != $casinoban)
+{
+if ($casinoban == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Casino rights enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# blackjack ban 
+# --------------------------------
+if ($blackjackban && $curblackjackban != $blackjackban)
+{
+if ($blackjackban == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Blackjack rights removed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# blackjack ban 
+# --------------------------------
+if ($blackjackban && $curblackjackban != $blackjackban)
+{
+if ($blackjackban == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Blackjack rights enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# shoutbox ban 
+# --------------------------------
+if ($chatpost && $curchatpost != $chatpost)
+{
+if ($chatpost == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Shoutbox rights removed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# shoutbox ban 
+# --------------------------------
+if ($chatpost && $curchatpost != $chatpost)
+{
+if ($chatpost == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Shoutbox rights enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+#  upload disable
+# --------------------------------
+if ($uploadpos && $curuploadpos != $uploadpos)
+{
+if ($uploadpos == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) uploads disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+#  user immune
+# --------------------------------
+if ($immun && $curimmun != $immun)
+{
+if ($immun == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) immunity enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+#  user immune
+# --------------------------------
+if ($immun && $curimmun != $immun)
+{
+if ($immun == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) immunity removed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------------------
+# donated
+# --------------------------------------------
+if ($donated != $curdonated)
+{
+if ($donated)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) donated amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+# donor
+# --------------------------------
+if ($donor && $curdonor != $donor)
+{
+if ($donor == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) received a donor by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+# un-donor
+# --------------------------------
+if ($donor && $curdonor != $donor)
+{
+if ($donor == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) donor was removed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------------------
+# enable
+# --------------------------------------------
+if ($enabled != $curenabled)
+{
+if ($enabled == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------------------
+# disable
+# --------------------------------------------
+if ($enabled != $curenabled)
+{
+if ($enabled == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------------------
+# changed avatar
+# --------------------------------------------
+if ($avatar && $curavatar != $avatar)
+{
+if ($avatar)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) avatar changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------------------
+# changed signature
+# --------------------------------------------
+if ($signature && $cursignature != $signature)
+{
+if ($signature)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) signature changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------------------
+# changed email
+# --------------------------------------------
+if ($email && $curemail != $email)
+{
+if ($email)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) email changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------------------
+# changed title
+# --------------------------------------------
+if ($title && $curtitle != $title)
+{
+if ($title)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) title changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------------------
 
 // Add ModComment to the update set...
 $updateset[] = "modcomment = " . sqlesc($modcomment);

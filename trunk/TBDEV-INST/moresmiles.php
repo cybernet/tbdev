@@ -1,8 +1,7 @@
-<?
-
-require_once("include/global.php");
-
-
+<?php
+require_once("include/function_cache.php");
+require_once("include/bbcode_functions.php");
+cache_start(6000,moresmilies);
 ?>
 <html><head>
 <title>more clickable smilies</title>
@@ -50,3 +49,5 @@ print("\n</tr>");
 <div align="center">
 <a href="javascript: window.close()"><? echo CLOSE; ?></a>
 </div>
+<?
+register_shutdown_function("cache_end"); 

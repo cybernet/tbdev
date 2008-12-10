@@ -2,6 +2,7 @@
 ob_start("ob_gzhandler");
 require_once("include/bittorrent.php");
 require_once("include/function_help.php");
+require_once("include/bbcode_functions.php");
 dbconn();
 loggedinorreturn();
 
@@ -24,7 +25,8 @@ loggedinorreturn();
 	table_top("Ticket Close","center");
 	table_start();
 	$ticket = 0 + $_POST['ticket'];
-	print "<font size=3 color=lightblue>You have " . $ticket . " help ticket's to close.";
+        $count = get_row_count("helpdesk", "WHERE closed='no' AND ticket='0'");
+	print "<font size=3 color=lightblue>You have " . $count . " help ticket's to close.";
 	print "<br><br>";
 	print "<table class=bottom width=30% border=0 cellspacing=0 cellpadding=4>";
 	print "<tr>";
@@ -46,7 +48,7 @@ loggedinorreturn();
 	page_end();
 	stdfoot();
 	die;
-	}
+ }
 
     if ($action == "save_new")
 	{
@@ -69,7 +71,7 @@ loggedinorreturn();
 	if (!$message)
 	site_error_message("Error", "You must enter a description of your problem.");
 	$ticket = 0 + $_POST['ticket'];
-	$user_id = $CURUSER['id'];
+	$user_id = 0 + $CURUSER['id'];
 	$message = sqlesc($message);
 	$added = sqlesc(get_date_time());
 	mysql_query("UPDATE helpdesk SET edit_by = $user_id, edit_date = $added, message = $message WHERE id=$ticket") or sqlerr(__FILE__, __LINE__);
@@ -78,7 +80,7 @@ loggedinorreturn();
     if ($action == "save_anwser")
 	{
 	$message = $_POST['message'];
-	$receiver = $_POST['receiver'];
+	$receiver = 0 + $_POST['receiver'];
 	if (!$message)
     site_error_message("Error", "You must enter a description of your problem.");
 	$user_id = 0 + $_POST['user_id'];
@@ -104,7 +106,7 @@ loggedinorreturn();
 	{
 	$ticket = $_POST['ticket'];
 	
-	site_header("Helpdesk");
+	stdhead("Helpdesk");
 	page_start(98);
 	table_top("Ticket Edit","center");
 	table_start();
@@ -136,8 +138,8 @@ loggedinorreturn();
 	
     if ($action == "anwser")
 	{
-	$ticket = $_POST['ticket'];
-	$receiver = $_POST['receiver'];
+	$ticket = 0 + $_POST['ticket'];
+	$receiver = 0 + $_POST['receiver'];
 	
 	stdhead("Helpdesk");
 	page_start(98);
@@ -260,7 +262,7 @@ document.hd_new.message.focus();
 	print "<tr>";
 	print "<td class=embedded align=center><center><br>";
 
-	if ($CURUSER['class'] > 4)
+	if ($CURUSER['class'] > UC_UPLOADER)
 		{
 		print "<form method=post action=helpdesk.php>";
 		print "<input type=hidden name=action value=view_list>";
@@ -268,14 +270,14 @@ document.hd_new.message.focus();
 		print "</form><br>";
 		}
 
-	$current_user = $CURUSER['id'];
+	$current_user = 0 + $CURUSER['id'];
 	
 	$count = get_row_count("helpdesk", "WHERE closed='no' AND userid=$current_user");
 	
 	if ($CURUSER['support'] == "yes")
 		$count = 1;
 	
-	if ($CURUSER['class'] > 4)
+	if ($CURUSER['class'] > UC_UPLOADER)
 		$count = 1;
 		
 	if ($count > 0)
@@ -403,7 +405,7 @@ document.hd_new.message.focus();
 	die;
 	}
 
-                if ($CURUSER['support'] == "yes" || $CURUSER['class'] > 4)
+                if ($CURUSER['support'] == "yes" || $CURUSER['class'] > UC_UPLOADER)
 	$action = "view_list";
 
                 if ($action == "view_list")
@@ -419,7 +421,7 @@ document.hd_new.message.focus();
 	if ($CURUSER['support'] == "yes")
 		$count = 1;
 	
-	if ($CURUSER['class'] > 4)
+	if ($CURUSER['class'] > UC_UPLOADER)
 		$count = 1;
 		
 	if ($count > 0)
@@ -487,7 +489,7 @@ table_top("Helpdesk","center");
 print "<table background=pic/site/table_background.gif width=100% border=0 cellspacing=0 cellpadding=0>";
 print "<tr>";
 print "<td class=embedded align=center><center><br>";
-$current_user = $CURUSER['id'];
+$current_user = 0 + $CURUSER['id'];
 
 $res = mysql_query("SELECT id FROM helpdesk WHERE read_date='0000-00-00 00:00:00' AND ticket='0' AND closed='no' AND userid=$current_user") or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_array($res);
@@ -503,12 +505,12 @@ $count = get_row_count("helpdesk", "WHERE ticket='0' AND closed='no'");
 if ($CURUSER['support'] == "yes")
 	$count = 1;
 
-if ($CURUSER['class'] > 6)
+if ($CURUSER['class'] > UC_ADMINISTRATOR)
 	$count = 1;
 	if ($count > 0)
 	{
-                if ($CURUSER['support'] == "yes" || $CURUSER['class'] > 6)
-		                if ($CURUSER['class'] > 4)
+                if ($CURUSER['support'] == "yes" || $CURUSER['class'] > UC_ADMINISTRATOR)
+		                if ($CURUSER['class'] > UC_UPLOADER)
 			{
 			print "<form method=post action=helpdesk.php>";
 			print "<input type=hidden name=action value=view_list>";
@@ -518,7 +520,7 @@ if ($CURUSER['class'] > 6)
 	                               $res = mysql_query("SELECT * FROM helpdesk WHERE closed='no' AND ticket='0'") or sqlerr(__FILE__, __LINE__);
 	                               while ($row = mysql_fetch_assoc($res))
 		                {
-		                if ($CURUSER['id'] == $row['userid'] || $CURUSER['support'] == "yes" || $CURUSER['class'] > 4)
+		                if ($CURUSER['id'] == $row['userid'] || $CURUSER['support'] == "yes" || $CURUSER['class'] > UC_UPLOADER)
 			{
 			print "<table class=sitetable width=98% border=0 cellspacing=0 cellpadding=4>";
 			print "<tr><td class=colheadsite>";

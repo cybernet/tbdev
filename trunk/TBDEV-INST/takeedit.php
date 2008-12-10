@@ -84,7 +84,8 @@ $updateset[] = "countstats = " . sqlesc($countstats);
 }
 else
 $updateset[] = "countstats = 'yes'";
-
+if(get_user_class()>=UC_UPLOADER)
+$updateset[] = "vip = '".($_POST["vip"]==1 ? 'yes' : 'no')."'";
 $updateset[] = "name = " . sqlesc($name);
 $updateset[] = "scene = '" . ($_POST["scene"] == "no" ? "no" : "yes") . "'";
 $updateset[] = "request = '" . ($_POST["request"] == "no" ? "no" : "yes") . "'";
@@ -112,8 +113,6 @@ $multiplicator = $_POST["multiplicator"];
 else
 $multiplicator = "0";
 $updateset[] = "multiplicator = " . sqlesc($multiplicator);
-
-
 sql_query("UPDATE torrents SET " . join(",", $updateset) . " WHERE id = $id");
 
 if ($CURUSER["anonymous"]=='yes')

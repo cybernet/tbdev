@@ -131,7 +131,7 @@ A:hover {color: #FF273D;}
 <?
 $bg = 'bgcolor=#777777';
 $fontcolor = '#000000';
-$dtcolor = '#356AA0';
+$dtcolor = '#FFFFFF';
 
 }
 
@@ -201,7 +201,7 @@ else
 		$resowner = sql_query("SELECT id, username, class FROM users WHERE id=$arr[userid]") or print(mysql_error());
 		$rowowner = mysql_fetch_array($resowner); 
         
-    
+
 if ($rowowner["class"] == "7")
 $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
 if ($rowowner["class"] == "6")
@@ -218,13 +218,16 @@ if ($rowowner["class"] == "1")
 $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
 if ($rowowner["class"] == "0")
 $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
+
+
 			
-			$edit= (get_user_class() >= UC_MODERATOR ? "<a href=/shoutbox.php?edit=".$arr['id']."><img src=".$pic_base_url."button_edit2.gif border=0 title=\"Edit Shout\"/></a> " : "");
+	                    $edit= (get_user_class() >= UC_MODERATOR ? "<a href=/shoutbox.php?edit=".$arr['id']."><img src=".$pic_base_url."button_edit2.gif border=0 title=\"Edit Shout\"/></a> " : "");
 		    $del= (get_user_class() >= UC_MODERATOR ? "<a href=/shoutbox.php?del=".$arr['id']."><img src=".$pic_base_url."button_delete2.gif border=0 title=\"Delete Single Shout\"/></a> " : "");
 		    $delall= (get_user_class() >= UC_SYSOP ? "<a href=/shoutbox.php?delall><img src=".$pic_base_url."button_delete2.gif border=0 title=\"Empty Shout\"/></a> " : "");
 		    $pm = "<span class='date' color=$dtcolor><a target=_blank href=sendmessage.php?receiver=$arr[userid]><img src=".$pic_base_url."button_pm2.gif border=0 title=\"Pm User\"/></a></span>\n";
-
-         print("<tr $bg><td><span class='date'><b><font color=$fontcolor>[".strftime("%d.%m %H:%M",$arr["date"])."]</font></b></span>\n$del $delall $edit $pm <a href='userdetails.php?id=".$arr["userid"]."' target='_blank'>$usercolor</a>\n" .
+                                    //if($arr[userid])$pm = "<span class='date' color=$dtcolor><a target=_blank href=sendmessage.php?receiver=$arr[userid]><img src=".$pic_base_url."button_pm2.gif border=0 title=\"Pm User\"/></a></span>\n";
+         $datum = gmdate("d M h:i",$arr["date"] + ($CURUSER['dst'] + $CURUSER["timezone"]) * 60);
+         print("<tr $bg><td><span class='date'><font color=$fontcolor>['$datum']</font></span>\n$del $delall $edit $pm <a href='userdetails.php?id=".$arr["userid"]."' target='_blank'>$usercolor</a>\n" .
 		($arr2["donor"] == "yes" ? "<img src=pic/star.gif alt='DONOR'>\n" : "") .
 		($arr2["warned"] == "yes" ? "<img src="."pic/warned.gif alt='Warned'>\n" : "") .
 		($arr2["chatpost"] == "no" ? "<img src=pic/chatpos.gif alt='No Chat'>\n" : "") .

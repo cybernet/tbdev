@@ -70,8 +70,9 @@ print'</tr>';
 while( $row = mysql_fetch_assoc($result) )
 {
 print'<tr>';
-if($row['countstats'] == 'no') print'<td><span style="color:#00FF00;">Yes</span></td>';
-else print'<td><span style="color:#FF0000;">No</span></td>';
+if($row['countstats'] == 'yes') print'<td><span style="color:#00FF00;">Yes</span></td>';
+else 
+print'<td><span style="color:#FF0000;">No</span></td>';
 
 print'<td><a href="details.php?id=' . $row['id'] . '&hit=1">' . $row['name'] . '</a></td>';
 print'</tr>';

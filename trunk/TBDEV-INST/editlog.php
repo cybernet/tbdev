@@ -1,5 +1,11 @@
 <?php
-// Normal code here...
+require_once('include/bittorrent.php');
+require_once('include/user_functions.php');
+require_once('include/bbcode_functions.php');
+dbconn(false);
+// ID list - Add individual user IDs to this list for access to this script
+$allowed_ID = array(1); // coder = 1
+
 // Written by RetroKill to allow scripters to see what scripts have changed since
 // they last updated their own list.
 //
@@ -14,11 +20,7 @@
 // will show the update, then update their list using the update button, to bring
 // their list up to date. If an update appears when the scripter hasn't made any
 // changes, then they know that another scripter has modified a script.
-require_once('include/bittorrent.php');
-require_once('include/user_functions.php');
-dbconn(false);
-// ID list - Add individual user IDs to this list for access to this script
-$allowed_ID = array(1); // coder = 1
+
 
 unset ($flag);
 foreach ($allowed_ID as $x)

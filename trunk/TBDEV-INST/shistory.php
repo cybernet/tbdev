@@ -38,7 +38,8 @@ else
 		$arr2 = mysql_fetch_array($res2);
 		$resowner = sql_query("SELECT id, username, class FROM users WHERE id=$arr[userid]") or print(mysql_error());
 		$rowowner = mysql_fetch_array($resowner); 
-        if ($rowowner["class"] == "7")
+         
+         if ($rowowner["class"] == "7")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
         elseif ($rowowner["class"] == "6")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
@@ -57,9 +58,9 @@ else
 
 		$pm = "<span class='date'>[<a target=_blank href=sendmessage.php?receiver=$arr[userid]>pm</a>]</span>\n";
 		if($i%2 == 0)
-        $bg = 'bgcolor=#555555';
-        else
-        $bg = 'bgcolor=#777777';
+                                $bg = 'bgcolor=#555555';
+                                else
+                                $bg = 'bgcolor=#777777';
 		print("<tr $bg><td><font color=white>[<span class='date'>".strftime("%d.%m %H:%M",$arr["date"])."]</font></span>\n$del $edit $pm <a href='userdetails.php?id=".$arr["userid"]."' target='_blank'>$usercolor</a>\n" .
 		($arr2["donor"] == "yes" ? "<img src=pic/star.gif alt='DONOR'>\n" : "") .
 		($arr2["warned"] == "yes" ? "<img src="."pic/warned.gif alt='Warned'>\n" : "") .

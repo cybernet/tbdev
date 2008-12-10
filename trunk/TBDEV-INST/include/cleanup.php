@@ -17,7 +17,7 @@ function GetDayDiff($ts_1, $ts_2, $decimals = 1) {
         }
 }
 function docleanup() {
-	global $torrent_dir, $signup_timeout, $max_dead_torrent_time, $autoclean_interval, $READPOST_EXPIRY;
+	global $torrent_dir, $signup_timeout, $max_dead_torrent_time, $autoclean_interval, $READPOST_EXPIRY , $CACHE;
 	set_time_limit(0);
 	ignore_user_abort(1);
 	do {
@@ -90,21 +90,8 @@ if (!count($ar))
 	sql_query("UPDATE torrents SET visible='no' WHERE visible='yes' AND last_action < FROM_UNIXTIME($deadtime)");
     
     $deadtime = time() - $signup_timeout;
-    $user = sql_query("SELECT invited_by FROM users WHERE status = 'pending' AND added < FROM_UNIXTIME($deadtime) AND last_access = '0000-00-00 00:00:00'");
-    $arr = mysql_fetch_assoc($user);
-    if (mysql_num_rows($user) > 0)
-    {
-    $invites = sql_query("SELECT invites FROM users WHERE id = $arr[invited_by]");
-    $arr2 = mysql_fetch_assoc($invites);
-    if ($arr2[invites] < 10)
-    {
-    $invites = $arr2[invites] +1;
-    sql_query("UPDATE users SET invites='$invites' WHERE id = $arr[invited_by]");
-    }
-    sql_query("DELETE FROM users WHERE status = 'pending' AND added < FROM_UNIXTIME($deadtime) AND last_access = '0000-00-00 00:00:00'");
-    write_log("| Unconfirmed account deletion - invite re-credited |<b> Failed to confirm sign up -- Bye Bye .</b>");
-    }
-	
+	mysql_query("DELETE FROM users WHERE status = 'pending' AND added < FROM_UNIXTIME($deadtime) AND last_login < FROM_UNIXTIME($deadtime) AND last_access < FROM_UNIXTIME($deadtime)");
+
 	$torrents = array();
 	$res = sql_query("SELECT torrent, seeder, COUNT(*) AS c FROM peers GROUP BY torrent, seeder");
 	while ($row = mysql_fetch_assoc($res)) {
@@ -185,21 +172,6 @@ sql_query("DELETE FROM snatched WHERE uid=$arr[id]");
       sql_query("INSERT INTO messages (sender, receiver, added, msg, poster) VALUES(0, $arr[id], $dt, $msg, 0)") or sqlerr(__FILE__, __LINE__);
     }
   }
-  /////////////////remove expired download disablements
-  $res = mysql_query("SELECT id FROM users WHERE downloadpos='no' AND disableuntil < NOW() AND disableuntil <> '0000-00-00 00:00:00'") or sqlerr(__FILE__, __LINE__);
-  if (mysql_num_rows($res) > 0)
-  {
-    $dt = sqlesc(get_date_time());
-    $msg = sqlesc("Your downloads have been enabled. Please keep in your best behaviour from now on.\n");
-    while ($arr = mysql_fetch_assoc($res))
-    {
-      mysql_query("UPDATE users SET downloadpos = 'yes', disableuntil = '0000-00-00 00:00:00' WHERE id = $arr[id]") or sqlerr(__FILE__, __LINE__);
-      $subject = sqlesc("Downloads enabled.\n"); //// Uncomment if you use subject in pm's
-      mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $arr[id], $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-      //mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster) VALUES(0, $arr[id], $dt, $msg, 0)") or sqlerr(__FILE__, __LINE__);
-    }
-  }
-//////////////end///////////////////
 //=== remove VIP status if time up===//
 //=== change class to whatever is under your vip class number
   $res = sql_query("SELECT id, modcomment FROM users WHERE vip_added='yes' AND vip_until < NOW() AND donoruntil <> '0000-00-00 00:00:00'") or sqlerr(__FILE__, __LINE__);
@@ -291,6 +263,23 @@ status_change($arr['id']);
 		        status_change($arr['id']);
                 }
 	}
+	 // promote user to mod
+	 /*
+$limit = 2000*1024*1024*1024;
+$minratio = 5.30;
+$maxdt = sqlesc(get_date_time(gmtime() - 86400*365));
+$res = mysql_query("SELECT id FROM users WHERE class = 0 AND uploaded >= $limit AND uploaded / downloaded >= $minratio AND added < $maxdt") or sqlerr(__FILE__, __LINE__);
+if (mysql_num_rows($res) > 0)
+{
+$dt = sqlesc(get_date_time());
+$msg = sqlesc("Congratulations, you have been auto-promoted to [b]Moderator[/b] .");
+while ($arr = mysql_fetch_assoc($res))
+{
+mysql_query("UPDATE users SET class = 4 WHERE id = $arr[id]") or sqlerr(__FILE__, __LINE__);
+mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster) VALUES(0, $arr[id], $dt, $msg, 0)") or sqlerr(__FILE__, __LINE__);
+}
+}
+*/
 ////autoleech warning script and disable downloads////
 $minratio = 0.5; // ratio < 0.5
 $downloaded = 4*1024*1024*1024; // + 4 GB
@@ -413,7 +402,7 @@ autoshout($message);
      $res = sql_query("SELECT id, filename FROM dox WHERE added < $dt");
      while ($arr = mysql_fetch_assoc($res))
      {
-     @unlink("/home2/chat2pal/public_html/dox/$arr[filename]");
+     @unlink("/home/mullruss/public_html/dox/$arr[filename]");
      sql_query("DELETE FROM dox WHERE id=$arr[id]");
      }
 /// freeslots
@@ -421,247 +410,6 @@ $dt = sqlesc(get_date_time(gmtime() - (14 * 86400))); /// is set to expire in 14
 sql_query("UPDATE freeslots SET doubleup = 'no' WHERE addedup<$dt") or sqlerr(__FILE__, __LINE__);
 sql_query("UPDATE freeslots SET free = 'no' WHERE addedfree<$dt") or sqlerr(__FILE__, __LINE__);
 sql_query("DELETE FROM freeslots WHERE doubleup = 'no' AND free = 'no'") or sqlerr(__FILE__, __LINE__);
-/////cddvd's fully automatic hitrun script--modified for new and improved snatchlist/////////
-$pwsecs = 14*86400;
-$pwdt = sqlesc(get_date_time(gmtime() + $pwsecs));
-$dt = sqlesc(get_date_time());
-$now = sqlesc(get_date_time(gmtime()));
-$res = mysql_query("SELECT delete_date FROM delete_hr WHERE delete_date<=NOW()");
-if (mysql_num_rows($res) > 0)
-{
-$res1 = mysql_query("SELECT id, hit_run_total FROM users WHERE hit_run_total>='1'") or sqlerr(__FILE__, __LINE__);
-if (mysql_num_rows($res1) > 0)
-{
-$dt = sqlesc(get_date_time());
-while ($arr = mysql_fetch_assoc($res1))
-{
-$hit_run_total =$arr['hit_run_total'];
-if ($hit_run_total>=3)
-{
-$hit_run_total=$hit_run_total-2;
-}
-else
-{
-$hit_run_total=$hit_run_total-1;
-}
-if ($hit_run_total>5)
-{
-$msg = sqlesc("Hit and run warnings have been automatically removed from your account due to 2 weeks passing - Hit-Run Total=$hit_run_total.\n");
-mysql_query("UPDATE users SET hit_run_total=$hit_run_total,downloadpos='no' WHERE id = $arr[id]") or sqlerr(__FILE__, __LINE__);
-}
-else
-{
-$msg = sqlesc("Hit and run warnings have been automatically removed from your account due to 2 weeks passing and your downloads Re-enabled - Hit-Run Total=$hit_run_total.\n");
-$subject = sqlesc("Downloads enabled.");
-mysql_query("UPDATE users SET hit_run_total=$hit_run_total,downloadpos='yes' WHERE id = $arr[id]") or sqlerr(__FILE__, __LINE__);
-}
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $arr[id], $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-write_log("User account $arr[id] ($arr[username]) Has Been Auto-Demoted from Donor by System");
-}
-mysql_query("UPDATE delete_hr SET delete_date=$pwdt") or sqlerr(__FILE__, __LINE__);
-}}
-//Remove warning if seeding//
-$pwsecs = 7*86400;
-$pwdt = sqlesc(get_date_time(gmtime() + $pwsecs));
-$now = sqlesc(get_date_time(gmtime()));
-$res = mysql_query("SELECT userid, torrentid, id, last_action, hit_run FROM snatched WHERE hit_run='2'");
-if (mysql_num_rows($res) > 0)
-{
-while ($arr = mysql_fetch_assoc($res))
-{
-$torrentname2=$arr[id];
-$username=$arr[userid];
-$torrentidnum=$arr[torrentid];
-$last=$arr[last_action];
-$hit_run=$arr[hit_run];
-$rescheck = mysql_query("SELECT * FROM peers WHERE seeder='yes' AND userid = $username AND torrent=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$sd3=mysql_query("SELECT name FROM torrents WHERE id =$torrentidnum");
-$fetched_result3 = mysql_fetch_array($sd3);
-$torrentname=$fetched_result3['name'];
-if (mysql_num_rows($rescheck) > 0)
-{
-$sd=mysql_query("SELECT donor,class,hit_run_total FROM users WHERE id =$username");
-$fetched_result = mysql_fetch_array($sd);
-$hrtotal = $fetched_result['hit_run_total'];
-$hrtotal =$hrtotal - 1;
-If ($hrtotal < 0)
-{$hrtotal=0;}
-$donor = $fetched_result['donor'];
-$class = $fetched_result['class'];
-IF ($donor == 'yes' OR $class >= '7' OR $leechers == '0' OR $sdtime >= '1.5')
-{
-write_log("Checking Take Warn Off Script UserId : $username Donor : $donor Class : $class Hit-Run Script : $hit_run");
-mysql_query("UPDATE snatched SET hit_run = '3' WHERE userid = $username and torrentid=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-}
-ELSE
-{
-$msg = sqlesc("Your Warning Has Been Removed for Snatched Id : $torrentname2 - $torrentname - Thank You For Re-seeding.If you fail to Re-Seed to a 1:1 Ratio it will be re-instated - Hit-Run Total=$hrtotal\n");
-$subject = sqlesc("Warning Removal.");
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $username, $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-mysql_query("UPDATE snatched SET hit_run = '0' WHERE userid = $username and torrentid=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$modcomment = gmdate("Y-m-d") . " - Your Warning Has Been Removed for Snatched Id : $torrentname2 - $torrentname - Re-Seed to a 1:1 Ratio or it will be re-instated.\n";
-$modcom = sqlesc($modcomment);
-If ($hrtotal<5)
-{mysql_query("UPDATE users SET warned = 'no', downloadpos='yes', warneduntil = '0000-00-00 00:00:00', hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $username") or sqlerr(__FILE__, __LINE__);
-write_log("Take pre warn off & Re-enable Dloads (Reseed to 1:1) $username Snatched Id : ($torrentname2) - ($torrentname) - Lookup:$pwdt Now:$now Hit-Run Script:$hit_run");}
-Else
-{mysql_query("UPDATE users SET warned = 'no', warneduntil = '0000-00-00 00:00:00', hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $username") or sqlerr(__FILE__, __LINE__);
-write_log("Take warn off but still disabled Dloads (Reseeded to 1:1) $username Snatched Id ($torrentname2) - ($torrentname) - Lookup : $pwdt Now : $now Hit-Run Script : $hit_run");
-$msg = sqlesc("Your HitRun Total Is still over the allowed limit - downloads are still Disabled\n");
-$subject = sqlesc("Hit Run total updated.");
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $username, $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-}}}}}
-//Remove warning if 1:1 ratio but stopped seeding before next check on cleanup//
-$pwsecs = 7*86400;
-$pwdt = sqlesc(get_date_time(gmtime() + $pwsecs));
-$now = sqlesc(get_date_time(gmtime()));
-$res = mysql_query("SELECT userid, torrentid, id, last_action, hit_run FROM snatched WHERE hit_run='2' AND uploaded >= ((downloaded/100)*60)");
-if (mysql_num_rows($res) > 0)
-{
-while ($arr = mysql_fetch_assoc($res))
-{
-$torrentname2=$arr[id];
-$username=$arr[userid];
-$torrentidnum=$arr[torrentid];
-$last=$arr[last_action];
-$hit_run=$arr[hit_run];
-$rescheck = mysql_query("SELECT * FROM peers WHERE userid = $username AND torrent=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$sd=mysql_query("SELECT hit_run_total FROM users WHERE id = $username");
-$fetched_result = mysql_fetch_array($sd);
-$sd3=mysql_query("SELECT name FROM torrents WHERE id =$torrentidnum");
-$fetched_result3 = mysql_fetch_array($sd3);
-$torrentname=$fetched_result3['name'];
-$hrtotal = $fetched_result['hit_run_total'];
-$hrtotal =$hrtotal - 1;
-If ($hrtotal < 0)
-{$hrtotal=0;}
-$msg = sqlesc("Your Warning Has Been Removed for Snatch Id : $torrentname2 - $torrentname - Thank You For Re-seeding to a 1:1 Ratio H&R Total=$hrtotal\n");
-$subject = sqlesc("Warning Removed.");
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $username, $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-mysql_query("UPDATE snatched SET hit_run = '3' WHERE userid = $username and torrentid=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$modcomment = gmdate("Y-m-d") . " - Your Warning Has Been Removed for Snatched Id : $torrentname2 - $torrentname - User Re-Seeded to a 1:1 Ratio\n";
-$modcom = sqlesc($modcomment);
-If ($hrtotal<6)
-{mysql_query("UPDATE users SET warned = 'no', downloadpos='yes', warneduntil = '0000-00-00 00:00:00', hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $username") or sqlerr(__FILE__, __LINE__);
-write_log("Take warn off (Reseeded to 1:1) $username Snatched Id : ($torrentname) Lookup : $pwdt Now : $now Hit-Run Script : $hit_run");}
-Else
-{mysql_query("UPDATE users SET warned = 'no', warneduntil = '0000-00-00 00:00:00', hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $username") or sqlerr(__FILE__, __LINE__);
-write_log("Take warn off (Reseeded to 1:1) $username Snatched Id : ($torrentname2) - ($torrentname) - Lookup : $pwdt Now : $now Hit-Run Script : $hit_run");
-$msg = sqlesc("Your Hit-Run Total Is still over the allowed limit downloads are still Disabled - Hit-Run Total=$hrtotal\n");
-$subject = sqlesc("Hit run limit exceeded.");
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster , subject) VALUES(0, $username, $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-}}}
-///warn after re-seed request from tracker if not re-seeded////
-$pwsecs = 7*86400;
-$pwdt = sqlesc(get_date_time(gmtime() + $pwsecs));
-$now = sqlesc(get_date_time(gmtime()));
-$res = mysql_query("SELECT userid, torrentid, id, last_action, completedat, uploaded, downloaded, hit_run FROM snatched WHERE uploaded < ((downloaded/100)*60) and prewarn<NOW() and hit_run='1' and finished='yes'");
-if (mysql_num_rows($res) > 0)
-{
-while ($arr = mysql_fetch_assoc($res))
-{
-$torrentname2=$arr[id];
-$username=$arr[userid];
-$torrentidnum=$arr[torrentid];
-$last=$arr[last_action];
-$hit_run=$arr[hit_run];
-$up=mksize($arr["uploaded"]);
-$down=mksize($arr["downloaded"]);
-$ratio=number_format((100/$down)*$up);
-$sd2=mysql_query("SELECT leechers FROM torrents WHERE id =$torrentidnum");
-$fetched_result2 = mysql_fetch_array($sd2);
-$leechers = $fetched_result2['leechers'];
-$sd=mysql_query("SELECT donor,class,hit_run_total FROM users WHERE id =$username");
-$fetched_result = mysql_fetch_array($sd);
-$donor = $fetched_result['donor'];
-$class = $fetched_result['class'];
-$hrtotal = $fetched_result['hit_run_total'];
-$hrtotal = $hrtotal +1;
-$a = strtotime($arr["completedat"]);
-$b = strtotime($arr["last_action"]);
-$sdtime = GetDayDiff($a,$b ,1);
-$rescheck = mysql_query("SELECT * FROM peers WHERE seeder='yes' AND userid = $username AND torrent=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$sd3=mysql_query("SELECT name FROM torrents WHERE id =$torrentidnum");
-$fetched_result3 = mysql_fetch_array($sd3);
-$torrentname=$fetched_result3['name'];
-if (mysql_num_rows($rescheck) < 1)
-{
-IF ($donor == 'yes' OR $class >= '7' OR $leechers == '0' OR $sdtime >= '1.5')
-{
-write_log("Did not warn UserId :$username Donor :$donor Class : $class Leechers : $leechers Lookup : $pwdt Now : $now Hit-Run Script : $hit_run");
-mysql_query("UPDATE snatched SET hit_run = '3' WHERE userid = $username and torrentid=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-}
-ELSE
-{
-$msg = sqlesc("Warning You Refused Or Were Unable To Re-Seed Snatched Id : $torrentname2 - $torrentname - within the 3 hours so you have recevied an automatic 7 day warning If you Re-seed it Now or at a later Time/Date this warning will be automatically removed from your account Hit and run Total= $hrtotal Stats : Up : $up Down : $down Ratio : $ratio Leechers : $leechers\n");
-$subject = sqlesc("Reseed Warning.");
-{
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $username, $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-mysql_query("UPDATE snatched SET hit_run = '2' WHERE userid = $username and torrentid=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$modcomment = gmdate("Y-m-d") . " - Warning You Refused To Re-Seed Snatched Id : $torrentname2 - $torrentname - after 3 hours. If you Now Re-Seed It At Any Time It Will Still Be automatically Removed From Your Account - Stats : Up: $up Down : $down Ratio : $ratio Leechers : $leechers\n";
-$modcom = sqlesc($modcomment);
-If ($hrtotal<=5)
-{mysql_query("UPDATE users SET warned = 'yes', warneduntil = $pwdt,hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $username") or sqlerr(__FILE__, __LINE__);
-write_log("Warned user - $username Snatch Id : ($torrentname) Stats : Last : $last Lookup : $pwdt Now : $now Up : $up Down : $down Ratio : $ratio Leechers : $leechers Now : $now Hit-Run Script : $hit_run");}
-Else
-{mysql_query("UPDATE users SET warned = 'yes', downloadpos='no', warneduntil = $pwdt,hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $username") or sqlerr(__FILE__, __LINE__);
-write_log("Warned User & Disabled Dloads $username Snatched Id : ($torrentname2) - ($torrentname) - Stats : Last : $last Lookup : $pwdt Now : $now Up : $up Down : $down Ratio : $ratio Leechers : $leechers Now : $now Hit-Run Script : $hit_run");
-$msg = sqlesc("Your Hit and Run Total Is Now Over The Allowed Limit. All Downloads are Now Disabled.\n");
-$subject = sqlesc("Dload Disable Warning.");
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $username, $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-}}}}}}
-//HitRun - Send a request to reseed if ratio less then 1:1 on torrent and stopped seeding//
-$secs = 0.0416*86400;
-$dt = sqlesc(get_date_time(gmtime() - $secs));
-$now = sqlesc(get_date_time(gmtime()));
-$wsecs = 0.125*86400;
-$wdt = sqlesc(get_date_time(gmtime() + $wsecs));
-$res = mysql_query("SELECT userid, torrentid, id, last_action, uploaded, downloaded, hit_run FROM snatched WHERE uploaded < ((downloaded/100)*60) and UNIX_TIMESTAMP($dt)<UNIX_TIMESTAMP(last_action) and hit_run='0' and finished='yes'");
-if (mysql_num_rows($res) > 0)
-{
-while ($arr = mysql_fetch_assoc($res))
-{
-$torrentname2=$arr[id];
-$username=$arr[userid];
-$torrentidnum=$arr[torrentid];
-$last=$arr[last_action];
-$hit_run=$arr[hit_run];
-$up=mksize($arr["uploaded"]);
-$down=mksize($arr["downloaded"]);
-$ratio=number_format((100/$down)*$up);
-$sd2=mysql_query("SELECT leechers FROM torrents WHERE id =$torrentidnum");
-$fetched_result2 = mysql_fetch_array($sd2);
-$leechers = $fetched_result2['leechers'];
-$sd=mysql_query("SELECT donor,class,hit_run_total FROM users WHERE id =$username");
-$fetched_result = mysql_fetch_array($sd);
-$donor = $fetched_result['donor'];
-$class = $fetched_result['class'];
-$rescheck = mysql_query("SELECT * FROM peers WHERE seeder='yes' AND userid = $username AND torrent=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$sd3=mysql_query("SELECT name FROM torrents WHERE id =$torrentidnum");
-$fetched_result3 = mysql_fetch_array($sd3);
-$torrentname=$fetched_result3['name'];
-if (mysql_num_rows($rescheck) < 1)
-{
-IF ($donor == 'yes' OR $class >= '7' OR $sdtime >= '1.5')
-{
-mysql_query("UPDATE snatched SET hit_run = '3' WHERE userid = $username and torrentid=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$msg = sqlesc("Seeding Request - Please consider Re-Seeding Snatched Id : $torrentname2 - $torrentname - As a Donor there is No need to Do this but is good for the site if you could do so. If your a staff member you know the score ! $dt Leechers : $leechers\n");
-$subject = sqlesc("Vip or Staff Reseed Request");
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $username, $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-write_log("Vip/Staff Message Sent to UserId : $username Snatched Id : ($torrentname2) - ($torrentname) - Stats : Last : $last Lookup : $dt Now : $now Leechers : $leechers Hit-Run Script : $hit_run");
-}
-Else
-{
-$msg = sqlesc("Seeding Request - Please Re-Seed Snatched Id : $torrentname2 - $torrentname - If you fail to do so after 3 hours you will get an automatic warning Unless -- 1.You Re-Seed 2.Your A Donor 3.There Are No Active Downloaders Now Or In The Next 3 Hours.If you do Re-seed it Now Or At Anytime (Even After A Warning Has Been GIven) The Warning Is automatically removed from your account $dt Leechers : $leechers Up : $up Down : $down \n.");
-$subject = sqlesc("Reseed Request.");
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $username, $dt, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
-mysql_query("UPDATE snatched SET prewarn = $wdt, hit_run = '1' WHERE userid = $username and torrentid=$torrentidnum") or sqlerr(__FILE__, __LINE__);
-$modcomment = gmdate("Y-m-d") . " - Re-Seed Request Sent for Snatched Id : $torrentname2 - $torrentname - Up : $up Down : $down Ratio : $ratio Leechers : $leechers\n";
-$modcom = sqlesc($modcomment);
-mysql_query("UPDATE users SET modcomment = CONCAT($modcom,modcomment) WHERE id = $username") or sqlerr(__FILE__, __LINE__);
-write_log("Pre-Warn user UserId : $username Snatched Id : ($torrentname2) - ($torrentname) - Last : $last Lookup : $dt Now : $now Up : $up Down : $down Ratio : $ratio Leechers : $leechers Hit-Run Script : $hit_run");
-}}}}
-///////end hitrun script/////////////
 // best film of the week by dokty - tbdev.net
 $catmovieids = "3,5,6,10,11"; // change this to ur movies category ids with format of x,x,x
 $dt = sqlesc(get_date_time(gmtime() - 604800));
@@ -672,11 +420,180 @@ $arr = mysql_fetch_assoc($res);
 sql_query("UPDATE avps SET value_d='" . get_date_time() . "', value_s=".$arr["id"]." WHERE arg='bestfilmofweek'");
 write_log("Torrent ".$arr["id"]." (".htmlentities($arr["name"]).") was set 'Best Film of the Week' by system");
 }
+/////////////////////////happyhour////
+$f = "$CACHE/happyhour.txt";                  
+    $happy = unserialize(file_get_contents($f));
+    $happyHour = strtotime($happy["time"]);
+    
+    $curDate = time();
+    $happyEnd = $happyHour + 3600;
+    
+    if ($happy["status"] == 0){
+    write_log("Happy hour was @ ".date("Y-m-d H:i" ,$happyHour)." and Catid ".$happy["catid"]." ");
+    happyFile("set");
+    }
+    elseif (($curDate > $happyEnd) && $happy["status"] == 1 )
+    happyFile("reset");
+//////////////end///////    
+/////cddvd's fully automatic hitrun script--modified for new and improved snatchlist by Bigjoos/////////
+$pwsecs = 7*86400;
+$pwdt = sqlesc(get_date_time(time() + $pwsecs));
+$now = sqlesc(get_date_time());
+//Remove warning if seeding//
+$res = mysql_query("SELECT userid, torrentid, torrent_name, hit_run FROM snatched WHERE hit_run='2'");
+if (mysql_num_rows($res) > 0) {
+while ($arr = mysql_fetch_assoc($res)) {
+$user=$arr['userid'];
+$torrent=$arr['torrentid'];
+$hit_run=$arr['hit_run'];
+$torrentname=$arr['torrent_name'];
+$res1 = mysql_query("SELECT * FROM peers WHERE seeder='yes' AND userid=$user AND torrent = $torrent") or sqlerr(__FILE__, __LINE__);
+if (mysql_num_rows($res1) > 0) {
+$res3=mysql_query("SELECT class,hit_run_total FROM users WHERE id = $user");
+$arr3 = mysql_fetch_array($res3);
+$hrtotal = $arr3['hit_run_total'];
+$hrtotal = $hrtotal - 1;
+if ($hrtotal < 0) {
+$hrtotal=0;
+}
+$class = $arr3['class'];
+if ($class >= '4') {
+mysql_query("UPDATE snatched SET hit_run = '3' WHERE userid = $user and torrentid=$torrent") or sqlerr(__FILE__, __LINE__);
+write_log("Checking Take Warn Off Script UserId : $user Class : $class Hit-Run Script : $hit_run");
+} else {
+mysql_query("UPDATE snatched SET hit_run = '0' WHERE userid = $user and torrentid=$torrent") or sqlerr(__FILE__, __LINE__);
+$msg = sqlesc("Your Warning Has Been Removed for Snatched Id : $torrent - $torrentname - Thank You For Re-seeding.If you fail to Re-Seed to a 0.8 Ratio or 36 hours it will be re-instated - Hit-Run Total=$hrtotal\n");
+$subject = sqlesc("Warning Removal.");
+mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $user, $now, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
+$modcomment = date("Y-m-d") . " - Your Warning Has Been Removed for Snatched Id : $torrent - $torrentname - Re-Seed to a 0.8 Ratio or 36 hours or it will be re-instated.\n";
+$modcom = sqlesc($modcomment);
+if ($hrtotal<6) {
+mysql_query("UPDATE users SET warned = 'no', downloadpos='yes', warneduntil = '0000-00-00 00:00:00', hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $user") or sqlerr(__FILE__, __LINE__);
+write_log("Take pre warn off & Re-enable Downloads (Reseed to 0.8 or 36 hours) $user Snatched Id : ($torrent) - ($torrentname) - Lookup:$pwdt Now:$now Hit-Run Script:$hit_run");
+$msg = sqlesc("Your HitRun Total Is now below limit - downloads are enabled again.Thanks for seeding!\n");
+$subject = sqlesc("Hit Run total updated.");
+} else {
+mysql_query("UPDATE users SET warned = 'no', warneduntil = '0000-00-00 00:00:00', hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $user") or sqlerr(__FILE__, __LINE__);
+write_log("Take warn off but still disabled Dloads (Reseeded to 0.8 or 36 hours) $user Snatched Id ($torrent) - ($torrentname) - Lookup : $pwdt Now : $now Hit-Run Script : $hit_run");
+$msg = sqlesc("Your HitRun Total Is still over the allowed limit - downloads are still Disabled\n");
+$subject = sqlesc("Hit Run total updated.");
+}
+mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $user, $now, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
+}}}}
+//Remove warning if 0.8 ratio but stopped seeding before next check on cleanup//
+$res = mysql_query("SELECT userid, torrentid, torrent_name, seedtime, downloaded, uploaded, hit_run FROM snatched WHERE hit_run='2'");
+if (mysql_num_rows($res) > 0) {
+while ($arr = mysql_fetch_assoc($res)) {
+$user=$arr['userid'];
+$torrent=$arr['torrentid'];
+$hit_run=$arr['hit_run'];
+$torrentname=$arr['torrent_name'];
+$sdtime = $arr['seedtime'] / 86400;
+$uploaded = (($arr['downloaded']/100)*80);
+if ($sdtime >= '1.5' OR $arr['uploaded'] >= $uploaded) {
+$res1=mysql_query("SELECT hit_run_total FROM users WHERE id = $user");
+$arr1 = mysql_fetch_array($res1);
+$hrtotal = $arr1['hit_run_total'];
+$hrtotal =$hrtotal - 1;
+if ($hrtotal < 0) {
+$hrtotal=0;
+}
+mysql_query("UPDATE snatched SET hit_run = '3' WHERE userid = $user and torrentid=$torrent") or sqlerr(__FILE__, __LINE__);
+$subject = sqlesc("Warning Removed");
+$msg = sqlesc("Your Warning Has Been Removed for Snatch Id : $torrent - $torrentname - Thank You For Re-seeding to a 0.8 Ratio OR 36 hours H&R Total=$hrtotal\n");
+mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $user, $now, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
+$modcomment = date("Y-m-d") . " - Your Warning Has Been Removed for Snatched Id : $torrent - $torrentname - User Re-Seeded to a 0.8 Ratio or 36 hours\n";
+$modcom = sqlesc($modcomment);
+If ($hrtotal<6) {
+mysql_query("UPDATE users SET warned = 'no', downloadpos='yes', warneduntil = '0000-00-00 00:00:00', hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $user") or sqlerr(__FILE__, __LINE__);
+write_log("Take warn off (Reseeded) $user Snatched Id : ($torrent) - ($torrentname) Lookup : $pwdt Now : $now Hit-Run Script : $hit_run");
+} else {
+mysql_query("UPDATE users SET warned = 'no', warneduntil = '0000-00-00 00:00:00', hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $user") or sqlerr(__FILE__, __LINE__);
+write_log("Take warn off (Reseeded) $user Snatched Id : ($torrent) - ($torrentname) - Lookup : $pwdt Now : $now Hit-Run Script : $hit_run");
+$msg = sqlesc("Your Hit-Run Total Is still over the allowed limit downloads are still Disabled - Hit-Run Total=$hrtotal\n");
+$subject = sqlesc("Hit run limit exceeded.");
+mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $user, $now, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__); //== uncomment then comment out above query to use subject in pm's
+}}}}
+///warn after re-seed request from tracker if not re-seeded////
+$res = mysql_query("SELECT userid, torrentid, torrent_name, seedtime, uploaded, downloaded, hit_run FROM snatched WHERE prewarn<NOW() AND hit_run='1' AND finished='yes'");
+if (mysql_num_rows($res) > 0) {
+while ($arr = mysql_fetch_assoc($res)) {
+$user=$arr['userid'];
+$torrent=$arr['torrentid'];
+$torrentname = $arr['torrent_name'];
+$hit_run=$arr['hit_run'];
+$sdtime = $arr['seedtime'] / 86400;
+$uploaded = (($arr['downloaded']/100)*80);
+$up=mksize($arr['uploaded']);
+$down=mksize($arr['downloaded']);
+$ratio=number_format((100/$down)*$up);
+$res2=mysql_query("SELECT class,hit_run_total FROM users WHERE id =$user");
+$arr2 = mysql_fetch_array($res2);
+$class = $arr2['class'];
+$hrtotal = $arr2['hit_run_total'];
+$hrtotal = $hrtotal +1;
+$rescheck = mysql_query("SELECT * FROM peers WHERE seeder='yes' AND userid = $user AND torrent=$torrent") or sqlerr(__FILE__, __LINE__);
+if (mysql_num_rows($rescheck) < 1) {
+if ($class >= '4' OR $sdtime >= '1.5' OR $arr['uploaded'] >= $uploaded) {
+write_log("Did not warn UserId :$user Class : $class Lookup : $pwdt Now : $now Hit-Run Script : $hit_run");
+mysql_query("UPDATE snatched SET hit_run = '3' WHERE userid = $user and torrentid=$torrent") or sqlerr(__FILE__, __LINE__);
+} else {
+$msg = sqlesc("Warning You Refused Or Were Unable To Re-Seed Snatched Id : ($torrent) - ($torrentname) - within the 3 hours so you have received an automatic 7 days warning If you Re-seed it Now or at a later Time/Date this warning will be automatically removed from your account Hit and run Total= $hrtotal Stats : Up : $up Down : $down Ratio : $ratio\n");
+$subject = sqlesc("Reseed Warning.");
+mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $user, $now, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
+mysql_query("UPDATE snatched SET hit_run = '2' WHERE userid = $user and torrentid=$torrent") or sqlerr(__FILE__, __LINE__);
+$modcomment = date("Y-m-d") . " - Warning You Refused To Re-Seed Snatched Id : $torrent - $torrentname - after 3 hours. If you Now Re-Seed It At Any Time It Will Still Be automatically Removed From Your Account - Stats : Up: $up Down : $down Ratio : $ratio\n";
+$modcom = sqlesc($modcomment);
+If ($hrtotal<=5){
+mysql_query("UPDATE users SET warned = 'yes', warneduntil = $pwdt,hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $user") or sqlerr(__FILE__, __LINE__);
+write_log("Warned user - $user Snatch Id : ($torrent) - ($torrentname) Stats : Lookup : $pwdt Now : $now Up : $up Down : $down Ratio : $ratio Hit-Run Script : $hit_run");
+} else {
+mysql_query("UPDATE users SET warned = 'yes', downloadpos='no', warneduntil = $pwdt,hit_run_total=$hrtotal,modcomment = CONCAT($modcom,modcomment) WHERE id = $user") or sqlerr(__FILE__, __LINE__);
+write_log("Warned User & Disabled Dloads $user Snatched Id : ($torrent) - ($torrentname) - Stats : Lookup : $pwdt Now : $now Up : $up Down : $down Ratio : $ratio Hit-Run Script : $hit_run");
+$msg = sqlesc("Your Hit and Run Total Is Now Over The Allowed Limit. All Downloads are Now Disabled.\n");
+$subject = sqlesc("Download Disable Warning.");
+mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $user, $now, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__);
+}}}}}
+//HitRun - Send a request to reseed if ratio less then 0.8 on torrent and stopped seeding//
+$secs = 0.0416*86400;
+$dt = sqlesc(get_date_time(time() - $secs));
+$wsecs = 0.125*86400;
+$wdt = sqlesc(get_date_time(time() + $wsecs));
+$res = mysql_query("SELECT userid, torrentid, torrent_name, seedtime, uploaded, downloaded, hit_run FROM snatched WHERE uploaded < ((downloaded/100)*80) and UNIX_TIMESTAMP($dt)<UNIX_TIMESTAMP(last_action) and hit_run='0' and finished='yes'");
+if (mysql_num_rows($res) > 0) {
+while ($arr = mysql_fetch_assoc($res)) {
+$user=$arr['userid'];
+$torrent=$arr['torrentid'];
+$hit_run=$arr['hit_run'];
+$torrentname=$arr['torrent_name'];
+$sdtime = $arr['seedtime'] / 86400;
+$uploaded = (($arr['downloaded']/100)*80);
+$up=mksize($arr['uploaded']);
+$down=mksize($arr['downloaded']);
+$ratio=number_format((100/$down)*$up);
+$res2=mysql_query("SELECT class FROM users WHERE id = $user");
+$arr2 = mysql_fetch_array($res2);
+$class = $arr2['class'];
+$res3 = mysql_query("SELECT * FROM peers WHERE seeder='yes' AND userid = $user AND torrent=$torrent") or sqlerr(__FILE__, __LINE__);
+if (mysql_num_rows($res3) < 1) {
+if ($class >= '4' OR $sdtime >= '1.5' OR $arr['uploaded'] >= $uploaded) {
+mysql_query("UPDATE snatched SET hit_run = '3' WHERE userid = $user and torrentid=$torrent") or sqlerr(__FILE__, __LINE__);
+} else {
+$msg = sqlesc("Seeding Request - Please Re-Seed Snatched Id : $torrent - $torrentname - If you fail to do so after 3 hours you will get an automatic warning Unless -- You Re-Seed, If you do Re-seed it Now Or At Anytime (Even After A Warning Has Been GIven) The Warning Is automatically removed from your account $dt Up : $up Down : $down \n.");
+$subject = sqlesc("HnR Reseed Request.");
+mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster, subject) VALUES(0, $user, $now, $msg, 0, $subject)") or sqlerr(__FILE__, __LINE__); //== uncomment then comment out above query to use subject in pm's
+mysql_query("UPDATE snatched SET prewarn = $wdt, hit_run = '1' WHERE userid = $user and torrentid=$torrent") or sqlerr(__FILE__, __LINE__);
+$modcomment = date("Y-m-d") . " - Re-Seed Request Sent for Snatched Id : $torrent - $torrentname - Up : $up Down : $down Ratio : $ratio\n";
+$modcom = sqlesc($modcomment);
+mysql_query("UPDATE users SET modcomment = CONCAT($modcom,modcomment) WHERE id = $user") or sqlerr(__FILE__, __LINE__);
+write_log("Pre-Warn user UserId : $user Snatched Id : ($torrent) - ($torrentname) - Lookup : $dt Now : $now Up : $up Down : $down Ratio : $ratio Hit-Run Script : $hit_run");
+}}}}
+///////end hitrun script////////
 $secs = 24 * 60 * 60; //  24Hours * 60 minutes * 60 seconds...
 $dt = sqlesc(get_date_time(gmtime() - $secs));
 mysql_query("UPDATE users SET ip = '' WHERE last_access < $dt");
 write_log("---------------------------------------Site Auto Clean up Complete----------------------------------------");
-//$message = "Code Run Test Message - Site Auto Clean Up Complete";
-//autoshout($message);
+$message = "Code Run Test Message - Site Auto Clean Up Complete";
+autoshout($message);
 }
 ?>

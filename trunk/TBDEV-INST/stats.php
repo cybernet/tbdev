@@ -1,6 +1,7 @@
 <?php
-require "include/bittorrent.php";
-require_once "include/user_functions.php";
+require ("include/bittorrent.php");
+require_once ("include/user_functions.php");
+require_once ("include/bbcode_functions.php");
 dbconn(false);
 if(!logged_in())
 {

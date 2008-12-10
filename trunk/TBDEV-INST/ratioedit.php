@@ -32,7 +32,7 @@ if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
 }
 stdhead("Ratio Edit");
 ?>
-<h1>::Your-Site:: Ratio Edit</h1>
+<h1><?=$SITENAME?> Ratio Edit</h1>
 <form method=post action=ratioedit.php>
 <table border=1 cellspacing=0 cellpadding=5>
 <tr><td class=rowhead>User name</td><td><input type=text name=username size=40></td></tr>

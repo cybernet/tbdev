@@ -49,42 +49,21 @@ else {
 $anonymous = "no";
 $anon = $CURUSER["username"];
 }
-/*
+
 $nfofile = $_FILES['nfo'];
 //if ($nfofile['name'] == '')
   /*bark("No NFO!");*/
 
 //if ($nfofile['size'] == 0)
 /* bark("0-byte NFO");*/
-/*
+
 if ($nfofile['size'] > 65535)
   bark("NFO is too big! Max 65,535 bytes.");
 
 $nfofilename = $nfofile['tmp_name'];
 
 //if (@!is_uploaded_file($nfofilename))
-// bark("NFO upload failed");*/
-$nfo = '';
-/////////////////////// NFO FILE ////////////////////////    
-if(isset($_FILES['nfo']) && !empty($_FILES['nfo']['name'])) {
-$nfofile = $_FILES['nfo'];
-if ($nfofile['name'] == '')
-  bark("No NFO!");
-
-if ($nfofile['size'] == 0)
-  bark("0-byte NFO");
-
-if ($nfofile['size'] > 65535)
-  bark("NFO is too big! Max 65,535 bytes.");
-
-$nfofilename = $nfofile['tmp_name'];
-
-if (@!is_uploaded_file($nfofilename))
-  bark("NFO upload failed");
-
-$nfo = sqlesc(str_replace("\x0d\x0d\x0a", "\x0d\x0a", @file_get_contents($nfofilename)));
-}
-/////////////////////// NFO FILE END /////////////////////
+// bark("NFO upload failed");
 
 //AUTO VIEWNFO
 $descr = unesc($_POST["descr"]);
@@ -205,6 +184,9 @@ else {
 	}
 	$type = "multi";
 }
+$poster = unesc($_POST['poster']);
+$tube = unesc($_POST['tube']);
+$url = unesc($_POST['url']);
 $dict['value']['announce']=bdec(benc_str( $announce_urls[0]));  // change announce url to local
 $dict['value']['info']['value']['private']=bdec('i1e');  // add private tracker flag
 $dict['value']['info']['value']['source']=bdec(benc_str( "[$DEFAULTBASEURL] $SITENAME")); // add link for bitcomet users
@@ -234,7 +216,7 @@ else
 $countstats = "yes";
 //===end
 $nfo = sqlesc(str_replace("\x0d\x0d\x0a", "\x0d\x0a", @file_get_contents($nfofilename)));
-$ret = mysql_query("INSERT INTO torrents (search_text, filename, owner, visible, tube, multiplicator, uclass, anonymous, request, scene, info_hash, name, size, numfiles, url, poster, countstats, newgenre, type, descr, ori_descr, category, save_as, added, last_action, nfo, afterpre) VALUES (" .implode(",", array_map("sqlesc", array(searchfield("$shortfname $dname $torrent"), $fname, $CURUSER["id"], "no", $tube, $multiplicator, $uclass, $anonymous, $request, $scene, $infohash, $torrent, $totallen, count($filelist), $url, $poster, $countstats, $genre, $type, $descr, $descr, 0 + $_POST["type"], $dname))) . ", '" . get_date_time() . "', '" . get_date_time() . "', $nfo, '" . $predif . "')") or sqlerr(__FILE__, __LINE__); 
+$ret = mysql_query("INSERT INTO torrents (search_text, filename, owner, visible, tube, multiplicator, uclass, anonymous, request, scene, info_hash, name, size, numfiles, url, poster, countstats, newgenre, type, vip, descr, ori_descr, category, save_as, added, last_action, nfo, afterpre) VALUES (" .implode(",", array_map("sqlesc", array(searchfield("$shortfname $dname $torrent"), $fname, $CURUSER["id"], "no", $tube, $multiplicator, $uclass, $anonymous, $request, $scene, $infohash, $torrent, $totallen, count($filelist), $url, $poster, $countstats, $genre, $type, $vip, $descr, $descr, 0 + $_POST["type"], $dname))) . ", '" . get_date_time() . "', '" . get_date_time() . "', $nfo, '" . $predif . "')") or sqlerr(__FILE__, __LINE__); 
 if ($CURUSER["anonymous"]=='yes')
 $message = "New Torrent : ($torrent) Uploaded - Anonymous User";
 else
@@ -259,7 +241,6 @@ if ($fp)
 //===add karma
 sql_query("UPDATE users SET seedbonus = seedbonus+15.0 WHERE id = $CURUSER[id]") or sqlerr(__FILE__, __LINE__);
 //===end
-////////////annonymous user??///////////
 if ($CURUSER["anonymous"]=='yes')
 write_log("Torrent $id ($torrent) was uploaded by Anonymous");
 else

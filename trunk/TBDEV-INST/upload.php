@@ -19,9 +19,7 @@ exit;
 } 
 ?>
 <div align=Center>
-<!--<form enctype="multipart/form-data" action="takeupload.php" method="post">-->
 <form name=upload method=post action=takeupload.php enctype=multipart/form-data>
-<!--<form name=edit method=post action=takeedit.php enctype=multipart/form-data>--->
 <input type="hidden" name="MAX_FILE_SIZE" value="<?=$max_torrent_size?>">
 <p>The tracker's announce url is <b><?= $announce_urls[0] ?></b></p>
 <table border="1" cellspacing="0" cellpadding="10">
@@ -48,7 +46,7 @@ tr("Torrent file", "<input type=file name=file size=80>\n", 1);
 tr("Torrent name", "<input type=\"text\" name=\"name\" size=\"80\" /><br />(Taken from filename if not specified. <b>Please use descriptive names.</b>)\n", 1);
 tr("NFO file", "<input type=file name=nfo size=81><br>(<b>optional.</b> Can only be viewed by power users)\n", 1);
 tr("Description", "<textarea name=\"descr\" rows=\"10\" cols=\"80\"></textarea>" . "<br>(HTML/BB code is <b>not</b> allowed.)", 1);
-tr("Strip ASCII", "<input type=checkbox name=strip value=strip unchecked />   <a href=\"http://en.wikipedia.org/wiki/ASCII_art\" target=\"_blank\">what is this ?</a><b>Copy And Paste Nfo Contents Into Description And Check Strip</b>", 1);
+tr("Strip ASCII", "<input type=checkbox name=strip value=strip unchecked />   <a href=\"http://en.wikipedia.org/wiki/ASCII_art\" target=\"_blank\">what is this ?</a><b> Copy And Paste Nfo Contents Into Description And Check Strip</b>", 1);
 ?>
 <script type="text/javascript">
 window.onload = function() {
@@ -102,6 +100,7 @@ tr("Release", $so, 1);
 $sp = "<select name=\"request\">\n<option value=\"no\">No</option>\n<option value=\"yes\">Yes</option>\n</select>\n";
 tr("Requested", $sp, 1);
 tr("Show uploader", "<input type=checkbox name=uplver value=yes>Dont show my username in 'Uploaded By' field in browse.", 1);
+tr("Vip Torrent?", "<input type='checkbox' name='vip'" . (($row["vip"] == "yes") ? " checked='checked'" : "" ) . " value='1' /> If this one is checked, only Vip's can download this torrent", 1);
 //===free upload or staff only torrent
 if (get_user_class() >= UC_VIP){      
 tr("Count Stats:","<input type=radio name=countstats value=yes checked=checked /> yes <input type=radio name=countstats value=no /> no - free download only upload is counted.<br /> ",1);

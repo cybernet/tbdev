@@ -3,16 +3,16 @@
 <channel>
 <title>TorrentBits</title>
 <description>0-week torrents</description>
-<link>http://localhost/</link>
+<link>http://scene.kicks-ass.org/</link>
 <item>
-<title>Banner Maker Pro 6.07 full.torrent (Appz/misc)</title>
-<description>test</description>
-<link>http://localhost/details.php?id=2&amp;hit=1</link>
+<title>Andy.McNabs.Tour.Of.Duty.S01E01.WS.PDTV.XviD-SSTV.torrent (Episodes)</title>
+<description>testing</description>
+<link>http://scene.kicks-ass.org/details.php?id=2&amp;hit=1</link>
 </item>
 <item>
-<title>Crysis.Warhead.Crack-TDM.torrent (Appz/misc)</title>
-<description>Test</description>
-<link>http://localhost/details.php?id=1&amp;hit=1</link>
+<title>The Killers - Hot Fuss.torrent (Music)</title>
+<description>test</description>
+<link>http://scene.kicks-ass.org/details.php?id=1&amp;hit=1</link>
 </item>
 </channel>
 </rss>

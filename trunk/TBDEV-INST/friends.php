@@ -1,10 +1,16 @@
 <?php
 // new friends.php - by pdq
-require_once "include/bittorrent.php";
-//require_once "include/user_functions.php";
-
+require_once ("include/bittorrent.php");
+require_once ("include/user_functions.php");
+require_once ("include/bbcode_functions.php");
 dbconn(false);
-loggedinorreturn();
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
 
 $userid = isset($_GET['id']) ? (int)$_GET['id'] : $CURUSER['id'];
 $action = isset($_GET["action"]) ?$_GET["action"] : '';
@@ -88,7 +94,7 @@ if ($action == 'confirm')
   if (!is_valid_id($targetid))
 		stderr("Error", "Invalid ID.");
 
-  $hash = md5(' changethis '.$CURUSER['id'].$targetid.$type.'confirm'.'changethis');
+  $hash = md5(' s5me mud '.$CURUSER['id'].$targetid.$type.'confirm'.'muddys the wat3r');
   if (!$sure)
     stderr("Confirm Friend","Do you really want to confirm this person? Click\n" .
         "<a href=?id=$userid&action=confirm&type=$type&targetid=$targetid&sure=1&h=$hash><b>here</b></a> if you are sure.", FALSE);
@@ -124,7 +130,7 @@ elseif ($action == 'delpending')
   if (!is_valid_id($targetid))
 		stderr("Error", "Invalid ID.");
 
-  $hash = md5(' changethis '.$CURUSER['id'].$targetid.$type.'delete'.'changethis');
+  $hash = md5(' s5me mud '.$CURUSER['id'].$targetid.$type.'confirm'.'muddys the wat3r');
   if (!$sure)
     stderr("Delete $type Request","Do you really want to delete this friend request? Click\n" .
         "<a href=?id=$userid&action=delpending&type=$type&targetid=$targetid&sure=1&h=$hash><b>here</b></a> if you are sure.", FALSE);
@@ -153,7 +159,7 @@ elseif ($action == 'delete')
   if (!is_valid_id($targetid))
 		stderr("Error", "Invalid ID.");
 
-  $hash = md5(' changethis '.$CURUSER['id'].$targetid.$type.'delete'.'changethis');
+  $hash = md5(' s5me mud '.$CURUSER['id'].$targetid.$type.'confirm'.'muddys the wat3r');
   if (!$sure)
     stderr("Delete $type","Do you really want to delete a $type? Click\n" .
         "<a href=?id=$userid&action=delete&type=$type&targetid=$targetid&sure=1&h=$hash><b>here</b></a> if you are sure.", FALSE);
@@ -189,24 +195,24 @@ stdhead("Personal lists for " . $user['username']);
 $donor = ($user["donor"] == "yes") ? "<img src=".$pic_base_url."starbig.gif alt='Donor' style='margin-left: 4pt'>" : '';
 $warned = ($user["warned"] == "yes") ? "<img src=".$pic_base_url."warnedbig.gif alt='Warned' style='margin-left: 4pt'>" : '';
 
-/*
+
 $country = '';
-include 'cache/countries.php';
+include 'include/cache/countries.php';
 foreach ($countries as $country)
 if ($country['id'] == $user['country'])
 {
 $country = "<td class=embedded><img src=\"".$pic_base_url."flag/{$country['flagpic']}\" alt=\"". htmlspecialchars($country['name']) ."\" style='margin-left: 8Pt'></td>";
 break;
 }
-*/
 
+/*
 $country = '';
 $res = mysql_query("SELECT name,flagpic FROM countries WHERE id=".$user['country']." LIMIT 1") or sqlerr();
 if (mysql_num_rows($res) == 1)
 {
   $arr = mysql_fetch_assoc($res);
 	$country = "<td class=embedded><img src=\"".$pic_base_url."flag/".$arr['flagpic']."\" alt=\"". htmlspecialchars($arr['name']) ."\" style='margin-left: 8pt'></td>";
-}
+}*/
 $pm_pic = "<img src=".$pic_base_url."button_pm.gif alt='Send PM' border=0>";
 
 print("<p><table class=main border=0 cellspacing=0 cellpadding=0>".

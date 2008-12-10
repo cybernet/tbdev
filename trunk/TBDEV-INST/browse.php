@@ -4,6 +4,7 @@ require_once("include/bittorrent.php");
 require_once("include/function_torrenttable.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
+
 dbconn(false);
 if(!logged_in())
 {
@@ -13,10 +14,9 @@ print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was 
 die();
 }
 
-if ($_GET['clear_new']){
-sql_query("UPDATE users SET last_browse=".gmtime()." where id=".$CURUSER['id']);
-header("Location: browse.php");
-}
+if ($CURUSER['update_new'] != 'no' && $_GET['clear_new'])
+$_SESSION['browsetime']=gmtime();
+
 include 'include/cache/categories.php';
 $cats = $categories;
 ////////////sort start///////////
@@ -196,10 +196,11 @@ if ($addparam != "") {
     } else {
  $addparam = $pagerlink;
     }
+	
 	list($pagertop, $pagerbottom, $limit) = pager($torrentsperpage, $count, "browse.php?" . $addparam);
-    $query = "SELECT torrents.id, torrents.category, torrents.leechers, torrents.seeders, torrents.request, torrents.scene, torrents.nuked, torrents.nukereason, torrents.newgenre, torrents.afterpre, torrents.countstats, torrents.name, torrents.sticky, torrents.times_completed, torrents.size, torrents.added, torrents.comments,torrents.numfiles,torrents.filename,torrents.multiplicator,torrents.anonymous,torrents.owner,IF(torrents.nfo <> '', 1, 0) as nfoav," .
+    $query = "SELECT torrents.id, torrents.category, torrents.leechers, torrents.seeders, torrents.request, torrents.checked_by, torrents.scene, torrents.nuked, torrents.nukereason, torrents.newgenre, torrents.afterpre, torrents.countstats, torrents.name, torrents.vip, torrents.sticky, torrents.times_completed, torrents.size, torrents.added, torrents.comments,torrents.numfiles,torrents.filename,torrents.multiplicator,torrents.anonymous,torrents.owner,IF(torrents.nfo <> '', 1, 0) as nfoav," .
 //	"IF(torrents.numratings < $minvotes, NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, categories.name AS cat_name, categories.image AS cat_pic, users.username FROM torrents LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
-	"categories.name AS cat_name, categories.image AS cat_pic, users.username FROM torrents LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
+	"freeslots.free AS freeslot, freeslots.doubleup AS doubleslot, categories.name AS cat_name, categories.image AS cat_pic, users.username FROM torrents LEFT JOIN freeslots ON (torrents.id=freeslots.torrentid AND freeslots.userid={$CURUSER[id]}) LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
 	$res = mysql_query($query) or die(mysql_error());
 }
 else
@@ -207,7 +208,9 @@ else
 if (isset($cleansearchstr))
 	stdhead("Search results for \"$searchstr\"");
 else
+
 	stdhead();
+
 ?>
 
 <STYLE TYPE="text/css" MEDIA=screen>
@@ -391,7 +394,13 @@ $deadchkbox .= " /> including dead torrents\n";
 <?php
 if (isset($cleansearchstr))
 print("<h2>Search results for \"" . safechar($searchstr) . "\"</h2>\n");
-echo'<a href="?clear_new=1"><input type=submit value="clear new tag" class=input></a>';
+if ($CURUSER['update_new'] != 'no')
+{
+//=== if you want a button
+echo'<a href="?clear_new=1"><input type=submit value="clear new tag" class=button></a>';
+//=== if you want a link
+//echo'<p><a href="?clear_new=1">clear new tag</a></p>';
+}
 if ($count) {
 	print($pagertop);
 
@@ -409,5 +418,7 @@ else {
 		print("<p>Sorry pal :(</p>\n");
 	}
 }
+if ($CURUSER['update_new'] != 'yes')
+$_SESSION['browsetime']=gmtime();
 stdfoot();
 ?>

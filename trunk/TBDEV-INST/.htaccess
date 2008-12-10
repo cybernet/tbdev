@@ -1,16 +1,6 @@
-# -FrontPage-
-
-IndexIgnore .htaccess */.??* *~ *# */HEADER* */README* */_vti*
-
-<Limit GET POST>
-order deny,allow
-deny from all
-allow from all
-</Limit>
-<Limit PUT DELETE>
-order deny,allow
-deny from all
-</Limit>
-AuthName chat2pals.co.uk
-AuthUserFile /home2/chat2pal/public_html/_vti_pvt/service.pwd
-AuthGroupFile /home2/chat2pal/public_html/_vti_pvt/service.grp
+######## Simple ReWrite users id by DJLEE ########
+RewriteEngine on
+# For subdir installs just change to RewriteBase /subdirectory
+RewriteBase /
+RewriteRule ^(.*).usr$ userdetails.php?username=$1
+##################################################

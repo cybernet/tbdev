@@ -3,12 +3,13 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Oct 13, 2008 at 12:27 AM
+-- Generation Time: Dec 06, 2008 at 05:56 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.6
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
+--
 --
 --
 
@@ -32,7 +33,6 @@ CREATE TABLE `addedrequests` (
 -- Dumping data for table `addedrequests`
 --
 
-
 -- --------------------------------------------------------
 
 --
@@ -54,7 +54,6 @@ CREATE TABLE `announcement_main` (
 -- Dumping data for table `announcement_main`
 --
 
-
 -- --------------------------------------------------------
 
 --
@@ -73,7 +72,6 @@ CREATE TABLE `announcement_process` (
 --
 -- Dumping data for table `announcement_process`
 --
-
 
 -- --------------------------------------------------------
 
@@ -96,8 +94,6 @@ CREATE TABLE `attachmentdownloads` (
 -- Dumping data for table `attachmentdownloads`
 --
 
-
-
 -- --------------------------------------------------------
 
 --
@@ -119,7 +115,7 @@ CREATE TABLE `attachments` (
 
 --
 -- Dumping data for table `attachments`
-
+--
 
 -- --------------------------------------------------------
 
@@ -143,8 +139,10 @@ CREATE TABLE `avps` (
 INSERT INTO `avps` (`arg`, `value_s`, `value_i`, `value_u`, `value_d`) VALUES
 ('lastcleantime', '', 0, 0, '0000-00-00 00:00:00'),
 ('last24', '0', 0, 0, '0000-00-00 00:00:00'),
-('bestfilmofweek', '', 0, 0, '0000-00-00 00:00:00'),
-('inactivemail', '0', 0, 0, '0000-00-00 00:00:00');
+('extscrape', '0', 0, 0, '0000-00-00 00:00:00'),
+('bestfilmofweek', '0', 0, 0, '0000-00-00 00:00:00'),
+('inactivemail', '0', 0, 0, '0000-00-00 00:00:00'),
+('today', '0', 0, 0, '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -232,7 +230,8 @@ INSERT INTO `bannedemails` (`id`, `added`, `addedby`, `comment`, `email`) VALUES
 (198, '2007-06-19 23:37:08', 1, 'Misspelled hotmail?', '*@hotmail.se'),
 (199, '2007-06-19 23:37:08', 1, 'Misspelled hotmail?', '*@hotmal.com'),
 (200, '2007-06-19 23:37:08', 1, 'Misspelled provider?', '*@bredbnd.net'),
-(201, '2008-09-20 20:02:14', 1, 'Spoof Hotmail', '@hiotmail.com');
+(201, '2008-09-20 20:02:14', 1, 'Spoof Hotmail', '@hiotmail.com'),
+(202, '2008-12-06 15:43:07', 1, 'fake', '*@free1houremail.com');
 
 -- --------------------------------------------------------
 
@@ -254,6 +253,10 @@ CREATE TABLE `bans` (
 --
 -- Dumping data for table `bans`
 --
+
+INSERT INTO `bans` (`id`, `added`, `addedby`, `comment`, `first`, `last`) VALUES
+(3, '2008-08-16 08:38:37', 3, 'test', 1684300900, 1684300900),
+(4, '2008-08-30 16:38:37', 1, 'test', 1684300902, 1684300903);
 
 -- --------------------------------------------------------
 
@@ -309,6 +312,7 @@ CREATE TABLE `bonus` (
   `description` text NOT NULL,
   `art` varchar(10) NOT NULL default 'traffic',
   `menge` bigint(20) unsigned NOT NULL default '0',
+  `pointspool` decimal(10,1) NOT NULL default '0.0',
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
 
@@ -316,25 +320,26 @@ CREATE TABLE `bonus` (
 -- Dumping data for table `bonus`
 --
 
-INSERT INTO `bonus` (`id`, `enabled`, `bonusname`, `points`, `description`, `art`, `menge`) VALUES
-(1, 'yes', '1.0GB Uploaded', '275.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 1073741824),
-(2, 'yes', '2.5GB Uploaded', '350.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 2684354560),
-(3, 'yes', '5GB Uploaded', '550.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 5368709120),
-(4, 'yes', '3 Invites', '1000.0', 'With enough bonus points acquired, you are able to exchange them for a few invites. The points are then removed from your Bonus Bank and the invitations are added to your invites amount.', 'invite', 3),
-(5, 'yes', 'Custom Title!', '500.0', 'For only 500 Bonus Points, you can buy yourself a custom title. The only restrictions are no foul or offensive language or user class can be entered. The points are then removed from your Bonus Bank and your special title is changed to the title of your choice', 'title', 1),
-(6, 'yes', 'VIP Status', '5000.0', 'With enough bonus points acquired, you can buy yourself VIP status for one month. The points are then removed from your Bonus Bank and your status is changed.', 'class', 1),
-(7, 'yes', 'Give A Karma Gift', '100.0', 'Well perhaps you don''t need the upload credit, but you know somebody that could use the Karma boost! You are now able to give your Karma credits as  a gift! The points are then removed from your Bonus Bank and  added to the account of a user of your choice!\r\n\r\nAnd they recieve a PM with all the info as well as who it came from...', 'gift_1', 1073741824),
-(8, 'yes', 'Custom Smilies', '300.0', 'With enough bonus points acquired, you can buy yourself a set of custom smilies for one month! The points are then removed from your Bonus Bank and with a click of a link, your new smilies are available whenever you post or comment!', 'smile', 1),
-(9, 'yes', 'Remove Warning', '1000.0', 'With enough bonus points acquired... So you''ve been naughty... tsk tsk.. Yep now for only 1000 points you can have that warning taken away !', 'warning', 1),
-(10, 'yes', 'Ratio Fix', '500.0', 'With enough bonus points acquired, you can bring the ratio of one torrent to a 1 to 1 ratio! The points are then removed from your Bonus Bank and your status is changed.', 'ratio', 1),
-(11, 'yes', '3 Freeleech Slots', '1000.0', 'With enough bonus points acquired, you are able to exchange them for some Freeleech Slots. The points are then removed from your Bonus Bank and the slots are added to your free slots amount.', 'freeslots', 3),
-(12, 'yes', '10GB Uploaded', '1000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 10737418240),
-(13, 'yes', '25GB Uploaded', '2000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 26843545600),
-(14, 'yes', '50GB Uploaded', '4000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 53687091200),
-(15, 'yes', '100GB Uploaded', '8000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 107374182400),
-(16, 'yes', '520GB Uploaded', '40000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 558345748480),
-(17, 'yes', '1TB Uploaded', '80000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 1116691496960),
-(18, 'yes', '200 Bonus Points - Invite trade-in', '1.0', 'If you have 1 invite and don''t use them click the button to trade them in for 200 Bonus Points.', 'itrade', 200);
+INSERT INTO `bonus` (`id`, `enabled`, `bonusname`, `points`, `description`, `art`, `menge`, `pointspool`) VALUES
+(1, 'yes', '1.0GB Uploaded', '275.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 1073741824, '0.0'),
+(2, 'yes', '2.5GB Uploaded', '350.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 2684354560, '0.0'),
+(3, 'yes', '5GB Uploaded', '550.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 5368709120, '0.0'),
+(4, 'yes', '3 Invites', '1000.0', 'With enough bonus points acquired, you are able to exchange them for a few invites. The points are then removed from your Bonus Bank and the invitations are added to your invites amount.', 'invite', 3, '0.0'),
+(5, 'yes', 'Custom Title!', '500.0', 'For only 500 Bonus Points, you can buy yourself a custom title. The only restrictions are no foul or offensive language or user class can be entered. The points are then removed from your Bonus Bank and your special title is changed to the title of your choice', 'title', 1, '0.0'),
+(6, 'yes', 'VIP Status', '5000.0', 'With enough bonus points acquired, you can buy yourself VIP status for one month. The points are then removed from your Bonus Bank and your status is changed.', 'class', 1, '0.0'),
+(7, 'yes', 'Give A Karma Gift', '100.0', 'Well perhaps you don''t need the upload credit, but you know somebody that could use the Karma boost! You are now able to give your Karma credits as  a gift! The points are then removed from your Bonus Bank and  added to the account of a user of your choice!\r\n\r\nAnd they recieve a PM with all the info as well as who it came from...', 'gift_1', 1073741824, '0.0'),
+(8, 'yes', 'Custom Smilies', '300.0', 'With enough bonus points acquired, you can buy yourself a set of custom smilies for one month! The points are then removed from your Bonus Bank and with a click of a link, your new smilies are available whenever you post or comment!', 'smile', 1, '0.0'),
+(9, 'yes', 'Remove Warning', '1000.0', 'With enough bonus points acquired... So you''ve been naughty... tsk tsk.. Yep now for only 1000 points you can have that warning taken away !', 'warning', 1, '0.0'),
+(10, 'yes', 'Ratio Fix', '500.0', 'With enough bonus points acquired, you can bring the ratio of one torrent to a 1 to 1 ratio! The points are then removed from your Bonus Bank and your status is changed.', 'ratio', 1, '0.0'),
+(11, 'yes', '3 Freeleech Slots', '1000.0', 'With enough bonus points acquired, you are able to exchange them for some Freeleech Slots. The points are then removed from your Bonus Bank and the slots are added to your free slots amount.', 'freeslots', 3, '0.0'),
+(12, 'yes', '10GB Uploaded', '1000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 10737418240, '0.0'),
+(13, 'yes', '25GB Uploaded', '2000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 26843545600, '0.0'),
+(14, 'yes', '50GB Uploaded', '4000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 53687091200, '0.0'),
+(15, 'yes', '100GB Uploaded', '8000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 107374182400, '0.0'),
+(16, 'yes', '520GB Uploaded', '40000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 558345748480, '0.0'),
+(17, 'yes', '1TB Uploaded', '80000.0', 'With enough bonus points acquired, you are able to exchange them for an Upload Credit. The points are then removed from your Bonus Bank and the credit is added to your total uploaded amount.', 'traffic', 1116691496960, '0.0'),
+(18, 'yes', '200 Bonus Points - Invite trade-in', '1.0', 'If you have 1 invite and don''t use them click the button to trade them in for 200 Bonus Points.', 'itrade', 200, '0.0'),
+(19, 'yes', 'Freeslots - Invite trade-in', '1.0', 'If you have 1 invite and don''t use them click the button to trade them in for 2 Free Slots.', 'itrade2', 2, '0.0');
 
 -- --------------------------------------------------------
 
@@ -353,6 +358,7 @@ CREATE TABLE `bookmarks` (
 --
 -- Dumping data for table `bookmarks`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -465,6 +471,7 @@ CREATE TABLE `casino_bets` (
 --
 -- Dumping data for table `casino_bets`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -521,31 +528,6 @@ CREATE TABLE `changelog` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cheaters`
---
-
-CREATE TABLE `cheaters` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `added` datetime NOT NULL default '0000-00-00 00:00:00',
-  `userid` int(10) NOT NULL default '0',
-  `torrentid` int(10) NOT NULL default '0',
-  `client` varchar(255) NOT NULL default '',
-  `rate` varchar(255) NOT NULL default '',
-  `beforeup` varchar(255) NOT NULL default '',
-  `upthis` varchar(255) NOT NULL default '',
-  `timediff` varchar(255) NOT NULL default '',
-  `userip` varchar(15) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `cheaters`
---
-
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `coins`
 --
 
@@ -560,6 +542,7 @@ CREATE TABLE `coins` (
 --
 -- Dumping data for table `coins`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -604,7 +587,6 @@ CREATE TABLE `config` (
 --
 -- Dumping data for table `config`
 --
-
 
 -- --------------------------------------------------------
 
@@ -766,6 +748,8 @@ CREATE TABLE `dox` (
 --
 -- Dumping data for table `dox`
 --
+
+
 -- --------------------------------------------------------
 
 --
@@ -790,7 +774,7 @@ CREATE TABLE `faq` (
 INSERT INTO `faq` (`id`, `cid`, `question`, `answer`, `ctime`, `mtime`) VALUES
 (1, 1, 'What is this bittorrent all about anyway? How do I get the files?', 'Check out Brian''s BitTorrent FAQ and Guide.', 1162676179, 1162844691),
 (2, 2, 'Where does the donated money go?', 'yoursite is situated on a dedicated server in the Netherlands. For the moment we have monthly running costs of approximately ', 1162868062, 1162406569),
-(3, 1, 'Where can I get a copy of the source code?', 'Its open  free source code..... Made by the People For The People...', 1162676179, 1162647088),
+(3, 1, 'Where can I get a copy of the source code?', 'Its available @ http://tbdev.net ...Its open  free source code..... Made by the People For The People...', 1162676179, 1225736457),
 (4, 2, 'I registered an account but did not receive the confirmation e-mail!', 'You can use this form to delete the account so you can re-register. Note though that if you didn''t receive the email the first time it will probably not succeed the second time either so you should really try another email address.', 1162676179, 1162406569),
 (5, 2, 'I have lost my user name or password! Can you send it to me?', 'Please use this form to have the login details mailed back to you.', 1162868062, 1162406569),
 (6, 2, 'Can you rename my account?', 'We do not rename accounts. Please create a new one. (Use this form to delete your present account.)', 1162676179, 1162406569),
@@ -864,7 +848,6 @@ CREATE TABLE `files` (
 -- Dumping data for table `files`
 --
 
-
 -- --------------------------------------------------------
 
 --
@@ -907,6 +890,24 @@ CREATE TABLE `forums` (
 --
 -- Dumping data for table `forums`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `freepoll`
+--
+
+CREATE TABLE `freepoll` (
+  `torrentid` int(11) NOT NULL default '0',
+  `userid` int(11) NOT NULL default '0',
+  `id` int(11) NOT NULL auto_increment,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `freepoll`
+--
+
 -- --------------------------------------------------------
 
 --
@@ -927,6 +928,7 @@ CREATE TABLE `freeslots` (
 --
 -- Dumping data for table `freeslots`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -946,7 +948,7 @@ CREATE TABLE `free_download` (
 --
 
 INSERT INTO `free_download` (`free`, `free_for_all`, `title`, `message`) VALUES
-('free', 'no', 'Testing', '[b][i][color=green] :-P Test :-P [/b][/i][/color]');
+('free', 'yes', 'test', 'test');
 
 -- --------------------------------------------------------
 
@@ -965,6 +967,8 @@ CREATE TABLE `friends` (
 
 --
 -- Dumping data for table `friends`
+--
+
 -- --------------------------------------------------------
 
 --
@@ -1002,6 +1006,7 @@ CREATE TABLE `funds` (
 --
 -- Dumping data for table `funds`
 --
+
 
 -- --------------------------------------------------------
 
@@ -1052,6 +1057,46 @@ INSERT INTO `gallery_admin_users` (`user_class`, `gal_per_member`, `number_total
 (5, 10, 60, 10),
 (6, 12, 100, 10),
 (7, 12, 100, 10);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `happyhour`
+--
+
+CREATE TABLE `happyhour` (
+  `id` int(10) NOT NULL auto_increment,
+  `userid` int(10) NOT NULL default '0',
+  `torrentid` int(10) NOT NULL default '0',
+  `multiplier` float NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `userid` (`userid`,`torrentid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `happyhour`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `happylog`
+--
+
+CREATE TABLE `happylog` (
+  `id` int(10) NOT NULL auto_increment,
+  `userid` int(10) NOT NULL default '0',
+  `torrentid` int(10) NOT NULL default '0',
+  `multi` float NOT NULL default '0',
+  `date` int(10) NOT NULL default '0',
+  PRIMARY KEY  (`id`),
+  KEY `userid` (`userid`,`torrentid`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `happylog`
+--
+
 -- --------------------------------------------------------
 
 --
@@ -1099,6 +1144,46 @@ CREATE TABLE `image_ratings` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `infolog`
+--
+
+CREATE TABLE `infolog` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `added` datetime default NULL,
+  `txt` text,
+  PRIMARY KEY  (`id`),
+  KEY `added` (`added`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `infolog`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `invite_codes`
+--
+
+CREATE TABLE `invite_codes` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `sender` int(10) unsigned NOT NULL default '0',
+  `receiver` varchar(32) NOT NULL default '0',
+  `code` varchar(32) NOT NULL default '',
+  `invite_added` datetime NOT NULL default '0000-00-00 00:00:00',
+  `status` enum('Pending','Confirmed') NOT NULL default 'Pending',
+  PRIMARY KEY  (`id`),
+  KEY `sender` (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `invite_codes`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `iplog`
 --
 
@@ -1115,7 +1200,6 @@ CREATE TABLE `iplog` (
 -- Dumping data for table `iplog`
 --
 
-
 -- --------------------------------------------------------
 
 --
@@ -1131,12 +1215,11 @@ CREATE TABLE `links` (
   `mtime` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `cat_id` (`cid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `links`
 --
-
 
 -- --------------------------------------------------------
 
@@ -1178,8 +1261,6 @@ CREATE TABLE `loginattempts` (
 --
 -- Dumping data for table `loginattempts`
 --
-
-
 -- --------------------------------------------------------
 
 --
@@ -1205,6 +1286,7 @@ CREATE TABLE `messages` (
 --
 -- Dumping data for table `messages`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -1243,6 +1325,7 @@ CREATE TABLE `news` (
 --
 -- Dumping data for table `news`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -1285,6 +1368,8 @@ CREATE TABLE `offers` (
 --
 -- Dumping data for table `offers`
 --
+
+
 -- --------------------------------------------------------
 
 --
@@ -1372,7 +1457,6 @@ CREATE TABLE `peers` (
 -- Dumping data for table `peers`
 --
 
-
 -- --------------------------------------------------------
 
 --
@@ -1394,6 +1478,7 @@ CREATE TABLE `photo_gallery` (
 --
 -- Dumping data for table `photo_gallery`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -1414,6 +1499,7 @@ CREATE TABLE `pollanswers` (
 --
 -- Dumping data for table `pollanswers`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -1432,7 +1518,9 @@ CREATE TABLE `poller` (
 
 INSERT INTO `poller` (`ID`, `pollerTitle`) VALUES
 (1, 'How would you rate this script?'),
-(2, 'Testing Ajax Poller');
+(2, 'Testing Ajax Poller'),
+(3, 'What pet do you have?'),
+(4, 'Are you waiting for Santa?');
 
 -- --------------------------------------------------------
 
@@ -1461,7 +1549,17 @@ INSERT INTO `poller_option` (`ID`, `pollerID`, `optionText`, `pollerOrder`, `def
 (5, 1, 'Poor', 4, '0'),
 (6, 2, 'Better than the default poll ', 0, '0'),
 (7, 2, 'its the shit', 1, '0'),
-(8, 2, 'dont give a fcuk', 2, '0');
+(8, 2, 'dont give a fcuk', 2, '0'),
+(9, 3, 'Cat', 0, '0'),
+(10, 3, 'Dog', 1, '0'),
+(11, 3, 'Birds', 2, '0'),
+(12, 3, 'Monkey', 3, '0'),
+(13, 3, 'Fish', 4, '0'),
+(14, 3, 'No pet', 5, '0'),
+(15, 4, 'Yes', 0, '0'),
+(16, 4, 'No ', 1, '0'),
+(17, 4, 'I have been bad so he will not come :(', 2, '0'),
+(18, 4, 'Who is Santa?', 3, '0');
 
 -- --------------------------------------------------------
 
@@ -1481,6 +1579,7 @@ CREATE TABLE `poller_vote` (
 --
 -- Dumping data for table `poller_vote`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -1520,6 +1619,7 @@ CREATE TABLE `polls` (
 --
 -- Dumping data for table `polls`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -1544,7 +1644,6 @@ CREATE TABLE `posts` (
 --
 -- Dumping data for table `posts`
 --
-
 
 -- --------------------------------------------------------
 
@@ -1586,8 +1685,6 @@ CREATE TABLE `readposts` (
 -- Dumping data for table `readposts`
 --
 
-
-
 -- --------------------------------------------------------
 
 --
@@ -1612,7 +1709,6 @@ CREATE TABLE `reports` (
 --
 -- Dumping data for table `reports`
 --
-
 
 -- --------------------------------------------------------
 
@@ -1640,6 +1736,7 @@ CREATE TABLE `requests` (
 -- Dumping data for table `requests`
 --
 
+
 -- --------------------------------------------------------
 
 --
@@ -1662,11 +1759,11 @@ CREATE TABLE `rules` (
 --
 
 INSERT INTO `rules` (`id`, `cid`, `heading`, `body`, `ctime`, `mtime`) VALUES
-(1, 1, ':: General rules - Breaking these rules can and will get you banned !', 'Access to the newest torrents is conditional on a good ratio! (See the FAQ  for details.)\r\nLow ratios may result in severe consequences, including banning in extreme cases.\r\n\r\nGeneral Guidelines - Please follow these guidelines or else you might end up with a warning!\r\n\r\nNo duplicate accounts from the same IP.   Members with more than one account for whatever reason without approval of Sysops or staff leaders will get banned  please do not make multiple  accounts!.\r\nNo aggressive behavior or flaming in the forums.\r\nNo trashing of other peoples topics (e.g. SPAM)\r\nNo language other than English in the forums.\r\n\r\nThis site has very strict rules in regards to racial slurs and racist remarks', 1214338879, 1214079783),
-(2, 2, ':Forum Rules::', ' # Please, feel free to answer any questions but leave the moderating to the moderators.\r\n     # Don''t use all capital letters, excessive !!! (exclamation marks) or ??? (question marks)... it seems like you''re shouting.\r\n     # No posting of users stats without their consent is allowed in the forums or torrent comments regardless of ratio or class.  \r\n     # No trashing of other peoples topics.\r\n     # No systematic foul language (and none at all on titles).\r\n     # No double posting. If you wish to post again, and yours is the last post in the thread please use the EDIT function, instead of posting a double.    \r\n     # No bumping... (All bumped threads will be Locked.)  \r\n     # No direct links to internet sites in the forums.      \r\n     # No images larger than 400x400, and preferably web-optimised. Use the [imgw] tag for larger images.\r\n     # No advertising, mechandising or promotions of any sort are allowed on the site.    \r\n     # Do not tell people to read the Rules, the FAQ, or comment on their ratios and torrents.    \r\n     # No consistent off-topic posts allowed in the forums. (i.e. SPAM or hijacking)  \r\n     # The Trading/Requesting of invites to other sites is forbidden in the forums.  \r\n     # Do not post links to other torrent sites or torrents on those sites.    \r\n     # Users are not allowed, under any circumstance to create their own polls in the forum.    \r\n     # No self-congratulatory topics are allowed in the forums.    \r\n     # Do not quote excessively. One quote of a quote box is sufficient.    \r\n     # Please ensure all questions are posted in the correct section!     (Game questions in the Games section, Apps questions in the Apps section, etc.)    \r\n     # Please, feel free to answer any questions.. However remain respectful to the people you help ....nobodys better than anyone else.    \r\n     # Last, please read the FAQ before asking any question', 1214339023, 0),
-(3, 4, 'Uploaders Rules', 'All uploaders are subject to follow the below rules in order to be a part of the Scene-Base uploader team.  We realize that it''s quite a list, and for new uploaders, it might seem a bit overwhelming, but as you spend time here, they''ll become second hat.\r\n\r\nTorrents that do not follow the rules below will be deleted.  If you have any questions about the below rules, please feel free to PM them and I will clarify as best I can.\r\n\r\nWelcome to the team and happy uploading!\r\n\r\n# All Uploaders must upload a minimum of 3 unique torrents each week to retain their Uploader status.  Failure to comply will result in a demotion, and a minimum of a 2 week blackout period where they will not be able to return to the Uploader team.  If, after the 2 weeks, the Uploader can prove they will be active, they will be reinstated.  A second instance of inactivity will be cause for permanent removal from the Uploader team.  Extenuating circumstances will be considered if it is the cause of inactivity.  If you are going to be away, please let a staff member know so that your account is not affected.\r\n# All torrents must be rarred, no matter what the size or type.  The ONLY exception to this is MP3s.  Guidelines for rarring your own releases are as follows:\r\n', 1214339203, 0),
-(4, 5, ':: :: Free leech rules', '      From time to time we will have freeleech for 48hours. This means that when you download from site it will not count against your download ratio.\r\n\r\n      Whatever you seed back will add to your upload ratio.\r\n\r\nThis is a good opportunity for members with ratio''s below 1.0 to bring them back into line\r\n\r\nAnyone who hit and runs on a freeleech torrent will receive a mandatory 2 week warning. You must seed all torrents downloaded to  100% or for a minimum of 48 hours this is for free leech torrents only.\r\n\r\n', 1214339464, 0),
-(5, 6, ':: Downloading rules', 'No comments on torrents you are not about to download\r\nOnce download is complete, remember to seed for as long as possible or for a minimum of 36 hours or a ratio of 1:1\r\nLow ratios will be given the three strike warning from staff and can lead to a total ban', 1214339531, 0);
+(1, 1, ':: ::General rules - Breaking these rules can and will get you banned !', 'Access to the newest torrents is conditional on a good ratio! (See the FAQ  for details.)\r\nLow ratios may result in severe consequences, including banning in extreme cases.\r\n\r\nGeneral Guidelines - Please follow these guidelines or else you might end up with a warning!\r\n\r\nNo duplicate accounts from the same IP.   Members with more than one account for whatever reason without approval of Sysops or staff leaders will get banned  please do not make multiple  accounts!.\r\nNo aggressive behavior or flaming in the forums.\r\nNo trashing of other peoples topics (e.g. SPAM)\r\nNo language other than English in the forums.\r\n\r\nThis site has very strict rules in regards to racial slurs and racist remarks', 1214338879, 1214079783),
+(2, 2, ':: ::Forum Rules', ' # Please, feel free to answer any questions but leave the moderating to the moderators.\r\n     # Don''t use all capital letters, excessive !!! (exclamation marks) or ??? (question marks)... it seems like you''re shouting.\r\n     # No posting of users stats without their consent is allowed in the forums or torrent comments regardless of ratio or class.  \r\n     # No trashing of other peoples topics.\r\n     # No systematic foul language (and none at all on titles).\r\n     # No double posting. If you wish to post again, and yours is the last post in the thread please use the EDIT function, instead of posting a double.    \r\n     # No bumping... (All bumped threads will be Locked.)  \r\n     # No direct links to internet sites in the forums.      \r\n     # No images larger than 400x400, and preferably web-optimised. Use the [imgw] tag for larger images.\r\n     # No advertising, mechandising or promotions of any sort are allowed on the site.    \r\n     # Do not tell people to read the Rules, the FAQ, or comment on their ratios and torrents.    \r\n     # No consistent off-topic posts allowed in the forums. (i.e. SPAM or hijacking)  \r\n     # The Trading/Requesting of invites to other sites is forbidden in the forums.  \r\n     # Do not post links to other torrent sites or torrents on those sites.    \r\n     # Users are not allowed, under any circumstance to create their own polls in the forum.    \r\n     # No self-congratulatory topics are allowed in the forums.    \r\n     # Do not quote excessively. One quote of a quote box is sufficient.    \r\n     # Please ensure all questions are posted in the correct section!     (Game questions in the Games section, Apps questions in the Apps section, etc.)    \r\n     # Please, feel free to answer any questions.. However remain respectful to the people you help ....nobodys better than anyone else.    \r\n     # Last, please read the FAQ before asking any question', 1214339023, 0),
+(3, 4, ':: ::Uploaders Rules', 'All uploaders are subject to follow the below rules in order to be a part of the  uploader team. We realize that it''s quite a list, and for new uploaders, it might seem a bit overwhelming, but as you spend time here, they''ll become second hat.\r\n\r\nTo apply to become a site uploader use the uploaders application form, contact staff to get the link.\r\n\r\nTorrents that do not follow the rules below will be deleted.  If you have any questions about the below rules, please feel free to PM them and I will clarify as best I can.\r\n\r\nWelcome to the team and happy uploading!\r\n\r\n# All Uploaders must upload a minimum of 3 unique torrents each week to retain their Uploader status.  Failure to comply will result in a demotion, and a minimum of a 2 week blackout period where they will not be able to return to the Uploader team.  If, after the 2 weeks, the Uploader can prove they will be active, they will be reinstated.  A second instance of inactivity will be cause for permanent removal from the Uploader team.  Extenuating circumstances will be considered if it is the cause of inactivity.  If you are going to be away, please let a staff member know so that your account is not affected.\r\n# All torrents must be rarred, no matter what the size or type.  The ONLY exception to this is MP3s.  Guidelines for rarring your own releases are as follows:\r\n', 1214339203, 0),
+(4, 5, ':: ::Free leech rules', '      From time to time we will have freeleech for 48hours. This means that when you download from site it will not count against your download ratio.\r\n\r\n      Whatever you seed back will add to your upload ratio.\r\n\r\nThis is a good opportunity for members with ratio''s below 1.0 to bring them back into line\r\n\r\nAnyone who hit and runs on a freeleech torrent will receive a mandatory 2 week warning. You must seed all torrents downloaded to  100% or for a minimum of 48 hours this is for free leech torrents only.\r\n\r\n', 1214339464, 0),
+(5, 6, ':: ::Downloading rules', 'No comments on torrents you are not about to download\r\nOnce download is complete, remember to seed for as long as possible or for a minimum of 36 hours or a ratio of 1:1\r\nLow ratios will be given the three strike warning from staff and can lead to a total ban', 1214339531, 0);
 
 -- --------------------------------------------------------
 
@@ -1686,11 +1783,11 @@ CREATE TABLE `rules_categories` (
 --
 
 INSERT INTO `rules_categories` (`cid`, `rcat_name`, `min_class_read`) VALUES
-(1, 'General Site Rules', 0),
-(2, 'Forum Rules', 0),
-(5, ':: :: Free leech rules', 0),
-(3, ':Uploaders Rules::', 0),
-(6, ':: Downloading rules', 0);
+(1, ':: ::General Site Rules', 0),
+(2, ':: ::Forum Rules', 0),
+(5, ':: ::Free leech rules', 0),
+(3, ':: ::Uploaders Rules', 0),
+(6, ':: ::Downloading rules', 0);
 
 -- --------------------------------------------------------
 
@@ -1710,7 +1807,6 @@ CREATE TABLE `shit_list` (
 -- Dumping data for table `shit_list`
 --
 
-
 -- --------------------------------------------------------
 
 --
@@ -1729,6 +1825,7 @@ CREATE TABLE `shoutbox` (
 --
 -- Dumping data for table `shoutbox`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -1747,6 +1844,11 @@ CREATE TABLE `sitelog` (
 -- Dumping data for table `sitelog`
 --
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `siteonline`
+--
 
 CREATE TABLE `siteonline` (
   `onoff` int(1) NOT NULL default '1',
@@ -1756,13 +1858,14 @@ CREATE TABLE `siteonline` (
   PRIMARY KEY  (`onoff`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
--- 
+--
 -- Dumping data for table `siteonline`
--- 
+--
 
-INSERT INTO `siteonline` VALUES (1, 'Insert Your Message Here', 0, 'just for User');
+INSERT INTO `siteonline` (`onoff`, `reason`, `class`, `class_name`) VALUES
+(1, 'Server Offline For Updates - Back Soon !', 0, 'just for User');
 
--- -----------------------------------------------------------
+-- --------------------------------------------------------
 
 --
 -- Table structure for table `snatched`
@@ -1792,14 +1895,36 @@ CREATE TABLE `snatched` (
   `hit_run` int(2) default '0',
   `prewarn` datetime NOT NULL default '0000-00-00 00:00:00',
   `finished` enum('yes','no') NOT NULL default 'no',
-  `completedat` datetime NOT NULL default '0000-00-00 00:00:00',
-  `tamount` int(10) unsigned NOT NULL default '0',
+  `sl_warned` enum('yes','no') NOT NULL default 'no',
+  `torrent_name` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `tr_usr` (`torrentid`,`userid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `snatched`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `staffmessages`
+--
+
+CREATE TABLE `staffmessages` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `sender` int(10) unsigned NOT NULL default '0',
+  `added` datetime default NULL,
+  `msg` text,
+  `subject` varchar(100) NOT NULL default '',
+  `answeredby` int(10) unsigned NOT NULL default '0',
+  `answered` tinyint(1) NOT NULL default '0',
+  `answer` text,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `staffmessages`
 --
 
 -- --------------------------------------------------------
@@ -1832,6 +1957,7 @@ INSERT INTO `staffpanel` (`id`, `page_name`, `file_name`, `description`, `av_cla
 (4, 'Manage Chmod', 'chmod', 'Manage Ftp Directory Chmod Permissions', 7, 1, 1217836942),
 (5, 'Manual Clean up', 'docleanup', 'Run Site Clean Up ', 6, 1, 1217837040),
 (6, 'Mass Bonus', 'massbonus', 'Award All Members 500 Karma Points', 6, 1, 1217837358),
+(7, 'Cache Stylesheets', 'cachestylesheets', 'Cache The StyleSheets', 6, 1, 1217837552),
 (8, 'Ip Bans', 'bans', 'Ip Ban Bad Users', 6, 1, 1217838226),
 (9, 'Donations', 'donations', 'View All Site Donators And Donations Here', 6, 1, 1217838383),
 (10, 'Site Check', 'sitecheck', 'Coders Site Checker', 7, 1, 1217838638),
@@ -1840,7 +1966,7 @@ INSERT INTO `staffpanel` (`id`, `page_name`, `file_name`, `description`, `av_cla
 (13, 'Db Admin', 'msgspy', 'Delete And Manage Spam', 6, 1, 1217839090),
 (14, 'Upload Bonus', 'upload-bonus', 'Award All Members Upload Bonus', 6, 1, 1217839153),
 (15, 'Slots Manager', 'manage-slots', 'Manage Members Freeslots', 6, 1, 1217839273),
-(16, 'Delete User', 'delacct', 'Delete Members Accounts', 5, 1, 1217839394),
+(16, 'Delete User', 'delacctadmin', 'Delete Members Accounts', 5, 1, 1217839394),
 (17, 'Check Torrent Comments', 'torrentcomments', 'Check Comments For Karma Whores', 5, 1, 1217839483),
 (18, 'Mass Pm', 'masspm', 'Mass Pm All Members', 5, 1, 1217840638),
 (19, 'View Reports', 'reports', 'View All Site Reports', 5, 1, 1217840706),
@@ -1855,18 +1981,17 @@ INSERT INTO `staffpanel` (`id`, `page_name`, `file_name`, `description`, `av_cla
 (29, 'Advanced Account Manager', 'acpmanage', 'Manage Bans - Disabled - Pending Users', 5, 1, 1217854481),
 (30, 'Reset Banned', 'maxlogin', 'Reset Banned Failed Login Attempts', 5, 1, 1217854628),
 (31, 'Edit Rules', 'rules_admin', 'Edit Site Rules', 5, 1, 1217856210),
-(32, 'Ratio Cheats', 'cheaters', 'View Possible Ratio Cheats With Up Speed Greater Than 2mb/s', 5, 1, 1217856291),
 (33, 'Edit Links', 'links_admin', 'Edit Site Links', 5, 1, 1217856548),
 (34, 'Warned User''s', 'warned', 'Manage Warned Users', 4, 1, 1217861230),
 (35, 'Rip Nfo', 'nforipper', 'Rip Ascii From Nfo''s', 4, 1, 1217861313),
 (36, 'Invited Users', 'invitedby', 'Show All Invited Users', 4, 1, 1217861373),
 (37, 'Uploader Activity', 'stats', 'View Uploader Activity And Categorie Activity', 4, 1, 1217861859),
-(38, 'Category Manager', 'category', 'Manage Site Categories', 4, 1, 1217861924),
+(38, 'Category Manager', 'categorie', 'Manage Site Categories', 4, 1, 1217861924),
 (39, 'Name Changer', 'namechanger', 'Change Members Nicks', 4, 1, 1217862003),
 (40, 'Site Log', 'log', 'View All Site log Entrys', 4, 1, 1217862053),
 (41, 'User List', 'users', 'Full Site User List', 4, 1, 1217862162),
 (42, 'Forum Manager', 'forummanage', 'Manage And Edit Forums', 4, 1, 1217862210),
-(43, 'Inactive Users', 'inactiveusers', 'Show All Inactive Members - Notify By Email', 4, 1, 1217862406),
+(43, 'Inactive Users', 'inactive', 'Show All Inactive Members - Notify By Email', 4, 1, 1217862406),
 (44, 'Reset Password', 'reset', 'Reset Forgotten Passwords', 4, 1, 1217862448),
 (45, 'Snatched Torrents', 'snatched_torrents', 'View All Site Snatches', 4, 1, 1217862509),
 (46, 'Duplicate Ip''s', 'ipcheck', 'Check Site For Duplicate Ip''s', 4, 1, 1217862581),
@@ -1876,20 +2001,24 @@ INSERT INTO `staffpanel` (`id`, `page_name`, `file_name`, `description`, `av_cla
 (50, 'Advanced User Search', 'usersearch1', 'Carry Out Advanced User Searches', 4, 1, 1218321784),
 (51, 'HtAccessor', 'htaccesser', 'Make .Htaccess files', 7, 1, 1218993346),
 (53, 'Check Invites', 'invitesinplay', 'Keep Tabs on invite''s ', 6, 1, 1219524702),
-(54, 'Query Explain', 'query_explain', 'Check Active Mysql Querys', 6, 1, 1219602834),
 (55, 'Advanced Db Manager', 'database', 'Back up, Check, Repair, Optimize Db', 7, 1, 1219602892),
+(56, 'Cache Countries', 'cachecountries', 'Cache Countries When Adding New Entrys', 6, 1, 1219664241),
+(57, 'Cache Categories', 'cachecategories', 'Cache Catigories When Adding New Entry', 6, 1, 1219664338),
 (58, 'View Shout History', 'shistory', 'Shout History Check', 6, 1, 1220057674),
+(59, 'Edit Php Files', 'editfiles', 'Only Use This If You Know What Your Doing', 7, 1, 1220104662),
 (60, 'Php File Edit Log', 'editlog', 'Coders Php File Edit Log', 7, 1, 1220104851),
 (61, 'Sql Query Script', 'sqlcmdex', 'Execute Raw Sql Commands From Tracker', 7, 1, 1220181900),
 (62, 'Users Possibilities', 'userspos', 'View User Settings', 4, 1, 1220640589),
-(63, 'PhpInfo', 'phpinfo', 'PhpInfo - Check Filepaths And Configs', 7, 1, 1220781999),
+(63, 'PhpInfo', 'system_view', 'PhpInfo - Check Filepaths And Configs', 7, 1, 1220781999),
 (64, 'Byte Calculator', 'calculator', 'Convert gigbytes to bytes ect for ratio adjustments', 4, 1, 1221381023),
 (65, 'Advanced Bonus Manager', 'bonuspoints', 'New Advanced Bonus Manager - Under Tests', 5, 1, 1221391649),
 (66, 'Reveal Ip Location', 'iptocountry', 'Show Geo Location On Any Ip', 5, 1, 1221406559),
 (67, 'Ban Spoof Emails', 'bannedemails', 'Ban Fake Email Address From Being Used On Sign Up', 5, 1, 1221937606),
 (68, 'Mass Freeleech', 'massfree', 'Not All FreeDownload - Sets Individual Torrent''s To  Countstats On Or Off', 4, 1, 1222420548),
-(69, 'Proxy Detect', 'proxy', 'Possible Proxy Users May Be Listed Here', 5, 1, 1222431165),
-(70, 'Site Offline Control', 'siteonoff', 'Turn Site Offline - Staff access Only', 7, 1, 1223213931);
+(69, 'Proxy Detect', 'proxy', 'Possible Proxy Users May Be Listed Here', 7, 1, 1222431165),
+(70, 'Site Offline Control', 'siteonoff', 'Turn Site Offline - Staff access Only', 7, 1, 1223213931),
+(71, 'Staff Actions Log', 'sysoplog', 'Staff Functions Log', 6, 1, 1224993991),
+(72, 'Passkey Checker', 'selpasskey', 'View Users With More Than One Passkey', 5, 1, 1228089465);
 
 -- --------------------------------------------------------
 
@@ -1910,31 +2039,10 @@ CREATE TABLE `stylesheets` (
 
 INSERT INTO `stylesheets` (`id`, `uri`, `name`) VALUES
 (1, 'default', '(default)'),
-(2, 'large', 'Large text');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `subcache`
---
-
-CREATE TABLE `subcache` (
-  `id` int(10) NOT NULL,
-  `date` datetime NOT NULL,
-  `english` int(10) NOT NULL default '0',
-  `swedish` int(10) NOT NULL default '0',
-  `danish` int(10) NOT NULL default '0',
-  `finnish` int(10) NOT NULL default '0',
-  `norwegian` int(10) NOT NULL default '0',
-  `spanish` int(10) NOT NULL default '0',
-  `french` int(10) NOT NULL default '0',
-  `icelandic` int(10) NOT NULL default '0'
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `subcache`
---
-
+(2, 'large', 'Large text'),
+(3, 'Klima', 'Klima'),
+(4, 'Ei', 'Ei'),
+(5, 'S-Graw', 'S-Graw');
 
 -- --------------------------------------------------------
 
@@ -1951,7 +2059,7 @@ CREATE TABLE `subscriptions` (
 
 --
 -- Dumping data for table `subscriptions`
-
+--
 -- --------------------------------------------------------
 
 --
@@ -1996,7 +2104,6 @@ CREATE TABLE `topics` (
 --
 -- Dumping data for table `topics`
 --
-
 
 -- --------------------------------------------------------
 
@@ -2047,6 +2154,8 @@ CREATE TABLE `torrents` (
   `newgenre` varchar(100) collate utf8_bin NOT NULL default '',
   `afterpre` text collate utf8_bin,
   `uclass` int(10) unsigned NOT NULL,
+  `checked_by` varchar(40) collate utf8_bin NOT NULL default '',
+  `vip` enum('yes','no') collate utf8_bin default 'no',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `info_hash` (`info_hash`),
   KEY `owner` (`owner`),
@@ -2058,8 +2167,6 @@ CREATE TABLE `torrents` (
 --
 -- Dumping data for table `torrents`
 --
-
-
 -- --------------------------------------------------------
 
 --
@@ -2089,6 +2196,7 @@ CREATE TABLE `uploadapp` (
 --
 -- Dumping data for table `uploadapp`
 --
+
 -- --------------------------------------------------------
 
 --
@@ -2190,11 +2298,6 @@ CREATE TABLE `users` (
   `lastwarned` datetime NOT NULL default '0000-00-00 00:00:00',
   `timeswarned` int(10) NOT NULL default '0',
   `warnedby` varchar(40) collate utf8_bin NOT NULL default '',
-  `invited_by` int(10) NOT NULL default '0',
-  `invitees` varchar(100) collate utf8_bin NOT NULL default '',
-  `invites` int(10) NOT NULL default '0',
-  `invitedate` datetime NOT NULL default '0000-00-00 00:00:00',
-  `invite_on` enum('yes','no') collate utf8_bin NOT NULL default 'yes',
   `showfriends` enum('yes','no') collate utf8_bin NOT NULL default 'no',
   `imagecats` enum('yes','no') collate utf8_bin NOT NULL default 'no',
   `port` smallint(5) unsigned NOT NULL default '0',
@@ -2206,6 +2309,7 @@ CREATE TABLE `users` (
   `ttablehl` enum('yes','no') collate utf8_bin NOT NULL default 'no',
   `split` enum('yes','no') collate utf8_bin NOT NULL default 'yes',
   `anonymoustopten` enum('yes','no') collate utf8_bin NOT NULL default 'no',
+  `lastchange` datetime NOT NULL default '0000-00-00 00:00:00',
   `gender` enum('Male','Female','N/A') collate utf8_bin NOT NULL default 'N/A',
   `tohp` enum('yes','no') collate utf8_bin NOT NULL default 'no',
   `shoutboxbg` enum('1','2','3') collate utf8_bin NOT NULL default '1',
@@ -2213,12 +2317,31 @@ CREATE TABLE `users` (
   `casinoban` enum('yes','no') collate utf8_bin NOT NULL default 'no',
   `blackjackban` enum('yes','no') collate utf8_bin NOT NULL default 'no',
   `webseeder` enum('yes','no') collate utf8_bin NOT NULL default 'no',
-  `downloadpos2` enum('yes','no') collate utf8_bin NOT NULL default 'yes',
-  `disableuntil` datetime NOT NULL default '0000-00-00 00:00:00',
   `addbookmark` enum('yes','no','ratio') collate utf8_bin NOT NULL default 'no',
   `bookmcomment` text collate utf8_bin NOT NULL,
   `view_uclass` enum('yes','no') collate utf8_bin NOT NULL default 'no',
   `forumview` enum('yes','no') collate utf8_bin NOT NULL default 'no',
+  `hash1` varchar(96) collate utf8_bin NOT NULL default '',
+  `invitedby` int(10) NOT NULL default '0',
+  `invitees` varchar(100) collate utf8_bin NOT NULL default '',
+  `invites` int(10) NOT NULL default '1',
+  `invitedate` datetime NOT NULL default '0000-00-00 00:00:00',
+  `invite_on` enum('yes','no') collate utf8_bin NOT NULL default 'yes',
+  `update_new` enum('yes','no') collate utf8_bin NOT NULL default 'no',
+  `whywarned` text collate utf8_bin NOT NULL,
+  `warns` bigint(3) unsigned NOT NULL default '0',
+  `dlremoveuntil` datetime NOT NULL default '0000-00-00 00:00:00',
+  `immun` enum('yes','no') collate utf8_bin NOT NULL default 'no',
+  `passhint` int(10) unsigned NOT NULL,
+  `hintanswer` varchar(40) collate utf8_bin NOT NULL default '',
+  `download` int(10) unsigned NOT NULL default '0',
+  `upload` int(10) unsigned NOT NULL default '0',
+  `timezone` smallint(3) NOT NULL default '0',
+  `dst` tinyint(2) NOT NULL default '0',
+  `hidecur` enum('yes','no') collate utf8_bin NOT NULL default 'no',
+  `tlimitall` int(10) NOT NULL default '0',
+  `tlimitseeds` int(10) NOT NULL default '0',
+  `tlimitleeches` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `username` (`username`),
   KEY `status_added` (`status`,`added`),

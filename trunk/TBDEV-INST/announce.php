@@ -1,113 +1,30 @@
 <?php
-// PHP5 with register_long_arrays off?
-if (!isset($HTTP_POST_VARS) && isset($_POST))
-{
-$HTTP_POST_VARS = $_POST;
-$HTTP_GET_VARS = $_GET;
-$HTTP_SERVER_VARS = $_SERVER;
-$HTTP_COOKIE_VARS = $_COOKIE;
-$HTTP_ENV_VARS = $_ENV;
-$HTTP_POST_FILES = $_FILES;
-}
-function strip_magic_quotes($arr)
-{
-foreach ($arr as $k => $v)
-{
-if (is_array($v))
-{ $arr[$k] = strip_magic_quotes($v); }
-else
-{ $arr[$k] = stripslashes($v); }
-}
-return $arr;
-}
-if (get_magic_quotes_gpc())
-{
-if (!empty($_GET)) { $_GET = strip_magic_quotes($_GET); }
-if (!empty($_POST)) { $_POST = strip_magic_quotes($_POST); }
-if (!empty($_COOKIE)) { $_COOKIE = strip_magic_quotes($_COOKIE); }
-}
-// addslashes to vars if magic_quotes_gpc is off
-// this is a security precaution to prevent someone
-// trying to break out of a SQL statement.
-//
-if( !get_magic_quotes_gpc() )
-{
-if( is_array($HTTP_GET_VARS) )
-{
-while( list($k, $v) = each($HTTP_GET_VARS) )
-{
-if( is_array($HTTP_GET_VARS[$k]) )
-{
-while( list($k2, $v2) = each($HTTP_GET_VARS[$k]) )
-{
-$HTTP_GET_VARS[$k][$k2] = addslashes($v2);
-}
-@reset($HTTP_GET_VARS[$k]);
-}
-else
-{
-$HTTP_GET_VARS[$k] = addslashes($v);
-}
-}
-@reset($HTTP_GET_VARS);
-}
-if( is_array($HTTP_POST_VARS) )
-{
-while( list($k, $v) = each($HTTP_POST_VARS) )
-{
-if( is_array($HTTP_POST_VARS[$k]) )
-{
-while( list($k2, $v2) = each($HTTP_POST_VARS[$k]) )
-{
-$HTTP_POST_VARS[$k][$k2] = addslashes($v2);
-}
-@reset($HTTP_POST_VARS[$k]);
-}
-else
-{
-$HTTP_POST_VARS[$k] = addslashes($v);
-}
-}
-@reset($HTTP_POST_VARS);
-}
-if( is_array($HTTP_COOKIE_VARS) )
-{
-while( list($k, $v) = each($HTTP_COOKIE_VARS) )
-{
-if( is_array($HTTP_COOKIE_VARS[$k]) )
-{
-while( list($k2, $v2) = each($HTTP_COOKIE_VARS[$k]) )
-{
-$HTTP_COOKIE_VARS[$k][$k2] = addslashes($v2);
-}
-@reset($HTTP_COOKIE_VARS[$k]);
-}
-else
-{
-$HTTP_COOKIE_VARS[$k] = addslashes($v);
-}
-}
-@reset($HTTP_COOKIE_VARS);
-}
-}
 ob_start("ob_gzhandler");
 $h = date("H");
 if ($h >= 01 && $h <= 06) //When to save some load.
 $announce_interval = 60 * 60; //60 min update in announce - Night
-else $announce_interval = 60 * 30; // 30 min update in announce - Day
+else 
+$announce_interval = 60 * 30; // 30 min update in announce - Day
+$GLOBALS["TORRENT_RULES"] = "0:0:10:2:12|1.01:5:10:3:13|2.01:20:10:4:14";
 $MEMBERSONLY = true;  
 $SITE_ONLINE = true;  
 define ("UC_VIP", 2);
 // secrets.php part //
 $mysql_host = 'localhost';
 $mysql_db = 'xxxxxxxx';
-$mysql_user = 'xxxxxx';
-$mysql_pass = 'xxxxxx';
+$mysql_user = 'xxxxxxxx';
+$mysql_pass = 'xxxxxxxxx';
 // end of secrets.php part //
 //=== start functions
+//=== bad stuff let's just kill this right off
+$headers = getallheaders();
+if (isset($headers['Cookie']) || isset($headers['Accept-Language']) || isset($headers['Accept-Charset']))
+exit('It takes 46 muscles to frown but only 4 to flip \'em the bird.');
+//=== all needed functions
 function err($msg){
-benc_resp(array("failure reason" => array(type => "string", value => $msg)));
-die();
+header('Content-Type: text/plain');
+header('Pragma: no-cache');
+die('d14:failure reason'.strlen($msg).':'.$msg.'e');
 }
 
     //Function unesc
@@ -140,32 +57,33 @@ function mksize($bytes)
 else
 return number_format($bytes / 1125899906842624, 2) . " PB";
 }
-//=== Laffin 0807 - Replacement validip Validation
-// ip 2 unsigned long for MySQL compatibility
-function ip2ulong2($ip) {
-return (ip2long ( $ip ) +pow(2,32));
-}
-//=== LVE 0807 - Replacement validip Validation
-function validip($ip) {
-if($ip==long2ip(ip2long($ip)))
+// IP Validation
+function validip($ip)
 {
-// reserved IANA IPv4 addresses
-// [url=http://www.iana.org/assignments/ipv4-address-space%5dhttp://www.iana.org/assignments/ipv4-address-space%5b/url%5d
-$reserved_ips = array (
-array(4294967296,4345298943), // array('0.0.0.0','2.255.255.255'),
-array(4462739456,4479516671), // array('10.0.0.0','10.255.255.255'),
-array(6425673728,6442450943), // array('127.0.0.0','127.255.255.255'),
-array(2886729728,2887778303), // array('172.16.0.0','172.31.255.255'),
-array(3221225984,3221226239), // array('192.0.2.0','192.0.2.255'),
-array(3232235520,3232301055), // array('192.168.0.0','192.168.255.255'),
-array(4294967040,4294967295), // array('255.255.255.0','255.255.255.255')
-);
-$ip=ip2ulong($ip);
-foreach ($reserved_ips as $r)
-if (($ip >= $r[0]) && ($ip <= $r[1])) return false;
-return true;
-}
-else return false;
+	if (!empty($ip) && $ip == long2ip(ip2long($ip)))
+	{
+		// reserved IANA IPv4 addresses
+		// http://www.iana.org/assignments/ipv4-address-space
+		$reserved_ips = array (
+				array('0.0.0.0','2.255.255.255'),
+				array('10.0.0.0','10.255.255.255'),
+				array('127.0.0.0','127.255.255.255'),
+				array('169.254.0.0','169.254.255.255'),
+				array('172.16.0.0','172.31.255.255'),
+				array('192.0.2.0','192.0.2.255'),
+				array('192.168.0.0','192.168.255.255'),
+				array('255.255.255.0','255.255.255.255')
+		);
+
+		foreach ($reserved_ips as $r)
+		{
+				$min = ip2long($r[0]);
+				$max = ip2long($r[1]);
+				if ((ip2long($ip) >= $min) && (ip2long($ip) <= $max)) return false;
+		}
+		return true;
+	}
+	else return false;
 }
 function getip()
 {
@@ -270,6 +188,33 @@ header("Content-Type: text/plain");
 header("Pragma: no-cache");
 print($x);
 }
+function get_torrent_limits($userinfo)
+{
+    $limit = array("seeds" => -1, "leeches" => -1, "total" => -1);
+
+    if ($userinfo["tlimitall"] == 0) {
+        // Auto limit
+        $ruleset = explode("|", $GLOBALS["TORRENT_RULES"]);
+        $ratio = (($userinfo["downloaded"] > 0) ? ($userinfo["uploaded"] / $userinfo["downloaded"]) : (($userinfo["uploaded"] > 0) ? 1 : 0));
+        $gigs = $userinfo["uploaded"] / 1073741824;
+        
+        $limit = array("seeds" => 0, "leeches" => 0, "total" => 0);
+        foreach ($ruleset as $rule) {
+            $rule_parts= explode(":", $rule);
+            if ($ratio >= $rule_parts[0] && $gigs >= $rule_parts[1] && $limit["total"] <= $rule_parts[4]) {
+                $limit["seeds"] = $rule_parts[2];
+                $limit["leeches"] = $rule_parts[3];
+                $limit["total"] = $rule_parts[4];
+            }
+        }
+    } elseif ($userinfo["tlimitall"] > 0) {
+        // Manual limit
+        $limit["seeds"] = $userinfo["tlimitseeds"];
+        $limit["leeches"] = $userinfo["tlimitleeches"];
+        $limit["total"] = $userinfo["tlimitall"];
+    }
+    return $limit;
+}
 //=== end functions
 global $mysql_host, $mysql_user, $mysql_pass, $mysql_db;   
 mysql_connect($mysql_host, $mysql_user, $mysql_pass);
@@ -301,22 +246,7 @@ foreach(array("num want", "numwant", "num_want") as $k)
 		break;
 	}
 }
-//--- Fix Increase ratio using Firefox & Deny access made with a browser ---//
-$agent = $_SERVER["HTTP_USER_AGENT"];
-if (isset($_SERVER['HTTP_COOKIE']) || isset($_SERVER['HTTP_ACCEPT_LANGUAGE']) || isset($_SERVER['HTTP_ACCEPT_CHARSET']))      
-       if (isset($_GET['info_hash']) || isset($_GET['uploaded']) || isset($_GET['downloaded']) || isset($_GET['event']))
-       {
-            // report in forum
-            $ip = getip();
-            $upld = (int) mksize($_GET['uploaded']);
-            $subject = sqlesc("Browser Cheat - $ip");
-            $body = sqlesc("A user has been detected trying to cheat using the browser method.\n\n Their IP address is $ip and they tried to add $upld.");
-            auto_post( $subject , $body );
-            die("Tracker Response Error: Dictionary Key Missing");
-       }
-       elseif (ereg("^Mozilla\\/", $agent) || ereg("^Opera\\/", $agent) || ereg("^Links ", $agent) || ereg("^Lynx\\/", $agent) || ereg("^curl\\/", $agent))
-die("torrent not registered with this tracker");
-//---- end of fix ----//
+
 $agent = $_SERVER["HTTP_USER_AGENT"];
 if (!isset($event))
 	$event = "";
@@ -344,12 +274,13 @@ err("I'm sorry, $client_ban[0] is banned from this tracker (".stripslashes($clie
 mysql_select_db($mysql_db) or die('dbconn: mysql_select_db: ' + mysql_error()); //=== old dbconn(false);  
 $valid = @mysql_fetch_row(@mysql_query("SELECT COUNT(*) FROM users WHERE passkey=" . sqlesc($passkey)));
 if ($valid[0] != 1) err("Invalid passkey! Re-download the .torrent from $BASEURL");
-$res = mysql_query("SELECT id, added, banned, seeders + leechers AS numpeers, UNIX_TIMESTAMP(added) AS ts, countstats FROM torrents WHERE " . hash_where("info_hash", $info_hash));
+$res = mysql_query("SELECT id, added, banned, vip, seeders + leechers AS numpeers, UNIX_TIMESTAMP(added) AS ts, countstats FROM torrents WHERE " . hash_where("info_hash", $info_hash));
 $torrent = mysql_fetch_assoc($res);
 if (!$torrent)
 	err("torrent not registered with this tracker");
 $torrentid = $torrent["id"];
 $fields = "seeder, peer_id, ip, port, uploaded, downloaded, userid, (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(last_action)) AS announcetime, UNIX_TIMESTAMP(last_action) AS ts";
+
 $numpeers = $torrent["numpeers"];
 $limit = "";
 if ($numpeers > $rsize)
@@ -430,20 +361,38 @@ if (!isset($self))
 $valid = @mysql_fetch_row(@mysql_query("SELECT COUNT(*) FROM peers WHERE torrent=$torrentid AND passkey=" . sqlesc($passkey)));
 if ($valid[0] >= 2 && $seeder == 'no') err("Connection limit exceeded! You may only leech from one location at a time.");
 if ($valid[0] >= 3 && $seeder == 'yes') err("Connection limit exceeded!");
-$rz = mysql_query("SELECT id, uploaded, downloaded, downloadpos, uploadpos, parked, class FROM users WHERE passkey=".sqlesc($passkey)." AND enabled = 'yes' ORDER BY last_access DESC LIMIT 1") or err("Tracker error 2");
+$rz = mysql_query("SELECT id, tlimitseeds, tlimitleeches, tlimitall, uploaded, downloaded, parked, class FROM users WHERE passkey=".sqlesc($passkey)." AND enabled = 'yes' ORDER BY last_access DESC LIMIT 1") or err("Tracker error 2");
 if ($MEMBERSONLY && mysql_num_rows($rz) == 0)
 err("Unknown passkey. Please redownload the torrent from $BASEURL.");
 		$az = mysql_fetch_assoc($rz);
 	    $userid = $az["id"];
+        /////// Torrent-Limit 
+        if ($az["tlimitall"] >= 0) {
+        $arr = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS cnt FROM peers WHERE userid=$userid"));
+        $numtorrents = $arr["cnt"];
+        $arr = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS cnt FROM peers WHERE userid=$userid AND seeder='yes'"));
+        $seeds = $arr["cnt"];
+        $leeches = $numtorrents - $seeds;
+        $limit = get_torrent_limits($az);
+
+        if (   ($limit["total"] > 0)
+            &&(($numtorrents >= $limit["total"])
+            || ($left == 0 && $seeds >= $limit["seeds"])
+            || ($left > 0 && $leeches >= $limit["leeches"])))
+                err("Maximum Torrent-Limit reached ($limit[seeds] Seeds, $limit[leeches] Leeches, $limit[total] total)");
+
+    }
+        if ($az["vip"] =="yes" && get_user_class() < UC_VIP)
+        err("VIP Access Required, You must be a VIP In order to view details or download this torrent! You may become a Vip By Donating to our site. Donating ensures we stay online to provide you more Vip-Only Torrents!");
         if ($az["class"] < UC_USER)
 	    {
 		$gigs = $az["uploaded"] / (1024*1024*1024);
 		$elapsed = floor((gmtime() - $torrent["ts"]) / 3600);
 		$ratio = (($az["downloaded"] > 0) ? ($az["uploaded"] / $az["downloaded"]) : 1);
-		if ($ratio < 0.5 || $gigs < 5) $wait = 1;
-		elseif ($ratio < 0.65 || $gigs < 6.5) $wait = 0.75;
-		elseif ($ratio < 0.8 || $gigs < 8) $wait = 0.5;
-		elseif ($ratio < 0.95 || $gigs < 9.5) $wait = 0.25;
+		if ($ratio < 0.5 || $gigs < 5) $wait = 0;
+		elseif ($ratio < 0.65 || $gigs < 6.5) $wait = 0.;
+		elseif ($ratio < 0.8 || $gigs < 8) $wait = 0;
+		elseif ($ratio < 0.95 || $gigs < 9.5) $wait = 0;
 		else $wait = 0;
 		if ($elapsed < $wait)
 		err("Not authorized (" . ($wait - $elapsed) . "h) - READ THE FAQ!");
@@ -451,10 +400,6 @@ err("Unknown passkey. Please redownload the torrent from $BASEURL.");
         }
         else
         {
-	    $maxupspeed = 1024 * 1024 * 2; // When to report users?
-        if ($upspeed > $maxupspeed) {
-        mysql_query("INSERT INTO reports (added, userid) VALUES('".get_date_time()."', $userid)") or err("R Err 1");
-        }
         $upthis = max(0, $uploaded - $self["uploaded"]);
         $downthis = max(0, $downloaded - $self["downloaded"]);
         $upspeed = ($upthis > 0 ? $upthis / $self["announcetime"] : 0);
@@ -482,32 +427,10 @@ err("Unknown passkey. Please redownload the torrent from $BASEURL.");
         $updq[1]="uploaded = uploaded + " . (($arrfs['doubleup']=='yes')?($upthis*2):$upthis);
         $udq=implode(',',$updq);
         mysql_query("UPDATE users SET $udq WHERE id=$userid") or err("Tracker error 3");
-        // Initial sanity check xMB/s for 1 second
-        if($upthis > 2097152)
-        {
-        //Work out time difference
-        $endtime = time();
-        $starttime = $self['ts'];
-        $diff = ($endtime - $starttime);
-        //Normalise to prevent divide by zero.
-        $rate = ($upthis / ($diff + 1));
-        //Currently 2MB/s. Increase to 5MB/s once finished testing.
-        if ($rate > 2097152)
-        {
-            if ($class < UC_MODERATOR)
-            {
-                $rate = mksize($rate);
-                $client = $agent;
-                $userip = getip();
-
-                auto_enter_cheater($userid, $rate, $upthis, $diff, $torrentid, $client, $userip, $last_up);
-            }
-           }
-          }
-         }
+        }
         //===end
         ///////////////////////////////////////////////////////////////////////////////       
-        $updateset = array();
+  
         if (portblacklisted($port))
 			err("Port $port is blacklisted.");
 		else
@@ -521,7 +444,8 @@ err("Unknown passkey. Please redownload the torrent from $BASEURL.");
 				@fclose($sockres);
 			}
 		}
-//$updateset = array();
+
+$updateset = array();
 if (isset($self) && $event == "stopped") {
 mysql_query("DELETE FROM peers WHERE $selfwhere") or err("D Err");
 if (mysql_affected_rows()) {
@@ -530,10 +454,10 @@ mysql_query("UPDATE snatched SET ip = ".sqlesc($ip).", port = $port, connectable
 }
 } elseif (isset($self)) {
 if ($event == "completed") {
-mysql_query("UPDATE snatched SET tamount = tamount + 1, finished  = 'yes', completedat = '".get_date_time()."'  WHERE torrentid = $torrentid AND userid = $userid") or err("HnR Err");
 $updateset[] = "times_completed = times_completed + 1";
 $finished = ", finishedat = UNIX_TIMESTAMP()";
-$finished1 = ", complete_date = '".get_date_time()."'";
+$finished1 = ", complete_date = '".get_date_time()."', finished = 'yes'";
+
 }
 mysql_query("UPDATE peers SET ip = ".sqlesc($ip).", port = $port, connectable = '$connectable', uploaded = $uploaded, downloaded = $downloaded, to_go = $left, last_action = NOW(), seeder = '$seeder', agent = ".sqlesc($agent)." $finished WHERE $selfwhere") or err("PL Err 1");
 if (mysql_affected_rows()) {
@@ -553,9 +477,10 @@ $updateset[] = ($seeder == "yes" ? "seeders = seeders + 1" : "leechers = leecher
 $anntime = "timesann = timesann + 1";
 mysql_query("UPDATE snatched SET ip = ".sqlesc($ip).", port = $port, connectable = '$connectable', to_go = $left, last_action = '".get_date_time()."', seeder = '$seeder', agent = ".sqlesc($agent).", $anntime WHERE torrentid = $torrentid AND userid = $userid") or err("SL Err 3");
 if (!mysql_affected_rows() && $seeder == "no")
-mysql_query("INSERT INTO snatched (torrentid, userid, peer_id, ip, port, connectable, uploaded, downloaded, to_go, start_date, last_action, seeder, agent) VALUES ($torrentid, $userid, ".sqlesc($peer_id).", ".sqlesc($ip).", $port, '$connectable', $uploaded, $downloaded, $left, '".get_date_time()."', '".get_date_time()."', '$seeder', ".sqlesc($agent).")") or err("SL Err 4");
+mysql_query("INSERT INTO snatched (torrentid, torrent_name, userid, peer_id, ip, port, connectable, uploaded, downloaded, to_go, start_date, last_action, seeder, agent) VALUES ($torrentid, ".sqlesc($torrent['name']).", $userid, ".sqlesc($peer_id).", ".sqlesc($ip).", $port, '$connectable', $uploaded, $downloaded, $left, '".get_date_time()."', '".get_date_time()."', '$seeder', ".sqlesc($agent).")") or err("SL Err 4");
 }
 }
+
 if ($seeder == "yes")
 {
         if ($torrent["banned"] != "yes")
@@ -564,5 +489,6 @@ if ($seeder == "yes")
 }
 if (count($updateset))
         mysql_query("UPDATE torrents SET " . join(",", $updateset) . " WHERE id = $torrentid");
+
 benc_resp_raw($resp);
 ?>

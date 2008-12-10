@@ -75,7 +75,7 @@ logincookie($row["id"], $passh);
 
 $ip = sqlesc(getip());
 sql_query("DELETE FROM loginattempts WHERE ip = $ip");
-
+sql_query("UPDATE users SET onlinetime=".sqlesc($dt)." WHERE id=".$row['id']);// or die(mysql_error());
 if (!empty($_POST["returnto"]))
 	header("Location: $_POST[returnto]");
 else
