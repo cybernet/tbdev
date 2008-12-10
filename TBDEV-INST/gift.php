@@ -1,9 +1,11 @@
-<?
+<?php
 include("include/bittorrent.php");
+include("include/user_functions.php");
+include("include/bbcode_functions.php");
 dbconn();
 loggedinorreturn();
 
-$xmasday= mktime(24,01,01,12,24,2007);
+$xmasday= mktime(24,01,01,12,24,2008);
 $today = mktime(date("G"), date("i"), date("s"), date("m"),date("d"),date("Y"));
 $gifts = array("upload", "bonus", "invites");
 
@@ -27,13 +29,13 @@ Thanks for your support and sharing through year 2008! <br> Happy Christmas and 
 
 if($gift == "bonus"){
 sql_query("UPDATE users SET seedbonus = seedbonus + 1500, gotgift='yes' WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
-stderr("Congratulations!","<img src=\"/pic/gift.png\" style=\"float: left; padding-right:10px;\"> <h2> You just got 1500 karma bonus points!</h2>
+stderr("Congratulations!","<img src=\"/pic/gift.png\" style=\"float: left; padding-right:10px;\"> <h2> You just got 1750 karma bonus points!</h2>
 Thanks for your support and sharing through year 2008! <br> Happy Christmas and New Year from ".$SITENAME." Crew!");
 }
 
 if($gift == "invites") {
-sql_query("UPDATE users SET invites=invites+2, seedbonus = seedbonus + 1500, gotgift='yes' WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
-stderr("Congratulations!","<img src=\"/pic/gift.png\" style=\"float: left; padding-right:10px;\"> <h2> You just got 2 invites and 1500 bonus points!</h2>
+sql_query("UPDATE users SET invites=invites+2, seedbonus = seedbonus + 2000, gotgift='yes' WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
+stderr("Congratulations!","<img src=\"/pic/gift.png\" style=\"float: left; padding-right:10px;\"> <h2> You just got 2 invites and 2000 bonus points!</h2>
 Thanks for your support and sharing through year 2008! <br> Happy Christmas and New Year from ".$SITENAME." Crew!");
 }
 } else {
@@ -41,9 +43,8 @@ stderr("Sorry...", "You already got your gift!");
 }
 
 } else {
-stderr("Sorry...", "Be patient! Can't open your present until xmas! <b>" . date("j", ($xmasday - $today)) . "</b> day(s) to go. <br> today:" . date('l dS \of F Y h:i:s A', $today) . "<br>xmas day:" . date('l dS \of F Y h:i:s A', $xmasday));
-
+//stderr("Sorry...", "<br> today:" . date('l dS \of F Y h:i:s A', $today) . "<br>xmas day:" . date('l dS \of F Y h:i:s A', $xmasday));
+stderr("Doh...", "Be patient ! You can't open your present until xmas !  <b>" . date("j", ($xmasday - $today)) . "</b> day(s) to go. <br> today:" . date('l dS \of F Y h:i:s A', $today) . "<br>xmas day:" . date('l dS \of F Y h:i:s A', $xmasday));
 }
-
 }
 ?>

@@ -1,5 +1,7 @@
 <?php
 require_once("include/bittorrent.php");
+require_once("include/function_cache.php");
+require_once("include/bbcode_functions.php");
 dbconn(false);
 if(!logged_in())
 {
@@ -21,6 +23,7 @@ $ss_uri = $a['uri'];
 }
 if($CURUSER['smile_until'] == '0000-00-00 00:00:00')
 stderr("Error", "you do not have access!");
+cache_start(6000,moresmilies_custom);
 ?>
 <html><head>
 <script language=javascript>
@@ -51,5 +54,6 @@ echo'</tr>';
 ?>
 </tr></table><br><div align="center"><a class=altlink href="javascript: window.close()"><? echo CLOSE; ?></a></div>
 <?
+register_shutdown_function("cache_end"); 
 stdfoot();
 ?>

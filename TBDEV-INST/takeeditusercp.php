@@ -48,7 +48,7 @@ $action = "signature";
 else if ($action == "security")
 {
 ////////password////////
-if (!mkglobal("email:chpassword:passagain"))
+if (!mkglobal("email:chpassword:passagain:secretanswer"))
 bark("missing form data");
 if ($chpassword != "") {
 if (strlen($chpassword) > 40)
@@ -61,7 +61,15 @@ $updateset[] = "secret = " . sqlesc($sec);
 $updateset[] = "passhash = " . sqlesc($passhash);
 logincookie($CURUSER["id"], $passhash);
 }
-///////////email///////////
+///////////secret hint and answer by neptune///////////
+if ($secretanswer != '') {
+              if (strlen($secretanswer) > 40) bark("Sorry, secret answer is too long (max is 40 chars)");
+              if (strlen($secretanswer) < 6) bark("Sorry, secret answer is too sort (min is 6 chars)");
+              
+              $new_secret_answer = md5($secretanswer);
+              $updateset[] = "hintanswer = " . sqlesc($new_secret_answer); 
+              }
+/////////////////////////email///////////////              
 if ($email != $CURUSER["email"]) {
 if (!validemail($email))
 bark("That doesn't look like a valid email address.");
@@ -110,6 +118,13 @@ if(($anonymous = ($_POST["anonymous"] != "" ? "yes" : "no")) != $CURUSER["anonym
 $updateset[] = "anonymous = '$anonymous'";
 $anonymoustopten = ($_POST["anonymoustopten"] != "" ? "yes" : "no");
 $updateset[] = "anonymoustopten = " . sqlesc($anonymoustopten);
+/////////////hide snatch lists/////////////
+if(isset($_POST["hidecur"]) && ($hidecur = $_POST["hidecur"]) != $CURUSER["hidecur"])
+$updateset[] = "hidecur = " . sqlesc($hidecur);
+//////////////secret hint and answer
+if(isset($_POST["changeq"])  && (($changeq = (int)$_POST["changeq"]) !=  $CURUSER["passhint"]) && is_valid_id($changeq))
+$updateset[] = "passhint = " . sqlesc($changeq);
+///////////secret hint and answer/////////
 $action = "security";
 }
 else if ($action == "torrents")
@@ -135,12 +150,21 @@ $updateset[] = "tohp = " . sqlesc($tohp);
 //////////////User class colour on browse///
 $view_uclass= (isset($_POST['view_uclass']) && $_POST["view_uclass"] != "" ? "yes" : "no");
 $updateset[] = "view_uclass= '$view_uclass'";
+/////////////clear new tag/////pdq////////
+$update_new = (isset($_POST['update_new']) && $_POST["update_new"] != "" ? "yes" : "no");
+$updateset[] = "update_new = " . sqlesc($update_new);
 $action = "torrents";
 }
 else if ($action == "personal")
 {
+if (is_valid_id($_POST["download"]))
+$updateset[] = "download = ".sqlesc($_POST["download"]);
+if (is_valid_id($_POST["upload"]))
+$updateset[] = "upload = ".sqlesc($_POST["upload"]);
 if(isset($_POST["stylesheet"]) && (($stylesheet = $_POST["stylesheet"]) != $CURUSER["stylesheet"]) && is_valid_id($stylesheet))
 $updateset[] = "stylesheet = '$stylesheet'";
+$updateset[] = "timezone = ".(0 + $_POST["timezone"]);
+$updateset[] = "dst = ".($_POST["dst"] ? 60 : 0);
 if(isset($_POST["country"]) && (($country = $_POST["country"]) != $CURUSER["country"]) && is_valid_id($country))
 $updateset[] = "country = $country";
 if(isset($_POST["torrentsperpage"]) && (($torrentspp = min(100, 0 + $_POST["torrentsperpage"])) != $CURUSER["torrentsperpage"]))

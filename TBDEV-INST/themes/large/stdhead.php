@@ -2,7 +2,7 @@
 echo "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n";
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <script type="text/javascript" src="java_klappe.js"></script>
@@ -16,7 +16,13 @@ echo "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n";
 * Visit Dynamic Drive for this script and more: http://www.dynamicdrive.com
 ****************************************************/
 </script>
-
+    	<script type="text/javascript">
+function SelectAll(id)
+{
+    document.getElementById(id).focus();
+    document.getElementById(id).select();
+}
+</script>
 <script language=javascript>
 <!--
 function Post()
@@ -122,7 +128,6 @@ function SetSize(obj, x_size) {
       <link rel="icon" href="animated_favicon1.gif" type="image/gif" >
 <script type="text/javascript" src="java_klappe.js"></script>
 <title><?= $title ?></title>
-<link rel="stylesheet" type="text/css" href="./themes/<?=$ss_uri."/".$ss_uri?>.css">
 <link rel="stylesheet" href="css/lightbox.css" type="text/css" media="screen" />
 <? if ($CURUSER) { ?>
 <link rel="alternate" type="application/rss+xml" title="Latest Torrents" href="rss.php?passkey=<?=$CURUSER["passkey"]?>&user=<?=$CURUSER["username"]?>">
@@ -135,8 +140,8 @@ function SetSize(obj, x_size) {
 <script type="text/javascript" src="js/scriptaculous.js?load=effects"></script>
 <script type="text/javascript" src="js/lightbox.js"></script>
 <script type="text/javascript" src="scripts/cookies.js"></script>
-<script language="javascript" src="js/blendtrans.js"><\/script>
-<script language="javascript" src="js/fade.js"><\/script>
+<script language="javascript" src="js/blendtrans.js"></script>
+<script language="javascript" src="js/fade.js"></script>
 <html><head>
 <script type="text/javascript" src="js/ajax_details.js"></script>
 <script type="text/javascript"language="JavaScript1.2">
@@ -315,13 +320,13 @@ while($row = mysql_fetch_array($res)){
 
 
 $time = date("H");
-     if(($time >= 6) && ($time < 10)){        $hi = "<font color=blue>Morning</font>"; }
+     if(($time >= 06) && ($time < 10)){        $hi = "<font color=blue>Morning</font>"; }
      if(($time >= 11) && ($time < 12)){      $hi = "<font color=blue>Munchtime</font>"; }
      if(($time >= 12) && ($time < 18)){      $hi = "<font color=blue>Afternoon</font>"; }
      if(($time >= 17) && ($time < 18)){      $hi = "<font color=blue>Teatime</font>"; }
-     if(($time >= 18) && ($time < 23)){      $hi = "<font color=blue>Evening</font>"; }
-     if(($time >= 0) && ($time < 2)){        $hi = "<font color=blue>Bedtime</font>"; }
-     if(($time >= 3) && ($time < 6)){          $hi = "<font color=blue>Goodnight</font>"; }
+     if(($time >= 18) && ($time < 22)){      $hi = "<font color=blue>Evening</font>"; }
+     if(($time >= 23) && ($time < 02)){        $hi = "<font color=blue>Bedtime</font>"; }
+     if(($time >= 03) && ($time < 06)){          $hi = "<font color=blue>Goodnight</font>"; }
 ?>
 <? // Start PHP
 if ($CURUSER['override_class'] != 255) $usrclass = "&nbsp;<b>(".get_user_class_name($CURUSER['class']).")</b>&nbsp;";
@@ -370,19 +375,21 @@ setInterval("displaytime()", 1000)
 if ($messages){
 print("<span class=smallfont><a href=mailbox.php?inbox>$inboxpic</a> $messages ($unread New)</span>");
 if ($outmessages)
-print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=14px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> $outmessages</span>");
+print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=12px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> $outmessages</span>");
 else
-print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=14px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> 0</span>");
+print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=12px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> 0</span>");
 }
 else
 {
-print("<span class=smallfont><a href=mailbox.php?inbox><img height=14px style=border:none alt=inbox title=inbox src=pic/pn_inbox.gif></a> 0</span>");
+print("<span class=smallfont><a href=mailbox.php?inbox><img height=12px style=border:none alt=inbox title=inbox src=pic/pn_inbox.gif></a> 0</span>");
 if ($outmessages)
-print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=14px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> $outmessages</span>");
+print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=12px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> $outmessages</span>");
 else
-print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=14px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> 0</span>");
+print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=12px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> 0</span>");
 }
-print("&nbsp;<a href=friends.php><img style=border:none alt=Buddylist title=Buddylist src=themes/large/pic/buddylist.gif></a>");
+print("&nbsp;<a href=friends.php><img height=12px style=border:none alt=Buddylist title=Buddylist src=themes/large/pic/buddylist.gif></a>");
+print("&nbsp;<a href=users.php><img height=12px style=border:none alt=Buddylist title=Userlist src=pic/buddylist3.gif></a>");
+print("&nbsp;<a href=\"rss.php?userid=" . $CURUSER[id] . "\"><img height=12px src=\"pic/rss.png\" alt=\"Subscribe to the site RSS feed\" title=\"RSS Feed\" border=\"none\"></a>");
 ?>
 </span></td>
 </tr>
@@ -410,6 +417,13 @@ if (isset($unread) && !empty($unread))
   print("<b><a href=mailbox.php?inbox><font color=white>You have $unread new message" . ($unread > 1 ? "s" : "") . " !<br /><br /><br /><br /></font></a></b>");
   print("</td></tr></table></p>\n");
 }
+//happy hour
+if (happyHour("check")) {
+print("<table border=0 cellspacing=0 cellpadding=10  ><tr><td align=center style=\"background:#CCCCCC;color:#222222; padding:10px\">\n");
+print("<b>Hey its now happy hour ! ".((happyCheck("check") == 255) ? "Every torrent downloaded in the happy hour will is free" : "Only <a href=\"browse.php?cat=".happyCheck("check")."\">this category</a> is free this happy hour" )."<br/><font color=red>".happyHour("time")." </font> remaining from this happy hour!</b>");
+print("</td></tr></table>\n");
+}
+//////////////////
 if ($CURUSER["tenpercent"] == "no") {
 ?>
 <script language=javascript>
@@ -489,7 +503,7 @@ print("</td></tr></table></p>\n");
         <p><table width=760 border=1 cellspacing=0 cellpadding=5>
         <tr><td bgcolor=#466248><b><font color=white>Announcement:
         <?php print(safe($ann_subject));?></font></b></td></tr>
-        <tr><td style='padding: 10px; background: #FFFFFF'>
+        <tr><td style='padding: 10px; background: #777777'>
         <?php print(format_comment($ann_body));?>
         <br /><hr /><br />
         Click <a href=<?php print(safe($DEFAULTBASEURL))?>/clear_announcement.php>

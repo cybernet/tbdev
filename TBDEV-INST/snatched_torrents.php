@@ -84,7 +84,7 @@ $count = $row1[0];
 $snatchedperpage = 50;
 list($pagertop, $pagerbottom, $limit) = pager($snatchedperpage, $count, "snatched_torrents.php?");
 print("$pagertop");
-$sql = "SELECT sn.id, sn.userid, sn.torrentid, sn.hit_run, sn.timesann, sn.prewarn, sn.uploaded, sn.downloaded, sn.start_date, sn.complete_date, sn.seeder, sn.leechtime, sn.seedtime, sn.tamount, u.username, t.name ".
+$sql = "SELECT sn.id, sn.userid, sn.torrentid, sn.hit_run, sn.timesann, sn.prewarn, sn.uploaded, sn.downloaded, sn.start_date, sn.complete_date, sn.seeder, sn.leechtime, sn.seedtime, u.username, t.name ".
 "FROM snatched AS sn ".
 "LEFT JOIN users AS u ON u.id=sn.userid ".
 "LEFT JOIN torrents AS t ON t.id=sn.torrentid WHERE complete_date != '0000-00-00 00:00:00'".
@@ -107,7 +107,6 @@ if( mysql_num_rows($result) != 0 ) {
 <td class=tabletorrent align=center width="1%">Start Date</td>
 <td class=tabletorrent align=center width="1%">End Date</td>
 <td class=tabletorrent align=center width="1%">Seeding</td>
-<td class=tabletorrent align=center width="1%">Total Snatched</td>
 <td class=tabletorrent align=center width="1%">Delete</td>
 </tr>
 <?php
@@ -133,7 +132,6 @@ echo '<td align=center><nobr><b>' . "" . get_elapsed_time(sql_timestamp_to_unix_
 else
 echo '<td align=center><nobr><b><font color=red>Not Completed</font></b></td>';
 echo '<td align=center><b>'.($row['seeder'] == 'yes' ? "<img src=/pic/online.gif>" : "<img src=/pic/offline.gif>") . '</b></td>'.
-'<td><b>' . htmlspecialchars($row['tamount']) . '</b></a></td>'.
 '</td>';
 //}
 if (get_user_class() >= UC_SYSOP)

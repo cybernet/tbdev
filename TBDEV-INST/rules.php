@@ -48,10 +48,10 @@ if($arr['cid'] != $cat_placeholder)
 print '<br /><h2>'. $arr['rcat_name'] . '</h2><br />';
 $updated = ($arr['updated'] == 1 ? "&nbsp;<img src='pic/updated.png' />" : (($arr['updated'] ==2) ? "&nbsp;<img src='pic/new.png' />": ""));
 print "<div class='faqhead' align='left'>&nbsp;<img onclick=\"javascript:flipBox('".$arr['id']."')\" src='pic/panel_off.gif' name='b_".$arr['id']."' style='vertical-align:middle;' />&nbsp;<a class=altlink href=\"#\" onclick=\"javascript:flipBox('".$arr['id']."')\" src='pic/panel_off.gif' name='b_".$arr['id']."'>". $arr['heading']. $updated. "</a></div>";
-print "<div align='left' id='box_".$arr['id']."' style='display:none' class='faqbody'><p>". format_comment($arr['body']) . "</p></div>";
+print "<div align='left' id='box_".$arr['id']."' style='display:block' class='faqbody'><p>". format_comment($arr['body']) . "</p></div>";
 //}//===end class filter
 $cat_placeholder = $arr['cid'];
 
 }
-echo "<br /><p align='center' style='color:orange;font-weight:bold;'>Rules system based on FAQ System 2006 © CoLdFuSiOn</p>";
+echo "<br /><p align='center' style='color:orange;font-weight:bold;'>Rules system based on FAQ System 2006 &copy; CoLdFuSiOn</p>";
 stdfoot(); ?>

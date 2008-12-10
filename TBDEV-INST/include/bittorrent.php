@@ -1,5 +1,8 @@
 <?php
+$stime=array_sum(explode(' ',microtime())); // start execution time
+//error_reporting(E_ALL);
 define('SQL_DEBUG', 0);
+define('DEBUG_MODE', 1);
 define ('IN_TRACKER', 'God! Your so sexy...');
 define('ROOT_PATH', $_SERVER['DOCUMENT_ROOT'].'/');
 require ("ctracker.php");
@@ -7,6 +10,7 @@ require ("vfunc.php");
 $maxloginattempts = 5; // change this whatever u want. if u dont know what is this, leave it default
 require_once("secrets.php");
 require_once("cleanup.php");
+require_once("function_happyhour.php");
 // Sits at front of pageload (bittorrent.php)
 function unsafeChar($var)
 {
@@ -59,6 +63,11 @@ while ( $row = mysql_fetch_assoc($result) )
 $SITE_ONLINE = $config['siteonline'];
 //$SITE_ONLINE = local_user();
 //$SITE_ONLINE = false;
+$h = date("H");
+if ($h >= 01 && $h <= 06) //When to save some load.
+$announce_interval = 60 * 60; //60 min update in announce - Night
+else 
+$announce_interval = 60 * 30; // 30 min update in announce - Day
 $max_torrent_size = 1000000;
 $sql_error_log = './logs/sql_err_'.date("M_D_Y").'.log';
 $signup_timeout = 86400 * 3;
@@ -67,6 +76,10 @@ $max_dead_torrent_time = 6 * 3600;
 $invite_timeout = 21600 * 1;
 $invites = 2500;
 $READPOST_EXPIRY = 14*86400; // 14 days
+// Rules for torrent limitation
+// Format is Ratio:UpGigs:SeedsMax:LeechesMax:AllMax|...
+// Ratio and UpGigs are "minimum" requirements.
+$GLOBALS["TORRENT_RULES"] = "0:0:10:2:12|1.01:5:10:3:13|2.01:20:10:4:14";
 // Max users on site
 $maxusers = $config['maxusers'];
 ////////////Define all rootpaths//////////
@@ -139,7 +152,7 @@ function validip($ip)
 	}
 	else return false;
 }
-//////////////ban browsers by system-uncomment to use///////////////
+/////////////Block Unsupported browser///////////////
 /*
 if(false!==stristr($_SERVER['HTTP_USER_AGENT'],'chrome')){
     header('Location: http://chat2pals.co.uk/reject.html');
@@ -152,8 +165,9 @@ if(false!==stristr($_SERVER['HTTP_USER_AGENT'],'ie')){
 if(false!==stristr($_SERVER['HTTP_USER_AGENT'],'opera')){
     header('Location: http://chat2pals.co.uk/reject.html');
     exit();
-}*/
-//////////////////ban browsers end///////////
+}
+*/
+//////////////////browser block end///////////
 // Patched function to detect REAL IP address if it's valid
 function getip() {
    if (isset($_SERVER)) {
@@ -357,12 +371,16 @@ unset($ann_row);
     $ip = 'Hidden';*/
     //$hideids = array('1','3');  
     //$ip = ($row['class'] != UC_SYSOP || !in_array($row['id'], $hideids)) ? $ip : substr('IPHash-'. md5('random text'.$ip.$row['id'].'more random text'), 0, -24);
+    session_cache_limiter('private');
+    session_start();
+    if ((!isset($_SESSION['browsetime'])) || ($row['ip'] !==$ip))
+    $_SESSION['browsetime']=strtotime($row['last_access']);
     sql_query("UPDATE users SET last_access=".sqlesc($dt).", ip=".sqlesc($ip).$add_set.
         " WHERE id=".$row['id']);// or die(mysql_error());
     $row['ip'] = $ip;
     if ($row['override_class'] < $row['class']) $row['class'] = $row['override_class']; // Override class and save in GLOBAL array below.
     $GLOBALS["CURUSER"] = $row;
-}
+    }
 
 function autoclean() {
     global $autoclean_interval;
@@ -472,55 +490,63 @@ if (!function_exists("stripos")) {
       return strpos(strtolower($str),strtolower($needle),$offset);
   }
 }
-
+function display_date_time($time) {
+  global $CURUSER;
+  return date("Y-m-d H:i:s", strtotime($time) + (($CURUSER["timezone"] + $CURUSER["dst"]) * 60));
+}
 function cpfooter() {
 $referring_url = $_SERVER['HTTP_REFERER'];    
 print("<table class=bottom width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>\n");
 print("<td class=bottom align=center><p><br><a href=$referring_url>Return to whence you came</a></td>\n");
 print("</tr></table>\n");
 }
-////////modified sqlquery count - magic qoutes and error reporting-enable/disable here/////
-  @error_reporting (E_ALL & ~E_NOTICE);
-  @ini_set ('error_reporting', E_ALL & ~E_NOTICE);
-  @ini_set ('display_errors', '1');
-  @set_magic_quotes_runtime (0);
-  @ini_set ('magic_quotes_sybase', 0);
-  @session_start ();
-  if (!defined ('DEBUGMODE'))
-  {
-    $_SESSION['tb_start_time'] = array_sum (explode (' ', microtime ()));
-    unset ($_SESSION[totaltime]);
-    unset ($_SESSION[totalqueries]);
-    $_SESSION['queries'] = array ();
-  }
 
-  if (((empty ($_SESSION['hash']) OR empty ($_SESSION['hash_time'])) OR 1800 < TIMENOW - $_SESSION['hash_time']))
-  {
-    $_SESSION['hash'] = md5 (TIMENOW . session_id ());
-    $_SESSION['hash_time'] = TIMENOW;
-  }
+function sql_query($query) {
+    global $queries, $query_stat;
+    $queries++;
+    $mtime = microtime(); // Get Current Time
+    $mtime = explode (" ", $mtime); // Split Seconds and Microseconds
+    $mtime = $mtime[1] + $mtime[0];  // Create a single value for start time
+    $query_start_time = $mtime; // Start time
+    $result = mysql_query($query);
+    $mtime = microtime();
+    $mtime = explode (" ", $mtime);
+    $mtime = $mtime[1] + $mtime[0];
+    $query_end_time = $mtime; // End time
+    $query_time = ($query_end_time - $query_start_time);
+    $query_time = substr($query_time, 0, 8);
+    $query_stat[] = array("seconds" => $query_time, "query" => $query);
+    return $result;
+}
 
+function get_torrent_limits($userinfo)
+{
+    $limit = array("seeds" => -1, "leeches" => -1, "total" => -1);
 
-function sql_query ($query)
-  {
-    if (!defined ('DEBUGMODE'))
-    {
-      $query_start = array_sum (explode (' ', microtime ()));
+    if ($userinfo["tlimitall"] == 0) {
+        // Auto limit
+        $ruleset = explode("|", $GLOBALS["TORRENT_RULES"]);
+        $ratio = (($userinfo["downloaded"] > 0) ? ($userinfo["uploaded"] / $userinfo["downloaded"]) : (($userinfo["uploaded"] > 0) ? 1 : 0));
+        $gigs = $userinfo["uploaded"] / 1073741824;
+        
+        $limit = array("seeds" => 0, "leeches" => 0, "total" => 0);
+        foreach ($ruleset as $rule) {
+            $rule_parts= explode(":", $rule);
+            if ($ratio >= $rule_parts[0] && $gigs >= $rule_parts[1] && $limit["total"] <= $rule_parts[4]) {
+                $limit["seeds"] = $rule_parts[2];
+                $limit["leeches"] = $rule_parts[3];
+                $limit["total"] = $rule_parts[4];
+            }
+        }
+    } elseif ($userinfo["tlimitall"] > 0) {
+        // Manual limit
+        $limit["seeds"] = $userinfo["tlimitseeds"];
+        $limit["leeches"] = $userinfo["tlimitleeches"];
+        $limit["total"] = $userinfo["tlimitall"];
     }
-
-    $return = mysql_query ($query);
-    if (!defined ('DEBUGMODE'))
-    {
-      $query_end = round (array_sum (explode (' ', microtime ())) - $query_start, 4);
-      $_SESSION['queries'][] = array ('id' => intval ($_SESSION['totalqueries']), 'query_time' => substr ($query_end, 0, 8), 'query' => safechar($query));
-      ++$_SESSION['totalqueries'];
-    }
-
-    return $return;
-  }
-////////////end modified sqlquery handler/////////////////
-
-
+    
+    return $limit;
+}
 function tr($x,$y,$noesc=0) {
     if ($noesc)
         $a = $y;
@@ -549,7 +575,6 @@ function add_s($i)
 return ($i == 1 ? "" : "s");
 }
 /////////moddified sqesc function by retro///
-
 function sqlesc($x) {
     
    if (get_magic_quotes_gpc()) {
@@ -560,7 +585,6 @@ function sqlesc($x) {
 
    return "'" . mysql_real_escape_string(unsafeChar($x)) . "'";
 }
-
 ///////////////end new sqlesc/////////
 function sqlwildcardesc($x) {
     return str_replace(array("%","_"), array("\\%","\\_"), mysql_real_escape_string($x));
@@ -587,7 +611,6 @@ function hashit($var,$addtext="")
         return md5("Some ".$addtext.$var.$addtext." sal7 mu55ie5 wat3r.@.");
 }
 // Basic MySQL error handler
-
 function sqlerr($file = '', $line = '') {
     global $sql_error_log, $CURUSER;
     
@@ -648,8 +671,8 @@ return $row;
 return false;
 }
 
-function stdhead($title = "Test-Code", $msgalert = true) {
-global $CURUSER, $SITE_ONLINE, $FUNDS, $SITENAME, $BASEURL;
+function stdhead($title = "", $msgalert = true) {
+global $CURUSER, $SITE_ONLINE, $FUNDS, $SITENAME, $BASEURL , $CACHE, $crazymessage, $crazytitle;
 //////site on/off
 $res = sql_query("SELECT * FROM siteonline") or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_array($res);
@@ -687,12 +710,12 @@ die("<title>Site Offline!</title>
 Please, try later...</h1>
 <img border=0 class=embedded width='800' height='300' src=pic/404.jpg>
 </td></tr></table>");
-
 }
 /////////////end on/off
 global $ss_uri;
 if (!$SITE_ONLINE)
 die("Site is down for maintenance, please check back again later... thanks<br/>");
+//header("Content-Type: text/html; charset=utf-8");
 header("Content-Type: text/html; charset=iso-8859-1");
 if ($title == "")
 $title = $SITENAME .(isset($_GET['tbv'])?" (".TBVERSION.")":'');
@@ -721,16 +744,16 @@ $res = sql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"
 $arr = mysql_fetch_row($res);
 $unread = $arr[0];
 }
-require_once "themes/".$ss_uri."/template.php";
-require_once("themes/" . $ss_uri . "/stdhead.php");
+require_once("themes/".$ss_uri."/template.php");
+require_once("themes/".$ss_uri."/stdhead.php");
+}// stdhead
 
-} // stdhead
 function stdfoot()
 {
 global $CURUSER;
 global $ss_uri;
-require_once "themes/".$ss_uri."/template.php";
-require_once("themes/" . $ss_uri . "/stdfoot.php");
+require_once("themes/".$ss_uri."/template.php");
+require_once("themes/".$ss_uri."/stdfoot.php");
 }
 
 function genbark($x,$y) {
@@ -740,6 +763,7 @@ function genbark($x,$y) {
     stdfoot();
     exit();
 }
+
 function mksecret($length = 20) {
 $set = array("a","A","b","B","c","C","d","D","e","E","f","F","g","G","h","H","i","I","j","J","k","K","l","L","m","M","n","N","o","O","p","P","q","Q","r","R","s","S","t","T","u","U","v","V","w","W","x","X","y","Y","z","Z","1","2","3","4","5","6","7","8","9");
 $str;

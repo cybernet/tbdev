@@ -1,4 +1,4 @@
-<?
+<?php
 ////////////////////////////////////////////////////////
 // Bonus Mod by TvRecall.org
 // Bonus Mod Updated by devin
@@ -14,9 +14,17 @@ dopeydwerg - WRK - Fantomax - porthos - dokty - xam - wicked & Sir_SnuggleBunny
 
 UPDATED!!! Wed, Nov 28th 2007
 *******************************************************/
-require_once("include/bittorrent.php");
-dbconn(false);
-loggedinorreturn();
+require ("include/bittorrent.php");
+require_once("include/user_functions.php");
+require_once("include/bbcode_functions.php");
+dbconn();
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
 parked();
 
 function I_smell_a_rat($var){
@@ -33,17 +41,6 @@ case ($_GET['up_success']):
 I_smell_a_rat($_GET['up_success']);
 
 $amt = (int)$_GET['amt'];
-/*
-switch ($amt) {
-case $amt == 275.0:
-$amt = '1 GB';
-break;
-case $amt == 350.0:
-$amt = '2.5 GB';
-break;
-default:
-$amt = '5 GB';
-}*/
 
 switch ($amt) {
 case $amt == 275.0:
@@ -58,16 +55,16 @@ break;
 case $amt == 1000.0:
 $amt = '10 GB';
 break;
-case $amt == 2000.0:
+case $amt == 2000:
 $amt = '25 GB';
 break;
-case $amt == 4250.0:
+case $amt == 3750:
 $amt = '50 GB';
 break;
-case $amt == 8000.0:
+case $amt == 8000:
 $amt = '100 GB';
 break;
-case $amt == 40000.0:
+case $amt == 40000:
 $amt = '520 GB';
 break;
 default:
@@ -167,7 +164,7 @@ case ($_GET['gift_fail_points']):
 I_smell_a_rat($_GET['gift_fail_points']);
 
 stdhead($CURUSER['username'] . "'s Karma Bonus Page");
-echo'<table width=756><tr><td class=colhead align=left colspan=2><h1>OUPS!</h1></td></tr><tr><td align=left class=clearalt6>'.
+echo'<table width=756><tr><td class=colhead align=left colspan=2><h1>Oops!</h1></td></tr><tr><td align=left class=clearalt6>'.
 '<img src=pic/smilies/cry.gif alt=oops></td><td align=left class=clearalt6><b>Sorry </b>'.$CURUSER['username'].' you don\'t have enough Karma points'.
 '<br> go back to your <a class=altlink href=mybonus.php>Karma Bonus Point</a> page.<br><br></td></tr></table>';
 stdfoot();
@@ -198,7 +195,7 @@ case ($_GET['gift_fail_itrade']):
 I_smell_a_rat($_GET['gift_fail_itrade']);
 
 stdhead($CURUSER['username'] . "'s Karma Bonus Page");
-echo'<table width=756><tr><td class=colhead align=left colspan=2><h1>OOPS!</h1></td></tr><tr><td align=left class=clearalt6>'.
+echo'<table width=756><tr><td class=colhead align=left colspan=2><h1>Oops!</h1></td></tr><tr><td align=left class=clearalt6>'.
 '<img src=pic/smilies/cry.gif alt=oops></td><td align=left class=clearalt6><b>Sorry </b>'.$CURUSER['username'].' you don\'t have any Invites'.
 '<br> go back to your <a class=altlink href=mybonus.php>Karma Bonus Point</a> page.<br><br></td></tr></table>';
 stdfoot();
@@ -210,11 +207,33 @@ I_smell_a_rat($_GET['itrade_success']);
 stdhead($CURUSER['username'] . "'s Karma Bonus Page");
 echo'<table width=756><tr><td class=colhead align=left colspan=2><h1>Success!</h1></td></tr><tr><td align=left class=clearalt6>'.
 '<img src=pic/smilies/karma.gif alt=good_karma></td><td align=left class=clearalt6>'.
-'<b>Congratulations! </b>'.$CURUSER['username'].' you have got your self 200 points! <img src=pic/smilies/w00t.gif alt=w00t><br><br>'.
+'<b>Congratulations! </b>'.$CURUSER['username'].' you have got your self 200 karma points! <img src=pic/smilies/w00t.gif alt=w00t><br><br>'.
+' click to go back to your <a class=altlink href=mybonus.php>Karma Bonus Point</a> page.<br><br></td></tr></table>';
+stdfoot();
+die;
+case ($_GET['gift_fail_itrade2']):
+I_smell_a_rat($_GET['gift_fail_itrade2']);
+
+stdhead($CURUSER['username'] . "'s Karma Bonus Page");
+echo'<table width=756><tr><td class=colhead align=left colspan=2><h1>Oops!</h1></td></tr><tr><td align=left class=clearalt6>'.
+'<img src=pic/smilies/cry.gif alt=oops></td><td align=left class=clearalt6><b>Sorry </b>'.$CURUSER['username'].' you don\'t have any Invites'.
+'<br> go back to your <a class=altlink href=mybonus.php>Karma Bonus Point</a> page.<br><br></td></tr></table>';
+stdfoot();
+die;
+
+case ($_GET['itrade2_success']):
+I_smell_a_rat($_GET['itrade2_success']);
+
+stdhead($CURUSER['username'] . "'s Karma Bonus Page");
+echo'<table width=756><tr><td class=colhead align=left colspan=2><h1>Success!</h1></td></tr><tr><td align=left class=clearalt6>'.
+'<img src=pic/smilies/karma.gif alt=good_karma></td><td align=left class=clearalt6>'.
+'<b>Congratulations! </b>'.$CURUSER['username'].' you have got your self 2 free slots! <img src=pic/smilies/w00t.gif alt=w00t><br><br>'.
 ' click to go back to your <a class=altlink href=mybonus.php>Karma Bonus Point</a> page.<br><br></td></tr></table>';
 stdfoot();
 die;
 }
+
+
 //=== exchange
 if ($_GET['exchange']){
 I_smell_a_rat($_GET['exchange']);
@@ -371,12 +390,12 @@ header("Refresh: 0; url=$BASEURL/mybonus.php?gift_fail_points=1");
 die;
 }
 break;
- case 'freeslots':
+case 'freeslots':
 //=== trade for freeslots
 $freeslots = $CURUSER['freeslots'];
 $slots = $freeslots+$arr_points['menge'];
 $bonuscomment = gmdate("Y-m-d") . " - " .$points. " Points for freeslots.\n " .$bonuscomment;
-mysql_query("UPDATE users SET freeslots = '$slots', seedbonus = '$seedbonus' WHERE id = '$userid'") or sqlerr(__FILE__, __LINE__);
+sql_query("UPDATE users SET freeslots = '$slots', seedbonus = '$seedbonus' WHERE id = '$userid'") or sqlerr(__FILE__, __LINE__);
 header("Refresh: 0; url=$BASEURL/mybonus.php?freeslots_success=1");
 die;
 break;
@@ -387,8 +406,19 @@ $inv = $invites+$arr_points['menge'];
 if ($invites == 0)
 stderr("Error", "I smell a rat!");
 $bonuscomment = gmdate("Y-m-d") . " - " .$points. " invites for bonus points.\n" .$bonuscomment;
-mysql_query("UPDATE users SET invites = invites - 1, seedbonus = seedbonus + 200 WHERE id = '$userid' AND invites = '$invites +1'") or sqlerr(__FILE__, __LINE__);
+sql_query("UPDATE users SET invites = invites - 1, seedbonus = seedbonus + 200 WHERE id = '$userid' AND invites = '$invites +1'") or sqlerr(__FILE__, __LINE__);
 header("Refresh: 0; url=$BASEURL/mybonus.php?itrade_success=1");
+die;
+break;
+case 'itrade2':
+//=== trade for slots
+$invites = $CURUSER['invites'];
+$inv = $invites+$arr_points['menge'];
+if ($invites == 0)
+stderr("Error", "I smell a rat!");
+$bonuscomment = gmdate("Y-m-d") . " - " .$points. " invites for bonus points.\n" .$bonuscomment;
+mysql_query("UPDATE users SET invites = invites - 1, freeslots = freeslots + 2 WHERE id = '$userid' AND invites = '$invites +1'") or sqlerr(__FILE__, __LINE__);
+header("Refresh: 0; url=$BASEURL/mybonus.php?itrade2_success=1");
 die;
 break;
 }
@@ -424,7 +454,7 @@ case ($gets['id'] == 7):
 echo'<tr><td align=left class='.$class.'><h1><font color="#CECFF3">'.$gets['bonusname'].'</font></h1>'.$gets['description'].'<br><br>Enter the <b>username</b> of the person you would like to send karma to, and select how many points you want to send and click Exchange!<br>'.$otheroption.'</td><td align=center class='.$class.'>min.<br>'.$gets['points'].'<br>max.<br>1000.0</td>';
 break;
 case ($gets['id'] == 9):
-echo'<tr><td align=left class='.$class.'><h1><font color="#CECFF3">'.$gets['bonusname'].'</font></h1>'.$gets['description'].'</td><td align=center class='.$invites.'>min.<br>'.$gets['points'].'</td>';
+echo'<tr><td align=left class='.$class.'><h1><font color="#CECFF3">'.$gets['bonusname'].'</font></h1>'.$gets['description'].'</td><td align=center class='.$class.'>min.<br>'.$gets['points'].'</td>';
 break;
 case ($gets['id'] == 10):
 echo'<tr><td align=left class='.$class.'><h1><font color="#CECFF3">'.$gets['bonusname'].'</font></h1>'.$gets['description'].'<br><br>Enter the <b>ID number of the Torrent:</b> <input type=text name=torrent_id size=4 maxlength=8> you would like to buy a 1 to 1 ratio on.</td><td align=center class='.$class.'>min.<br>'.$gets['points'].'</td>';
@@ -432,13 +462,22 @@ break;
 default:
 echo'<tr><td align=left class='.$class.'><h1><font color="#CECFF3">'.$gets['bonusname'].'</font></h1>'.$gets['description'].'</td><td align=center class='.$class.'>'.$gets['points'].'</td>';
 }
-
 echo'<input type=hidden name=option value='.$gets['id'].'> <input type=hidden name=art value='.$gets['art'].'>';
+if ($gets['id'] == 18 || $gets['id'] == 19)
+{
+$bonus = $CURUSER['invites'];
+}
+else
+{
+$bonus = $CURUSER['seedbonus'];
+}
 if($bonus >= $gets['points']) {
-
 switch (true){
 case ($gets['id'] == 7):
 echo'<td class='.$class.'><input class=button type=submit name=submit value="Karma Gift!"></form></td>';
+break;
+case ($gets['id'] == 18 || $gets['id'] == 19):
+echo'<td class='.$class.'><input class=button type=submit name=submit value="Exchange!"></form></td>';
 break;
 
 default:
@@ -447,31 +486,28 @@ echo'<td class='.$class.'><input class=button type=submit name=submit value="Exc
 }
 else
 echo'<td class='.$class.' align=center><b>more points needed</b></form></td>';
-
 }
-
 
 echo'</table><br><br><br><table width=756><tr><td class=colhead2><h1>What the hell are these Karma Bonus points,'.
 ' and how do I get them?</h1></td></tr><tr><td class=clearalt6>- For every hour that you seed a torrent, you are awarded with 1'.
 ' Karma Bonus Point... <br>If you save up enough of them, you can trade them in for goodies like bonus GB(s) to '.
 'your upload<br> stats,getting more invites, or doing the real Karma booster... give them to another user!<br>'.
-'and yes! this is awarded on a per torrent basis even if there are no leechers on the Torrent you are seeding! <br>'.
+'and yes! this is awarded on a per torrent basis (max of 5) even if there are no leechers on the Torrent you are seeding! <br>'.
 '<h1>Other things that will get you karma points:</h1><ul><li>uploading a new torrent = 15 points</li><li>'.
 'putting up an offer = 10 points</li><li>filling a request = 10 points</li><li>comment on torrent = 3 points</li>'.
 '<li>saying thanks = 2 points</li><li>rating a torrent = 2 points</li><li>making a post = 1 point</li>'.
-'<li>starting a topic = 2 points</li><li>voting on poll = 1 point</li>'.
+'<li>starting a topic = 2 points</li><li>voting on poll = 1 point</li><li>filling a re-seed request = 5 points</li>'.
 '</ul><h1>Some things that will cost you karma points:</h1><ul>'.
 '<li>upload credit</li><li>custom title</li>'.
 '<li>one month VIP status</li><li>a 1:1 ratio on a torrent</li>'.
-'<li>buying off your warning - Note dont waste your points buying off Hit and Run warnings the system will Automatically re-apply it</li><li>one month custom smilies for the forums and comments</li>'.
+'<li>buying off your warning</li><li>one month custom smilies for the forums and comments</li>'.
 '<li>getting extra invites</li><li>giving a gift of karma points to another user</li>'.
-'<li>making a request</li></ul><p>But keep in mind that everything that can get'.
-' you karma can also be lost, <br>ie:if you up a torrent then delete it, you will gain and then lose 15 points, <br>'.
+'<li>asking for a re-seed</li><li>making a request</li></ul><p>But keep in mind that everything that can get'.
+' you karma can also be lost, <br>ie:if you up a torrent then delete it, you will gain and then lose 10 points, <br>'.
 'making a post and having it deleted will do the same<br><br>... and there are other hidden bonus karma points all '.
 'over the site.<br><br>Yet another way to help out your ratio! </p><p>*please note, staff can give or take away '.
 'points for breaking the rules, or doing good for the community.</p></td></tr></table><p align=center>'.
-'<a class=altlink href=index.php>back to homepage</a></p></td>'; 
+'<a class=altlink href=my.php>back to your profile</a></p></td>'; 
 end_frame();
 stdfoot();
 ?>
-

@@ -28,7 +28,6 @@ if (!isset($CURUSER) || ($CURUSER["id"] != $row["owner"] && get_user_class() < U
 	print("<p>You're not the rightful owner, or you're not <a href=\"login.php?returnto=" . urlencode(substr($_SERVER["REQUEST_URI"],1)) . "&amp;nowarn=1\">logged in</a> properly.</p>\n");
 }
 else {
-	//print("<form method=post action=takeedit.php enctype=multipart/form-data>\n");
 	print("<form name=edit method=post action=takeedit.php enctype=multipart/form-data>\n");
 	print("<input type=\"hidden\" name=\"id\" value=\"$id\">\n");
 	if (isset($_GET["returnto"]))
@@ -77,6 +76,8 @@ else {
     <option value="<?=safechar($row[countstats])?>"><?=safechar($row[countstats])?></option>
     <option value="yes"> yes </option><option value="no"> no </option></select> <?=$mess?></td></tr>
      <?php
+	if(get_user_class()>=UC_UPLOADER)
+    tr("VIP Torrent?", "<input type='checkbox' name='vip'" . (($row["vip"] == "yes") ? " checked='checked'" : "" ) . " value='1' /> If this one is checked, only VIPs can download this torrent", 1);
 	if(get_user_class() > UC_MODERATOR)
     tr("Sticky", "<input type='checkbox' name='sticky'" . (($row["sticky"] == "yes") ? " checked='checked'" : "" ) . " value='yes' />Set sticky this torrent!", 1);
 	if(get_user_class() >= UC_ADMINISTRATOR){

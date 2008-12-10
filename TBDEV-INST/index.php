@@ -121,6 +121,7 @@ case UC_CODER:
    break;
 case UC_SYSOP:
    $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
+   //$arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'>".$arr['username']."</font>";
    break;
 case UC_ADMINISTRATOR:
    $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
@@ -302,7 +303,7 @@ begin_table("Theme");?>
 end_table();
 ?>
 <?php
-require_once ("include/function_forumpost.php");
+require_once("include/function_forumpost.php");
 latestforumposts();
 ?>
 
@@ -484,11 +485,11 @@ if ($CURUSER["gotgift"] == 'no') {
 		on this server. The links are provided solely by this sites users. These
 		BitTorrent files are meant for the distribution of backup files. By downloading
 		the BitTorrent file, you are claiming that you own the original file. The
-		administrator of this site (http://yoursite.org) holds NO RESPONSIBILITY
+		administrator of this site <?php echo $BASEURL?> holds NO Responsibility
 		if these files are misused in any way and cannot be held responsible for
 		what its users post, or any other actions of its users. For controversial
-		reasons, if you are affiliated with any government, ANTI-Piracy group or
-		any other related group, or were formally a worker of one you CANNOT download
+		reasons, if you are affiliated with any government, Anti-Piracy group or
+		any other related group, or were formally a worker of one you Cannot download
 		any of these BitTorrent files. You may not use this site to distribute or
 		download any material when you do not have the legal rights to do so. It
 		is your own responsibility to adhere to these terms.<br><br><br><br><br>
@@ -499,6 +500,56 @@ if ($CURUSER["gotgift"] == 'no') {
 	</tr>
 </table>
 </td></tr></table>
+<!--<br>
+<div align=center>
+<h2><script language="JavaScript1.2">
+var message="InstallerV1 ® Powered By TBdev.net"
+var neonbasecolor="black"
+var neontextcolor="blue"
+var neontextcolor2="#FF0000"
+var flashspeed=30	       // speed of flashing in milliseconds
+var flashingletters=4     // number of letters flashing in neontextcolor
+var flashingletters2=1  // number of letters flashing in neontextcolor2 (0 to disable)
+var flashpause=0         // the pause between flash-cycles in milliseconds
+///No need to edit below this line/////
+var n=0
+if (document.all||document.getElementById){
+document.write('<font color="'+neonbasecolor+'">')
+for (m=0;m<message.length;m++)
+document.write('<span id="neonlight'+m+'">'+message.charAt(m)+'</span>')
+document.write('</font>')
+}
+else
+document.write(message)
+function crossref(number){
+var crossobj=document.all? eval("document.all.neonlight"+number) : document.getElementById("neonlight"+number)
+return crossobj
+}
+function neon(){
+//Change all letters to base color
+if (n==0){
+for (m=0;m<message.length;m++)
+crossref(m).style.color=neonbasecolor
+}
+//cycle through and change individual letters to neon color
+crossref(n).style.color=neontextcolor
+if (n>flashingletters-1) crossref(n-flashingletters).style.color=neontextcolor2 
+if (n>(flashingletters+flashingletters2)-1) crossref(n-flashingletters-flashingletters2).style.color=neonbasecolor
+if (n<message.length-1)
+n++
+else{
+n=0
+clearInterval(flashing)
+setTimeout("beginneon()",flashpause)
+return
+}
+}
+function beginneon(){
+if (document.all||document.getElementById)
+flashing=setInterval("neon()",flashspeed)
+}
+beginneon()
+</script></h2></div>--->
 <?
 print("<p align=center><font class=small>Updated ".date('Y-m-d H:i:s', filemtime($file))."</font></p>");
 stdfoot();

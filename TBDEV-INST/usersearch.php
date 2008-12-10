@@ -42,7 +42,7 @@ if ($_GET['h'])
 	respectively, as well as linking to the history page.
 	<br><br>\n <b>Announcement Feature</b><br><br> To use the announcement feature either specify what criteria you want in the
 	search boxes then hit submit query and the new announcement button will appear at the bottom
-	or simply hit submit qeury to bring up every registered member\n
+	or simply hit submit query to bring up every registered member\n
 	</div></td></tr></table><br><br>\n";
 }
 else

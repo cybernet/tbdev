@@ -27,9 +27,14 @@ if (!$id)
 
 //$res = mysql_query("SELECT name FROM torrents WHERE id = $id") or sqlerr(__FILE__, __LINE__);
 ///browserfix-stonebreath///
-$res = mysql_query("SELECT name, filename FROM torrents WHERE id = $id") or sqlerr(__FILE__, __LINE__);
+$res = mysql_query("SELECT name, filename, category, vip FROM torrents WHERE id = $id") or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_assoc($res);
-
+if (happyHour("check") && happyCheck("checkid", $row["category"]) ){
+$multiplier = happyHour("multiplier");
+$time = time();
+happyLog($CURUSER["id"], $id,$multiplier);
+mysql_query("INSERT INTO happyhour (userid, torrentid, multiplier ) VALUES (".sqlesc($CURUSER["id"])." , ".sqlesc($id).", ".sqlesc($multiplier).")");
+}
 $fn = "$torrent_dir/$id.torrent";
 
 if (!$row || !is_file($fn) || !is_readable($fn))
@@ -40,11 +45,9 @@ mysql_query("UPDATE torrents SET hits = hits + 1 WHERE id = $id");
 
 require_once "include/benc.php";
 
-function loginfailed($reason) {
-header('WWW-Authenticate: Basic realm="CoreDownload"');
-header('HTTP/1.0 401 Unauthorized');
-# print($reason);
-print('You are required to log in to download');
+if ($row["vip"] == 'yes' && get_user_class() < UC_VIP)
+{
+stdmsg("Sorry...", "You are not allowed to download this torrent");
 exit;
 }
 
@@ -55,7 +58,6 @@ $CURUSER['passkey'] = md5($CURUSER['username'].get_date_time().$CURUSER['passhas
 mysql_query("UPDATE users SET passkey='$CURUSER[passkey]' WHERE id=$CURUSER[id]");
 
 }
-
 
 
 $dict = bdec_file($fn, (1024*1024));

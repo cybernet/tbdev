@@ -32,8 +32,8 @@ stderr('Error','what are you doing?');
 function deletechangelogid($changelogid) {
 global $CURUSER;
 mysql_query("DELETE FROM changelog WHERE id = $changelogid AND userid = $CURUSER[id]");
-@unlink("cache/news.html");
-@unlink("cache/newsstaff.html");
+@unlink("cache/changelog.html");
+@unlink("cache/changelogstaff.html");
 }
 deletechangelogid($changelogid);
 stdhead();
@@ -57,8 +57,8 @@ $added = get_date_time();
 mysql_query("INSERT INTO changelog (userid, added, body, title, sticky) VALUES (".
 $CURUSER['id'] . "," . sqlesc($added) . ", " . sqlesc($body) . ", " . sqlesc($title) . ", " . sqlesc($sticky) . ")") or sqlerr(__FILE__, __LINE__);
 mysql_affected_rows() == 1 ?$warning = "changelog entry was added successfully." : stderr("oopss","Something's wrong !! .");
-@unlink("cache/news.html");
-@unlink("cache/newsstaff.html");
+@unlink("cache/changelog.html");
+@unlink("cache/changelogstaff.html");
 }
 /////////////////Edit/change changelog////////////////////////////////////////////////////////
 if ($action == 'edit')
@@ -84,8 +84,8 @@ $body = sqlesc($body);
 $sticky = sqlesc($sticky);
 $editedat = sqlesc(get_date_time());
 mysql_query("UPDATE changelog SET body=$body, sticky=$sticky, title=".sqlesc($title)." WHERE id=$changelogid") or sqlerr(__FILE__, __LINE__);
-@unlink("cache/news.html");
-@unlink("cache/newsstaff.html");
+@unlink("cache/changelog.html");
+@unlink("cache/changelogstaff.html");
 $returnto = htmlentities($_POST['returnto']);
 if ($returnto != "")
 header("Location: $returnto");

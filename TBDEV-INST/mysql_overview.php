@@ -1,8 +1,10 @@
 <?php
 /* $Id: mysql_overview.php,v 1.01 2005/08/05 19:11:48 CoLdFuSiOn Exp $ */
 // vim: expandtab sw=4 ts=4 sts=4:
-require "include/bittorrent.php";
-require_once "include/user_functions.php";
+require ("include/bittorrent.php");
+require_once ("include/user_functions.php");
+require_once ("include/bbcode_functions.php");
+
 dbconn(false);
 if(!logged_in())
 {
@@ -122,7 +124,7 @@ $count = 0;
 /**
 * Sends the query and buffers the result
 */
-$res = @mysql_query('SHOW TABLE STATUS FROM `xxxxxxxxxx`') or Die(mysql_error());
+$res = @mysql_query('SHOW TABLE STATUS FROM `'.$mysql_db.'`') or Die(mysql_error());
 while ($row = mysql_fetch_array($res)) {
 list($formatted_Avg, $formatted_Abytes) = formatByteDown($row['Avg_row_length']);
 list($formatted_Dlength, $formatted_Dbytes) = formatByteDown($row['Data_length']);

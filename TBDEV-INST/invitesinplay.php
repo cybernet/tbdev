@@ -32,7 +32,7 @@ $page = $pagedefault;
 else
 $page = $pagedefault;
 
-$pager = "<td class=\"pager\">Seiten:</td><td class=\"pagebr\">&nbsp;</td>";
+$pager = "<td class=\"pager\">Page:</td><td class=\"pagebr\">&nbsp;</td>";
 
 $mp = $pages - 1;
 $as = "<b>«</b>";
@@ -78,7 +78,7 @@ $pagerarr[] = "<td class=\"highlight\"><b>$text</b></td><td class=\"pagebr\">&nb
 }
 $pagerstr = join("", $pagerarr);
 $pagertop = "<table class=\"main\"><tr>$pager $pagerstr $pager2</tr></table>\n";
-$pagerbottom = "Insgesamt $count auf $i Seiten, angezeigt werden $rpp pro Seite.<br /><br /><table class=\"main\">$pager $pagerstr $pager2</table>\n";
+$pagerbottom = "Overall $count on $i Page(s), showing $rpp per page.<br /><br /><table class=\"main\">$pager $pagerstr $pager2</table>\n";
 }
 else {
 $pagertop = $pager;
@@ -155,7 +155,7 @@ $downloaded = mksize($arr["downloaded"]);
 $added = substr($arr['added'],0,10);
 $last_access = substr($arr['last_access'],0,10);
 $class=get_user_class_name($arr["class"]);
-if($arr[invites] < 5 ) { // change the number 5 to any number you like , that number is used to trace users with invites more than 5 invites .
+if($arr[invites] < 3 ) { // change the number 5 to any number you like , that number is used to trace users with invites more than 5 invites .
 print("<tr><td align=left class=invite><a href=userdetails.php?id=$arr[id]><b>$arr[username]</b></a></td>
 <td align=center class=invite>$added</td>
 <td align=center class=invite>$last_access</td>

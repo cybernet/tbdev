@@ -17,7 +17,7 @@ stdhead();
 begin_frame("Invited Users");
 
 /////////// by rulzmaker /////////////
-$res2 = sql_query("SELECT COUNT(*) FROM users WHERE invited_by > 0");
+$res2 = sql_query("SELECT COUNT(*) FROM users WHERE invitedby > 0");
 $row = mysql_fetch_array($res2);
 $count = $row[0];
 $perpage = 50;
@@ -28,7 +28,7 @@ echo $pagertop;
 echo '<table width="640" border="0" align="center" cellpadding="2" cellspacing="0">';
 echo "<tr><td class=colhead align=left>User</td><td class=colhead>Invited by</td><td class=colhead>Ratio</td><td class=colhead>IP</td><td class=colhead>Date Joined</td><td class=colhead>Last Access</td><td class=colhead>Download</td><td class=colhead>Upload</td></tr>";
 
-$result = sql_query ("SELECT * FROM users WHERE " . unsafechar(invited_by) . " > 0 AND status = 'confirmed' ORDER BY added DESC $limit");
+$result = sql_query ("SELECT * FROM users WHERE " . unsafechar(invitedby) . " > 0 AND status = 'confirmed' ORDER BY added DESC $limit");
 if ($row = mysql_fetch_array($result)) {
 do { 
 if ($row["uploaded"] == "0") { $ratio = "inf"; }
@@ -37,10 +37,10 @@ else {
 $ratio = number_format($row["uploaded"] / $row["downloaded"], 3);
 $ratio = "<font color=" . get_ratio_color($ratio) . ">$ratio</font>";
 }
-$invited_by = sql_query("SELECT username FROM users WHERE id=$row[invited_by]");
-$invited_by2 = mysql_fetch_array($invited_by);
+$invitedby = sql_query("SELECT username FROM users WHERE id=$row[invitedby]");
+$invitedby2 = mysql_fetch_array($invitedby);
 
-echo "<tr><td><a href=userdetails.php?id=".$row["id"]."><b>".$row["username"]."</b></a></td><td><a href=userdetails.php?id=".$row["invited_by"].">".$invited_by2["username"]."</a></td><td><strong>".$ratio."</strong></td><td>".$row["ip"]."</td><td>".$row["added"]."</td><td>".$row["last_access"]."</td><td>".mksize($row["downloaded"])."</td><td>".mksize($row["uploaded"])."</td></tr>";
+echo "<tr><td><a href=userdetails.php?id=".$row["id"]."><b>".$row["username"]."</b></a></td><td><a href=userdetails.php?id=".$row["invitedby"].">".$invitedby2["username"]."</a></td><td><strong>".$ratio."</strong></td><td>".$row["ip"]."</td><td>".$row["added"]."</td><td>".$row["last_access"]."</td><td>".mksize($row["downloaded"])."</td><td>".mksize($row["uploaded"])."</td></tr>";
 
 
 } while($row = mysql_fetch_array($result));

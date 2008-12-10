@@ -1,54 +1,32 @@
 <?php
-/***************************************************************************
+###############################################################################
+# Browser Emulating file functions v2.0
+# (c) Kai Blankenhorn
+# www.bitfolge.de/en
+# kaib@bitfolge.de
+# -----------------------------------------------------------------------------
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+# 
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+###############################################################################
 
-Browser Emulating file functions v2.0
-(c) Kai Blankenhorn
-www.bitfolge.de/en
-kaib@bitfolge.de
-
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-as published by the Free Software Foundation; either version 2
-of the License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-****************************************************************************
-
-
-Changelog:
-
-v2.0	03-09-03
-	added a wrapper class; this has the advantage that you no longer need
-		to specify a lot of parameters, just call the methods to set 
-		each option
-	added option to use a special port number, may be given by setPort or
-		as part of the URL (e.g. server.com:80)
-	added getLastResponseHeaders()
-
-v1.5
-	added Basic HTTP user authorization
-	minor optimizations
-
-v1.0
-	initial release
-
-
-
-***************************************************************************/
-/**
- * BrowserEmulator class. Provides methods for opening urls and emulating 
- * a web browser request.
+/** BrowserEmulator class. Provides methods for opening urls and emulating 
+ *  a web browser request.
+ * @package Api
+ * @class BrowserEmulator
+ * @author Kai Blankenhorn (kai AT bitfolge DOT de)
  **/
-     class BrowserEmulator {
+class BrowserEmulator {
 
      var $headerLines = Array ();
      var $postData = Array ();
@@ -62,76 +40,73 @@ v1.0
 	  $this->resetPort ();
      }
 
-	/**
-	* Adds a single header field to the HTTP request header. The resulting header
-	* line will have the format
-	* $name: $value\n
+	/** Add a single header field to the HTTP request header. The resulting
+        *   header line will have the format "$name: $value\n"
+        * @method addHeaderLine
+        * @param string name
+        * @param string value
 	**/
      function addHeaderLine ($name, $value) {
 	  $this->headerLines[$name] = $value;
      }
 
-	/**
-	* Deletes all custom header lines. This will not remove the User-Agent header field,
-	* which is necessary for correct operation.
+	/** Delete all custom header lines. This will not remove the User-Agent
+        *   header field, which is necessary for correct operation.
+        * @method resetHeaderLines
 	**/
      function resetHeaderLines () {
 	  $this->headerLines = Array ();
-
-		/*******************************************************************************/
-		/**************    YOU MAX SET THE USER AGENT STRING HERE    *******************/
-	  /*                                                                             */
-	  /* default is "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)",            */
-	  /* which means Internet Explorer 6.0 on WinXP                                  */
-
 	  $this->headerLines["User-Agent"] =
 	       "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)";
-
-		/*******************************************************************************/
-
      }
 
-	/**
-	* Add a post parameter. Post parameters are sent in the body of an HTTP POST request.
+	/** Add a post parameter. Post parameters are sent in the body of an HTTP POST request.
+        * @method addPostData
+        * @param string name
+        * @param string value
 	**/
      function addPostData ($name, $value) {
 	  $this->postData[$name] = $value;
      }
 
-	/**
-	* Deletes all custom post parameters.
+	/** Delete all custom post parameters.
+        * @method resetPostData
 	**/
      function resetPostData () {
 	  $this->postData = Array ();
      }
 
-	/**
-	* Sets an auth user and password to use for the request.
-	* Set both as empty strings to disable authentication.
+	/** Set an auth user and password to use for the request.
+	*   Set both as empty strings to disable authentication.
+        * @method setAuth
+        * @param string user
+        * @param string pass
 	**/
      function setAuth ($user, $pass) {
 	  $this->authUser = $user;
 	  $this->authPass = $pass;
      }
 
-	/**
-	* Selects a custom port to use for the request.
+	/** Select a custom port to use for the request.
+        * @method setPort
+        * @param integer portNumber
 	**/
      function setPort ($portNumber) {
 	  $this->port = $portNumber;
      }
 
-	/**
-	* Resets the port used for request to the HTTP default (80).
+	/** Reset the port used for request to the HTTP default (80).
+        * @method resetPort
 	**/
      function resetPort () {
 	  $this->port = 80;
      }
 
-	/**
-	* Make an fopen call to $url with the parameters set by previous member
-	* method calls. Send all set headers, post data and user authentication data.
-	* Returns a file handle on success, or false on failure.
+	/** Make an fopen call to $url with the parameters set by previous member
+	*   method calls. Send all set headers, post data and user authentication data.
+	* @method fopen
+	* @param string url
+	* @return mixed file handle on success, FALSE otherwise
 	**/
      function fopen ($url) {
 	  $debug = false;
@@ -152,7 +127,7 @@ v1.0
 	  if ($path == "")
 	       $path = "/";
 	  $socket = false;
-	  $socket = fsockopen ($server, $this->port);
+	  $socket = @fsockopen ($server, $this->port);
 	  if ($socket) {
 	       $this->headerLines["Host"] = $server;
 
@@ -218,10 +193,11 @@ v1.0
 	  return $socket;
      }
 
-	/**
-	* Make an file call to $url with the parameters set by previous member
-	* method calls. Send all set headers, post data and user authentication data.
-	* Returns the requested file as an array on success, or false on failure.
+	/** Make an file call to $url with the parameters set by previous member
+	*   method calls. Send all set headers, post data and user authentication data.
+	* @method file
+	* @param string url
+	* @return mixed array file on success, FALSE otherwise
 	**/
      function file ($url) {
 	  $file = Array ();
@@ -238,33 +214,19 @@ v1.0
 	  return $file;
      }
 
+	/** Get the latest server response
+	* @method getLastResponseHeaders
+	* @return array lastResponse <ul>
+        *  <li>0: HTTP response (e.g. "HTTP/1.1 404 Not Found")</li>
+        *  <li>1: Date (e.g. "Date: Sun, 08 Jun 2008 16:36:37 GMT")</li>
+        *  <li>2: ServerInfo (e.g. "Server: Apache/2.2.3 (Ubuntu) PHP/5.2.1"</li>
+        *  <li>3: Content length (e.g. "Content-Length: 214"</li>
+        *  <li>4: Connection (e.g. "Connection: close")</li>
+        *  <li>5: Content type (e.g. "Content-Type: text/html; charset=iso-8859-1")</li></ul>
+        */
      function getLastResponseHeaders () {
 	  return $this->lastResponse;
      }
-}
 
-
-
-// example code
-/*
-$be = new BrowserEmulator(); 
-//$be->addHeaderLine("Referer", "http://previous.server.com/");
-//$be->addHeaderLine("Accept-Encoding", "x-compress; x-zip");
-//$be->addPostData("Submit", "OK");
-//$be->addPostData("item", "42");
-//$be->setAuth("admin", "secretpass");
-// also possible: 
-// $be->setPort(10080); 
-
-$file = $be->fopen("http://us.imdb.com/Title?0209144");
-$response = $be->getLastResponseHeaders(); 
-
-while ($line = fgets($file, 1024)) { 
-    // do something with the file
-    echo $line;
-} 
-fclose($file); 
-
-*/
-
+} // end class
 ?>

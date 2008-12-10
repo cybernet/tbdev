@@ -492,9 +492,9 @@ function format_comment($text, $strip_html = true)
     
                                                                                   "<tr><td bgcolor=green><b>\\1</b></td></tr>".
                                                                                     "</table>", $s);
-  
 
-// [ codebox]Some long text[/codebox ]
+
+// [ codebox2]Some long text[/codebox2 ]
         $s = preg_replace(
     '/\[codebox\]\s*((\s|.)+?)\s*\[\/codebox\]\s*/i',
     '<div class="codetop">CODEBOX</div><div class="codemain" style="OVERFLOW: auto; WHITE-SPACE: pre; width: 100%; HEIGHT: 200px">\\1</div>', $s );
@@ -619,7 +619,11 @@ $s = preg_replace( "/\[sql\]((\s|.)+?)\[\/sql\]/ise", "''.highlight_sql(htmlspec
                 $s = preg_replace("/\[center\]((\s|.)+?)\[\/center\]/i", "<div align='center'><tt><nobr><font face='Verdana' size=2 style='font-size: 10pt; line-height: " .
                 "10pt'>\\1</font></nobr></tt></div>", $s);
 
-	            // [s]Stroke[/s]
+	//[spoiler]Text[/spoiler]
+                $s = preg_replace("/\[spoiler\]\s*((\s|.)+?)\s*\[\/spoiler\]\s*/i",
+                "<div><strong>Spoiler:</strong> (select text to read)</div> <div class=\"spoiler\">\\1</div>", $s);
+        
+                // [s]Stroke[/s]
                 $s = preg_replace("/\[s\]((\s|.)+?)\[\/s\]/", "<s>\\1</s>", $s);  
 	             
 	reset($smilies);

@@ -120,10 +120,9 @@ print("<td class=tabletorrent align=center>Completed At</td>\n");
 print("<td class=tabletorrent align=center>Port</td>\n");
 print("<td class=tabletorrent align=center>seeding</td>\n");
 print("<td class=tabletorrent align=center>Announced</td>\n");
-print("<td class=tabletorrent align=center>Total Snatched</td>\n");
 print("</tr>\n");
 
-$res = mysql_query("SELECT s.*, size, username, parked, warned, enabled, donor, timesann, tamount FROM snatched AS s INNER JOIN users ON s.userid = users.id INNER JOIN torrents ON s.torrentid = torrents.id WHERE torrentid = $id ORDER BY complete_date DESC $limit") or sqlerr();
+$res = mysql_query("SELECT s.*, size, username, parked, warned, enabled, donor, timesann FROM snatched AS s INNER JOIN users ON s.userid = users.id INNER JOIN torrents ON s.torrentid = torrents.id WHERE torrentid = $id ORDER BY complete_date DESC $limit") or sqlerr();
 while ($arr = mysql_fetch_assoc($res)) {
 
 $upspeed = ($arr["upspeed"] > 0 ? mksize($arr["upspeed"]) : ($arr["seedtime"] > 0 ? mksize($arr["uploaded"] / ($arr["seedtime"] + $arr["leechtime"])) : mksize(0)));
@@ -145,11 +144,10 @@ print("<td align=right>$completed</td>\n");
 print("<td align=right><center><b>".get_snatched_color($arr["seedtime"])."</b></center></td>\n");
 print("<td align=right>".mkprettytime($arr["leechtime"])."</td>\n");
 print("<td align=center>$arr[last_action]</td>\n");
-print("<td align=center>".safechar($arr["complete_date"] == "0000-00-00 00:00:00" ? "<img src=/pic/offline.gif>" : $arr["complete_date"])."</td>\n");
+print("<td align=center>".safechar($arr["complete_date"] == "0000-00-00 00:00:00" ? "Not Complete Yet" : $arr["complete_date"])."</td>\n");
 print("<td align=center>".safechar($arr[port])."</td>\n");
 print("<td align=center>" .($arr9["seeder"] == "yes" ? "<img src=".$pic_base_url."online.gif border=0 alt=\"active Seeder\">" : "<img src=".$pic_base_url."offline.gif border=0 alt=\"Not seeding!\">") . "</td>\n");
 print("<td align=right>".safechar($arr["timesann"])."</td>\n");
-print("<td align=right>".safechar($arr["tamount"])."</td>\n");
 print("</tr>\n");
 }
 print("</table>\n");

@@ -10,9 +10,10 @@ $arr = mysql_fetch_row($res);
 if ($arr[0] >= $maxusers)
 	stderr("Error", "Sorry, user limit reached. Please try again later.");
 
-if (!mkglobal("wantusername:wantpassword:passagain:email:captcha"))
-	die();
-	
+//if (!mkglobal("wantusername:wantpassword:passagain:email:captcha"))
+	//die();
+if (!mkglobal("wantusername:wantpassword:passagain:email:captcha:passhint:hintanswer"))
+                    die();
 session_start();
   if(empty($captcha) || $_SESSION['captcha_id'] != strtoupper($captcha)){
       header('Location: signup.php');
@@ -29,20 +30,6 @@ print("</td></tr></table>");
 die; 
 } 
 
-function validusername($username)
-{
-	if ($username == "")
-	  return false;
-
-	// The following characters are allowed in user names
-	$allowedchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-	for ($i = 0; $i < strlen($username); ++$i)
-	  if (strpos($allowedchars, $username[$i]) === false)
-	    return false;
-
-	return true;
-}
 
 function isportopen($port)
 {
@@ -64,9 +51,10 @@ function isproxy()
 	return false;
 }
 */
-if (empty($wantusername) || empty($wantpassword) || empty($email))
-	bark("Don't leave any fields blank.");
-
+//if (empty($wantusername) || empty($wantpassword) || empty($email))
+//	bark("Don't leave any fields blank.");
+if (empty($wantusername) || empty($wantpassword) || empty($email) || empty($passhint) || empty($hintanswer))
+                    bark("Don't leave any fields blank.");
 if (strlen($wantusername) > 12)
 	bark("Sorry, username is too long (max is 12 chars)");
 
@@ -96,12 +84,12 @@ if ($_POST["rulesverify"] != "yes" || $_POST["faqverify"] != "yes" || $_POST["ag
 $a = (@mysql_fetch_row(@sql_query("select count(*) from users where email='$email'"))) or die(mysql_error());
 if ($a[0] != 0)
   bark("The e-mail address " . htmlspecialchars($email) . " is already in use.");
-/*
+
 //=== check if ip addy is already in use
 $c = (@mysql_fetch_row(@sql_query("select count(*) from users where ip='" . $_SERVER['REMOTE_ADDR'] . "'"))) or die(mysql_error());
 if ($c[0] != 0)
 stderr("Error", "The ip " . $_SERVER['REMOTE_ADDR'] . " is already in use. We only allow one account per ip address.");
-*/
+
 /*
 // do simple proxy check
 if (isproxy())
@@ -111,11 +99,12 @@ if (isproxy())
 $secret = mksecret();
 $wantpasshash = md5($secret . $wantpassword . $secret);
 $editsecret = (!$arr[0]?"":mksecret());
+$wanthintanswer = md5($hintanswer);
 check_banned_emails($email);
-$ret = sql_query("INSERT INTO users (username, passhash, secret, email, status, ". (!$arr[0]?"class, ":"") ."added) VALUES (" .
- implode(",", array_map("sqlesc", array($wantusername, $wantpasshash, $secret, $email, 'confirmed'))).
+$ret = sql_query("INSERT INTO users (username, passhash, secret, editsecret, passhint, hintanswer, email, status, ". (!$arr[0]?"class, ":"") ."added) VALUES (" .
+ implode(",", array_map("sqlesc", array($wantusername, $wantpasshash, $secret, $editsecret, $passhint, $wanthintanswer, $email, 'confirmed'))).
  ", ". (!$arr[0]?UC_SYSOP.", ":""). "'". get_date_time() ."')");
-$message = "Welcome New ::Yoursite:: Member : - ".htmlspecialchars($wantusername)."";
+$message = "Welcome New $SITENAME Member : - ".htmlspecialchars($wantusername)."";
 if (!$ret) {
 	if (mysql_errno() == 1062)
 		bark("Username already exists!");

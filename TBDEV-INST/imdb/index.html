@@ -1,29 +1,17 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<title>Nosey Cunt !</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<style type="text/css">
-<!--
-body,td,th {
-	color: cyan;
-	font-family: arial;
-}
-body {
-	background-color: #000000;
-}
-.style1 {font-size: 16px}
-.style2 {color: cyan}
--->
-</style></head>
-
-<body>
-<div align="center">
-  <p class="style1">Scene-Base</p>
-  <p class="style1"><img src="http://www.scene-base.net/warn.jpg" width="128" height="128"></p>
-  <p class="style1 style2">Fuck off Nosey You Shouldnt Be Looking Here</p>
-  
-</div>
-</body>
-</html>
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
+<HTML><HEAD>
+  <TITLE>imdb php classes test</TITLE>
+  <STYLE TYPE='text/css'>body,td,th { font-size:12px; font-family:sans-serif; }</STYLE>
+</HEAD><BODY>
+<FORM ACTION="imdbsearch.php" METHOD="get">
+ <TABLE ALIGN="center" STYLE="margin-top:20px;border-collapse:collapse;" BORDER="1">
+  <TR><TH COLSPAN="2" STYLE="background-color:#ffb000">Search IMDB for...</TH></TR>
+  <TR><TD ALIGN="right">Movie Name:<BR>Type:</TD>
+      <TD><INPUT TYPE="text" NAME="name" SIZE="30" MAXLENGTH="50"><BR>
+          <SELECT NAME="searchtype"><OPTION VALUE="movie">Movie</OPTION><OPTION VALUE="episode">Episode</OPTION></SELECT></TD></TR>
+  <TR><TD ALIGN="right">or IMDB ID:</TD><TD><INPUT TYPE="text" NAME="mid"  SIZE="30" MAXLENGTH="7"></TD></TR>
+  <TR><TD COLSPAN="2" ALIGN="center"><INPUT TYPE="submit" VALUE="Search"></TD></TR>
+ </TABLE>
+</FORM>
+<P ALIGN="center"><A href="cache.php">view movies in cache</A></P>
+</BODY></HTML>

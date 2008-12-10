@@ -10,11 +10,61 @@ header("HTTP/1.0 404 Not Found");
 print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
 die();
 }
-//$action = $_GET["action"];
 $action = isset($_GET["action"]) ?$_GET["action"] : '';
-
 stdhead ($CURUSER ["username"] . "'s private page", false);
-
+$speed = array(
+'1' => '64kbps',
+'2' => '96kbps',
+'3' => '128kbps',
+'4' => '150kbps',
+'5' => '256kbps',
+'6' => '512kbps',
+'7' => '768kbps',
+'8' => '1Mbps',
+'9' => '1.5Mbps',
+'10' => '2Mbps',
+'11' => '3Mbps',
+'12' => '4Mbps',
+'13' => '5Mbps',
+'14' => '6Mbps',
+'15' => '7Mbps',
+'16' => '8Mbps',
+'17' => '9Mbps',
+'18' => '10Mbps',
+'19' => '48Mbps',
+'20' => '100Mbit'
+);
+$tz = array(
+"-720" => "GMT - 12:00 hours (DLW)",
+"-660" => "GMT - 11:00 hours (NT)",
+"-600" => "GMT - 10:00 hours (HST)",
+"-540" => "GMT - 9:00 hours (YST)",
+"-480" => "GMT - 8:00 hours (PST)",
+"-420" => "GMT - 7:00 hours (MST)",
+"-360" => "GMT - 6:00 hours (CST)",
+"-300" => "GMT - 5:00 hours (EST)",
+"-240" => "GMT - 4:00 hours (AST)",
+"-210" => "GMT - 3:30 hours (GST)",
+"-180" => "GMT - 3:00 hours (ADT)",
+"-120" => "GMT - 2:00 hours (FST)",
+"-60"  => "GMT - 1:00 hour (WAT)",
+"0"    => "GMT (Universal Time)",
+"60"   => "GMT + 1:00 hour (CET)",
+"120"  => "GMT + 2:00 hours (EET)",
+"180"  => "GMT + 3:00 hours (MSK)",
+"210"  => "GMT + 3:30 hours (NST)",
+"240"  => "GMT + 4:00 hours (GST)",
+"300"  => "GMT + 5:00 hours (TMT)",
+"330"  => "GMT + 5:30 hours (IST)",
+"360"  => "GMT + 6:00 hours (BT)",
+"420"  => "GMT + 7:00 hours (ICT)",
+"480"  => "GMT + 8:00 hours (CCT)",
+"540"  => "GMT + 9:00 hours (JST)",
+"570"  => "GMT + 9:30 hours (ACST)",
+"600"  => "GMT + 10:00 hours (GST)",
+"660"  => "GMT + 11:00 hours (AEDT)",
+"720"  => "GMT + 12:00 hours (NZST)"
+);
 if ($_GET["edited"]) {
 print("<h1>Profile updated!</h1>\n");
 if ($_GET["mailsent"])
@@ -161,6 +211,8 @@ tr("Account parked",
 tr("Anonymous", "<input type=checkbox name=anonymous" . ($CURUSER["anonymous"] == "yes" ? " checked" : "") . "> (Anonymous Status - You profile is protected!)",1);
 tr("Anonymous in Top10", "<input type=checkbox name=anonymoustopten" . ($CURUSER["anonymoustopten"] == "yes" ? " checked" : "") . "> Check this not to be shown in Top10",1);
 ////annonymous mod////comment out if not required
+//////////////////////////hide snatch lists////////////////
+tr("Hide current seed and leech","<input type=radio name=hidecur" . ($CURUSER["hidecur"] == "yes" ? " checked" : "") . " value=yes>Yes<input type=radio name=hidecur" .  ($CURUSER["hidecur"] == "no" ? " checked" : "") . " value=no>No",1);
 ////////////// Passkey //////////////////
 if (get_user_class() >= UC_VIP ) {
 tr("Reset passkey ","<input type=checkbox name=resetpasskey value=1 /><br><font class=small>Any active torrents must be downloaded again to continue leeching/seeding.</font>", 1);
@@ -172,6 +224,21 @@ print("<tr><td class=rowhead>*Note:</td><td align=left>In order to change your e
 <tr><td class="heading" valign="top" align="right" width="20%">Change Password:</td><td valign="top" align="left" width="80%"><input type="password" name="chpassword" size="30" class="keyboardInput" onkeypress="showkwmessage();return false;" /></td></tr>
 <tr><td class="heading" valign="top" align="right" width="20%">Type Password Again:</td><td valign="top" align="left" width="80%"><input type="password" name="passagain" size="30" class="keyboardInput" onkeypress="showkwmessage();return false;" /> <font class=small size=1></font></td></tr>
 <?
+$secretqs = "<option value=0>---- None selected ----</option>\n";
+              $questions = array(
+              array("id"=> "1", "question"=> "Mother's birthplace"),
+              array("id"=> "2", "question"=> "Best childhood friend"),
+              array("id"=> "3", "question"=> "Name of first pet"),
+              array("id"=> "4", "question"=> "Favorite teacher"),
+              array("id"=> "5", "question"=> "Favorite historical person"),
+              array("id"=> "6", "question"=> "Grandfather's occupation")
+              );
+              
+              foreach($questions as $sctq){  
+              $secretqs .= "<option value=".$sctq['id']."" .  ($CURUSER["passhint"] == $sctq['id'] ? " selected" : "") .  ">".$sctq['question']."</option>\n"; }
+              
+              tr("Question", "<select name=changeq>\n$secretqs\n</select>",1);
+              tr("Secret Answer", "<input type=\"text\" name=\"secretanswer\" size=\"40\" />", 1);
 }
 
 else if ($action == "torrents")
@@ -213,6 +280,7 @@ tr("Torrents On Homepage",
 <input type=radio name=tohp" .  ($CURUSER["tohp"] == "no" ? " checked" : "") . " value=no>no"
 ,1);
 tr("User Class Colour On Browse", "<input type=checkbox name=view_uclass" . ($CURUSER["view_uclass"] == "yes" ? " checked" : "") . "> Select to display uploaders user class colour on <a href=browse.php>browse</a>",1);
+tr("Clear New Tag Manualy", "<input type=checkbox name=update_new" . ($CURUSER["update_new"] == "yes" ? " checked" : "") . ">(Default value for \"New Tag on browse\")",1);
 print("<tr><td class=colhead colspan=2 height=18><a href=mytorrents.php>My Torrents</a></td></tr>");
 }
 
@@ -262,11 +330,30 @@ $pos_opt .= "<option value=200".($pos_per_pg == 200 ? " selected" : "") .">200</
 $pos_opt .= "</select>";
 echo "Posts per Page: ".$pos_opt."";
 ///////////////////////////////////////////////////////////////////////////////////////
+////////////up/down speed//////////////////
+$dlspeed = "<option value=0>---- None selected ----</option>\n";
+foreach ($speed as $key => $value)
+  $dlspeed .= "<option value=$key".($CURUSER["download"] == $key ? " selected" : "").">$value</option>";
+tr("Download speed", "<select name=download>$dlspeed</select>", 1);
+
+reset($speed);
+
+$ulspeed = "<option value=0>---- None selected ----</option>\n";
+foreach ($speed as $key => $value)
+  $ulspeed .= "<option value=$key".($CURUSER["upload"] == $key ? " selected" : "").">$value</option>";
+tr("Upload speed", "<select name=upload>$ulspeed</select>", 1);
+////////////stylesheet//////////////
 $stylesheets = "<option value=0>---- None selected ----</option>\n";
 $stylesheet ='';
 include 'include/cache/stylesheets.php';
 foreach ($stylesheets as $stylesheet)
 $stylesheets .= "<option value=$stylesheet[id]" . ($CURUSER["stylesheet"] == $stylesheet['id'] ? " selected" : "") . ">$stylesheet[name]</option>\n";
+//////////////end/
+/////////////timezone/////
+while (list($key, $value) = each($tz))
+$timezone .= "<option value=$key".($CURUSER["timezone"] == $key ? " selected" : "").">$value</option>";
+tr("Timezone", "<select name=timezone>$timezone</select> <input type=checkbox name=dst".($CURUSER["dst"] ? " checked" : "").">Observing Daylight Savings Time", 1);
+//////////////////////end///////
 $countries = "<option value=0>---- None selected ----</option>\n";
 $country = '';
 include 'include/cache/countries.php';

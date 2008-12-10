@@ -1,5 +1,4 @@
 <?php
-////////////////proxy detect////
 require ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
@@ -11,7 +10,7 @@ header("HTTP/1.0 404 Not Found");
 print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
 die();
 }
-if(get_user_class()<UC_MODERATOR) stderr("Error", "Permission denied. Can only be seen by a mod or higher.");
+if(get_user_class()<UC_CODER) stderr("Error", "Permission denied. Can only be seen by Mindless.");
 stdhead("Possible Proxy User List");
 print"<big><b>Possible Proxy Users</b></big><p>";
 print"<b>Lists User That Have Different Ip On the Tracker</b><p>";
@@ -57,8 +56,8 @@ print"<td align=right>$addr</td><td align=right>$joindate</td><td align=right>$i
 $username=$row["userid"];
 $pwsecs = 7*86400;
 $pwdt = sqlesc(get_date_time(gmtime() + $pwsecs));
-$msg = sqlesc("Possible Proxy Server : You Have Been Seen to be downloading on a different IP to what you logged into the site with. The use of Proxy servers is not allowed on the site unless you have a good reason to do so. Most times it's to gain access to the site when banned or for Dupe accounts?PLEASE CONTACT STAFF TO HAVE WARNING REMOVED\n.");
-mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster) VALUES(0, $userid, NOW(), $msg, 0)") or sqlerr(__FILE__, __LINE__);
+//$msg = sqlesc("Possible Proxy Server : You Have Been Seen to be downloading on a different IP to what you logged into the site with. The use of Proxy servers is not allowed on the site unless you have a good reason to do so. Most times it's to gain access to the site when banned or for Dupe accounts?PLEASE CONTACT STAFF TO HAVE WARNING REMOVED\n.");
+//mysql_query("INSERT INTO messages (sender, receiver, added, msg, poster) VALUES(0, $userid, NOW(), $msg, 0)") or sqlerr(__FILE__, __LINE__);
 $modcomment = gmdate("Y-m-d") . " - Possible Proxy : Logged IP = $ip Tracked IP = $userip.\n.";
 $modcom = sqlesc($modcomment);
 //mysql_query("UPDATE users SET warned = 'yes', warneduntil = $pwdt,modcomment = CONCAT($modcom,modcomment) WHERE id = $userid and class<5 and donor='no'") or sqlerr(__FILE__, __LINE__);

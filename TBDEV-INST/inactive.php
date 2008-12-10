@@ -1,14 +1,21 @@
-<?
-require "include/bittorrent.php";
+<?php
+require_once("include/bittorrent.php");
+require_once("include/user_functions.php");
+require_once("include/bbcode_functions.php");
+dbconn(false);
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
+
+if (get_user_class() < UC_MODERATOR)
+hacker_dork("Inactive Users - Nosey Cunt !");
 
 //made by putyn @ tbdev.net
 //email part by x0r @ tbdev.net
-
-dbconn(true);
-loggedinorreturn();
-if(get_user_class() < UC_MODERATOR)
-stderr("Err","Smell rat !");
-
 //config
 $sitename = "chat2pals.co.uk"; // Sitename, format: site.com
 $replyto = "noreply@chat2pals.co.uk"; // The Reply-to email.
@@ -138,9 +145,8 @@ if($record_mail){
 $ress = mysql_query("SELECT avps.value_s AS userid, avps.value_i AS last_mail, avps.value_u AS mails, users.username FROM avps LEFT JOIN users ON avps.value_s=users.id WHERE avps.arg='inactivemail' LIMIT 1");
 $date = mysql_fetch_assoc($ress);
 if ($date["last_mail"] > 0 )
-print("<tr><td colspan=\"6\" class=\"colhead\" align=\"center\" style=\"color:red;\">Last mail sent by <a href=\"usersdetails.php?id=".htmlspecialchars($date["userid"])."\">".htmlspecialchars($date["username"])."</a> on <b>".gmdate("d M Y",$date["last_mail"])."</b> and <b>".$date["mails"]."</b> mail".($date["mails"] > 1 ? "s" : "")." was sent!</td></tr>");
+print("<tr><td colspan=\"6\" class=\"colhead\" align=\"center\" style=\"color:red;\">Last Email sent by <a href=\"usersdetails.php?id=".htmlspecialchars($date["userid"])."\">".htmlspecialchars($date["username"])."</a> on <b>".gmdate("d M Y",$date["last_mail"])." -  ".$date["mails"]."</b> Email".($date["mails"] > 1 ? "s" : "")."  sent !</td></tr>");
 }
-
 print("</table></form>");
 }else{
 print("<h2>No account inactive for longer than ".$days." days.</h2>");

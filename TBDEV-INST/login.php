@@ -25,7 +25,7 @@ if (!empty($_GET["returnto"])) {
 <script type="text/javascript" src="captcha/captcha.js"></script>
 
 <form method="post" action="takelogin.php">
-<table align="center" border="0" cellpadding=5>
+<table align="center" border="1" cellpadding=10>
   <tr><center><font color="white">
     	<p><b>Note:</b> You need cookies enabled to log in.<b>[<?=$maxloginattempts;?>]</b> 
 		failed logins in a row will result in banning your ip</p>
@@ -73,8 +73,10 @@ if (isset($returnto))
 ?>
 </form>
 <center>
-	<p>Forget password? <a href="recover.php">Click here</a> to resend!</p><p>
+	<p>Forget password? <a href="resetpw.php"><font color="red">Click here</a> to retrieve your password!</p><p></font>
 	New Member? <a href="signup.php">Sign-Up</a></p>
+	<p>
+	Got A Invite Code? <a href="invite_signup.php">Invite Sign-Up</a></p>
 	<a href="http://www.mozilla.com" />
 	<img alt="Get Firefox" border="0" src="/pic/firefox.png"></a>
 	<a href="http://www.utorrent.com" />

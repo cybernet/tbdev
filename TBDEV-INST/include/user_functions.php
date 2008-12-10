@@ -7,6 +7,20 @@ function check_banned_emails ($email) {
     if ($arr = mysql_fetch_assoc($res))
     stderr("Sorry..","This email address is banned!<br /><br /><strong>Reason</strong>: $arr[comment]", false);
 }
+function validusername($username)
+{
+	if ($username == "")
+	  return false;
+
+	// The following characters are allowed in user names
+	$allowedchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+	for ($i = 0; $i < strlen($username); ++$i)
+	  if (strpos($allowedchars, $username[$i]) === false)
+	    return false;
+
+	return true;
+}
 function get_user_icons($arr, $big = false)
 {
 	global $pic_base_url;

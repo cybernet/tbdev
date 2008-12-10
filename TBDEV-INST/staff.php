@@ -47,16 +47,11 @@ $staff_table[$arr['class']]=$staff_table[$arr['class']]."</tr><tr height=15>";
 $col[$arr['class']]=0;
 }
 }
-begin_frame("Staff");
+begin_frame("$SITENAME Staff");
 ?>
 
 <style type="text/css">
 #fieldset_CODER { border:1px solid #FF0000 }
-#fieldset_FLS { border:1px solid purple }
-#fieldset_SYSOP { border:1px solid blue }
-#fieldset_ADMIN { border:1px solid lightblue }
-#fieldset_MOD { border:1px solid orange }
-#fieldset_STAFF { border:1px solid red }
 #fieldset { border:1px solid green }
 </style>
 <fieldset id="fieldset CODER">
@@ -138,12 +133,7 @@ $firstline .= "<tr height=15><td class=embedded><a class=altlink href=userdetail
 begin_frame("Firstline Support");
 ?>
 <style type="text/css">
-#fieldset_CODER { border:1px solid #FF0000 }
 #fieldset_FLS { border:1px solid purple }
-#fieldset_SYSOP { border:1px solid blue }
-#fieldset_ADMIN { border:1px solid lightblue }
-#fieldset_MOD { border:1px solid orange }
-#fieldset_STAFF { border:1px solid red }
 #fieldset { border:1px solid teal }
 </style>
 

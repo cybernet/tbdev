@@ -190,7 +190,6 @@ return "Unknown client";
 #========================================
 #getAgent function by deliopoulos
 #========================================
-
 function dltable($name, $arr, $torrent)
 {
 
@@ -286,7 +285,7 @@ $id = 0 + $_GET["id"];
 if (!isset($id) || !$id)
 	die();
 
-$res = sql_query("SELECT torrents.seeders, torrents.banned, torrents.nuked, torrents.nukereason, torrents.newgenre, torrents.leechers, torrents.info_hash, torrents.filename, torrents.points, LENGTH(torrents.nfo) AS nfosz, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(torrents.last_action) AS lastseed, torrents.numratings, torrents.name, IF(torrents.numratings < $minvotes, NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, torrents.owner, torrents.save_as, torrents.descr, torrents.visible, torrents.size, torrents.added, torrents.views, torrents.hits, torrents.times_completed, torrents.id, torrents.tube, torrents.type, torrents.numfiles, torrents.url, torrents.countstats, torrents.anonymous, torrents.poster, categories.name AS cat_name, users.username FROM torrents LEFT JOIN categories ON torrents.category = categories.id LEFT JOIN users ON torrents.owner = users.id WHERE torrents.id = $id")
+$res = sql_query("SELECT torrents.seeders, torrents.banned, torrents.nuked, torrents.nukereason, torrents.newgenre, torrents.checked_by, torrents.leechers, torrents.info_hash, torrents.filename, torrents.points, LENGTH(torrents.nfo) AS nfosz, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(torrents.last_action) AS lastseed, torrents.numratings, torrents.name, IF(torrents.numratings < $minvotes, NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, torrents.owner, torrents.save_as, torrents.descr, torrents.visible, torrents.size, torrents.added, torrents.views, torrents.hits, torrents.times_completed, torrents.id, torrents.tube, torrents.type, torrents.numfiles, torrents.vip, torrents.url, torrents.countstats, torrents.anonymous, torrents.poster, freeslots.free AS freeslot, freeslots.doubleup AS doubleslot, freeslots.addedfree AS addedfree, freeslots.addedup AS addedup, freeslots.torrentid AS slotid, freeslots.userid AS slotuid, categories.name AS cat_name, users.username FROM torrents LEFT JOIN freeslots ON (torrents.id=freeslots.torrentid AND freeslots.userid={$CURUSER[id]}) LEFT JOIN categories ON torrents.category = categories.id LEFT JOIN users ON torrents.owner = users.id WHERE torrents.id = $id")
 	or sqlerr();
 $row = mysql_fetch_assoc($res);
 
@@ -295,7 +294,8 @@ $owned = $moderator = 0;
 		$owned = $moderator = 1;
 	elseif ($CURUSER["id"] == $row["owner"])
 		$owned = 1;
-//}
+if ($row["vip"] =="yes" && get_user_class() < UC_VIP)
+stderr("VIP Access Required", "You must be a VIP In order to view details or download this torrent! You may become a Vip By Donating to our site. Donating ensures we stay online to provide you more Vip-Only Torrents!");
 
 if (!$row || ($row["banned"] == "yes" && !$moderator))
 	stderr("Error", "No torrent with ID.");
@@ -345,7 +345,47 @@ else {
 		}
 		elseif ($_GET["rated"])
 			print("<h2>Rating added!</h2>\n");
-
+// start torrent check mod
+if ($CURUSER['class'] >= UC_MODERATOR)
+{
+if (isset($_GET["checked"]) &&  $_GET["checked"] == 1)
+{
+mysql_query("UPDATE torrents SET checked_by = ".sqlesc($CURUSER['username'])." WHERE id =$id LIMIT 1");
+write_log("Torrent <a href=$BASEURL/details.php?id=$id>($row[name])</a> was checked by $CURUSER[username]");
+header("Location: $BASEURL/details.php?id=$id&checked=done#Success");        
+}
+elseif (isset($_GET["rechecked"]) &&  $_GET["rechecked"] == 1)
+{
+mysql_query("UPDATE torrents SET checked_by = ".sqlesc($CURUSER['username'])." WHERE id =$id LIMIT 1");
+write_log("Torrent <a href=$BASEURL/details.php?id=$id>($row[name])</a> was re-checked by $CURUSER[username]");
+header("Location: $BASEURL/details.php?id=$id&rechecked=done#Success");        
+}
+elseif (isset($_GET["clearchecked"]) &&  $_GET["clearchecked"] == 1)
+{
+mysql_query("UPDATE torrents SET checked_by = '' WHERE id =$id LIMIT 1");
+write_log("Torrent <a href=$BASEURL/details.php?id=$id>($row[name])</a> was un-checked by $CURUSER[username]");
+header("Location: $BASEURL/details.php?id=$id&clearchecked=done#Success");        
+}
+if (isset($_GET["checked"]) &&  $_GET["checked"] == 'done')
+{
+?>
+<h2><a name='Success'>Successfully checked <?php echo $CURUSER['username']?>!</a></h2>
+<?php
+}
+if (isset($_GET["rechecked"]) &&  $_GET["rechecked"] == 'done')
+{
+?>
+<h2><a name='Success'>Successfully re-checked <?php echo $CURUSER['username']?>!</a></h2>
+<?php
+}
+if (isset($_GET["clearchecked"]) &&  $_GET["clearchecked"] == 'done')
+{
+?>
+<h2><a name='Success'>Successfully un-checked <?php echo $CURUSER['username']?>!</a></h2>
+<?php
+}
+}
+// end
         $s=$row["name"];
 		print("<h1>$s</h1>\n");
                 print("<table width=750 border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n");
@@ -362,25 +402,24 @@ else {
 //		if ($owned)
 //			$s .= " $spacer<$editlink>[Edit torrent]</a>";
 //		tr("Name", $s, 1);
+
 /// freeleech/doubleseed slots
 $clr = '#EAFF08'; /// font color
 $duration ="+14 days"; /// slots in use get deleted in 14 days
 $freeimg = '<img src="'.$pic_base_url.'freedownload.gif" border=0"/>';
 $doubleimg = '<img src="'.$pic_base_url.'doubleseed.gif" border=0"/>';
-$resfs = sql_query("SELECT * FROM freeslots WHERE torrentid=$id && userid=$CURUSER[id]");
-$arrfs = mysql_fetch_assoc($resfs);
-$addedup = strtotime($arrfs["addedup"]);
+$addedup = strtotime($row["addedup"]);
 $expires = strtotime("$duration",$addedup);
 $addup = date('F j, Y',$expires);
-$addedfree = strtotime($arrfs["addedfree"]);
+$addedfree = strtotime($row["addedfree"]);
 $expires2 = strtotime("$duration",$addedfree);
 $addfree = date('F j, Y',$expires2);
 $iq =  strtotime(get_date_time($iq));
 $xp = strtotime("$duration",$iq);
 $idk = date('F j, Y',$xp);
-$pq = $arrfs["torrentid"] == $id && $arrfs["userid"] == $CURUSER["id"];
-$frees = $arrfs["free"];
-$doubleup = $arrfs["doubleup"];
+$pq = $row["slotid"] == $id && $row["slotuid"] == $CURUSER["id"];
+$frees = $row["freeslot"];
+$doubleup = $row["doubleslot"];
 if ($pq && $frees == 'yes' && $doubleup == 'no'){
 echo '<tr><td align=right class=rowhead>Slots</td><td align=left>'.$freeimg.'  <b><font color="'.$clr.'">Freeleech Slot In Use!</font></b> (only upload stats are recorded) - Expires:  12:01AM '.$addfree.'</td></tr>';
 $freeslot = ($CURUSER['freeslots']>="1" ? "  <b>Use:</b> <a class=\"index\" href=\"doubleseed.php/".$id."/" . rawurlencode($row['filename']) . "\" rel=balloon2 onClick=\"return confirm('Are you sure you want to use a doubleseed slot?')\"><font color=".$clr."><b>Doubleseed Slot</a></font></b> - " . safechar($CURUSER[freeslots]) . " Slots Remaining. " : "");
@@ -401,10 +440,13 @@ Once chosen this torrent will be Freeleech <?php echo $freeimg?> until <?php ech
 Once chosen this torrent will be Doubleseed <?php echo $doubleimg?> until <?php echo $idk?> and can be resumed or started over using the regular download link. Doing so will result in one Freeleech Slot being taken away from your total.</div>
 <?php
 if ($CURUSER["id"] == $row["owner"]) $CURUSER["downloadpos"] = "yes";
-if ($CURUSER["downloadpos"] != "no")
-{
-print("<tr><td align=right class=rowhead width=1%>Download</td><td width=99% align=left><a class=\"index\" href=\"download.php/$id/" . rawurlencode($row["filename"]) . "\">" . safechar($row["filename"]) . "</a>".$freeslot."</td></tr>");
-        /// Mod by dokty - tbdev.net
+       if ($CURUSER["downloadpos"] != "no")
+    {
+     print("<tr><td align=right class=rowhead width=1%>Download</td><td width=99% align=left><a class=\"index\" href=\"download.php/$id/" . rawurlencode($row["filename"]) . "\">" . safechar($row["filename"]) . "</a>".$freeslot."</td></tr>");
+     print("<tr><td align=right class=rowhead width=1%>Download As Zip</td><td width=99% align=left><a class=\"index\" href=\"download_zip.php/$id/" . rawurlencode($row["filename"]) . "\">" . htmlspecialchars($row["filename"]) . "</a></td></tr>");
+     if (get_user_class() >= UC_MODERATOR)
+     print("<tr><td class=rowhead width=10>Download For Dump sites</td><td width=99% align=left><a class=\"index\" href=\"downloaddump.php/$id/" . rawurlencode($row["filename"]) . "\">" . safechar($row["filename"]) . "</a></td></tr>");
+     /// Mod by dokty - tbdev.net
         $blasd = sql_query("SELECT points FROM coins WHERE torrentid=$id AND userid=".$CURUSER["id"]);
         $sdsa = mysql_fetch_assoc($blasd) or $sdsa["points"] = 0;
         tr("Points","<b>In total ".$row["points"]." Points given to this torrent of which ".$sdsa["points"]." from you.<br /><br />By clicking on the coins you can give points to the uploader of this torrent.</b><br /><br /><a href=coins.php?id=$id&points=10><img src=pic/10coin.jpg border=0></a>&nbsp;&nbsp;<a href=coins.php?id=$id&points=20><img src=pic/20coin.jpg border=0></a>&nbsp;&nbsp;<a href=coins.php?id=$id&points=50><img src=pic/50coin.jpg border=0></a>&nbsp;&nbsp;<a href=coins.php?id=$id&points=100><img src=pic/100coin.jpg border=0></a>&nbsp;&nbsp;<a href=coins.php?id=$id&points=200><img src=pic/200coin.gif border=0></a>&nbsp;&nbsp;<a href=coins.php?id=$id&points=500><img src=pic/500coin.gif border=0></a>&nbsp;&nbsp;<a href=coins.php?id=$id&points=1000><img src=pic/1000coin.gif border=0></a>", 1);
@@ -418,9 +460,7 @@ print("<tr><td align=right class=rowhead width=1%>Download</td><td width=99% ali
         tr("Download", "You are not allowed to download");
         }
         tr("Picture", "<a href='".$row["poster"]."' rel='lightbox' title='".CutName($row["name"], 35)."'><img src='".$row["poster"]."' border=0 width=150></a><br>Click Image For Full Size", 1);   
-
-	          //auto imdb mod
-	          /*	          
+	          	          
               if (($row["url"] != "")AND(strpos($row["url"], imdb))AND(strpos($row["url"], title)))
               {
               $thenumbers = ltrim(strrchr($row["url"],'tt'),'tt');
@@ -508,7 +548,7 @@ print("<tr><td align=right class=rowhead width=1%>Download</td><td width=99% ali
                }
 
                trala("Imdb Info $smallth",$autodata,1);
-                 }*/
+                 }
                 //end auto imdb
                 /////////////youtube sample scriptulicious style//////////
                 if (!empty($row["tube"]))
@@ -546,62 +586,7 @@ print("<tr><td align=right class=rowhead width=1%>Download</td><td width=99% ali
 		        else
 			    tr("Type", "(none selected)");
                 tr("Genre", $row["newgenre"], 1);
-                ///////////subtitle-mod/////////
-                // enter the categories you want the subtitles to show up in (there's no reason to run the script at the i.e games section)
-                if(($row["cat_name"] == "Movies/XviD") || ($row["cat_name"] == "Movies/SVCD") || ($row["cat_name"] == "EPISODES") || ($row["cat_name"] == "Movies/DVD-R") ){
-                $hour = 1; // check with subtitlesource if there are new subtitles every hour
-                $cdate = date("Y-m-d H:i:s");
-                $ss = "<a href=\"http://www.subtitlesource.org/upload-0.php\" target=\"_about\">Upload subtitle</a>";
-                // checks if the links are up to date
-                $sqlsubs = mysql_query("SELECT * FROM subcache WHERE id='$id' AND date > DATE_SUB(NOW(), INTERVAL $hour HOUR) ") or sqlerr();
-                $subcached = mysql_num_rows($sqlsubs);
-                // if there are no links up to date, fetch new data to see if there are new subs out
-                if($subcached == 0){
-                // adds it to the database if it doesn't exist
-                $sqlsubsexist = mysql_query("SELECT * FROM subcache WHERE id='$id'") or sqlerr();
-                $subcachedtot = mysql_num_rows($sqlsubsexist);
-                if($subcachedtot == 0){ mysql_query("INSERT INTO subcache (id, date) VALUES('$id', '$cdate' ) ") or sqlerr(); }
-                $getrls = $row['name'];
-                $getrls = str_replace(" ", ".", "$getrls"); // makes sure the releasename doesn't contain any spaces, if none of your releasenames contains a space, you can remove this line
-                // collects the data required for the links/languages(images)
-                $url = "http://www.subtitlesource.org/indexing/subs.php?rls=$getrls";
-                $subcont = @file_get_contents("$url");
-                $subcont = explode("|", $subcont);
-                $runtimes = count($subcont);
-                $runtimes = $runtimes - 2;
-                for( $i=0; $i < $runtimes; $i++ ){
-                // sets the correct language depending on the fetched data
-                $next = $i + 1;
-                if($subcont[$next] == 1){ $language = 'english'; }
-                elseif($subcont[$next] == 2){ $language = 'swedish'; }
-                elseif($subcont[$next] == 3){ $language = 'finnish'; }
-                elseif($subcont[$next] == 4){ $language = 'danish'; }
-                elseif($subcont[$next] == 5){ $language = 'norwegian'; }
-                elseif($subcont[$next] == 6){ $language = 'icelandic'; }
-                elseif($subcont[$next] == 7){ $language = 'spanish'; }
-                elseif($subcont[$next] == 8){ $language = 'french'; }
-                if($subcont[$i] > 6){ mysql_query("UPDATE subcache SET {$language}='$subcont[$i]' WHERE id='$id'")or sqlerr(); }
-                }
-                // changed the date, so this script won't have to run more times today
-                mysql_query("UPDATE subcache SET date='$cdate' WHERE id='$id'")or sqlerr();
-                }
-                // are there any subs? if yes, then print them
-                $sqlsubs = mysql_query("SELECT * FROM subcache WHERE id='$id'") or sqlerr();
-                $subcached = mysql_num_rows($sqlsubs);
-                if($subcached > 0){
-                while($subrow = mysql_fetch_assoc( $sqlsubs ))
-                {
-                // adds the link to $link if there is a subtitle in a specific language
-                $lanarray = array('english', 'swedish', 'danish', 'finnish', 'norwegian', 'icelandic','spanish','french');
-                foreach ($lanarray as $value) {
-                if($subrow["$value"] != "0"){ $links = "$links <a href=\"http://www.subtitlesource.org/getfile.php?id=" . $subrow["$value"] . "\"><img src=\"http://www.subtitlesource.org/images/$value.gif\"></a>"; }
-                }
-                }
-                // the final step, prints it ($links) out in the table
-                tr("Subtitles", "$links - $ss", 1);
-                }}
-                /////////////end subtitles///////////////////
-		        tr("Last&nbsp;seeder", "Last activity " . mkprettytime($row["lastseed"]) . " ago");
+   		        tr("Last&nbsp;seeder", "Last activity " . mkprettytime($row["lastseed"]) . " ago");
 		        tr("Size",mksize($row["size"]) . " (" . number_format($row["size"]) . " bytes)");
 
 		        $s = "";
@@ -657,7 +642,82 @@ print("<tr><td align=right class=rowhead width=1%>Download</td><td width=99% ali
 		}
 		$s .= "</td></tr></table>";
 		tr("Rating", $s, 1);
-        tr("Added", $row["added"]);
+        /////////////Vote For FreeLeech////////
+   if ($CURUSER["class"] < UC_VIP)
+   {
+    $ratio1 = (($CURUSER["downloaded"] > 0) ? ($CURUSER["uploaded"] / $CURUSER["downloaded"]) : 0);
+    if ($ratio1 < 0.55) $wait1 = 5;
+    elseif ($ratio1 < 0.45) $wait1 = 10;
+    elseif ($ratio1 < 0.35) $wait1 = 15;
+    elseif ($ratio1 < 0.25) $wait1 = 20;
+    elseif ($ratio1 < 0.15) $wait1 = 25;
+    else $wait1 = 0;
+    }
+    $elapsed1 = floor((time() - strtotime($row["added"])) / 3600);
+    $torrentid = 0 + $row["id"];
+    $freepoll_sql = mysql_query("SELECT userid FROM freepoll where torrentid=$torrentid");
+    $freepoll_all = mysql_numrows($freepoll_sql);
+    if ($freepoll_all) {
+    while($rows_t = mysql_fetch_array($freepoll_sql)) {
+    $freepoll_userid = $rows_t["userid"];
+    $user_sql = mysql_query("SELECT id, username FROM users where id=$freepoll_userid");
+    $rows_a = mysql_fetch_array($user_sql);
+    $username_t = $rows_a["username"];
+    $freepollby1 =  $freepollby1."<a href='userdetails.php?id=$freepoll_userid'>$username_t</a>, ";
+    }   
+    $t_userid = 0 + $CURUSER["id"];
+    $tsqlcount = mysql_query("SELECT COUNT(*) as tcount FROM freepoll where torrentid=$torrentid");
+    $tass = mysql_fetch_assoc($tsqlcount);
+    $freepollcount = $tass["tcount"];   
+    $tsql = mysql_query("SELECT COUNT(*) FROM freepoll where torrentid=$torrentid and userid=$t_userid");
+    $trows = mysql_fetch_array($tsql);
+    $t_ab = $trows[0];    
+    if ($t_ab == "0") {
+    $freepollby = $freepollby." <form action=\"freepoll.php\" method=\"post\">
+    <br />
+    <input type=\"submit\" name=\"submit\" value=\"Vote\">
+    <input type=\"hidden\" name=\"torrentid\" value=\"$torrentid\">
+    </form>";
+    } else {
+    $t_userid == $row["owner"];
+    $freepollby = $freepollby." <form action=\"freepoll.php\" method=\"post\">
+    <br />    
+    <input type=\"submit\" name=\"submit\" value=\"Already voted\" disabled>
+    <input type=\"hidden\" name=\"torrentid\" value=\"$torrentid\">
+    </form>";
+    }
+    } else {
+    $freepollcount = "0";
+    $freepollby = "
+    <form action=\"freepoll.php\" method=\"post\">
+    <br />
+    <input type=\"submit\" name=\"submit\" value=\"Vote\">
+    <input type=\"hidden\" name=\"torrentid\" value=\"$torrentid\">
+    </form>
+    ";
+    }        
+    $votesrequired= "30";
+    $count = $votesrequired-$freepollcount;    
+    if ($row["countstats"] == 'yes'){
+    tr("Free Leech Vote<b></b>","$freepollcount member(s) would like this torrent to be free leech. $count vote(s) are needed yet.",1);
+    }    
+    if ($elapsed < $wait AND $row["countstats"] == 'yes')        
+    if ($t_ab == "0" AND $row["countstats"] == 'yes'){
+    if($freepollcount < $votesrequired )
+    print("<tr><td class=rowhead><div align='right'>Free Leech Vote</div></td><td align=left>$freepollby");
+    }
+    else
+    print("<tr><td class=rowhead><div align='right'>Sorry</div></td><td align=left>Your ratio is poor, you have to wait for it because of this <b><a href=rules.php><font color=red>" . number_format($wait1 - $elapsed1) . " hours</font></b></a>!");
+    elseif($row["countstats"] == 'yes')
+    print("<tr><td class=rowhead><div align='right'>Vote</div></td><td align=left>$freepollby");    
+    $tid = $row["id"];
+    if($freepollcount == $votesrequired || $row["countstats"] == 'no'){
+    print("<tr><td class=rowhead><div align='right'>Free</div></td><td align=left>This torrent is currently free leech");
+    mysql_query("UPDATE torrents SET countstats = 'no' WHERE torrents.id=$tid") or sqlerr(__FILE__, __LINE__);}
+    if($freepollcount < $votesrequired AND $row["countstats"] == 'yes')
+    print("<tr><td class=rowhead><div align='right'>Free</div></td><td align=left>This torrent is not free leech");
+    ///////////////////end vote for freeleech//////////////////////
+     tr("Added", $row["added"]);
 		tr("Views", $row["views"]);
 		tr("Hits", $row["hits"]);
 		if (get_user_class() >= UC_MODERATOR) {
@@ -685,10 +745,7 @@ print("<tr><td align=right class=rowhead width=1%>Download</td><td width=99% ali
                                  $progressTotal = sprintf("%.2f", $progressPerTorrent / $iProgressbar);
                                  tr("Progress", get_percent_completed_image(floor($progressTotal))." (".round($progressTotal)."%)", 1);
                                  //Progressbar Mod End
-                                 if (get_user_class() >= UC_MODERATOR)
-                                 print("<tr><td class=rowhead width=10>Download For Dump sites</td><td width=99% align=left><a class=\"index\" href=\"downloaddump.php/$id/" . rawurlencode($row["filename"]) . "\">" . safechar($row["filename"]) . "</a></td></tr>");
-
- 		                         $keepget = "";
+ 		 $keepget = "";
                                  if($row['anonymous'] == 'yes') {
                                  if (get_user_class() < UC_UPLOADER)
                                  $uprow = "<i>Anonymous</i>";
@@ -701,6 +758,33 @@ print("<tr><td align=right class=rowhead width=1%>Download</td><td width=99% ali
                                  if ($owned)
 			                     $uprow .= " $spacer<$editlink><b>[Edit this torrent]</b></a>";
 		                         tr("Upped by", $uprow, 1);
+                                 // start torrent mod check
+                                 if ($CURUSER['class'] >= UC_MODERATOR)
+                                 {
+                                 if (!empty($row['checked_by']))
+                                 {
+                                 $checked_by = mysql_query("SELECT id FROM users WHERE username='$row[checked_by]'");
+                                 $checked = mysql_fetch_array($checked_by);
+                                 ?>
+                                 <tr><td class='rowhead'>Checked by</td><td align='left'><a href='userdetails.php?id=<?php echo $checked['id']?>'><strong><?php echo $row['checked_by']?></strong></a>&nbsp;
+                                 <img src='<?php echo $pic_base_url?>mod.gif' width='15' border='0' alt='Checked' title='Checked - by <?php echo safe($row['checked_by'])?>' />
+                                 <a href='details.php?id=<?php echo $row['id']?>&amp;rechecked=1'><small><em><strong>[Re-Check this torrent]</strong></em></small></a> &nbsp;<a href='details.php?id=<?php echo $row['id']?>&amp;clearchecked=1'><small><em><strong>[Un-Check this torrent]</strong></em></small></a> &nbsp;* STAFF Eyes Only *</td></tr>
+                                 <?php
+                                 }
+                                 else
+                                 {
+                                 ?>
+                                 <tr><td class='rowhead'>Checked by</td><td align='left'><font color='#ff0000'><strong>NOT CHECKED!</strong></font>&nbsp;<a href='details.php?id=<?php echo $row['id']?>&amp;checked=1'><small><em><strong>[Check this torrent]</strong></em></small></a> &nbsp;* STAFF Eyes Only *</td></tr>
+                                 <?php    
+                                 }
+                                 }
+                                 ////////////////////// torrent check end - pdq
+                                 $bookmarks = get_row_count("bookmarks","WHERE torrentid=".$id." AND private ='no'");
+                                 if ($bookmarks > 0)
+                                 tr("Bookmarked", "<a href=\"viewbookmarks.php?id=".$id."\">$bookmarks".($bookmarks == 1  ? " time</a>" : " times</a>"),1);
+                                 else
+                                 tr("Bookmarked", "not yet");
+
                 if ($row["type"] == "multi") {
                 if (!$_GET["filelist"])
                 tr("Num files<br /><a href=\"details.php?id=$id&amp;filelist=1$keepget#filelist\" class=\"sublink\">[See full list]</a>", $row["numfiles"] . " files", 1);
