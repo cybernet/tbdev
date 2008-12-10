@@ -13,21 +13,6 @@ die();
 if (get_user_class() < UC_ADMINISTRATOR)
 stderr("Smartass!", "What the hell are you doing here?");
 
-function validusername($username)
-{
-if ($username == "")
-return false;
-
-// The following characters are allowed in user names
-$allowedchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-for ($i = 0; $i < strlen($username); ++$i)
-if (strpos($allowedchars, $username[$i]) === false)
-return false;
-
-return true;
-}
-
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
 if ($_POST["username"] == "" || $_POST["password"] == "" || $_POST["email"] == "" || $_POST["class"] == "" || $_POST["seedbonus"] == "" || $_POST["modcomment"] == "")
