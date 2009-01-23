@@ -1,6 +1,7 @@
 <?php
 require "include/bittorrent.php";
 dbconn();
+maxcoder();
 //remade by putyn@ tbdev
 $passkey = sqlesc($_GET["passkey"]);
 

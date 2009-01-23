@@ -2,8 +2,10 @@
 require_once("include/bittorrent.php");
 require_once "include/user_functions.php";
 require_once ("include/bbcode_functions.php");
+require_once ("include/commenttable.php");
 $action = $_GET["action"];
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -15,7 +17,12 @@ if ($action == "add")
 {
   if ($_SERVER["REQUEST_METHOD"] == "POST")
   {
-    $torrentid = 0 + $_POST["tid"];
+            // Anti Flood Code
+
+        if (!($CURUSER['comment_count'] < $CURUSER['comment_max']))
+                stderr('Notice','You have reached your Comment limit. Please wait 15 minutes before retrying.');
+
+      $torrentid = 0 + $_POST["tid"];
 	  if (!is_valid_id($torrentid))
 			stderr("Error", "Invalid ID.");
 
@@ -45,7 +52,11 @@ if ($action == "add")
           //===add karma
           sql_query("UPDATE users SET seedbonus = seedbonus+3.0 WHERE id = $CURUSER[id]") or sqlerr(__FILE__, __LINE__);
           //===end
-	  header("Refresh: 0; url=details.php?id=$torrentid&viewcomm=$newid#comm$newid");
+	// Update Last comment sent...
+        mysql_query("UPDATE users SET comment_count = comment_count + 1 WHERE id = ".
+                        sqlesc($CURUSER['id'])) or sqlerr(__FILE__, __LINE__);
+
+          header("Location: details.php?id=$torrentid&viewcomm=$newid#comm$newid");
 	  die;
 	}
 
@@ -105,19 +116,11 @@ elseif ($action == "edit")
 
 	  if ($text == "")
 	  	stderr("Error", "Comment body cannot be empty!");
-      //=== saving history of edits
-    if ($arr['editedby'] == 0){      
-      $res_first = mysql_query("SELECT username FROM users WHERE id=$arr[user]");
-          $arr_edited = mysql_fetch_assoc($res_first);
-          $comment_history = sqlesc('[b]First comment by [url='.$DEFAULTBASEURL.'/userdetails.php?id='.$arr['user'].'] '.$arr_edited['username'].'[/url] made at: '.$arr['added'].' GMT[/b][hr]'.$arr['text'].'[hr][b]Comment edited by [url='.$DEFAULTBASEURL.'/userdetails.php?id='.$CURUSER['id'].']'.$CURUSER['username'].'[/url] at: '.get_date_time().' GMT[/b][hr]'.$text);
-          }
-       else
-          $comment_history = sqlesc($arr['comment_history'].'[hr][b]Comment edited by [url='.$DEFAULTBASEURL.'/userdetails.php?id='.$CURUSER['id'].'] '.$CURUSER['username'].'[/url] at: '.get_date_time().' GMT[/b][hr]'.$text);
-	  $text = sqlesc($text);
+     	  $text = sqlesc($text);
 
 	  $editedat = sqlesc(get_date_time());
 
-	  sql_query("UPDATE comments SET text=$text, comment_history=$comment_history, editedat=$editedat, editedby=$CURUSER[id] WHERE id=$commentid") or sqlerr(__FILE__, __LINE__);
+	  sql_query("UPDATE comments SET text=$text, editedat=$editedat, editedby=$CURUSER[id] WHERE id=$commentid") or sqlerr(__FILE__, __LINE__);
 
 		if ($returnto)
 	  	header("Location: $returnto");
@@ -213,29 +216,8 @@ elseif ($action == "vieworiginal")
 	stdfoot();
 	die;
 }
-elseif ($action == "view_comment_history"){
-    if (get_user_class() < UC_MODERATOR)
-        stderr("Error", "Permission denied.");
-
-  $commentid = 0 + $_GET['comment'];
-  if (!is_valid_id($commentid))
-        stderr("Error", "Invalid ID.");
-
-//=== Get info
-$res = mysql_query("SELECT * FROM comments WHERE id=".sqlesc($commentid)) or sqlerr(__FILE__, __LINE__);
-$arr = mysql_fetch_assoc($res) or die;
-
-stdhead("comment History");
-
-echo'<br><h1>Comment History</h1><a class=altlink href="javascript:history.back()">go back to comments</a><br><br>'.
-'<table align=center width=80%><tr><td class=colhead>text of comment with all edits</td></tr><tr>'.
-'<td>'.format_comment($arr['comment_history']).'</td></tr></table><br>'.
-'<a class=altlink href="javascript:history.back()">go back to thread</a><br>';
-
-stdfoot();
-die;  
-}
 else
-stderr("Error", "Unknown action");
+    stderr("Error", "Unknown action");
+
 die;
 ?>

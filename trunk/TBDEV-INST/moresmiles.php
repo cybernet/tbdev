@@ -1,9 +1,10 @@
 <?php
 require_once("include/function_cache.php");
 require_once("include/bbcode_functions.php");
-cache_start(6000,moresmilies);
+
 ?>
 <html><head>
+<link rel="stylesheet" href="themes/default/default.css" type="text/css">
 <title>more clickable smilies</title>
 </head>
 <BODY BGCOLOR="#000000" TEXT="#ffffff" LINK="#ff0000" VLINK="#808080">
@@ -47,7 +48,7 @@ print("\n</tr>");
 </tr>
 </table>
 <div align="center">
-<a href="javascript: window.close()"><? echo CLOSE; ?></a>
+<a href="javascript: window.close()"><? echo Close; ?></a>
 </div>
 <?
-register_shutdown_function("cache_end"); 
+

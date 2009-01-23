@@ -3,6 +3,7 @@ require_once("include/bittorrent.php");
 require_once("include/function_cache.php");
 require_once("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -23,7 +24,7 @@ $ss_uri = $a['uri'];
 }
 if($CURUSER['smile_until'] == '0000-00-00 00:00:00')
 stderr("Error", "you do not have access!");
-cache_start(6000,moresmilies_custom);
+
 ?>
 <html><head>
 <script language=javascript>
@@ -34,12 +35,13 @@ window.opener.document.forms[form].elements[text].focus();
 }
 </script>
 <title>Custom Smilies</title>
-<link rel="stylesheet" href="/<?=$ss_uri?>" type="text/css">
+<link rel="stylesheet" href="themes/default/default.css" type="text/css">
 </head>
 <h2>Custom Smilies</h2>
 <table class="lista" width="100%" cellpadding="1" cellspacing="1">
 <tr>
 <?
+
 $ctr=0;
 global $customsmilies;
 while ((list($code, $url) = each($customsmilies))) {
@@ -54,6 +56,5 @@ echo'</tr>';
 ?>
 </tr></table><br><div align="center"><a class=altlink href="javascript: window.close()"><? echo CLOSE; ?></a></div>
 <?
-register_shutdown_function("cache_end"); 
-stdfoot();
+
 ?>

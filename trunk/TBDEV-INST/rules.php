@@ -4,6 +4,7 @@ require_once("include/bittorrent.php");
 require_once "include/user_functions.php";
 require_once "include/bbcode_functions.php";
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -38,6 +39,7 @@ LEFT JOIN rules_categories c ON c.cid = r.cid
 GROUP BY cid, id");
 $cat_placeholder = '';
 echo"<h1>$SITENAME Rules</h1>";
+begin_table();
 while ($arr=mysql_fetch_assoc($res)){
 //=== add to above query
 //$res2 = mysql_query("SELECT min_class_read FROM rules_categories WHERE cid=$arr[id]") or sqlerr(__FILE__, __LINE__);
@@ -54,4 +56,6 @@ $cat_placeholder = $arr['cid'];
 
 }
 echo "<br /><p align='center' style='color:orange;font-weight:bold;'>Rules system based on FAQ System 2006 &copy; CoLdFuSiOn</p>";
-stdfoot(); ?>
+end_table();
+stdfoot(); 
+?>

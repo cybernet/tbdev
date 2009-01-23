@@ -3,7 +3,7 @@ include("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn();
-
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 		if (!is_valid_id($id))
 			stderr('Error...', 'Invalid ID!');
 	
-	$do = safechar($_POST['do']);
+	$do = safeChar($_POST['do']);
 	
 	if ($do == 'enabled')
 		sql_query("UPDATE users SET enabled = 'yes' WHERE ID IN(".join(', ', $ids).") AND enabled = 'no'");

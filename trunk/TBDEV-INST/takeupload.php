@@ -3,11 +3,14 @@ require_once("include/benc.php");
 require_once("include/bittorrent.php");
 require_once "include/user_functions.php";
 require_once ("include/bbcode_functions.php");
+//ini_set("memory_limit","12M");
 ini_set("upload_max_filesize",$max_torrent_size);
 function bark($msg) {
 genbark($msg, "Upload failed!");
 }
 dbconn(); 
+//maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -19,7 +22,14 @@ die();
 if ($CURUSER["uploadpos"] == 'no')
 die;
 
+if (!function_exists('is_valid_url')) {
+	
+	function is_valid_url($link) {
+	
+	return preg_match('|^http(s)?://[a-z0-9-]+(.[a-z0-9-]+)*(:[0-9]+)?(/.*)?$|i', $link);
 
+ }
+}
 foreach(explode(":","descr:type:name") as $v) {
 	if (!isset($_POST[$v]))
 		bark("missing form data");
@@ -28,14 +38,22 @@ foreach(explode(":","descr:type:name") as $v) {
 if (!isset($_FILES["file"]))
 	bark("missing form data");
 
+if (!empty($_POST['poster']))
+$poster = unesc($_POST['poster']);
+
+if (!empty($_POST['url']))
+$url = unesc($_POST['url']);
+
+
 $f = $_FILES["file"];
 $fname = unesc($f["name"]);
 
 if (!empty($_POST['tube']))
 $tube = unesc($_POST['tube']);
 
+
 if(get_user_class() >= UC_ADMINISTRATOR)
-$multiplicator = $_POST["multiplicator"];
+$multiplicator = 0 + $_POST["multiplicator"];
 else
 $multiplicator = "0";
 
@@ -185,6 +203,7 @@ else {
 	$type = "multi";
 }
 $poster = unesc($_POST['poster']);
+$recommended = unesc($_POST['recommended']);
 $tube = unesc($_POST['tube']);
 $url = unesc($_POST['url']);
 $dict['value']['announce']=bdec(benc_str( $announce_urls[0]));  // change announce url to local
@@ -201,6 +220,7 @@ $uclass = $CURUSER["class"] ;
 // Replace punctuation characters with spaces
 $torrent = str_replace("_", " ", $torrent);
 ///////////pretime////////
+/* uncommnet to use pre times 
 $pre = getpre($torrent,1);
 $timestamp = strtotime($pre);
 $tid = time();
@@ -208,7 +228,7 @@ if (empty($pre)) {
 $predif = "N/A";
 }else{
 $predif = ago($tid - $timestamp);
-}
+}*/
 //=== free download?
 if (get_user_class() >= UC_VIP)
 $countstats = unesc($_POST["countstats"]);
@@ -216,7 +236,11 @@ else
 $countstats = "yes";
 //===end
 $nfo = sqlesc(str_replace("\x0d\x0d\x0a", "\x0d\x0a", @file_get_contents($nfofilename)));
-$ret = mysql_query("INSERT INTO torrents (search_text, filename, owner, visible, tube, multiplicator, uclass, anonymous, request, scene, info_hash, name, size, numfiles, url, poster, countstats, newgenre, type, vip, descr, ori_descr, category, save_as, added, last_action, nfo, afterpre) VALUES (" .implode(",", array_map("sqlesc", array(searchfield("$shortfname $dname $torrent"), $fname, $CURUSER["id"], "no", $tube, $multiplicator, $uclass, $anonymous, $request, $scene, $infohash, $torrent, $totallen, count($filelist), $url, $poster, $countstats, $genre, $type, $vip, $descr, $descr, 0 + $_POST["type"], $dname))) . ", '" . get_date_time() . "', '" . get_date_time() . "', $nfo, '" . $predif . "')") or sqlerr(__FILE__, __LINE__); 
+/*  //== uncomment to use doopies pre times on browse
+$ret = mysql_query("INSERT INTO torrents (search_text, filename, owner, visible, tube, multiplicator, uclass, anonymous, request, scene, info_hash, name, size, numfiles, url, poster, countstats, newgenre, type, vip, descr, ori_descr, category, save_as, added, last_action, nfo, afterpre) VALUES (" .implode(",", array_map("sqlesc", array(searchfield("$shortfname $dname $torrent"), $fname, $CURUSER["id"], "no", $tube, $multiplicator, $uclass, $anonymous, $request, $scene, $infohash, $torrent, $totallen, count($filelist), $url, $poster, $countstats, $genre, $type, $vip, $descr, $descr, 0 + $_POST["type"], $dname))) . ", '" . get_date_time() . "', '" . get_date_time() . "', $nfo, '" . $predif . "')") or sqlerr(__FILE__, __LINE__);
+*/ 
+$ret = mysql_query("INSERT INTO torrents (search_text, filename, owner, visible, tube, multiplicator, uclass, anonymous, request, scene, info_hash, name, size, numfiles, url, poster, countstats, newgenre, type, vip, descr, ori_descr, category, save_as, added, last_action, nfo) VALUES (" .implode(",", array_map("sqlesc", array(searchfield("$shortfname $dname $torrent"), $fname, $CURUSER["id"], "no", $tube, $multiplicator, $uclass, $anonymous, $request, $scene, $infohash, $torrent, $totallen, count($filelist), $url, $poster, $countstats, $genre, $type, $vip, $descr, $descr, 0 + $_POST["type"], $dname))) . ", '" . get_date_time() . "', '" . get_date_time() . "', $nfo)") or sqlerr(__FILE__, __LINE__); 
+
 if ($CURUSER["anonymous"]=='yes')
 $message = "New Torrent : ($torrent) Uploaded - Anonymous User";
 else
@@ -242,7 +266,7 @@ if ($fp)
 sql_query("UPDATE users SET seedbonus = seedbonus+15.0 WHERE id = $CURUSER[id]") or sqlerr(__FILE__, __LINE__);
 //===end
 if ($CURUSER["anonymous"]=='yes')
-write_log("Torrent $id ($torrent) was uploaded by Anonymous");
+write_log("Torrent $id ($torrent) was uploaded by Anonymous $CURUSER[username]");
 else
 write_log("Torrent $id ($torrent) was uploaded by $CURUSER[username]");
 ////////new torrent upload detail sent to shoutbox//////////
@@ -337,5 +361,4 @@ while ($arr = mysql_fetch_row($res))
 }
 *******************/
 header("Location: $BASEURL/details.php?id=$id&uploaded=1");
-
 ?>

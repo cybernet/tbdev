@@ -1,8 +1,9 @@
 <?php
 require ("include/bittorrent.php");
 require_once("include/bbcode_functions.php");
-require_once("include/user_functions.php");
+//require_once("include/user_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -25,7 +26,7 @@ if (!validemail($_POST['email']))
 stderr("Error", "Not valid email");
 
 $class = 0+$_POST["class"];
-$country = 0 +$_POST["country"];
+$country = 0+$_POST["country"];
 $seedbonus = 0+$_POST["seedbonus"];
 $modcomment = $_POST["modcomment"];
 $username = $_POST["username"];

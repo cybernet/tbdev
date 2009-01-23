@@ -4,6 +4,7 @@ require_once("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -17,9 +18,9 @@ hacker_dork("Hack-Log - Nosey Cunt !");
 stdhead("Xss Hack Log");
 echo"<h2>Xss Hack Log</h2>";
 echo"<table width=70% border=0 cellspacing=0 cellpadding=5 align=center><td class=colhead align=right>Line</td><td class=colhead align=center>Error</td></tr>";
-$lines = file("hacklog.txt");
+$lines = file("logs/hacklog.txt");
 foreach ($lines as $line_num => $line) {
-echo"<tr bgcolor=".($line_num % 2 == 0 ? "green" : "gray")."><td align=right>#<b>{$line_num}</b></td><td align=left>" . safechar($line) . "</td></tr>";
+echo"<tr bgcolor=".($line_num % 2 == 0 ? "green" : "gray")."><td align=right>#<b>{$line_num}</b></td><td align=left>" . safeChar($line) . "</td></tr>";
 }
 echo"</table>";
 stdfoot();

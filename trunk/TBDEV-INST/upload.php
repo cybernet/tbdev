@@ -3,6 +3,7 @@ require_once("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -40,7 +41,7 @@ if (get_user_class() >= UC_POWER_USER){
 tr("Multiple Uploads", '<a href=multiupload.php><font color=red>Click For <b>Multi Uploads</b></font></a></tr>', 1);
 }
 tr("URL", "<input type=text name=url size=80><br />(Taken from IMDB. <b>Please use ONLY for MOVIES.</b>)\n", 1 );
-tr("Poster", "<input type=text name=poster size=80><br>(Direct link for a poster image to be shown on the details page)\n", 1);
+tr("Poster", "<input type=text value=$BASEURL/poster.jpg name=poster size=80><br>(Direct link for a poster image to be shown on the details page - Include full url)\n", 1);
 tr("YouTube Sample", "<input type=\"text\" name=\"tube\" size=\"80\" /><br />For Samples Should be in the format of http://www.youtube.com/watch?vxxxx .\n", 1);
 tr("Torrent file", "<input type=file name=file size=80>\n", 1);
 tr("Torrent name", "<input type=\"text\" name=\"name\" size=\"80\" /><br />(Taken from filename if not specified. <b>Please use descriptive names.</b>)\n", 1);

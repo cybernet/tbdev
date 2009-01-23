@@ -3,6 +3,7 @@ require ("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -14,7 +15,7 @@ if (get_user_class() < UC_SYSOP)
 hacker_dork("Mass Mail - Nosey Cunt !");
 
 $class = 0 + $_POST["class"];
-$or = $_POST["or"];
+$or = 0 + $_POST["or"];
 
 if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
 {

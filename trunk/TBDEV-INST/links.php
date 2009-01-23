@@ -1,9 +1,10 @@
-<?
+<?php
 ob_start("ob_gzhandler");
 require_once("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -40,6 +41,7 @@ GROUP BY cid, id");
 
 $cat_placeholder = '';
 echo"<h1>$SITENAME links</h1>";
+begin_table();
 while ($arr=mysql_fetch_assoc($res)){
 
 if($arr['cid'] != $cat_placeholder)
@@ -53,5 +55,6 @@ $cat_placeholder = $arr['cid'];
 
 }
 echo "<br /><p align='center' style='color:orange;font-weight:bold;'>links system based on FAQ System 2006 © CoLdFuSiOn</p>";
+end_table();
 stdfoot();
 ?>

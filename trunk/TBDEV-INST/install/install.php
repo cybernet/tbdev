@@ -31,12 +31,21 @@ window.onload = function() {
 </script>
 </head>
 <body style="font-family:Arial, Helvetica, sans-serif; font-size:12px;">
-<? 
+<?php
+////////////magic quotes check//////////////////////////////
+if (get_magic_quotes_gpc() === 1 || get_magic_quotes_runtime() === 1) {
+    $error = 1;
+    $message = "Disable magic_quotes in your php.ini before commencing with this install !";
+} else {
+    $error = 0;
+    $message = "Magic quotes are off \o/";
+}
 require "functions.php";  
 
 // Form
 function step_1()
 {
+	global $message, $error;
 	echo'
     <form method="post" action="install.php">
   <center><img src=/pic/logo.gif></center>
@@ -50,7 +59,7 @@ function step_1()
     </tr>
     <tr>
       <td>Database Name</td>
-      <td><input class="color" name="dbname" type="text" id="dbname" value="bittorrent" size="40" maxlength="40" /></td>
+      <td><input class="color" name="dbname" type="text" id="dbname" value="Installerv1" size="40" maxlength="40" /></td>
     </tr>
     <tr>
       <td>Database User</td>
@@ -65,9 +74,9 @@ function step_1()
       <td colspan="2"><center><strong>Coder User Configuration</strong></center></td>
     </tr>
     <tr>
-      <td>Coder Username</td>
-      <td><input class="color" name="coderuser" type="text" id="coderuser" size="40" maxlength="40" /></td>
-    </tr>
+      <td>Coder Username - Do not change this</td>
+      <td><input class="color" name="coderuser" type="text" id="coderuser" value="Admin" size="40" maxlength="40" /></td>
+     </tr>
     <tr>
       <td>Coder Password</td>
       <td><input class="color" name="coderpass" type="password" id="coderpass" size="40" maxlength="40" /></td>
@@ -86,7 +95,7 @@ function step_1()
     </tr>
     <tr>
       <td>Site Name</td>
-      <td><input class="color" name="sitename" type="text" id="sitename" value="TBDEV.NET" size="40" maxlength="40" /></td>
+      <td><input class="color" name="sitename" type="text" id="sitename" value="::InstallerV1::" size="40" maxlength="40" /></td>
     </tr>
     <tr>
       <td>Domain (no ending slash)</td>
@@ -114,7 +123,8 @@ function step_1()
       <tr>
       <td colspan="2"><br /><strong>Ensure include/secrets.php is CHMOD666 for Linux Install</strong></td>
     </tr>
-    <tr>
+     ' . (isset($error) && $error == 0?'<p align="center" style="color: green">' . $message . '</p>':'<p align="center" style="color: red">' . $message . '</p>') . '
+	<tr>
       <td colspan="2"><div align="center">
         <input name="install" type="submit" class="red" value="Install" />
       </div></td>

@@ -1,7 +1,7 @@
 <?php
 require "include/bittorrent.php";
 dbconn();
-	
+maxcoder();	
 if(isset($_GET['pollId'])){
 	
 	//require_once("dbConnect.php");

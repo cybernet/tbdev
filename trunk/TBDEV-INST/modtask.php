@@ -1,10 +1,10 @@
 <?php
-//print_r($_POST); exit();
 /////////////////updated modtask by Retro//////////////////
 require "include/bittorrent.php";
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -32,9 +32,13 @@ if (!is_valid_id($userid)) stderr("Error", "Bad user ID.");
 
 // Fetch current user data...
 $res = sql_query("SELECT * FROM users WHERE id=".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
+//Check to make sure u re not editing someone of the same or higher class
+if (get_user_class() <= $user['class'] && ($CURUSER['id']!= $userid && get_user_class()<UC_MODERATOR))
+stderr('Error','You cannot edit someone of the same or higher class.. injecting stuff arent we? Action logged');
 $user = mysql_fetch_assoc($res) or sqlerr(__FILE__, __LINE__);
 $curinvites = $user["invites"];
 $curseedbonus = $user["seedbonus"];
+$curhit_run_total = $user["hit_run_total"];
 $curinvite_on = $user["invite_on"];
 $cursignature = $user["signature"];
 $curtitle = $user["title"];
@@ -44,6 +48,9 @@ $curenabled = $user["enabled"];
 $curmaxseeds = $user["maxseeds"];
 $curmaxleeches = $user["maxleeches"];
 $curmaxtotal = $user["maxtotal"];
+$curpost_max = $user["post_max"];
+$curcomment_max = $user["comment_max"];
+$curpm_max = $user["pm_max"];
 $curdonor = $user["donor"];
 $curdonated = $user["donated"];
 $curuploadpos = $user["uploadpos"];
@@ -54,6 +61,7 @@ $curdownloadpos = $user["downloadpos"];
 $curforumpost = $user["forumpost"];
 $cursupport = $user["support"];
 $cursupportfor = $user["supportfor"];
+$curhighspeed = $user["highspeed"];
 $curclass = $user["class"];
 $curwarned = $user["warned"];
 $curdownloaded = $user["downloaded"];
@@ -72,17 +80,13 @@ $nowupload = $user["uploaded"];
 $nowdownload = $user["downloaded"];
 $updateset = array();
 
-
-if ((isset($_POST['modcomment'])) && ($modcomment = $_POST['modcomment'])) ;
-else $modcomment = "";
+$modcomment =(isset($_POST['modcomment']) && $CURUSER['class'] == UC_CODER)?$_POST['modcomment']:$user['modcomment'];
 
 
 // Set class
-
 if ((isset($_POST['class'])) && (($class = $_POST['class']) != $user['class']))
 {
-if (($CURUSER['class'] < UC_SYSOP) && ($user['class'] >= $CURUSER['class'])) die();
-
+if (!is_valid_user_class($class) || get_user_class() <= $_POST['class']) stderr( ("Error"), "Bad class :-P");
 // Notify user
 $what = ($class > $user['class'] ? "promoted" : "demoted");
 $msg = sqlesc("You have been $what to '" . get_user_class_name($class) . "' by ".$CURUSER['username']);
@@ -93,11 +97,60 @@ $updateset[] = "class = ".sqlesc($class);
 
 $modcomment = gmdate("Y-m-d") . " - $what to '" . get_user_class_name($class) . "' by $CURUSER[username].\n". $modcomment;
 }
+//////////////////////////flood protection/////////
+// Set Post Limit
+    if (isset($_POST['post_max'])) {
+
+        $post_max = 0 + $_POST['post_max'];
+        $curpost_max = $user['post_max'];
+
+        if (($post_max < 0) OR ($post_max > 255)) $post_max = 20; // Default number
+
+        if ($post_max != $curpost_max) {
+
+           $modcomment = gmdate("Y-m-d")." - Post Limit changed from ".$curpost_max." to ".
+                $post_max." by ".$CURUSER['username'].".\n".$modcomment;
+           $updateset[] = "post_max = ".sqlesc($post_max);
+        }
+    }
+
+    // Set Comment Limit
+    if (isset($_POST['comment_max'])) {
+
+        $comment_max = 0 + $_POST['comment_max'];
+        $curcomment_max = $user['comment_max'];
+
+        if (($comment_max < 0) OR ($comment_max > 255)) $comment_max = 20; // Default number
+
+        if ($comment_max != $curcomment_max) {
+
+           $modcomment = gmdate("Y-m-d")." - Comment Limit changed from ".$curcomment_max." to ".
+                $comment_max." by ".$CURUSER['username'].".\n".$modcomment;
+           $updateset[] = "comment_max = ".sqlesc($comment_max);
+        }
+    }
+
+    // Set PM Limit
+    if (isset($_POST['pm_max'])) {
+
+        $pm_max = 0 + $_POST['pm_max'];
+        $curpm_max = $user['pm_max'];
+
+        if (($pm_max < 0) OR ($pm_max > 255)) $pm_max = 20; // Default number
+
+        if ($pm_max != $curpm_max) {
+
+           $modcomment = gmdate("Y-m-d")." - PM Limit changed from ".$curpm_max." to ".
+                $pm_max." by ".$CURUSER['username'].".\n".$modcomment;
+           $updateset[] = "pm_max = ".sqlesc($pm_max);
+        }
+    }
 //////////////////////torrent- limit mod////////////////
 // Slots  
 
 switch ($_POST["limitmode"]) {
      case "automatic":
+            default:
             $maxtotal = 0;
             $maxseeds = 0;
             $maxleeches = 0;
@@ -122,7 +175,7 @@ switch ($_POST["limitmode"]) {
 
             break;
  }
-   if ($maxtotal <> intval($arr["tlimitall"]) || $maxseeds <> intval($arr["tlimitseeds"]) || $maxleeches <> intval($arr["tlimitleeches"])) {
+         if ($maxtotal <> intval($user["tlimitall"]) || $maxseeds <> intval($user["tlimitseeds"]) || $maxleeches <> intval($user["tlimitleeches"])) {
         $updateset[] = "tlimitall = " . $maxtotal;
         $updateset[] = "tlimitseeds = " . $maxseeds;
         $updateset[] = "tlimitleeches = " . $maxleeches;
@@ -213,7 +266,7 @@ $updateset[] = "addbookmark = " . sqlesc($addbookmark);
 if ((isset($_POST['donated'])) && (($donated = $_POST['donated']) != $user['donated']))
 {
 $added = sqlesc(get_date_time());
-sql_query("INSERT INTO funds (cash, user, added) VALUES ($donated, $userid, $added)") or sqlerr(__FILE__, __LINE__);
+mysql_query("INSERT INTO funds (cash, user, added) VALUES ($donated, $userid, $added)") or sqlerr(__FILE__, __LINE__);
 $updateset[] = "donated = " . sqlesc($donated);
 $updateset[] = "total_donated = $user[total_donated] + " . sqlesc($donated);
 }
@@ -243,18 +296,18 @@ so, thanks again, and enjoy!
 cheers,
 $SITENAME Staff
 
-PS. Your donator status will last for $dur and can be found on your user details page and can only be seen by you smile.gif It was set by " . $CURUSER['username']);
+PS. Your donator status will last for $dur and can be found on your user details page and can only be seen by you :smile: It was set by " . $CURUSER['username']);
 
 $subject = sqlesc("Thank You for Your Donation!");
 $modcomment = gmdate("Y-m-d") . " - Donator status set for $dur by " . $CURUSER['username']."\n".$modcomment;
 $updateset[] = "donoruntil = ".sqlesc($donoruntil);
 }
 $added = sqlesc(get_date_time());
-sql_query("INSERT INTO messages (sender, subject, receiver, msg, added) VALUES (0, $subject, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+mysql_query("INSERT INTO messages (sender, subject, receiver, msg, added) VALUES (0, $subject, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
 $updateset[] = "donor = 'yes'";
 $res = mysql_query("SELECT class FROM users WHERE id = $userid") or sqlerr(__FILE__,__LINE__);
 $arr = mysql_fetch_array($res);
-if ($arr['class'] < UC_UPLOADER)
+if ($arr['class'] < UC_MODERATOR)
 $updateset[] = "class = '2'"; //=== set this to the number for vip on your server
 }
 
@@ -272,14 +325,14 @@ so, thanks again, and enjoy!
 cheers,
 $SITENAME Staff
 
-PS. Your donator status will last for an extra $dur on top of your current donation status, and can be found on your user details page and can only be seen by you. It was set by " . $CURUSER['username']);
+PS. Your donator status will last for an extra $dur on top of your current donation status, and can be found on your user details page and can only be seen by you :smile: It was set by " . $CURUSER['username']);
 
 $subject = sqlesc("Thank You for Your Donation... Again!");
 $modcomment = gmdate("Y-m-d") . " - Donator status set for another $dur by " . $CURUSER['username']."\n".$modcomment;
 $donorlengthadd = $donorlengthadd * 7;
-sql_query("UPDATE users donoruntil = IF(donoruntil='0000-00-00 00:00:00', ADDDATE(NOW(), INTERVAL $donorlengthadd DAY ), ADDDATE( donoruntil, INTERVAL $donorlengthadd DAY)) WHERE id = $userid") or sqlerr(__FILE__, __LINE__);
+mysql_query("UPDATE users SET donoruntil = IF(donoruntil='0000-00-00 00:00:00', ADDDATE(NOW(), INTERVAL $donorlengthadd DAY ), ADDDATE( donoruntil, INTERVAL $donorlengthadd DAY)) WHERE id = $userid") or sqlerr(__FILE__, __LINE__);
 $added = sqlesc(get_date_time());
-sql_query("INSERT INTO messages (sender, subject, receiver, msg, added) VALUES (0, $subject, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+mysql_query("INSERT INTO messages (sender, subject, receiver, msg, added) VALUES (0, $subject, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
 $updateset[] = "donated = $user[donated] + " . sqlesc($_POST['donated']);
 $updateset[] = "total_donated = $user[total_donated] + " . sqlesc($_POST['donated']);
 }
@@ -291,20 +344,17 @@ if (isset($_POST['donor']) && (($donor = $_POST['donor']) != $user['donor']))
 $updateset[] = "donor = " . sqlesc($donor);
 $updateset[] = "donoruntil = '0000-00-00 00:00:00'";
 $updateset[] = "donated = '0'";
-if ($arr['class'] < UC_UPLOADER)
-$updateset[] = "class = '1'";
-
+$updateset[] = "class = '1'"; //=== use this line to set them back to poweruser... change 2 to your poweruser class number
 if ($donor == 'no')
 {
 $modcomment = gmdate("Y-m-d") . " - Donor status removed by ".$CURUSER['username'].".\n". $modcomment;
 $msg = sqlesc("Your donator status has expired.");
 $added = sqlesc(get_date_time());
 $subject = sqlesc("Donator status expired.");
-sql_query("INSERT INTO messages (sender, subject, receiver, msg, added) VALUES (0, $subject, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+mysql_query("INSERT INTO messages (sender, subject, receiver, msg, added) VALUES (0, $subject, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
 }
 }
 //===end
-
 // Enable / Disable
 if ((isset($_POST['enabled'])) && (($enabled = $_POST['enabled']) != $user['enabled']))
 {
@@ -410,7 +460,28 @@ mysql_query("INSERT INTO messages (sender, receiver, msg, added, subject) VALUES
 }
 $updateset[] = "blackjackban = " . sqlesc($blackjackban);
 } 
+ // Set higspeed Upload Enable / Disable
+    if ((isset($_POST['highspeed'])) && (($highspeed = $_POST['highspeed']) != $user['highspeed']))
+    {
+        if ($highspeed == 'yes')
+        {
+            $modcomment = gmdate("Y-m-d") . " - Highspeed Upload enabled by " . $CURUSER['username'] . ".\n" . $modcomment;
+            $msg = sqlesc("You  have been set as a high speed uploader by  " . $CURUSER['username'] . ". You can now upload torrents using highspeeds without being flagged as a cheater  .");
+            $added = sqlesc(get_date_time());
+            mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+        }
+        elseif ($highspeed == 'no')
+        {
+            $modcomment = gmdate("Y-m-d") . " - Highspeed Upload disabled by " . $CURUSER['username'] . ".\n" . $modcomment;
+            $msg = sqlesc("Your highspeed upload setting has been disabled by " . $CURUSER['username'] . ". Please PM ".$CURUSER['username']." for the reason why.");
+            $added = sqlesc(get_date_time());
+            mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+        }
+        else
+            die(); // Error
 
+        $updateset[] = "highspeed = " . sqlesc($highspeed);
+    }
 // Change Custom Title
 if ((isset($_POST['title'])) && (($title = $_POST['title']) != ($curtitle = $user['title'])))
 {
@@ -438,6 +509,14 @@ if ((isset($_POST['seedbonus'])) && (($seedbonus = $_POST['seedbonus']) != $user
 {
 $modcomment = gmdate("Y-m-d") . " - seeding bonus set to $seedbonus  by " . $CURUSER['username'] . ".\n" . $modcomment;
 $updateset[] = "seedbonus = " . sqlesc($seedbonus);
+}
+
+// change hit run total
+if ((isset($_POST['hit_run_total'])) && (($hit_run_total = $_POST['hit_run_total']) != ($curhit_run_total = $user['hit_run_total'])))
+{
+$modcomment = gmdate("Y-m-d") . " - Total Hit and Run amount changed to '".$hit_run_total."' from '".$curhit_run_total."' by " . $CURUSER['username'] . ".\n" . $modcomment;
+
+$updateset[] = "hit_run_total = " . sqlesc($hit_run_total);
 }
 
 // Add Comment to ModComment
@@ -475,7 +554,30 @@ die(); // Error
 
 $updateset[] = "uploadpos = " . sqlesc($uploadpos);
 } 
+// Set Download Enable / Disable
+if ((isset($_POST['downloadpos'])) && (($downloadpos = $_POST['downloadpos']) != $user['downloadpos']))
+{
+if ($downloadpos == 'yes')
+{
+$modcomment = gmdate("Y-m-d") . " - Download enabled by " . $CURUSER['username'] . ".\n" . $modcomment;
+$subject = sqlesc("Downloading Rights.");
+$msg = sqlesc("Your download rights have been given back by " . $CURUSER['username'] . ". You can download torrents again.");
+$added = sqlesc(get_date_time());
+mysql_query("INSERT INTO messages (sender, receiver, subject, msg, added) VALUES (0, $userid, $subject, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+}
+elseif ($downloadpos == 'no')
+{
+$modcomment = gmdate("Y-m-d") . " - Download disabled by " . $CURUSER['username'] . ".\n" . $modcomment;
+$subject = sqlesc("Downloading Rights.");
+$msg = sqlesc("Your download rights have been removed by " . $CURUSER['username'] . ", Please PM ".$CURUSER['username']." for the reason why.");
+$added = sqlesc(get_date_time());
+mysql_query("INSERT INTO messages (sender, receiver, subject, msg, added) VALUES (0, $userid, $subject, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+}
+else
+die(); // Error
 
+$updateset[] = "downloadpos = " . sqlesc($downloadpos);
+} 
 // Avatar Changed
 if ((isset($_POST['avatar'])) && (($avatar = $_POST['avatar']) != ($curavatar = $user['avatar'])))
 {
@@ -514,7 +616,28 @@ die(); // Error
 
 $updateset[] = "parked = " . sqlesc($parked);
 }
+// Over-ride auto warns
+if ((isset($_POST['warned'])) && (($warned = $_POST['warned']) != $user['warned']))
+{
+if ($warned == 'yes')
+{
+$modcomment = gmdate("Y-m-d") . " - Warned by " . $CURUSER['username'] . ".\n" . $modcomment;
+    $msg = sqlesc("Your profile has a warning applied by " . $CURUSER['username'] . ". Contact admin if this incorrect.");
+$added = sqlesc(get_date_time());
+mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+}
+elseif ($warned == 'no')
+{
+$modcomment = gmdate("Y-m-d") . " - Auto system warning removed by " . $CURUSER['username'] . ".\n" . $modcomment;
+    $msg = sqlesc("Your auto system warn has been removed by " . $CURUSER['username'] . ", just be careful in future : ).");
+$added = sqlesc(get_date_time());
+mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+}
+else
+die(); // Error
 
+$updateset[] = "warned = " . sqlesc($warned);
+}
 // remove users anonymous status 
 if ((isset($_POST['anonymous'])) && (($anonymous = $_POST['anonymous']) != $user['anonymous']))
 {
@@ -537,20 +660,32 @@ die(); // Error
 
 $updateset[] = "anonymous = " . sqlesc($anonymous);
 }
-
-
 //=== allow invites
 if ((isset($_POST['invite_on'])) && (($invite_on = $_POST['invite_on']) != $user['invite_on'])){  
 $modcomment = gmdate("Y-m-d") . " - Invites allowed changed from $user[invite_on] to $invite_on by " . $CURUSER['username'] . ".\n" . $modcomment;
 $updateset[] = "invite_on = " . sqlesc($invite_on);
 }
-
-//=== webseeeder
-if ((isset($_POST['webseeder'])) && (($webseeder = $_POST['webseeder']) != $user['webseeder'])){  
-$modcomment = gmdate("Y-m-d") . " - User is a seedbox user - set by " . $CURUSER['username'] . ".\n" . $modcomment;
+// set webseeder yes no
+if ((isset($_POST['webseeder'])) && (($webseeder = $_POST['webseeder']) != $user['webseeder']))
+{
+if ($webseeder == 'yes')
+{
+$modcomment = gmdate("Y-m-d") . " - Webseeder set by " . $CURUSER['username'] . ".\n" . $modcomment;
+    $msg = sqlesc("Your now set as a webseeder by " . $CURUSER['username'] . ". your torrents will have an image on browse");
+$added = sqlesc(get_date_time());
+mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+}
+elseif ($webseeder == 'no')
+{
+$modcomment = gmdate("Y-m-d") . " - Webseeder removed by " . $CURUSER['username'] . ".\n" . $modcomment;
+    $msg = sqlesc("Your account has been removed from webseeder status by " . $CURUSER['username'] . ", your torrents wont have the high speed icon anymore.");
+$added = sqlesc(get_date_time());
+mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
+}
+else
+die(); // Error
 $updateset[] = "webseeder = " . sqlesc($webseeder);
 }
-
 
 // change invites
 if ((isset($_POST['invites'])) && (($invites = $_POST['invites']) != ($curinvites = $user['invites'])))
@@ -559,26 +694,22 @@ $modcomment = gmdate("Y-m-d") . " - invite amount changed to '".$invites."' from
 
 $updateset[] = "invites = " . sqlesc($invites);
 }
+ // FLS Support
+        if (isset($_POST['support']) && ($support = $_POST['support']) != $user['support'] )
+        {
+                if ($support == 'yes')
+                        $modcomment = gmdate("Y-m-d H:i") . " - Promoted to Fls by " . $CURUSER['username'] . "\n" . $modcomment;
+                elseif ($support == 'no')
+                        $modcomment = gmdate("Y-m-d H:i") . " - Demoted from Fls by " . $CURUSER['username'] . "\n" . $modcomment;
+                else
+                        die();
 
-// Support
-if ((isset($_POST['support'])) && (($support = $_POST['support']) != $user['support']))
-{
-if ($support == 'yes')
-{
-$modcomment = gmdate("Y-m-d") . " - Promoted to FLS by " . $CURUSER['username'] . ".\n" . $modcomment;
-}
-elseif ($support == 'no')
-{
-$modcomment = gmdate("Y-m-d") . " - Demoted from FLS by " . $CURUSER['username'] . ".\n" . $modcomment;
-}
-else
-die();
+                $updateset[] = "support = " . sqlesc($support);
+        }
 
-$supportfor = $_POST['supportfor'];
-
-$updateset[] = "support = " . sqlesc($support);
-$updateset[] = "supportfor = ".sqlesc($supportfor);
-} 
+        if (isset($_POST['supportfor']) && ($supportfor = $_POST['supportfor']) != $user['supportfor'] ) {
+                $updateset[] = "supportfor = ".sqlesc($supportfor);
+        }
 //////////////////////////////// dont change anything under here ///////////////////////////////
 
 # --------------------------------------------
@@ -598,20 +729,14 @@ if ($uploaded && $curuploaded != $uploaded)
 if ($uploaded)
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) upload amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
-/*
 # --------------------------------------------
-# warned
+# un-warned
 # --------------------------------------------
-if ($warneduntil)
+if ($warned && $curwarned != $warned)
 {
-if ($warnlength)
-write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) warned for $dur by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+if ($warned == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) warned by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
-elseif ($warnpm)
-{
-write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) warned for unlimited time by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
-}
-
 # --------------------------------------------
 # un-warned
 # --------------------------------------------
@@ -620,7 +745,7 @@ if ($warned && $curwarned != $warned)
 if ($warned == 'no')
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) un-warned by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
-*/
+
 # --------------------------------------------
 # promote and demote
 # --------------------------------------------
@@ -663,7 +788,7 @@ if ($seedbonus)
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) seedbonus amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
 # --------------------------------
-# maxseed amount
+# max seed amount
 # --------------------------------
 if ($maxseed && $curmaxseed != $maxseed)
 {
@@ -671,7 +796,7 @@ if ($maxseed)
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max seed amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
 # --------------------------------
-# maxleech amount
+# max leech amount
 # --------------------------------
 if ($maxleeches && $curmaxleeches != $maxleeches)
 {
@@ -679,12 +804,36 @@ if ($maxleeches)
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max leech amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
 # --------------------------------
-# maxtotal amount
+# max total amount
 # --------------------------------
 if ($maxtotal && $curmaxtotal != $maxtotal)
 {
 if ($maxtotal)
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max seed/leech total amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# max post
+# --------------------------------
+if ($post_max && $curpost_max != $post_max)
+{
+if ($post_max)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max post amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# max comment amount
+# --------------------------------
+if ($comment_max && $curcomment_max != $comment_max)
+{
+if ($comment_max)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max comments amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+# --------------------------------
+# max pm amount
+# --------------------------------
+if ($pm_max && $curpm_max != $pm_max)
+{
+if ($pm_maxl)
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Max pm total amount changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
 # --------------------------------
 # add firstline support
@@ -694,7 +843,6 @@ if ($support && $cursupport != $support)
 if ($support == 'yes')
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) added to FirstLine Support by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
-
 # --------------------------------
 # remove firstline support
 # --------------------------------
@@ -703,7 +851,6 @@ if ($support && $cursupport != $support)
 if ($support == 'no')
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) removed from FirstLine Support by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
-
 # --------------------------------
 # changed support for
 # --------------------------------
@@ -712,8 +859,6 @@ if ($supportfor && $cursupportfor != $supportfor)
 if ($supportfor)
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) support for info changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
-
-
 # --------------------------------
 # enable forum post possible
 # --------------------------------
@@ -730,7 +875,6 @@ if ($forumpost && $curforumpost != $forumpost)
 if ($forumpost == 'no')
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) forum posting disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
-
 # --------------------------------
 # enable download possible
 # --------------------------------
@@ -747,7 +891,6 @@ if ($downloadpos && $curdownloadpos != $downloadpos)
 if ($downloadpos == 'no')
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) downloads disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
-
 # --------------------------------
 # enable upload possible
 # --------------------------------
@@ -755,6 +898,15 @@ if ($uploadpos && $curuploadpos != $uploadpos)
 {
 if ($uploadpos == 'yes')
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) uploads enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
+
+# --------------------------------
+#  upload disable
+# --------------------------------
+if ($uploadpos && $curuploadpos != $uploadpos)
+{
+if ($uploadpos == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) uploads disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
 # --------------------------------
 # casino ban 
@@ -803,15 +955,6 @@ if ($chatpost && $curchatpost != $chatpost)
 {
 if ($chatpost == 'yes')
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Shoutbox rights enabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
-}
-
-# --------------------------------
-#  upload disable
-# --------------------------------
-if ($uploadpos && $curuploadpos != $uploadpos)
-{
-if ($uploadpos == 'no')
-write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) uploads disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
 # --------------------------------
 #  user immune
@@ -873,7 +1016,23 @@ if ($enabled != $curenabled)
 if ($enabled == 'no')
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) disabled by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
+# --------------------------------------------
+# highspeed seeder
+# --------------------------------------------
+if ($highspeed != $curhighspeed)
+{
+if ($highspeed == 'yes')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Highspeed user set by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
 
+# --------------------------------------------
+# highspeed seeder
+# --------------------------------------------
+if ($highspeed != $curhighspeed)
+{
+if ($highspeed == 'no')
+write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) Highspeed user returned to normal status by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
+}
 # --------------------------------------------
 # changed avatar
 # --------------------------------------------
@@ -910,17 +1069,15 @@ if ($title)
 write_info("User account $userid (<a href=userdetails.php?id=$userid>$user[username]</a>) title changed by <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>");
 }
 # --------------------------------------------
-
-// Add ModComment to the update set...
+// Add ModComment... (if we changed smt we update otherwise we dont include this..)
+if (($CURUSER['class'] == UC_CODER && ($user['modcomment'] != $_POST['modcomment'] || $modcomment!=$_POST['modcomment'])) || ($CURUSER['class']<UC_SYSOP && $modcomment != $user['modcomment']))
 $updateset[] = "modcomment = " . sqlesc($modcomment);
-sql_query("UPDATE users SET " . implode(", ", $updateset) . " WHERE id=".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
+if (sizeof($updateset)>0)
+mysql_query("UPDATE users SET  " . implode(", ", $updateset) . " WHERE id=".sqlesc($userid)."") or sqlerr(__FILE__, __LINE__);
 status_change($userid);
 $returnto = $_POST["returnto"];
 header("Location: $DEFAULTBASEURL/$returnto");
-
 die();
 }
-
 puke();
-
 ?>

@@ -4,6 +4,7 @@ require_once ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -59,14 +60,14 @@ if ($type == 'friend') {
   $r = mysql_query("SELECT id, confirmed FROM $table_is WHERE userid=$userid AND $field_is=$targetid") or sqlerr(__FILE__, __LINE__);
 $q = mysql_fetch_assoc($r);
 $subject =  sqlesc("New Friend Request!");
-$body  = sqlesc("[url=userdetails.php?id=$userid][b]This person[/b][/url] has added you to their Friends List. See all Friend Requests [url=friends.php#pending][b]Here[/b][/url]\n ");
+$body  = sqlesc("[url=userdetails.php?id=$userid][b]This person[/b][/url] has added you to their Friends List. See all Friend Requests [url=$DEFAULTBASEURL/friends.php#pending][b]Here[/b][/url]\n ");
     mysql_query("INSERT INTO messages (sender, receiver, added, subject, msg) VALUES (0, $targetid, '".get_date_time()."', $subject, $body)") or sqlerr(__FILE__, __LINE__);
     //mysql_query("INSERT INTO messages (sender, receiver, added, msg) VALUES (0, $targetid, '".get_date_time()."', $body)") or sqlerr(__FILE__, __LINE__);
   if (mysql_num_rows($r) == 1)
 		stderr("Error", "User ID is already in your ".htmlentities($table_is)." list.");
 	mysql_query("INSERT INTO $table_is VALUES (0, $userid, $targetid, 'no')") or sqlerr(__FILE__, __LINE__);
 
-stderr("Request Added!", "The user will be informed of your Friend Request, you will be informed via PM upon confirmation.<br/ ><br/ ><a href=friends.php?id=$userid#$frag><b>Go to your Friends List</b></a>", FALSE);
+stderr("Request Added!", "The user will be informed of your Friend Request, you will be informed via PM upon confirmation.<br/ ><br/ ><a href=$DEFAULTBASEURL/friends.php?id=$userid#$frag><b>Go to your Friends List</b></a>", FALSE);
   die;
  }
 if ($type == 'block') {
@@ -109,7 +110,7 @@ mysql_query("INSERT INTO friends VALUES (0, $userid, $targetid, 'yes') ON DUPLIC
 mysql_query("UPDATE friends SET confirmed = 'yes' WHERE userid=$targetid AND friendid=$CURUSER[id]");
 
 $subject =  sqlesc("You have a new friend!");
-$body  = sqlesc("[url=userdetails.php?id=$userid][b]This person[/b][/url] has just confirmed your Friendship Request. See your Friends  [url=friends.php][b]Here[/b][/url]\n ");
+$body  = sqlesc("[url=userdetails.php?id=$userid][b]This person[/b][/url] has just confirmed your Friendship Request. See your Friends  [url=$DEFAULTBASEURL/friends.php][b]Here[/b][/url]\n ");
     mysql_query("INSERT INTO messages (sender, receiver, added, subject, msg) VALUES (0, $targetid, '".get_date_time()."', $subject, $body)") or sqlerr(__FILE__, __LINE__);
    //mysql_query("INSERT INTO messages (sender, receiver, added, msg) VALUES (0, $targetid, '".get_date_time()."', $body)") or sqlerr(__FILE__, __LINE__);
 

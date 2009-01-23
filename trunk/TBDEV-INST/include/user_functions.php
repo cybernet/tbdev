@@ -181,8 +181,49 @@ function get_user_class_image($class)
     }
   return "";
 }
+/*
+function get_user_warns($warns) {
+  switch ($warns)
+  {
+    
+    case 10: return "10 %";
+    case 20: return "20 %";
+    case 30: return "30 % One to watch ";
+    case 40: return "40 %";
+    case 50: return "50 %";
+    case 60: return "60 % Piss taker ";
+    case 70: return "70 %";
+    case 80: return "80 %";
+    case 90: return "90 % Serial piss taker";
+    case 100: return "100 % The point of no return - Ban him i say !";
+  }
+  return "Not warned";
+}
+*/
+////////////////user warn progressbar//////
+function get_user_warns_image($w) {
+$maxpx = "40"; // Maximum amount of pixels for the progress bar
 
-///////////progress indicator
+if ($w == 0) $warns = "<img src=\"/pic/progbar-rest.gif\" height=9 width=" . ($maxpx) . " />";
+if ($w == 100) $warns = "<img src=\"/pic/progbar-red.gif\" height=9 width=" . ($maxpx) . " />";
+if ($w >= 1 && $w <= 30) $warns = "<img src=\"/pic/progbar-green.gif\" height=9 width=" . ($w*($maxpx/100)) . " /><img src=\"/pic/progbar-rest.gif\" height=9 width=" . ((100-$w)*($maxpx/100)) . " />";
+if ($w >= 31 && $w <= 65) $warns = "<img src=\"/pic/progbar-yellow.gif\" height=9 width=" . ($w*($maxpx/100)) . " /><img src=\"/pic/progbar-rest.gif\" height=9 width=" . ((100-$w)*($maxpx/100)) . " />";
+if ($w >= 66 && $w <= 99) $warns = "<img src=\"/pic/progbar-red.gif\" height=9 width=" . ($w*($maxpx/100)) . " /><img src=\"/pic/progbar-rest.gif\" height=9 width=" . ((100-$w)*($maxpx/100)) . " />";
+return "<img src=\"/pic/bar_left.gif\" />" . $warns ."<img src=\"/pic/bar_right.gif\" />";
+}
+////////////////user warn progressbar//////
+///////////inbox progress indicator
+function get_percent_inbox_image($p) {
+$maxpx = "40"; // Maximum amount of pixels for the progress bar
+
+if ($p == 0) $progress = "<img src=\"/pic/progbar-rest.gif\" height=9 width=" . ($maxpx) . " />";
+if ($p == 100) $progress = "<img src=\"/pic/progbar-red.gif\" height=9 width=" . ($maxpx) . " />";
+if ($p >= 1 && $p <= 30) $progress = "<img src=\"/pic/progbar-green.gif\" height=9 width=" . ($p*($maxpx/100)) . " /><img src=\"/pic/progbar-rest.gif\" height=9 width=" . ((100-$p)*($maxpx/100)) . " />";
+if ($p >= 31 && $p <= 65) $progress = "<img src=\"/pic/progbar-yellow.gif\" height=9 width=" . ($p*($maxpx/100)) . " /><img src=\"/pic/progbar-rest.gif\" height=9 width=" . ((100-$p)*($maxpx/100)) . " />";
+if ($p >= 66 && $p <= 99) $progress = "<img src=\"/pic/progbar-red.gif\" height=9 width=" . ($p*($maxpx/100)) . " /><img src=\"/pic/progbar-rest.gif\" height=9 width=" . ((100-$p)*($maxpx/100)) . " />";
+return "<img src=\"/pic/bar_left.gif\" />" . $progress ."<img src=\"/pic/bar_right.gif\" />";
+}
+///////////torrent progress indicator
 function get_percent_completed_image($p) {
 $maxpx = "40"; // Maximum amount of pixels for the progress bar
 

@@ -12,6 +12,7 @@ if (!$id)
 	httperr();
 
 dbconn();
+maxcoder();	
 
 
 $res = mysql_query("SELECT editsecret FROM users WHERE id = $id");

@@ -3,6 +3,7 @@ require_once("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -12,7 +13,6 @@ die();
 }
 if (get_user_class() < UC_ADMINISTRATOR)
 hacker_dork("take-slots");
-
 stdhead("Bonus Slots Manager");
 
 $class = $_POST['class'];
@@ -38,6 +38,7 @@ $res = mysql_query("UPDATE users SET freeslots = 0 WHERE class $class");
 ?>
 <br />
 <p><a href="manage-slots.php"><strong>Return</strong></a></p>
-<?
+<?php
 stdfoot();
+
 ?>

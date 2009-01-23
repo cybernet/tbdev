@@ -1,8 +1,9 @@
 <?php
 require ("include/bittorrent.php");
-require ("include/user_functions.php");
+//require ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -62,7 +63,7 @@ $downspeed = ($arr["downspeed"] > 0 ? mksize($arr["downspeed"]) : ($arr["leechti
 $ratio = ($arr["downloaded"] > 0 ? number_format($arr["uploaded"] / $arr["downloaded"], 3) : ($arr["uploaded"] > 0 ? "Inf." : "---"));
 $id=$arr[id];
 $table .= "<tr>
-<td style='padding: 0px'><img src='pic/".safechar($arr["catimg"])."' alt='".safechar($arr["catname"])."' width=42 height=42></td>
+<td style='padding: 0px'><img src='pic/".safeChar($arr["catimg"])."' alt='".safeChar($arr["catname"])."' width=42 height=42></td>
 <td><a href=details.php?id=$arr[torrentid]><b>".(strlen($arr["name"]) > 50 ? substr($arr["name"], 0, 50 - 3)."..." : $arr["name"])."</b></a></td>
 <td>".($arr["id"])."</td>
 <td>".mksize($arr["uploaded"])."</td>
@@ -94,15 +95,15 @@ $color = get_ratio_color($ratio);
 if ($color)
 
 $ratio = "<font color=$color>$ratio</font>";
-	$catimage = safechar($arr["image"]);
-	$catname = safechar($arr["catname"]);
+	$catimage = safeChar($arr["image"]);
+	$catname = safeChar($arr["catname"]);
 	$size = str_replace(" ", "<br>", mksize($arr["size"]));
 	$uploaded = str_replace(" ", "<br>", mksize($arr["uploaded"]));
 	$downloaded = str_replace(" ", "<br>", mksize($arr["downloaded"]));
 	$seeders = number_format($arr["seeders"]);
 	$leechers = number_format($arr["leechers"]);
     $ret .= "<tr><td style='padding: 0px'><img src=\"pic/$catimage\" alt=\"$catname\" width=42 height=42></td>\n" .
-		"<td><a href=details.php?id=$arr[torrent]&amp;hit=1><b>" . safechar($arr["torrentname"]) .
+		"<td><a href=details.php?id=$arr[torrent]&amp;hit=1><b>" . safeChar($arr["torrentname"]) .
 		"</b></a></td><td align=center>$size</td><td align=right>$seeders</td><td align=right>$leechers</td><td align=center>$uploaded</td>\n" .
 		"<td align=center>$downloaded</td><td align=center>$ratio</td></tr>\n";
   }
@@ -179,6 +180,29 @@ bark("Unknown User");
 $r = @mysql_query("SELECT * FROM users WHERE $where LIMIT 1") or sqlerr();
 $user = mysql_fetch_assoc($r) or bark("Unknown User");
 $id = $user['id'];
+
+//$res = mysql_query("SELECT COUNT(*) FROM userhits WHERE hitid = $id") or sqlerr(); // *1
+//$row = mysql_fetch_row($res); // *1
+//$userhits = $row[0]; // *1
+
+if (!$_GET["hit"] && $CURUSER["id"] <> $user["id"]) {
+  $res = sql_query("SELECT added FROM userhits WHERE userid = $CURUSER[id] AND hitid = $id LIMIT 1") or sqlerr(); // *3
+  $row = mysql_fetch_row($res); // *3
+  if ($row[0] > get_date_time(gmtime() - 3600)) { // *3
+    header("Location: $BASEURL$_SERVER[REQUEST_URI]&hit=1"); // *3
+  } else { // *3
+//  $hitnumber = $userhits + 1; // *1
+    $hitnumber = $user["hits"] + 1; // *2
+    sql_query("UPDATE users SET hits = hits + 1 WHERE id = $id") or sqlerr(); // *2
+    sql_query("INSERT INTO userhits (userid, hitid, number, added) VALUES($CURUSER[id], $id, $hitnumber, '".get_date_time()."')") or sqlerr();
+    header("Location: $BASEURL$_SERVER[REQUEST_URI]&hit=1");
+  } // *3
+}
+
+# *1 = comment this out if you use the cleanup code
+# *2 = comment this out if you do NOT use the cleanup code
+# *3 = comment this out if you do NOT want hits to be added only once every hour
+
 if ($user["status"] == "pending") die;
 $r = sql_query("SELECT id, name, seeders, leechers, category FROM torrents WHERE owner=$id ORDER BY name") or sqlerr();
 if (mysql_num_rows($r) > 0)
@@ -190,7 +214,7 @@ if (mysql_num_rows($r) > 0)
 		$r2 = sql_query("SELECT name, image FROM categories WHERE id=$a[category]") or sqlerr(__FILE__, __LINE__);
 		$a2 = mysql_fetch_assoc($r2);
 		$cat = "<img src=\"/pic/$a2[image]\" alt=\"$a2[name]\">";
-      $torrents .= "<tr><td style='padding: 0px'>$cat</td><td><a href=details.php?id=" . $a["id"] . "&hit=1><b>" . safechar($a["name"]) . "</b></a></td>" .
+      $torrents .= "<tr><td style='padding: 0px'>$cat</td><td><a href=details.php?id=" . $a["id"] . "&hit=1><b>" . safeChar($a["name"]) . "</b></a></td>" .
         "<td align=right>$a[seeders]</td><td align=right>$a[leechers]</td></tr>\n";
   }
   $torrents .= "</table>";
@@ -214,29 +238,12 @@ if ($user["ip"] && (get_user_class() >= UC_MODERATOR || $user["id"] == $CURUSER[
     $addr = "$ip ($dom)";
   }
 }
-  /*
-  if ($user[added] == "0000-00-00 00:00:00")
-  $joindate = 'N/A';
-  else
-  //$onlinetime = "$user[last_login] (" . time()-sql_timestamp_to_unix_timestamp($user["last_access"])) . ")";
-  //$lapsetime = ((($lapsetime=time()-sql_timestamp_to_unix_timestamp($user["last_access"]))/3600)%24). ':' (($lapsetime/60)%60) .':'. ($lapsetime%60);
-  //$lapsetime= "$user[last_login] date("H:m",time()-sql_timestamp_to_unix_timestamp($user["last_access"]))";
-  $onlinetime = "$user[last_login] (" . get_date_time(sql_timestamp_to_unix_timestamp($user["last_access"])) . ")";
-  $joindate = "$user[added] (" . get_elapsed_time(sql_timestamp_to_unix_timestamp($user["added"])) . " ago)";
-  $lastseen = $user["last_access"];
-  if ($lastseen == "0000-00-00 00:00:00")
-  $lastseen = "never";
-  else
-  {
-  $lastseen .= " (" . get_elapsed_time(sql_timestamp_to_unix_timestamp($lastseen)) . " ago)";
-  }
-  */
+
   if ($user["added"] == "0000-00-00 00:00:00")
   $joindate = "N/A";
   else 
   {
   $elapsed = get_elapsed_time(strtotime($user["added"]));
-  $onlinetime = "$user[last_login] (" . get_date_time(sql_timestamp_to_unix_timestamp($user["last_access"])) . ")";
   $joindate = display_date_time($user["added"])." ($elapsed ago)";
   }
   if ($user["added"] == $user["last_access"] || $user["last_access"] == "0000-00-00 00:00:00")
@@ -245,6 +252,9 @@ if ($user["ip"] && (get_user_class() >= UC_MODERATOR || $user["id"] == $CURUSER[
   {
   $elapsed = get_elapsed_time(strtotime($user["last_access"]));
   $lastseen = display_date_time($user["last_access"])." ($elapsed ago)";
+  //$lapsetime=((($lapsetime=time()-sql_timestamp_to_unix_timestamp($user["last_login"]))/3600)%24). ':' .(($lapsetime/60)%60) .':'. ($lapsetime%60);
+  $lapsetime=((($lapsetime=time()-sql_timestamp_to_unix_timestamp($user["last_login"]))/3600)%24). ' Hours ' .(($lapsetime/60)%60) .' minutes '. ($lapsetime%60).' seconds ';
+  $onlinetime = "$user[last_login] (" . get_date_time(sql_timestamp_to_unix_timestamp($user["last_access"])) . ")";
   }
   
  $res = sql_query("SELECT COUNT(*) FROM comments WHERE user=" . $user[id]) or sqlerr();
@@ -259,7 +269,7 @@ include 'include/cache/countries.php';
 foreach ($countries as $country)
 if ($country[id] == $user[country])
 {
-$country = "<td class=embedded><img src=\"{$pic_base_url}flag/{$country['flagpic']}\" alt=\"". safechar($country['name']) ."\" style='margin-left: 8pt'></td>";
+$country = "<td class=embedded><img src=\"{$pic_base_url}flag/{$country['flagpic']}\" alt=\"". $country['name'] ."\" style='margin-left: 8pt'></td>";
 break;
 }
 $ipto = mysql_query("SELECT COUNT(id) FROM `users` AS iplist WHERE `ip` = '" . $user["ip"] . "'") or sqlerr(__FILE__, __LINE__);
@@ -296,7 +306,37 @@ if (mysql_num_rows($res) > 0)
 $res = sql_query("SELECT torrent,added,uploaded,downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers LEFT JOIN torrents ON peers.torrent = torrents.id LEFT JOIN categories ON torrents.category = categories.id WHERE userid=$id AND seeder='yes'") or sqlerr();
 if (mysql_num_rows($res) > 0)
   $seeding = maketable($res);
+///////////////// Birthday mod /////////////////////
+if ($user[birthday] != "0000-00-00")
+{
+        //$current = gmdate("Y-m-d", time());
+        $current = gmdate("Y-m-d", time() + $CURUSER['tzoffset'] * 60);
+        list($year2, $month2, $day2) = split('-', $current);
+        $birthday = $user["birthday"];
+        $birthday = date("Y-m-d", strtotime($birthday));
+        list($year1, $month1, $day1) = split('-', $birthday);
+        if($month2 < $month1)
+        {
+                $age = $year2 - $year1 - 1;
+        }
+        if($month2 == $month1)
+        {
+                if($day2 < $day1)
+                {
+                        $age = $year2 - $year1 - 1;
+                }
+                else
+                {
+                        $age = $year2 - $year1;
+                }
+        }
+        if($month2 > $month1)
+        {
+                $age = $year2 - $year1;
+        }
 
+}
+///////////////// Birthday mod/////////////////////
 stdhead("Details for " . $user["username"]);
 $enabled = $user["enabled"] == 'yes';
 print("<p><table class=main border=0 cellspacing=0 cellpadding=0>".
@@ -304,7 +344,9 @@ print("<p><table class=main border=0 cellspacing=0 cellpadding=0>".
 
 if (!$enabled)
 print("<p><b>This account has been disabled</b></p>\n");
-elseif ($CURUSER["id"] <> $user["id"])
+if (($user["showfriends"] == "yes") || get_user_class() >= UC_USER){
+if ($CURUSER["id"] <> $user["id"])
+//elseif ($CURUSER["id"] <> $user["id"])
 {
 print("<p>(<a href=".$DEFAULTBASEURL."/userfriends.php?id=$id>add comment</a>)");
 //  $r = mysql_query("SELECT id, friendid FROM friends WHERE userid=$CURUSER[id] AND friendid=$id AND confirmed='yes'") or sqlerr(__FILE__, __LINE__);
@@ -331,6 +373,7 @@ if ($user["showfriends"] == "yes")
 print(" - (<a href=".$DEFAULTBASEURL."/userfriends.php?id=$id>view friends</a>)\n");
 print("</p>\n");
 }
+}
 if ($CURUSER['id'] != $user['id'])
 print(" - (<a href=/sharemarks.php?id=$id>view sharemarks</a>)</p>\n");
 
@@ -339,8 +382,8 @@ if ($user["anonymous"] == 'yes' && $CURUSER['class'] < UC_VIP)
 print("<table width=\"750\" border=1 cellspacing=0 cellpadding=5 class=main>");
 print("<tr><td colspan=\"2\" align=\"center\">The users profile is protected, because his/her status is anonymous !</td></tr>");
 if ($user["avatar"])
-print("<tr><td class=rowhead>Avatar</td><td align=left><a href=\"" . safechar($user["avatar"]) . "\" rel='lightbox' title=\"" . safechar($user["username"]) . "\" class=\"borderimage\" onMouseover=\"borderit(this,'black')\" onMouseout=\"borderit(this,'silver')\"><img src=\"" . safechar($user["avatar"]) . "\" width=150 title=\"" . safechar($user["username"]) . "\"></a></td></tr>\n");
-print("<tr><td class=rowhead>Class</td><td align=left><font color='#".get_user_class_color($user['class'])."'> ".get_user_class_name($user['class'])."  <img src=" . get_user_class_image($user["class"]) . " alt=" . get_user_class_name($user["class"]) . "> | ". safechar($user[title]) ."</td></tr>\n");
+print("<tr><td class=rowhead>Avatar</td><td align=left><a href=\"" . safeChar($user["avatar"]) . "\" rel='lightbox' title=\"" . safeChar($user["username"]) . "\" class=\"borderimage\" onMouseover=\"borderit(this,'black')\" onMouseout=\"borderit(this,'silver')\"><img src=\"" . safeChar($user["avatar"]) . "\" width=150 title=\"" . safeChar($user["username"]) . "\"></a></td></tr>\n");
+print("<tr><td class=rowhead>Class</td><td align=left><font color='#".get_user_class_color($user['class'])."'> ".get_user_class_name($user['class'])."  <img src=" . get_user_class_image($user["class"]) . " alt=" . get_user_class_name($user["class"]) . "> | ". safeChar($user[title]) ."</td></tr>\n");
 if ($user["info"])
 print("<tr valign=top><td align=left colspan=2 class=text bgcolor=\"#777777\">" . format_comment($user["info"]) . "</td></tr>\n");
 print("<tr><td colspan=2 align=center><form method=get action=sendmessage.php><input type=hidden name=receiver value=" .
@@ -371,31 +414,39 @@ $hit_run_total = number_format($user["hit_run_total"]);
 ///////////////
 
 if ($CURUSER['id'] == $user['id'])
-     print('<h3><a href='.$DEFAULTBASEURL.'/my.php>Edit My Profile</a></h3>'.
+     print('<h3><a href='.$DEFAULTBASEURL.'/usercp.php>Edit My Profile</a></h3>'.
 '<h3><a href='.$DEFAULTBASEURL.'/friends.php#pending>Unconfirmed Friends</a></h3>'.
         '<h3><a href=\'view_announce_history.php\'>View My Announcements</a></h3>');
 begin_main_frame();
 ?>
-
 <table width=100% border=1 cellspacing=0 cellpadding=5>
 <?php /* flush all torrents mod */
+if ($user["id"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR)
+{
 $un= $user["username"];
 ?>
 <tr><td class=rowhead width=1%>Flush&nbsp;Torrents</td><td align=left width=99%><?print("<h0>Flush&nbsp;Torrents, <a href=flush.php?id=$id>$un</a> ! Please note abuse will be flagged instantly - All flushes are logged !</h0>\n");?></td></tr>
 <tr><td class=rowhead width=1%>Join&nbsp;date</td><td align=left width=99%><?=$joindate?></td></tr>
 <tr><td class=rowhead>Last&nbsp;seen</td><td align=left><?=$lastseen?></td></tr>
-<?
+<tr><td class=rowhead width=1%>Elapsed&nbsp;from&nbsp;login</td><td align=left width=99%><?=safeChar($onlinetime)?></td></tr>
+<tr><td class=rowhead width=1%>Total&nbsp;time&nbsp;online</td><td align=left width=99%><?=safeChar($lapsetime)?></td></tr>
+<?}
+if ($user["id"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR)
+{
 if ($user['port'] != 0) { ?>
-<tr><td class=rowhead>Port</font></td><td class=tablea align=left><?=htmlentities($user['port'])?></td></tr>
-<tr><td class=rowhead>Client</font></td><td class=tablea align=left><?=htmlentities($user['agent'])?></td></tr>
-<? }
-if (get_user_class() >= UC_MODERATOR)
-  print("<tr><td class=rowhead>Email</td><td align=left><a href=mailto:$user[email]>$user[email]</a></td></tr>\n");
-if (get_user_class() >= UC_MODERATOR)
-print("<tr><td class=rowhead width=1%>Warning&nbsp;Level</td><td align=left width=99%>$user[warns]</td></tr>\n");
-
+<tr><td class=rowhead>Port</font></td><td class=tablea align=left><?=safeChar($user['port'])?></td></tr>
+<tr><td class=rowhead>Client</font></td><td class=tablea align=left><?=safeChar($user['agent'])?></td></tr>
+<? }}
+if ($user["id"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR)
+{
+print("<tr><td class=rowhead>Age</td><td align=left>".safeChar($age)."</td></tr>\n");
+$birthday = date("Y-m-d", strtotime($birthday));
+print("<tr><td class=rowhead>Birthdate</td><td align=left>$birthday</td></tr>\n");
+print("<tr><td class=rowhead>Warning Level</td><td align=left>".get_user_warns_image($user['warns'])."</td></tr>\n");
+print("<tr><td class=rowhead>Email</td><td align=left><a href=mailto:$user[email]>$user[email]</a></td></tr>\n");
 if ($addr)
   print("<tr><td class=rowhead>Address</td><td align=left>$addr</td></tr>\n");
+}
 if (get_user_class() >= UC_MODERATOR) {
     $resip = sql_query("SELECT ip FROM iplog WHERE userid =$id GROUP BY ip") or sqlerr(__FILE__, __LINE__);
     $iphistory = mysql_num_rows($resip);
@@ -525,9 +576,18 @@ if ($user["downloaded"] > 0)
 print("<tr><td class=rowhead style='vertical-align: middle'>Share ratio</td><td align=left valign=center style='padding-top: 1px; padding-bottom: 0px'>$sr</td></tr>\n");
 }
 }
+foreach($mood as $key => $value)
+    $change[$value['id']]=array('id' => $value['id'], 'name' => $value['name'], 'image' => $value['image']);
+$mooduname = $change[$user['mood']]['name'];
+$moodupic = $change[$user['mood']]['image'];  
+?>
+<tr><td class='rowhead'>Current Mood</td><td align='left'><span class='tool'><img src='<?php echo $pic_base_url;?>smilies/<?php echo  safe($moodupic);?>' alt='' border='0' /><span class='tip'><?php echo safe($user['username']);?> <?php echo  safe($mooduname);?>!</span></span></td></tr>
+<?php
+
 $res5 = sql_query("SELECT connectable FROM peers WHERE userid=$user[id]")or sqlerr(__FILE__, __LINE__);
 if($row = mysql_fetch_row($res5)){
 $connect = $row[0];
+if (get_user_class() >= UC_MODERATOR)
 if($connect == "yes"){
 $connectable = "<a title='well done good connection'><b><font color=green>Sorted - Your Port Is Open</a></font></b>";
 }else{
@@ -536,7 +596,8 @@ $connectable = "<b><a title='need to fix this goto irc for help'><font color=red
 }else{
 $connectable ="<b><a title='Unknown connection still'><font color=blue>Waiting</font></a></b>";
 }
-?><tr><td class=rowhead>connectable</font></td><td align=left><?=$connectable?></td></tr>
+?>
+<tr><td class=rowhead>connectable</font></td><td align=left><?=$connectable?></td></tr>
 <?
 if($user["download"] != 0){
 foreach ($speed as $key => $value)
@@ -553,28 +614,18 @@ if($user["upload"] == $key)
   $ulspeed = $value;
 tr("Upload speed", "<img src=\"pic/up_speed.png\" title=\"Upload speed: ".$ulspeed."\" alt=\"Upload speed: ".$ulspeed."\"> ".$ulspeed, 1);
 }
-$speedu = mysql_query("SELECT sum(((p.uploaded - p.uploadoffset )) / (
-unix_timestamp(p.last_action) - unix_timestamp(p.started))) AS speed FROM peers p INNER
-JOIN users u ON p.userid=u.id WHERE u.id=$user[id]");
-$tu=mysql_fetch_array($speedu);
-$speeduu = mksize($tu["speed"])or sqlerr(__FILE__, __LINE__);
-$speedd = mysql_query("SELECT sum(((p.downloaded - p.downloadoffset )) / (
-unix_timestamp(p.last_action) - unix_timestamp(p.started))) AS speed FROM peers p INNER
-JOIN users u ON p.userid=u.id WHERE u.id=$user[id]");
-$td=mysql_fetch_array($speedd);
-$speeddd = mksize($td["speed"])or sqlerr(__FILE__, __LINE__);
-if ($user["download"] != "")
-if ($user["upload"] != "")
-print("<tr><td class=rowhead>Speed</font></td><td
-align=left> <img src=/pic/down_speed.png alt=\"Download\" style='margin-left: 8Pt'> $speeddd  <img src=/pic/up_speed.png alt=\"Upload\" style='margin-left: 8Pt'> $speeduu  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Set:</b>$dlspeed $ulspeed</td></tr>\n");
+
 //=== Karma bonus points
+if (get_user_class() >= UC_MODERATOR)
 print("<tr><td class=rowhead><b>Karma Points</b></td><td colspan=2 align=left>" . safechar($user[seedbonus]) . "</tr></td>\n");
 //===end
+if (get_user_class() >= UC_MODERATOR)
 print("<tr><td class=rowhead>Freeleech Slots</td><td align=left>" . safechar($user['freeslots']) . "</td></tr>\n");
 if ($user["avatar"])
 print("<tr><td class=rowhead>Avatar</td><td align=left><a href=\"" . htmlspecialchars($user["avatar"]) . "\" rel='lightbox' title=\"" . htmlspecialchars($user["username"]) . "\" class=\"borderimage\" onMouseover=\"borderit(this,'black')\" onMouseout=\"borderit(this,'silver')\"><img src=\"" . htmlspecialchars($user["avatar"]) . "\" width=150 title=\"" . htmlspecialchars($user["username"]) . "\"></a></td></tr>\n");
 if ($user["signature"])
 print("<tr><td class=rowhead>Signature</td><td align=left>". format_comment($user["signature"]) ."</td></tr>\n");
+if (get_user_class() >= UC_MODERATOR)
 if ($user[title])
 print("<tr><td class=rowhead>Class</td><td align=left><font color='#".get_user_class_color($user['class'])."'> ".get_user_class_name($user['class'])."  <img src=" . get_user_class_image($user["class"]) . " alt=" . get_user_class_name($user["class"]) . "> | ". safechar($user[title]) ."</td></tr>\n");
 else
@@ -616,6 +667,8 @@ print("<td align=left><a href=userhistory.php?action=viewposts&id=$user[id]>$for
 }
 else
     print("<td align=left>$forumposts</td></tr>\n");
+if ($CURUSER["id"] == $user["id"] || get_user_class() >= UC_MODERATOR)
+print("<tr><td class=rowhead>Profile views</td><td align=left><a href=userhits.php?id=$id>".number_format($user["hits"])."</a></td></tr>\n"); // replace $user["hits"] with $userhits if you do NOT use the cleanup code
 if (get_user_class() >= UC_MODERATOR && $user[invites] > 0 || $user["id"] == $CURUSER["id"] && $user[invites] > 0)
 print("<tr><td class=rowhead>Invites</td><td align=left><a href=invite.php>$user[invites]</a></td></tr>\n");
 if (get_user_class() >= UC_MODERATOR && $user[invitedby] > 0 || $user["id"] == $CURUSER["id"] && $user[invitedby] > 0)
@@ -871,7 +924,7 @@ if (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class())
 	    print("<option value=$i" . ($user["class"] == $i ? " selected" : "") . ">$prefix" . get_user_class_name($i) . "\n");
 	  print("</select></td></tr>\n");
 	}
-    //===Fls mod
+	//===Fls mod
     $supportfor = safechar($user["supportfor"]);
     print("<tr><td class=rowhead>Support</td><td colspan=2 align=left><input type=radio name=support value=yes" .($user["support"] == "yes" ? " checked" : "").">Yes <input type=radio name=support value=no" .($user["support"] == "no" ? " checked" : "").">No</td></tr>\n");
     print("<tr><td class=rowhead>Support for:</td><td colspan=2 align=left><textarea cols=60 rows=6 name=supportfor>$supportfor</textarea></td></tr>\n");
@@ -886,13 +939,12 @@ if (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class())
     //=== Karma bonus
     if (get_user_class() >= UC_SYSOP)
     print("<tr><td align=right><b>Karma Bonus:</b></td><td colspan=2 align=left><input type=text size=5 name=seedbonus value=\"" . safechar($user[seedbonus]) . "\"></tr>\n");
-    
     ///////////Freeslots by pdq
     if (get_user_class() >= UC_ADMINISTRATOR)
     print("<tr><td class=rowhead>Freeleech Slots:</td><td colspan=2 align=left> <input type=text size=6 name=freeslots value=\"" . safechar($user[freeslots]) . "\"></td></tr>\n");
 		/////////////////////safe mod comment/////////
 		$modcomment = safechar($user["modcomment"]);
-        if (get_user_class() < UC_SYSOP) {
+        if (get_user_class() < UC_CODER) {
         print("<tr><td class=rowhead>Comment</td><td colspan=2 align=left><textarea cols=60 rows=6 name=modcomment READONLY>$modcomment</textarea></td></tr>\n");
         }
         else {
@@ -916,10 +968,20 @@ if (get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class())
         }else{
         print("<td class=\"row1\" colspan=\"2\">Not warned.</td></tr>\n");
         }
-        //End//////////////////////////////////////////////////////////////////   
+        print("<tr><td class=rowhead>Override Auto Warns</td><td colspan=2 align=left><input type=radio name=warned value=yes" .($user["warned"]=="yes" ? " checked" : "") . ">Yes <input type=radio name=warned value=no" .($user["warned"]=="no" ? " checked" : "") . ">No</td></tr>\n");
+		//End//////////////////////////////////////////////////////////////////   
+        if ($CURUSER["class"] < UC_SYSOP)
+        print("<input type=\"hidden\" name=\"highspeed\" value=$user[highspeed]>\n");
+        else
+        {
+        print("<tr><td class=rowhead>High Speed??</td><td class=row1 colspan=2 align=left><input type=radio name=highspeed value=yes" .($user["highspeed"]=="yes" ? " checked" : "") . ">Yes        <input type=radio name=highspeed value=no" .($user["highspeed"]=="no" ? " checked" : "") . ">No</td></tr>\n");
+        }
         ////////////webseeder
         print("<tr><td class=rowhead>Webseeder?</td><td colspan=2 align=left><input type=radio name=webseeder value=yes" .($user["webseeder"]=="yes" ? " checked" : "") . ">Yes <input type=radio name=webseeder value=no" .($user["webseeder"]=="no" ? " checked" : "") . ">No<br>This is needed, if the member has a box once checked it will show highspeed torrent image on browse once you set it !</td></tr>\n");
         /////////////////////// 
+        //=== Reset Hit And Runs
+        if (get_user_class() >= UC_ADMINISTRATOR)
+        print("<tr><td align=right><b>Reset Hit+Runs:</b></td><td colspan=2 align=left><input type=text size=5 name=hit_run_total value=\"" . safechar($user[hit_run_total]) . "\"></tr>\n");
 ///////////////new percentage warning system////////////  
 if(get_user_class() >= UC_ADMINISTRATOR)
 print("<tr><td class=rowhead>Immune?</td><td colspan=2 align=left><input type=radio name=immun value=yes" .($user["immun"] == "yes" ? " checked" : "").">Yes <input type=radio name=immun value=no" .($user["immun"] == "no" ? " checked" : "").">No<br />You can immunize this user against warnings/ download disablement!</td></tr>\n");
@@ -994,9 +1056,10 @@ print("<input type=\"hidden\" name=\"immun\" value=\"$user[immun]\">\n");
                 "\" /></td></tr>\n");
   print("<tr><td class=rowhead>Amount Downloaded</td><td colspan=2 align=left>".
                 "<input type=text size=40 name=downloaded value=\"".safechar($user["downloaded"]).
-                "\" />&nbsp;bytes<input type=hidden name=downloadbase value=\"".safechar($user["downloaded"]).
+                "\" />&nbsp;bytes<input type=hidden name=downloadbase value=\"".safeChar($user["downloaded"]).
                 "\" /></td></tr>\n");
   if ($CURUSER['class'] >=  UC_MODERATOR){
+  echo'<br><a class=altlink href=adminbookmarks.php> Admin Bookmarks?</a>';
   echo'<br><a class=altlink href=badratio.php?done=no> Bad ratio users ?</a>';
   echo'<br><a class=altlink href=snatchleave.php?done=no> Snatch and Leave ?</a>';
   ////////////////////////
@@ -1056,6 +1119,18 @@ function togglediv()
     print("Max Leeches: <input type=\"text\" size=\"2\" maxlength=\"2\" name=\"maxleeches\" value=\"" . ($user["tlimitleeches"] > 0?$user["tlimitleeches"]:"") . "\">");
     print("Limits: <input type=\"text\" size=\"2\" maxlength=\"2\" name=\"maxtotal\" value=\"" . ($user["tlimitall"] > 0?$user["tlimitall"]:"") . "\">");
     print("</div></td></tr>\n");
+    /////////////////////////flood protection by Retro
+    print("<tr><td class=rowhead>PM Limit</td><td colspan=2 align=left>".
+    "<input type=text  maxlength=3 size=3 name=pm_max value=\"".htmlspecialchars($user['pm_max']).
+    "\" /> (Max 255)  -  CCVal: ".htmlspecialchars($user['pm_count'])."</td></tr>\n");
+
+    print("<tr><td class=rowhead>Post Limit</td><td colspan=2 align=left>".
+    "<input type=text  maxlength=3 size=3 name=post_max value=\"".htmlspecialchars($user['post_max']).
+    "\" /> (Max 255)  -  CCVal: ".htmlspecialchars($user['post_count'])."</td></tr>\n");
+
+    print("<tr><td class=rowhead>Comment Limit</td><td colspan=2 align=left>".
+    "<input type=text  maxlength=3 size=3 name=comment_max value=\"".htmlspecialchars($user['comment_max']).
+    "\" /> (Max 255)  -  CCVal: ".htmlspecialchars($user['comment_count'])."</td></tr>\n");
   print("</td></tr>");
   print("<tr><td colspan=3 align=center><input type=submit class=btn value='Okay'></td></tr>\n");
   print("</table>\n");
@@ -1064,5 +1139,4 @@ function togglediv()
 }
 end_main_frame();
 stdfoot();
-
 ?>

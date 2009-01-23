@@ -1,8 +1,7 @@
 <?php
+//print_r($_POST);exit();
 require_once("include/bittorrent.php");
-require_once ("include/user_functions.php");
-require_once ("include/bbcode_functions.php");
-
+require_once "include/user_functions.php";
 $sha=sha1($_SERVER['REMOTE_ADDR']);
 if(is_file(''.$dictbreaker.'/'.$sha) && filemtime(''.$dictbreaker.'/'.$sha)>(time()-8)){
 @fclose(@fopen(''.$dictbreaker.'/'.$sha,'w'));
@@ -19,12 +18,13 @@ session_start();
 }
 
 dbconn();
+maxcoder();
 
 function bark($text) 
 { 
 print("<title>Error!</title>"); 
 print("<table width='100%' height='100%' style='border: 8px ridge #000000'><tr><td align='center'>"); 
-print("<center><h1 style='color: orange;'>Error:</h1><h2>" . htmlspecialchars($text) . "</h2></center>"); 
+print("<center><h1 style='color: #CC3300;'>Error:</h1><h2>" . htmlspecialchars($text) . "</h2></center>"); 
 print("<center><INPUT TYPE='button' VALUE='Back' onClick=\"history.go(-1)\"></center>"); 
 print("</td></tr></table>"); 
 die; 
@@ -44,7 +44,7 @@ sql_query("INSERT INTO loginattempts (ip, added, attempts) VALUES ($ip, $added, 
 else
 sql_query("UPDATE loginattempts SET attempts = attempts + 1 where ip=$ip") or sqlerr(__FILE__, __LINE__);
 @fclose(@fopen(''.$dictbreaker.'/'.sha1($_SERVER['REMOTE_ADDR']),'w'));
-bark("Incorrect User Name !");
+bark();
 
 }
 
@@ -61,11 +61,12 @@ $to = ($row["id"]);
 $msg = "[color=red]SECURITY[/color]\n Account: ID=".$row['id']." Somebody (probably you, ".$username."!) tried to login but failed!". "\nTheir [b]IP ADDRESS [/b] was : ". $ip . " (". @gethostbyaddr($ip) . ")". "\n If this wasn't you please report this event to a staff \n - Thank you.\n";
 $sql = "INSERT INTO messages (sender, receiver, msg, added) VALUES('$from', '$to', ". sqlesc($msg).", $added);";
 $res = sql_query($sql) or sqlerr(__FILE__, __LINE__);
-bark("Incorrect Password !");
+
+bark();
 }
 
 if ($row["passhash"] != md5($row["secret"] . $password . $row["secret"]))
-	bark("Incorrect Passhash - Cheating Are We ?");
+	bark();
 
 if ($row["enabled"] == "no")
 	bark("This account has been disabled.");
@@ -75,7 +76,7 @@ logincookie($row["id"], $passh);
 
 $ip = sqlesc(getip());
 sql_query("DELETE FROM loginattempts WHERE ip = $ip");
-sql_query("UPDATE users SET onlinetime=".sqlesc($dt)." WHERE id=".$row['id']);// or die(mysql_error());
+
 if (!empty($_POST["returnto"]))
 	header("Location: $_POST[returnto]");
 else

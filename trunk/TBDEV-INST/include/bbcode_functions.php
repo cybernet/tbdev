@@ -386,6 +386,267 @@ $badwords = array("asshole" => "<img src=pic/censored.png>",
 "ass wipes" =>"<img src=pic/censored.png>",
 );
 
+function highlight_sql($string)
+{
+        $aKeywords = array(); 
+
+        // SQL syntax
+        $aKeywords[] = array('and', true); // keyword name (any string [a-zA-Z0-9_], or any character), keyword to next line (true or false, default: false), css class (default: 'keyword')
+        $aKeywords[] = array('asc', false);
+        $aKeywords[] = array('binary', false);
+        $aKeywords[] = array('by', false);
+        $aKeywords[] = array('delete', true);
+        $aKeywords[] = array('desc', false);
+        $aKeywords[] = array('having', true);
+        $aKeywords[] = array('group', true);
+        $aKeywords[] = array('insert', true);
+        $aKeywords[] = array('in', true);
+        $aKeywords[] = array('into', false);
+        $aKeywords[] = array('left', false);
+        $aKeywords[] = array('like', false);
+        $aKeywords[] = array('limit', true);
+        $aKeywords[] = array('order', true);
+        $aKeywords[] = array('or', true);
+        $aKeywords[] = array('right', false);
+        $aKeywords[] = array('select', true);
+        $aKeywords[] = array('table', true);
+        $aKeywords[] = array('alter', true);
+        $aKeywords[] = array('set', true);
+        $aKeywords[] = array('values', true);
+        $aKeywords[] = array('where', true);
+        $aKeywords[] = array('xor', true);
+
+        // Operators
+        $aKeywords[] = array('+', false, 'operator');
+        $aKeywords[] = array('-', false, 'operator');
+        $aKeywords[] = array('*', false, 'operator');
+        $aKeywords[] = array('/', false, 'operator');
+        $aKeywords[] = array('%', false, 'operator');
+        $aKeywords[] = array('.', false, 'operator');
+        $aKeywords[] = array(',', false, 'operator');
+
+        $aKeywords[] = array('true', false, 'red');
+        $aKeywords[] = array('false', false, 'red');
+        $aKeywords[] = array('null', false, 'red');
+        $aKeywords[] = array('unkown', false, 'red');
+        $aKeywords[] = array(';', false, 'red');
+        
+        $aKeywords[] = array('distinct', true, 'green');
+        $aKeywords[] = array('as', false, 'green');
+        $aKeywords[] = array('from', false, 'green');
+        $aKeywords[] = array('join', false, 'green');
+        
+        $aKeywords[] = array('<', false, 'orange');
+        $aKeywords[] = array('>', false, 'orange');
+        $aKeywords[] = array('=', false, 'orange');
+        $aKeywords[] = array('on', false, 'orange');
+        $aKeywords[] = array('group', false, 'orange');
+
+        // Split query into pieces (quoted values, ticked values, string and/or numeric values, and all others).
+        $expr = '/(\'((\\\\.)|[^\\\\\\\'])*\')|(\`((\\\\.)|[^\\\\\\\`])*\`)|([a-z0-9_]+)|([\s\n]+)|(.)/i';
+        preg_match_all($expr, $string, $matches);
+
+        // Use a buffer to build up lines.
+        $buffer = '';
+        
+        // Keep track of brackets to indent/outdent
+        $iTab = 0;
+
+        for($i = 0; $i < sizeof($matches[0]); $i++)
+        {
+            if(strcasecmp($match = $matches[0][$i], "") !== 0)
+            {
+                if(in_array($match, array("(", ")"))) // Bracket found
+                {
+                    $buffer = trim($buffer);
+
+                    if(strlen($buffer) > 0)
+                    {
+                        $result .= $buffer . '<br>';
+                    }
+
+                    $buffer = '';
+
+                    if(strcasecmp($match, ")") === 0)
+                    {
+                        $iTab--;
+
+                        if($iTab < 0)
+                        {
+                            $iTab = 0;
+                        }
+
+                        $result .= str_repeat('&nbsp;', 4 * $iTab) . '<span class="bracket">' . htmlentities($match) . '</span><br>';
+                    }
+                    else // if(strcasecmp($match, "(") === 0)
+                    {
+                        $result .= str_repeat('&nbsp;', 4 * $iTab) . '<span class="bracket">' . htmlentities($match) . '</span><br>';
+                        $iTab++;
+                    }
+                }
+                elseif(preg_match('/^[\s\n]+$/', $match)) // Space character(s)
+                {
+                    if(strlen($buffer) === 0)
+                    {
+                        // Ignore space character(s)!
+                    }
+                    else
+                    {
+                        $buffer .= ' ';
+                    }
+                }
+                else
+                {
+                    $aKeyword = false;
+
+                    for($j = 0; $j < sizeof($aKeywords); $j++)
+                    {
+                        if(strcasecmp($match, $aKeywords[$j][0]) === 0)
+                        {
+                            $aKeyword = $aKeywords[$j];
+                            break;
+                        }
+                    }
+
+                    if($aKeyword) // Keyword found
+                    {
+                        if(isset($aKeyword[1]) && $aKeyword[1] === true) // Keyword to next line
+                        {
+                            $buffer = trim($buffer);
+
+                            if(strlen($buffer) > 0)
+                            {
+                                $result .= $buffer . '<br>';
+                            }
+
+                            $buffer = ''; 
+                        }
+
+                        if(strlen($buffer) === 0) // Indent
+                        {
+                            $buffer .= str_repeat('&nbsp;', 4 * $iTab); 
+                        }
+
+                        $buffer .= '<span class="' . (isset($aKeyword[2]) ? $aKeyword[2] : 'keyword') . '">' . htmlentities(strtoupper($match)) . '</span>';
+                    }
+                    else
+                    {
+                        if(strlen($buffer) === 0) // Indent
+                        {
+                            $buffer = str_repeat('&nbsp;', 4 * $iTab);
+                        }
+
+                        if((strcasecmp(substr($match, 0, 1), "'") === 0) || is_numeric($match)) // Quoted value or number
+                        {
+                            $buffer .= '<span class="red">' . htmlentities($match) . '</span>';
+                        }
+                        elseif((strcasecmp(substr($match, 0, 1), "`") === 0) || preg_match('/[a-z0-9_]+/i', $match)) // Ticked value or unquoted string (table/column name?!)
+                        {
+                            $buffer .= '<span class="ticked">' . htmlentities($match) . '</span>';
+                        }
+                        else // All other chars
+                        {
+                            $buffer .= htmlentities($match);
+                        }
+                    }
+                }
+            }
+        }
+
+        $buffer = trim($buffer);
+
+        if(strlen($buffer) > 0)
+        {
+            $result .= $buffer;
+        }
+
+        return '<div class="codetop">SQL</div><code class="sql">' . $result . '</code>';
+}
+
+function htmlspecialchars2( $s ) 
+{ 
+    static $patterns, $replaces; 
+     
+    if( !$patterns ){ 
+
+        $patterns = array( '#&lt;#', '#&gt;#', '#&amp;#', '#&quot;#' );
+        $replaces = array( '<', '>', '&', '"' ); 
+    } 
+
+    return preg_replace( $patterns, $replaces, $s ); 
+}
+
+function php( $test )
+{
+    $bTags = true;
+    if (   ( strpos( $test, "<?" ) === false )
+        && ( strpos( $test, "?>" ) === false ) ) {
+        $test = "<?php".$test."?>";
+        $bTags = false;
+    }
+    ob_start();
+    highlight_string($test);
+    $sRetVal = ob_get_contents();
+    ob_end_clean();
+
+    if ( $bTags == false ) {
+        $sRetVal = str_replace( "&lt;?php", "", $sRetVal );
+        $sRetVal = str_replace( "?&gt;", "", $sRetVal );
+    }
+
+    $sRetVal = str_replace( "\n", "", $sRetVal );
+    $sRetVal = str_replace( "<br />", "", $sRetVal );
+
+    return $sRetVal;
+}
+
+function highlight_html($code) { //HTML highlighting. Standard colors, or editable via Admin CP? Going standard at the moment 
+     
+        //coloring is a steady horse 
+         
+        // fikser highlight på vanlige tagger 
+        $code = preg_replace("#&lt;(.+?)&gt;#is", "<span style=\"color:#000099;\">&lt;\\1&gt;</span>", $code);  
+         
+        // <a>-taggen 
+        $code = preg_replace("#&lt;a(.+?)&gt;(.+?)&lt;/a&gt;#is", "<span style=\"color:#006600;\">&lt;a\\1&gt;</span>\\2<span style=\"color:#006600;\">&lt;/a&gt;</span>\n\r", $code);  
+         
+        // <img>-taggen 
+        $code = preg_replace("#&lt;img(.+?)&gt;#is", "<span style=\"color:#990099;\">&lt;img\\1&gt;</span>", $code); 
+         
+        // <input>-taggen 
+        $code = preg_replace("#&lt;input(.+?)&gt;#is", "<span style=\"color:#FF9900;\">&lt;input\\1&gt;</span>", $code); 
+         
+        // <style> 
+        $code = preg_replace("#&lt;style&gt;(.+?)&lt;/style&gt;#is", "<span style=\"color:#990099;\">&lt;style&gt;</span>\\1<span style=\"color:#990099\">&lt;/style&gt;</span>", $code); 
+         
+        // <!-- og --> 
+        $code = preg_replace("#&lt;!--(.+?)--&gt;#is", "<span style=\"color:#999999;\">&lt;!--\\1--&gt;</span>", $code); 
+         
+        // <script> med lukking 
+        $code = preg_replace("#&lt;script(.+?)&gt;(.+?)&lt;/script&gt;#is", "<span style=\"color:#990000;\">&lt;script\\1&gt;</span>\\2<span style=\"color:#990000;\">&lt;/script&gt</span>", $code); 
+         
+        // <script> uten lukking 
+        $code = preg_replace("#&lt;script(.+?)&gt;#is", "<span style=\"color:#990000;\">&lt;script\\1&gt;</span>", $code); 
+         
+        // <form> 
+        $code = preg_replace("#&lt;form(.+?)&gt;#is", "<span style=\"color:#FF9900;\">&lt;form\\1&gt;</span>", $code); 
+         
+        // </form> 
+        $code = preg_replace("#&lt;/form(.+?)&gt;#is", "<span style=\"color:#FF9900;\">&lt;/form\\1&gt;</span>", $code); 
+         
+        // atributter på vanlige tagger 
+        function attr($match) { 
+            return htmlspecialchars("<" . $match[1] . " ") 
+            . preg_replace("#([a-z\-]+)=(&quot;.*?&quot;)($| |\n)#", "\\1=<span style=\"color:#0000FF;\">\\2</span>\\3", $match[2]) 
+            . htmlspecialchars(">"); 
+        } 
+         
+        $input = preg_replace_callback("#&lt;([a-z0-9]+) (([a-z\-]+=&quot;(.*?)&quot; *)*.*?)&gt;#is", 'attr', $input);  
+         
+        //indeed. 
+        return $code; 
+}
+
 //Finds last occurrence of needle in haystack
 //in PHP5 use strripos() instead of this
 function _strlastpos ($haystack, $needle, $offset = 0)
@@ -399,41 +660,47 @@ function _strlastpos ($haystack, $needle, $offset = 0)
 	}
 	return ($endPos >= 0) ? $endPos : false;
 }
-
+function format_urls($s)
+{
+return preg_replace(
+   "/(\A|[^=\]'\"a-zA-Z0-9])((http|ftp|https|ftps|irc):\/\/[^<>\s]+)/i",
+   "\\1<a target=_blank href=redir.php?url=\\2>\\2</a>", $s);
+}
 function format_quotes($s)
 {
-  while ($old_s != $s)
-  {
-  	$old_s = $s;
+   preg_match_all('/\\[quote.*?\\]/', $s, $result, PREG_PATTERN_ORDER);
+    $openquotecount = count($openquote = $result[0]);
+   preg_match_all('/\\[\/quote\\]/', $s, $result, PREG_PATTERN_ORDER);
+    $closequotecount = count($closequote = $result[0]);
 
-	  //find first occurrence of [/quote]
-	  $close = strpos($s, "[/quote]");
-	  if ($close === false)
-	  	return $s;
+   if ($openquotecount != $closequotecount) return $s; // quote mismatch. Return raw string...
 
-	  //find last [quote] before first [/quote]
-	  //note that there is no check for correct syntax
-	  $open = _strlastpos(substr($s,0,$close), "[quote");
-	  if ($open === false)
-	    return $s;
+   // Get position of opening quotes
+    $openval = array();
+   $pos = -1;
 
-	  $quote = substr($s,$open,$close - $open + 8);
+   foreach($openquote as $val)
+ $openval[] = $pos = strpos($s,$val,$pos+1);
 
-	  //[quote]Text[/quote]
-	  $quote = preg_replace(
-	    "/\[quote\]\s*((\s|.)+?)\s*\[\/quote\]\s*/i",
-	    "<p class=sub><b>Quote:</b></p><table class=main border=1 cellspacing=0 cellpadding=10><tr><td style='border: 1px black dotted'>\\1</td></tr></table><br>", $quote);
+   // Get position of closing quotes
+   $closeval = array();
+   $pos = -1;
 
-	  //[quote=Author]Text[/quote]
-	  $quote = preg_replace(
-	    "/\[quote=(.+?)\]\s*((\s|.)+?)\s*\[\/quote\]\s*/i",
-	    "<p class=sub><b>\\1 wrote:</b></p><table class=main border=1 cellspacing=0 cellpadding=10><tr><td style='border: 1px black dotted'>\\2</td></tr></table><br>", $quote);
+   foreach($closequote as $val)
+       $closeval[] = $pos = strpos($s,$val,$pos+1);
 
-	  $s = substr($s,0,$open) . $quote . substr($s,$close + 8);
-  }
 
-	return $s;
+   for ($i=0; $i < count($openval); $i++)
+ if ($openval[$i] > $closeval[$i]) return $s; // Cannot close before opening. Return raw string...
+
+
+    $s = str_replace("[quote]","<p class=sub><b>Quote:</b></p><table class=main border=1 cellspacing=0 cellpadding=10><tr><td style='border: 1px black dotted'>",$s);
+   $s = preg_replace("/\\[quote=(.+?)\\]/", "<p class=sub><b>\\1 wrote:</b></p><table class=main border=1 cellspacing=0 cellpadding=10><tr><td style='border: 1px black dotted'>", $s);
+   $s = str_replace("[/quote]","</td></tr></table><br>",$s);
+   return $s;
 }
+
+
 
 function format_comment($text, $strip_html = true)
 {
@@ -492,13 +759,10 @@ function format_comment($text, $strip_html = true)
     
                                                                                   "<tr><td bgcolor=green><b>\\1</b></td></tr>".
                                                                                     "</table>", $s);
-
-
-// [ codebox2]Some long text[/codebox2 ]
+// [ codebox]Some long text[/codebox ]
         $s = preg_replace(
     '/\[codebox\]\s*((\s|.)+?)\s*\[\/codebox\]\s*/i',
     '<div class="codetop">CODEBOX</div><div class="codemain" style="OVERFLOW: auto; WHITE-SPACE: pre; width: 100%; HEIGHT: 200px">\\1</div>', $s );
-
 // [ code]Some long text[/code ]
         $s = preg_replace(
     '/\[code\]\s*((\s|.)+?)\s*\[\/code\]\s*/i',
@@ -550,52 +814,34 @@ $s = preg_replace( "/\[sql\]((\s|.)+?)\[\/sql\]/ise", "''.highlight_sql(htmlspec
 	$s = preg_replace(
 		"/\[color=(#[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9])\]((\s|.)+?)\[\/color\]/i",
 		"<font color=\\1>\\2</font>", $s);
-   
-        // [url=http://www.example.com]Text[/url]
+    // [url=http://www.example.com]Text[/url]
         $s = preg_replace(
-        "/\[url=([^()<>\s]+?)\]((\s|.)+?)\[\/url\]/i",
-        "<a target=_blank href=redir.php?url=\\1>\\2</a>", $s);
-
-// [url=http://www.example.com]Text[/url]
-    $s = preg_replace(
-        "/\[url=([^()<>\s]+?)\]((\s|.)+?)\[\/url\]/i",
-        "<a target='_blank' href=\"\\1\">\\2 </a>", $s);
-
+                "/\[url=([^()<>\s]+?)\]((\s|.)+?)\[\/url\]/i",
+                "<a href=$DEFAULTBASEURL/redir.php?url=\\1>\\2</a>", $s);
         // [url]http://www.example.com[/url]
-       /*  $s = preg_replace(
-        "/\[url\]([^()<>\s]+?)\[\/url\]/i",
-        "<a target=_blank href=redir.php?url=\\1>\\1</a>", $s);*/
-
-
+        // Edited Sep 10 2006 hatamoto@hhole.com - limit URLs displayed to no larger than 60 characters, to kill sidescroll        
+       // Of course people can still use the [url=http://somewhere.com]description[/url] format unchanged.
+        while(preg_match("/\[url\]([^()<>\s]+?)\[\/url\]/i", $s, $match)) {
+                $realurl = $match[1];
+                $cleanurl = (strlen($realurl)>60) ? substr($realurl, 0, 60)."..." : $realurl;
+                $s = preg_replace(
+                        "/\[url\]([^()<>\s]+?)\[\/url\]/i",
+                        "<a href=$DEFAULTBASEURL/redir.php?url=$realurl>$cleanurl</a>", $s, 1);
+        }
 	// [size=4]Text[/size]
 	$s = preg_replace(
 		"/\[size=([1-7])\]((\s|.)+?)\[\/size\]/i",
 		"<font size=\\1>\\2</font>", $s);
 		
-		
-
 	// [font=Arial]Text[/font]
 	$s = preg_replace(
 		"/\[font=([a-zA-Z ,]+)\]((\s|.)+?)\[\/font\]/i",
 		"<font face=\"\\1\">\\2</font>", $s);
-
-//  //[quote]Text[/quote]
-//  $s = preg_replace(
-//    "/\[quote\]\s*((\s|.)+?)\s*\[\/quote\]\s*/i",
-//    "<p class=sub><b>Quote:</b></p><table class=main border=1 cellspacing=0 cellpadding=10><tr><td style='border: 1px black dotted'>\\1</td></tr></table><br>", $s);
-
-//  //[quote=Author]Text[/quote]
-//  $s = preg_replace(
-//    "/\[quote=(.+?)\]\s*((\s|.)+?)\s*\[\/quote\]\s*/i",
-//    "<p class=sub><b>\\1 wrote:</b></p><table class=main border=1 cellspacing=0 cellpadding=10><tr><td style='border: 1px black dotted'>\\2</td></tr></table><br>", $s);
-
 	// Quotes
 	$s = format_quotes($s);
-
 	// URLs
 	 $s = format_urls($s);
-                //$s = format_local_urls($s);
-
+    //$s = format_local_urls($s);
 	// Linebreaks
 	$s = nl2br($s);
 
@@ -617,12 +863,7 @@ $s = preg_replace( "/\[sql\]((\s|.)+?)\[\/sql\]/ise", "''.highlight_sql(htmlspec
                 $s = str_replace ("[hr]", "<hr>", $s);
                 // [center]
                 $s = preg_replace("/\[center\]((\s|.)+?)\[\/center\]/i", "<div align='center'><tt><nobr><font face='Verdana' size=2 style='font-size: 10pt; line-height: " .
-                "10pt'>\\1</font></nobr></tt></div>", $s);
-
-	//[spoiler]Text[/spoiler]
-                $s = preg_replace("/\[spoiler\]\s*((\s|.)+?)\s*\[\/spoiler\]\s*/i",
-                "<div><strong>Spoiler:</strong> (select text to read)</div> <div class=\"spoiler\">\\1</div>", $s);
-        
+                "10pt'>\\1</font></nobr></tt></div>", $s);       
                 // [s]Stroke[/s]
                 $s = preg_replace("/\[s\]((\s|.)+?)\[\/s\]/", "<s>\\1</s>", $s);  
 	             
@@ -640,7 +881,7 @@ $s = preg_replace( "/\[sql\]((\s|.)+?)\[\/sql\]/ise", "''.highlight_sql(htmlspec
      
      reset($customsmilies);
      while (list($code, $url) = each($customsmilies))
-     $s = str_replace($code, "<img border=0 src=\"/pic/smilies/$url\" alt=\"" . htmlspecialchars($code) . "\">", $s);
+	 $s = str_replace($code, "<img border=0 src=\"/pic/smilies/$url\" alt=\"" . htmlspecialchars($code) . "\">", $s);
 	 return $s;
      }
 
@@ -651,293 +892,453 @@ function get_smile()
   return $CURUSER["smile_until"];
 }
 
-function textbbcode($form,$name,$content="") {
+////////////new modified bbcode function - credits to original coder///////////////
+function textbbcode($form,$text,$content="") {
 ?>
-
 <script language=javascript>
-function SmileIT(smile,form,text){
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+" "+smile+" ";
-document.forms[form].elements[text].focus();
+var b_open = 0;
+var i_open = 0;
+var u_open = 0;
+var marquee_open = 0;
+var highlight_open = 0;
+var blink_open = 0;
+var php_open = 0;
+var sql_open = 0;
+var html_open = 0;
+var codebox_open = 0;
+var color_open = 0;
+var list_open = 0;
+var quote_open = 0;
+var html_open = 0;
+var mcom_open = 0;
+var s_open = 0;
+var myAgent = navigator.userAgent.toLowerCase();
+var myVersion = parseInt(navigator.appVersion);
+
+var is_ie = ((myAgent.indexOf("msie") != -1) && (myAgent.indexOf("opera") == -1));
+var is_nav = ((myAgent.indexOf('mozilla')!=-1) && (myAgent.indexOf('spoofer')==-1)
+&& (myAgent.indexOf('compatible') == -1) && (myAgent.indexOf('opera')==-1)
+&& (myAgent.indexOf('webtv') ==-1) && (myAgent.indexOf('hotjava')==-1));
+
+var is_win = ((myAgent.indexOf("win")!=-1) || (myAgent.indexOf("16bit")!=-1));
+var is_mac = (myAgent.indexOf("mac")!=-1);
+var bbtags = new Array();
+function cstat() {
+var c = stacksize(bbtags);
+if ( (c < 1) || (c == null) ) {c = 0;}
+if ( ! bbtags[0] ) {c = 0;}
+document.<?=$form?>.tagcount.value = "Close last, Open tags "+c;
+}
+function stacksize(thearray) {
+for (i = 0; i < thearray.length; i++ ) {
+if ( (thearray[i] == "") || (thearray[i] == null) || (thearray == 'undefined') ) {return i;}
+}
+return thearray.length;
+}
+function pushstack(thearray, newval) {
+arraysize = stacksize(thearray);
+thearray[arraysize] = newval;
+}
+function popstackd(thearray) {
+arraysize = stacksize(thearray);
+theval = thearray[arraysize - 1];
+return theval;
+}
+function popstack(thearray) {
+arraysize = stacksize(thearray);
+theval = thearray[arraysize - 1];
+delete thearray[arraysize - 1];
+return theval;
+}
+function closeall() {
+if (bbtags[0]) {
+while (bbtags[0]) {
+tagRemove = popstack(bbtags)
+if ( (tagRemove != 'color') ) {
+doInsert("[/"+tagRemove+"]", "", false);
+eval("document.<?=$form?>." + tagRemove + ".value = ' " + tagRemove + " '");
+eval(tagRemove + "_open = 0");
+} else {
+doInsert("[/"+tagRemove+"]", "", false);
+}
+cstat();
+return;
+}
+}
+document.<?=$form?>.tagcount.value = "Close last, Open tags 0";
+bbtags = new Array();
+document.<?=$form?>.<?=$text?>.focus();
+}
+function add_code(NewCode) {
+document.<?=$form?>.<?=$text?>.value += NewCode;
+document.<?=$form?>.<?=$text?>.focus();
+}
+function alterfont(theval, thetag) {
+if (theval == 0) return;
+if(doInsert("[" + thetag + "=" + theval + "]", "[/" + thetag + "]", true)) pushstack(bbtags, thetag);
+document.<?=$form?>.color.selectedIndex = 0;
+cstat();
+}
+function tag_url() {
+var FoundErrors = '';
+var enterURL = prompt("You must enter a URL", "http://");
+var enterTITLE = prompt("You must enter a title", "");
+if (!enterURL || enterURL=="") {FoundErrors += " " + "You must enter a URL,";}
+if (!enterTITLE) {FoundErrors += " " + "You must enter a title";}
+if (FoundErrors) {alert("Error!"+FoundErrors);return;}
+doInsert("[url="+enterURL+"]"+enterTITLE+"[/url]", "", false);
+}
+function tag_list() {
+var FoundErrors = '';
+var enterTITLE = prompt("Enter item of the list. For end of the list, press 'cancel' or leave the next field empty ", "");
+if (!enterTITLE) {FoundErrors += " " + "Enter item of the list. For end of the list, press 'cancel' or leave the next field empty";}
+if (FoundErrors) {alert("Error!"+FoundErrors);return;}
+doInsert("[*]"+enterTITLE+"", "", false);
+
+}
+function tag_image() {
+var FoundErrors = '';
+var enterURL = prompt("You must enter a full image URL", "http://");
+if (!enterURL || enterURL=="http://") {
+alert("Error!"+"You must enter a full image URL");
+return;
+}
+doInsert("[img]"+enterURL+"[/img]", "", false);
+}
+function tag_email() {
+var emailAddress = prompt("You must enter a E-mail", "");
+if (!emailAddress) {
+alert("Error!"+"You must enter a E-mail");
+return;
+}
+doInsert("[email]"+emailAddress+"[/email]", "", false);
+}
+function doInsert(ibTag, ibClsTag, isSingle)
+{
+var isClose = false;
+var obj_ta = document.<?=$form?>.<?=$text?>;
+if ( (myVersion >= 4) && is_ie && is_win) {
+if(obj_ta.isTextEdit){
+obj_ta.focus();
+var sel = document.selection;
+var rng = sel.createRange();
+rng.colapse;
+if((sel.type == "Text" || sel.type == "None") && rng != null){
+if(ibClsTag != "" && rng.text.length > 0)
+ibTag += rng.text + ibClsTag;
+else if(isSingle) isClose = true;
+rng.text = ibTag;
+}
+}
+else{
+if(isSingle) isClose = true;
+obj_ta.value += ibTag;
+}
+} else {
+if(isSingle) isClose = true;
+obj_ta.value += ibTag;
+}
+obj_ta.focus();
+// obj_ta.value = obj_ta.value.replace(/ /, " ");
+return isClose;
+}
+function em(theSmilie)
+{
+doInsert(" " + theSmilie + " ", "", false);
 }
 
-function PopMoreSmiles(form,name) {
-link='moresmiles.php?form='+form+'&text='+name
-newWin=window.open(link,'moresmile','height=500,width=450,resizable=no,scrollbars=yes');
-if (window.focus) {newWin.focus()}
+function winop()
+{
+windop = window.open("moresmiles.php?form=<?=$form?>&text=<?=$text?>","mywin","height=400,width=450,resizable=yes,scrollbars=yes");
 }
 
-//=== custom smilies
-function PopCustomSmiles(form,name) {
-link='moresmilies_custom.php?form='+form+'&text='+name
-newWin=window.open(link,'moresmile','height=600,width=400,resizable=yes,scrollbars=yes');
-if (window.focus) {newWin.focus()}
+function winop2()
+{
+windop = window.open("moresmilies_custom.php?form=<?=$form?>&text=<?=$text?>","mywin","height=400,width=450,resizable=yes,scrollbars=yes");
 }
 
-function PopMoreTags(form,name) {
-link='moretags.php?form='+form+'&text='+name
-newWin=window.open(link,'moresmile','height=500,width=775,resizable=no,scrollbars=yes');
-if (window.focus) {newWin.focus()}
+function simpletag(thetag)
+{
+var tagOpen = eval(thetag + "_open");
+if (tagOpen == 0) {
+if(doInsert("[" + thetag + "]", "[/" + thetag + "]", true))
+{
+eval(thetag + "_open = 1");
+eval("document.<?=$form?>." + thetag + ".value += '*'");
+pushstack(bbtags, thetag);
+cstat();
+}
+}
+else {
+lastindex = 0;
+for (i = 0; i < bbtags.length; i++ ) {
+if ( bbtags[i] == thetag ) {
+lastindex = i;
+}
 }
 
-
-function BBTag(tag,s,text,form){
-switch(tag)
-{
-case '[RED]':
-if (document.forms[form].elements[s].value=="RED ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[color=red]";
-document.forms[form].elements[s].value="RED*";
+while (bbtags[lastindex]) {
+tagRemove = popstack(bbtags);
+doInsert("[/" + tagRemove + "]", "", false)
+if ((tagRemove != 'COLOR') ){
+eval("document.<?=$form?>." + tagRemove + ".value = ' " + tagRemove + " '");
+eval(tagRemove + "_open = 0");
 }
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/color]";
-document.forms[form].elements[s].value="RED ";
 }
-break;
-case '[ORANGE]':
-if (document.forms[form].elements[s].value=="ORANGE ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[color=orange]";
-document.forms[form].elements[s].value="ORANGE*";
+cstat();
 }
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/color]";
-document.forms[form].elements[s].value="ORANGE ";
 }
-break;
-case '[YELLOW]':
-if (document.forms[form].elements[s].value=="YELLOW ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[color=yellow]";
-document.forms[form].elements[s].value="YELLOW*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/color]";
-document.forms[form].elements[s].value="YELLOW ";
-}
-break;
-case '[LIME GREEN]':
-if (document.forms[form].elements[s].value=="LIME GREEN ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[color=green]";
-document.forms[form].elements[s].value="LIME GREEN*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/color]";
-document.forms[form].elements[s].value="LIME GREEN ";
-}
-break;
-case '[PURPLE]':
-if (document.forms[form].elements[s].value=="PURPLE ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[color=purple]";
-document.forms[form].elements[s].value="PURPLE*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/color]";
-document.forms[form].elements[s].value="PURPLE ";
-}
-break;
-case '[PINK]':
-if (document.forms[form].elements[s].value=="PINK ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[color=pink]";
-document.forms[form].elements[s].value="PINK*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/color]";
-document.forms[form].elements[s].value="PINK ";
-}
-break;
-case '[WHITE]':
-if (document.forms[form].elements[s].value=="WHITE ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[color=white]";
-document.forms[form].elements[s].value="WHITE*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/color]";
-document.forms[form].elements[s].value="WHITE ";
-}
-break;
-case '[QUOTE]':
-if (document.forms[form].elements[s].value=="QUOTE ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[quote]";
-document.forms[form].elements[s].value="QUOTE*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/quote]";
-document.forms[form].elements[s].value="QTE ";
-}
-break;
-case '[IMAGE]':
-if (document.forms[form].elements[s].value=="IMAGE ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[img]";
-document.forms[form].elements[s].value="IMAGE*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/img]";
-document.forms[form].elements[s].value="IMAGE ";
-}
-break;
-case '[MARQUEE]':
-if (document.forms[form].elements[s].value=="MARQUEE ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[marquee]";
-document.forms[form].elements[s].value="MARQUEE*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/marquee]";
-document.forms[form].elements[s].value="MARQUEE ";
-}
-break;
-case '[HIGHLIGHT]':
-if (document.forms[form].elements[s].value=="HIGHLIGHT ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[highlight]";
-document.forms[form].elements[s].value="HIGHLIGHT*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/highlight]";
-document.forms[form].elements[s].value="HIGHLIGHT ";
-}
-break;
-case '[URL]':
-if (document.forms[form].elements[s].value=="URL ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[url]";
-document.forms[form].elements[s].value="URL*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/url]";
-document.forms[form].elements[s].value="URL ";
-}
-break;
-case '[*]':
-if (document.forms[form].elements[s].value=="LIST ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[*]";
-}
-break;
-case '[BOLD]':
-if (document.forms[form].elements[s].value=="BOLD ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[b]";
-document.forms[form].elements[s].value="BOLD*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/b]";
-document.forms[form].elements[s].value="BOLD ";
-}
-break;
-case '[ITALIC]':
-if (document.forms[form].elements[s].value=="ITALIC ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[i]";
-document.forms[form].elements[s].value="ITALIC*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/i]";
-document.forms[form].elements[s].value="ITALIC ";
-}
-break;
-case '[UNDERLINE]':
-if (document.forms[form].elements[s].value=="UNDERLINE ")
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[u]";
-document.forms[form].elements[s].value="UNDERLINE*";
-}
-else
-{
-document.forms[form].elements[text].value = document.forms[form].elements[text].value+"[/u]";
-document.forms[form].elements[s].value="UNDERLINE ";
-}
-break;
-}
-document.forms[form].elements[text].focus();
-}
-
 </script>
-
-
-<table width="650" style='margin: 3px' cellpadding="0" cellspacing="0">
-<tr>
-<td class=embedded colspan=2>
-<table cellpadding="2" cellspacing="1">
-<tr>
-<!-- <td width="100">BBCODE TAGS</td>-->
-<td class=embedded><input class=btn style="font-weight: bold;" type="button" name="bold" value="BOLD " onclick="javascript: BBTag('[BOLD]','bold','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn style="font-style: italic;" type="button" name="italic" value="ITALIC " onclick="javascript: BBTag('[ITALIC]','italic','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn style="text-decoration: underline;" type="button" name="underline" value="UNDERLINE " onclick="javascript: BBTag('[UNDERLINE]','underline','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="li" value="LIST " onclick="javascript: BBTag('[*]','li','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="quote" value="QUOTE " onclick="javascript: BBTag('[QUOTE]','quote','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="url" value="URL " onclick="javascript: BBTag('[URL]','url','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="img" value="IMAGE " onclick="javascript: BBTag('[IMAGE]','img','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="marquee" value="MARQUEE " onclick="javascript: BBTag('[MARQUEE]','marquee','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-</tr>
-
-
-<tr>
-<!-- <td width="100">FONT COLOR</td>-->
-<td class=embedded><input class=btn type="button" name="red" value="RED " onclick="javascript: BBTag('[RED]','red','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="orange" value="ORANGE " onclick="javascript: BBTag('[ORANGE]','orange','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="yellow" value="YELLOW " onclick="javascript: BBTag('[YELLOW]','yellow','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="lime" value="LIME GREEN " onclick="javascript: BBTag('[LIME GREEN]','lime','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="purple" value="PURPLE " onclick="javascript: BBTag('[PURPLE]','purple','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="pink" value="PINK " onclick="javascript: BBTag('[PINK]','pink','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="white" value="WHITE " onclick="javascript: BBTag('[WHITE]','white','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-<td class=embedded><input class=btn type="button" name="highlight" value="HIGHLIGHT " onclick="javascript: BBTag('[HIGHLIGHT]','highlight','<? echo $name; ?>','<? echo $form; ?>')" /></td>
-</tr>
-</table>
-</td>
-</tr>
-<tr>
-<td class=embedded>
-<textarea name="<? echo $name; ?>" rows="20" cols="102"><? echo $content; ?></textarea>
-</td>
-<td class=embedded>
-<table cellpadding="3" cellspacing="1">
 <?
-
-global $smilies, $BASEURL;
-while ((list($code, $url) = each($smilies)) && $count<32) {
-if ($count % 4==0)
-print("<tr>");
-
-print("\n<td class=embedded style='padding: 3px; margin: 2px'><a href=\"javascript: SmileIT('".str_replace("'","\'",$code)."','$form','$name')\"><img border=0 src=pic/smilies/".$url."></a></td>");
-$count++;
-
-if ($count % 4==0)
-print("</tr>");
-}
+print("<table width=600 cellspacing=0 cellpadding=5>\n");
 ?>
+<td colSpan="2">
+<table cellSpacing="1" cellPadding="2">
+<tr>
+<td class=embedded><input style="font-weight: bold;font-size:9px;" class=groovybutton2 type=button name="b" value="B" onClick="javascript: simpletag('b')" /></td>
+<td class=embedded><input class=groovybutton2 style="font-style: italic;font-size:9px;"  type=button name="i" value="I" onClick="javascript: simpletag('i')" /></td>
+<td class=embedded><input class=groovybutton2 style="text-decoration: underline;font-size:9px;" type=button name="u" value="U" onClick="javascript: simpletag('u')" /></td>
+<? 
+if (get_user_class() >= UC_POWER_USER) { ?>
+<td class=embedded><input class=groovybutton2 style="text-decoration: s;font-size:9px;" type=button name="s" value="Stroke" onClick="javascript: simpletag('s')" /></td>
+<td class=embedded><input class=groovybutton2 style="text-decoration: marquee;font-size:9px;" type=button name="marquee" value="Marquee" onClick="javascript: simpletag('marquee')" /></td>
+<td class=embedded><input class=groovybutton2 style="text-decoration: highlight;font-size:9px;" type=button name="highlight" value="Highlight" onClick="javascript: simpletag('highlight')" /></td>
+<td class=embedded><input class=groovybutton2 style="text-decoration: blink;font-size:9px;" type=button name="blink" value="Blink" onClick="javascript: simpletag('blink')" /></td>
+<table cellSpacing="1" cellPadding="2">
+<tr>
+<? } ?>
+<? 
+if (get_user_class() >= UC_SYSOP) { ?>
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button name="warning" value="Warning" onClick="javascript: simpletag('warning')" /></td>
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button name="mcom" value="ModCom" onClick="javascript: simpletag('mcom')" /></td>
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button name="php" value="Php" onClick="javascript: simpletag('php')" /></td>
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button name="sql" value="Sql" onClick="javascript: simpletag('sql')" /></td>
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button name="html" value="Html" onClick="javascript: simpletag('html')" /></td>
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button name="codebox" value="Codebox" onClick="javascript: simpletag('codebox')" /></td>
+<? } ?>
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button name='url' value='Url' onclick='tag_url()' />
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button  name="IMG" value="Img" onClick="javascript: tag_image()" /></td>
+<td class=embedded><input type=button class=groovybutton2 style="font-size:9px;" name="list" value="List" onClick="tag_list()" /></td>
+<td class=embedded><input class=groovybutton2 style="font-size:9px;" type=button name="quote" value="Quote" onClick="javascript: simpletag('quote')" /></td>
+<td class=embedded><input style="width:180" style="font-size:9px;" class=groovybutton2 type=button onclick='javascript:closeall();' name='tagcount' value="Close all tags">
 </table>
-<center><a href="javascript: PopMoreSmiles('<? echo $form; ?>','<? echo $name; ?>')"><? echo Smilies;?></a></center>
+</td>
+
+<table width=600 cellspacing=0 cellpadding=5>
+<td colSpan="2">
+<table cellSpacing="1" cellPadding="2">
+<tr>
+<td class=embedded><select name='color' class='codebuttons' onChange="alterfont(this.options[this.selectedIndex].value, 'color')">
+<option value='0'>------ Color -------</option>
+<option style="BACKGROUND-COLOR: black" value="Black">Black
+</option>
+<option style="BACKGROUND-COLOR: sienna" value="Sienna">
+Sienna</option>
+<option style="BACKGROUND-COLOR: darkolivegreen" value="DarkOliveGreen">
+Dark Olive Green</option>
+<option style="BACKGROUND-COLOR: darkgreen" value="DarkGreen">
+Dark Green</option>
+<option style="BACKGROUND-COLOR: darkslateblue" value="DarkSlateBlue">
+Dark Slate Blue</option>
+<option style="BACKGROUND-COLOR: navy" value="Navy">Navy
+</option>
+<option style="BACKGROUND-COLOR: indigo" value="Indigo">
+Indigo</option>
+<option style="BACKGROUND-COLOR: darkslategray" value="DarkSlateGray">
+Dark Slate Gray</option>
+<option style="BACKGROUND-COLOR: darkred" value="DarkRed">
+Dark Red</option>
+<option style="BACKGROUND-COLOR: darkorange" value="DarkOrange">
+Dark Orange</option>
+<option style="BACKGROUND-COLOR: olive" value="Olive">Olive
+</option>
+<option style="BACKGROUND-COLOR: green" value="Green">Green
+</option>
+<option style="BACKGROUND-COLOR: teal" value="Teal">Teal
+</option>
+<option style="BACKGROUND-COLOR: blue" value="Blue">Blue
+</option>
+<option style="BACKGROUND-COLOR: slategray" value="SlateGray">
+Slate Gray</option>
+<option style="BACKGROUND-COLOR: dimgray" value="DimGray">
+Dim Gray</option>
+<option style="BACKGROUND-COLOR: red" value="Red">Red
+</option>
+<option style="BACKGROUND-COLOR: sandybrown" value="SandyBrown">
+Sandy Brown</option>
+<option style="BACKGROUND-COLOR: yellowgreen" value="YellowGreen">
+Yellow Green</option>
+<option style="BACKGROUND-COLOR: seagreen" value="SeaGreen">
+Sea Green</option>
+<option style="BACKGROUND-COLOR: mediumturquoise" value="MediumTurquoise">
+Medium Turquoise</option>
+<option style="BACKGROUND-COLOR: royalblue" value="RoyalBlue">
+Royal Blue</option>
+<option style="BACKGROUND-COLOR: purple" value="Purple">
+Purple</option>
+<option style="BACKGROUND-COLOR: gray" value="Gray">Gray
+</option>
+<option style="BACKGROUND-COLOR: magenta" value="Magenta">
+Magenta</option>
+<option style="BACKGROUND-COLOR: orange" value="Orange">
+Orange</option>
+<option style="BACKGROUND-COLOR: yellow" value="Yellow">
+Yellow</option>
+<option style="BACKGROUND-COLOR: lime" value="Lime">Lime
+</option>
+<option style="BACKGROUND-COLOR: cyan" value="Cyan">Cyan
+</option>
+<option style="BACKGROUND-COLOR: deepskyblue" value="DeepSkyBlue">
+Deep Sky Blue</option>
+<option style="BACKGROUND-COLOR: darkorchid" value="DarkOrchid">
+Dark Orchid</option>
+<option style="BACKGROUND-COLOR: silver" value="Silver">
+Silver</option>
+<option style="BACKGROUND-COLOR: pink" value="Pink">Pink
+</option>
+<option style="BACKGROUND-COLOR: wheat" value="Wheat">Wheat
+</option>
+<option style="BACKGROUND-COLOR: lemonchiffon" value="LemonChiffon">
+Lemon Chiffon</option>
+<option style="BACKGROUND-COLOR: palegreen" value="PaleGreen">
+Pale Green</option>
+<option style="BACKGROUND-COLOR: paleturquoise" value="PaleTurquoise">
+Pale Turquoise</option>
+<option style="BACKGROUND-COLOR: lightblue" value="LightBlue">
+Light Blue</option>
+<option style="BACKGROUND-COLOR: plum" value="Plum">Plum
+</option>
+<option style="BACKGROUND-COLOR: white" value="White">White
+</option>
+</select>
+<td class=embedded>
+<select name='font' class='codebuttons' onChange="alterfont(this.options[this.selectedIndex].value, 'font')">
+<option value='0'>--------- Font ---------</option>
+<option value="Arial">Arial</option>
+<option value="Arial Black">Arial Black</option>
+<option value="Arial Narrow">Arial Narrow</option>
+<option value="Book Antiqua">Book Antiqua</option>
+<option value="Century Gothic">Century Gothic</option>
+<option value="Comic Sans MS">Comic Sans MS</option>
+<option value="Courier New">Courier New</option>
+<option value="Fixedsys">Fixedsys</option>
+<option value="Franklin Gothic Medium">Franklin Gothic
+Medium</option>
+<option value="Garamond">Garamond</option>
+<option value="Georgia">Georgia</option>
+<option value="Impact">Impact</option>
+<option value="Lucida Console">Lucida Console</option>
+<option value="Lucida Sans Unicode">Lucida Sans Unicode
+</option>
+<option value="Microsoft Sans Serif">Microsoft Sans Serif
+</option>
+<option value="Palatino Linotype">Palatino Linotype</option>
+<option value="System">System</option>
+<option value="Tahoma">Tahoma</option>
+<option value="Times New Roman">Times New Roman</option>
+<option value="Trebuchet MS">Trebuchet MS</option>
+<option value="Verdana">Verdana</option>
+</select>
+<td class=embedded>
+<select name='size' class='codebuttons' onChange="alterfont(this.options[this.selectedIndex].value, 'size')">
+<option value='0'>- Size -</option>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+</select>
+</select>
+</table>
+</td>
+</tr>
+<tr>
+<td><textarea name="<?=$text?>" rows="15" cols="80"><? echo $content; ?></textarea>
+</td>
+<td>
+<table cellSpacing="1" cellPadding="3">
+<tr>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':-)')">
+<img border=0 src=pic/smilies/smile1.gif width="18" height="18"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':smile:')">
+<img border=0 src=pic/smilies/smile2.gif width="18" height="18"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':-D')">
+<img border=0 src=pic/smilies/grin.gif width="18" height="18"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':w00t:')">
+<img border=0 src=pic/smilies/w00t.gif width="18" height="20"></a></td></tr><tr>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':-P')">
+<img border=0 src=pic/smilies/tongue.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(';-)')">
+<img border=0 src=pic/smilies/wink.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':-|')">
+<img border=0 src=pic/smilies/noexpression.gif width="18" height="18"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':-/')">
+<img border=0 src=pic/smilies/confused.gif width="18" height="18"></a></td></tr><tr>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':-(')">
+<img border=0 src=pic/smilies/sad.gif width="18" height="18"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':\'-(')">
+<img border=0 src=pic/smilies/cry.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':-O')">
+<img border=0 src=pic/smilies/ohmy.gif width="18" height="18"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em('|-)')">
+<img border=0 src=pic/smilies/sleeping.gif width="20" height="27"></a></td></tr><tr>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':innocent:')">
+<img border=0 src=pic/smilies/innocent.gif width="18" height="22"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':unsure:')">
+<img border=0 src=pic/smilies/unsure.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':closedeyes:')">
+<img border=0 src=pic/smilies/closedeyes.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':cool:')">
+<img border=0 src=pic/smilies/cool2.gif width="20" height="20"></a></td></tr><tr>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':thumbsdown:')">
+<img border=0 src=pic/smilies/thumbsdown.gif width="27" height="18"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':blush:')">
+<img border=0 src=pic/smilies/blush.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':yes:')">
+<img border=0 src=pic/smilies/yes.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':no:')">
+<img border=0 src=pic/smilies/no.gif width="20" height="20"></a></td></tr><tr>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':love:')">
+<img border=0 src=pic/smilies/love.gif width="19" height="19"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':?:')">
+<img border=0 src=pic/smilies/question.gif width="19" height="19"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':!:')">
+<img border=0 src=pic/smilies/excl.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':idea:')">
+<img border=0 src=pic/smilies/idea.gif width="19" height="19"></a></td></tr><tr>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':arrow:')">
+<img border=0 src=pic/smilies/arrow.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':arrow2:')">
+<img border=0 src=pic/smilies/arrow2.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':hmm:')">
+<img border=0 src=pic/smilies/hmm.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':hmmm:')">
+<img border=0 src=pic/smilies/hmmm.gif width="25" height="23"></a></td></tr><tr>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':huh:')">
+<img border=0 src=pic/smilies/huh.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':rolleyes:')">
+<img border=0 src=pic/smilies/rolleyes.gif width="20" height="20"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':kiss:')">
+<img border=0 src=pic/smilies/kiss.gif width="18" height="18"></a></td>
+<td class=embedded style='padding: 2px; margin: 1px'><a href="javascript: em(':shifty:')">
+<img border=0 src=pic/smilies/shifty.gif width="20" height="20"></a></td></tr>
+<td class=embedded style='padding: 2px; margin: 1px' colspan="4" align="center">
+</head>
+<body bgcolor="#EDEDED" text="#000000" link="#000000" topmargin="0" leftmargin="0">
+</table>
+<center>
+<a href="javascript:winop();">More Smiles</a>
 <?php
 if(get_smile() != '0000-00-00 00:00:00')
-echo'<br><a class=altlink href="javascript: PopCustomSmiles(\''.$form.'\',\''.$name.'\')"><b>custom smilies</b></a>';
+echo'<br><a href="javascript:winop2();">Custom Smilies</a>';
 ?>
+</td></tr></table>
 </td>
-</tr>
-</table>
 <?
 }
+
 function user_key_codes($key)
 {
     return "/\[$key\]/i";

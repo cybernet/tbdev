@@ -1,9 +1,9 @@
 <?php
 ob_start("ob_gzhandler");
-require ("include/bittorrent.php");
-require_once("include/user_functions.php");
-require_once("include/bbcode_functions.php");
+require_once ("include/bittorrent.php");
+require_once ("themes/template.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -15,24 +15,22 @@ die();
 ?>
 <html>
 <head>
-<title>Official Yoursite JavaIRC</title>
+<title>Official JavaIRC</title>
 </head>
 <body bgcolor="#353535">
 <applet CODEBASE="./javairc/" code=IRCApplet.class archive="irc.jar,pixx.jar" width=960 height=480>
 <param name="CABINETS" value="irc.cab,securedirc.cab,pixx.cab">
 <param name="nick" value="<?=str_replace(' ','_',$CURUSER['username'])?>">
 <param name="alternatenick" value="<?=str_replace(' ','_',$CURUSER['username'])?>???">
-<param name="name" value="YourSite JavaUser">
-<param name="host" value="irc.p2p.net">
+<param name="name" value="java user">
+<param name="host" value="">
 <param name="gui" value="pixx">
-<param name="quitmessage" value="Yoursite out! Cya.....">
+<param name="quitmessage" value="Scene-Base out! Cya.....">
 <param name="multiserver" value="false">
-<param name="fingerreply" value="A lucky YS iRC user">
-<param name="userinforeply" value="A happy YS iRC user">
+<param name="fingerreply" value="A lucky iRC user">
+<param name="userinforeply" value="A happy iRC user">
 <param name="allowdccfile" value="false">
 <PARAM name="font_name" value="Arial">
-<param name="command1" value="/join #pres">
-<param name="command2" value="/join #staff">
 <param name="fileparameter" value="twl-black.ini">
 <param name="style:bitmapsmileys" value="true">
 <param name="style:smiley1" value=":ras: img/ras.gif">

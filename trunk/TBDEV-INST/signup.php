@@ -4,6 +4,7 @@ require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 
 dbconn();
+maxcoder();
 //ini_set('session.use_trans_sid', '0');
 // Begin the session
 session_start();

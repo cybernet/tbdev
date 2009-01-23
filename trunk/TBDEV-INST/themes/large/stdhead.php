@@ -32,14 +32,6 @@ document.compose.target = "";
 document.compose.submit();
 return true;
 }
-
-function Preview()
-{
-document.compose.action = "preview.php?"
-document.compose.target = "_blank";
-document.compose.submit();
-return true;
-}
 -->
 </script>
 <script type="text/javascript">
@@ -278,36 +270,39 @@ if ($color)
 $ratio = "<font color=$color>$ratio</font>";
 if ($CURUSER['donor'] == "yes")
 $medaldon = "<img src=pic/star.gif alt=donor title=donor>";
-//// check for messages //////////////////
-$res9 = mysql_query(
+if ($user["webseeder"] == "yes")
+$uweb = "<img src=pic/seeder.gif>";
+///////////////////check message counts//////////////////////////////////////////
+$res = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location=1") or print(mysql_error());
+$arr = mysql_fetch_row($res);
+$messages = $arr[0];
+$res = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " && unread='yes'") or print(mysql_error());
+$arr = mysql_fetch_row($res);
+$unread = $arr[0];
+$res = mysql_query("SELECT COUNT(*) FROM messages WHERE sender=" . $CURUSER["id"] . " AND saved='yes'") or print(mysql_error());
+$arr = mysql_fetch_row($res);
+$outmessages = $arr[0];
+$res = mysql_query("SELECT COUNT(*) FROM messages WHERE sender=" . $CURUSER["id"] . " && unread='yes' AND saved='yes'") or print(mysql_error());
+$arr = mysql_fetch_row($res);
+$unread2 = $arr[0];
+
+if ($unread)
+$inboxpic = "<img height=14px style=border:none alt=inbox title='inbox (new PMs)' src=pic/pn_inboxnew.gif>";
+else
+$inboxpic = "<img height=14px style=border:none alt=inbox title='inbox (no new PMs)' src=pic/pn_inbox.gif>";
+if ($unread2)
+$outboxpic = "<img height=14px style=border:none alt=sentbox title='sentbox (unread sent PMs)' src=pic/pn_sentbox.gif>";
+else
+$outboxpic = "<img height=14px style=border:none alt=sentbox title='sentbox (no unread sent PMs)' src=pic/pn_inbox.gif>";
+
+$res9 = sql_query(
 "SELECT ".
-    "(SELECT COUNT(messages.id) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location IN ('in', 'both')) AS messages_count, ".
-    "(SELECT COUNT(messages.id) FROM messages WHERE sender=" . $CURUSER["id"] . " AND location IN ('out', 'both')) AS outmessages_count, ".
-    "(SELECT COUNT(messages.id) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location IN ('in', 'both') AND unread='yes') AS unread_count, ".
     "(SELECT COUNT(peers.id) FROM peers WHERE userid=" . $CURUSER["id"] . " AND seeder='yes') AS activeseed_count, ".
     "(SELECT COUNT(peers.id) FROM peers WHERE userid=" . $CURUSER["id"] . " AND seeder='no') AS activeleech_count, ".
     "(SELECT connectable FROM peers WHERE userid=" . $CURUSER["id"] . " LIMIT 1) AS connectable");
-$arr9 = mysql_fetch_assoc($res9);
-
-$messages = $arr9['messages_count'];
-$outmessages = $arr9['outmessages_count'];
-$unread = $arr9['unread_count'];
+$arr9 = mysql_fetch_assoc($res9);	
 $activeseed = $arr9['activeseed_count'];
 $activeleech = $arr9['activeleech_count'];
-if ($unread)
-$inboxpic = "<img height=14px style=border:none alt=inbox title='inbox (new messages)' src=themes/large/pic/pn_inboxnew.gif>";
-else
-$inboxpic = "<img height=14px style=border:none alt=inbox title='inbox (no new messages)' src=themes/large/pic/pn_inbox.gif>";
-//////////////////// comment mod ////////////////////////
-$res = sql_query("SELECT torrent FROM peers WHERE userid='$CURUSER[id]'");
-while($row = mysql_fetch_array($res)){
-    $com = mysql_fetch_array(sql_query("SELECT count(*) FROM comments WHERE user='$CURUSER[id]' AND torrent='$row[torrent]'"));
-    $tor = mysql_fetch_array(sql_query("SELECT name,owner FROM torrents WHERE id='$row[torrent]'"));
-    if(!$com[0] && $tor[owner] != $CURUSER[id]){
- $comment .= "<a href=details.php?id=".$row[torrent].">".$tor[name]."</a><br>";
-    }
-}
-/////////////////////////////////////////////////////////////
 // check if user is connectable or not
        $connect = $arr9['connectable'];
        if($connect == "yes"){
@@ -317,8 +312,15 @@ while($row = mysql_fetch_array($res)){
        }else{
          $connectable ="---";
             }
-
-
+//////////////////// Kommentera modd ////////////////////////
+$res = sql_query("SELECT torrent FROM peers WHERE userid='$CURUSER[id]'");
+while($row = mysql_fetch_array($res)){
+    $kom = mysql_fetch_array(sql_query("SELECT count(*) FROM comments WHERE user='$CURUSER[id]' AND torrent='$row[torrent]'"));
+    $tor = mysql_fetch_array(sql_query("SELECT name,owner FROM torrents WHERE id='$row[torrent]'"));
+    if(!$kom[0] && $tor[owner] != $CURUSER[id]){
+ $komment .= "<a href=details.php?id=".$row[torrent].">".$tor[name]."</a><br>";
+    }
+}
 $time = date("H");
      if(($time >= 06) && ($time < 10)){        $hi = "<font color=blue>Morning</font>"; }
      if(($time >= 11) && ($time < 12)){      $hi = "<font color=blue>Munchtime</font>"; }
@@ -337,55 +339,52 @@ elseif(get_user_class() >= UC_MODERATOR) $usrclass = "&nbsp;<a href=setclass.php
 <td class="statusbar"><table align="center" background="pic/backcen.gif" style="width:834" cellspacing="0" cellpadding="0" border="0">
 <tr>
 <td class="bottom" background="pic/backcen.gif" align="left"><td class="bottom" align="left"><span class="smallfont"><font color=gray><b><?=$hi?></b> </font><b><a href="userdetails.php?id=<?=$CURUSER['id']?>"><?=$CURUSER['username']?></a></b><?=$usrclass?>
-&nbsp;<?=$medaldon?><?=$warn?>&nbsp;<font color=white><b>Bonus : <a href="mybonus.php"> <?=number_format($CURUSER['seedbonus'], 1)?></a>
+&nbsp;<?=$medaldon?><?=$warn?><? if ($CURUSER['webseeder'] == 'yes') { ?><img src="pic/seeder.gif" title="WebSeeder"><? } ?><font color=white><b>Bonus : <a href="mybonus.php"> <?=number_format($CURUSER['seedbonus'], 1)?></a>
 &nbsp;<img src='/pic/freedownload.gif' width='10' height='10' border='0' alt='Free Slots : <?=number_format($CURUSER['freeslots'])?>' title='Free Slots : <?=number_format($CURUSER['freeslots'])?>'><font color='#EAFF08'> <?=number_format($CURUSER['freeslots'])?></font>&nbsp;<a href='<?=$DEFAULTEBASEURL?>bookmarks.php?id=<?=$CURUSER['id']?>'>
 <img src='pic/bookmark.gif' width='10' height='10' border='0' alt='My Bookmarks' title='Total Bookmarks: <?php echo  number_format(get_row_count("bookmarks", "WHERE userid=$CURUSER[id]"))?>'><font color='#ffffff'></a>
 &nbsp;<?php echo  number_format(get_row_count("bookmarks", "WHERE userid=$CURUSER[id]"))?></font>&nbsp;<font color=white>
 &nbsp;Connectable :&nbsp;</font><?=$connectable?>&nbsp;</b>&nbsp<?if($invites>0){?>[Invites(<a href=invite.php><?=$invites?></a>)]<?}?>&nbsp;[<a href="logout.php" onClick="return log_out()"><b>Logout</b></a>]<br/>
-<b><font color=white>Ratio : </font> <?=$ratio?>&nbsp;&nbsp;<font color=green>Uploaded : </font> <font color=#777777><?=$uped?></font>
-&nbsp;&nbsp;<font color=darkred>Downloaded : </font> <font color=#777777><?=$downed?></font>
-&nbsp;&nbsp;<font color=white>Active Torrents :&nbsp;</font></span> <img alt="Torrents seeding" title="Torrents seeding" src="pic/arrowup.gif">&nbsp;<font color=#777777><span class="smallfont"><?=$activeseed?></span></font>&nbsp;&nbsp;<img alt="Torrents leeching" title="Torrents leeching" src="pic/arrowdown.gif">&nbsp;<font color=#777777><span class="smallfont"><?=$activeleech?></span></font></td>
-<td class="bottom" align="right"><span class="smallfont"><font color=#356AA0>
-<b>Time :- </b><span id="servertime"></span><br>
+<b><font color=white>Ratio : </font> <?=$ratio?>&nbsp;&nbsp;<font color=green>Up : </font> <font color=#777777><?=$uped?></font>
+&nbsp;&nbsp;<font color=darkred>Down : </font> <font color=#777777><?=$downed?></font>
+&nbsp;&nbsp;<font color=white>Active :&nbsp;</font></span> <img alt="Torrents seeding" title="Torrents seeding" src="pic/arrowup.gif">&nbsp;<font color=#777777><span class="smallfont"><?=$activeseed?></span></font>&nbsp;&nbsp;<img alt="Torrents leeching" title="Torrents leeching" src="pic/arrowdown.gif">&nbsp;<font color=#777777><span class="smallfont"><?=$activeleech?></span></font>
+<td class="bottom" align="right"><span class="smallfont"><font color=white><?=$clock?><span id="clock"></span><br>
 <script type="text/javascript">
-
-var currenttime = '<? print date("F d, Y H:i:s", time())?>'
-
-var montharray=new Array("January","February","March","April","May","June","July","August","September","October","November","December")
-var serverdate=new Date(currenttime)
-
-function padlength(what){
-var output=(what.toString().length==1)? "0"+what : what
-return output
+function refrClock(){
+var d=new Date();
+var s=d.getSeconds();
+var m=d.getMinutes();
+var h=d.getHours();
+var day=d.getDay();
+var date=d.getDate();
+var month=d.getMonth();
+var year=d.getFullYear();
+var am_pm;
+if (s<10) {s="0" + s}
+if (m<10) {m="0" + m}
+if (h>12) {h-=12;am_pm = "Pm"}
+else {am_pm="Am"}
+if (h<10) {h="0" + h}
+document.getElementById("clock").innerHTML=h + ":" + m + ":" + s + " " + am_pm;
+setTimeout("refrClock()",1000);
 }
-
-function displaytime(){
-serverdate.setSeconds(serverdate.getSeconds()+1)
-var datestring=padlength(serverdate.getDate())+"-"+montharray[serverdate.getMonth()]+"-"+serverdate.getFullYear()
-var timestring=padlength(serverdate.getHours())+":"+padlength(serverdate.getMinutes())+":"+padlength(serverdate.getSeconds())
-document.getElementById("servertime").innerHTML=datestring+" "+timestring
-}
-
-window.onload=function(){
-setInterval("displaytime()", 1000)
-}
+refrClock();
 </script>
-</font>
+                  </font>
 <?
 if ($messages){
-print("<span class=smallfont><a href=mailbox.php?inbox>$inboxpic</a> $messages ($unread New)</span>");
+print("<span class=smallfont><a href=messages.php?action=viewmailbox>$inboxpic</a> $messages ($unread New)</span>");
 if ($outmessages)
-print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=12px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> $outmessages</span>");
+print("<span class=smallfont>&nbsp;&nbsp;<a href=messages.php?action=viewmailbox&box=-1><img height=14px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> $outmessages</span>");
 else
-print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=12px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> 0</span>");
+print("<span class=smallfont>&nbsp;&nbsp;<a href=messages.php?action=viewmailbox&box=-1><img height=14px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> 0</span>");
 }
 else
 {
-print("<span class=smallfont><a href=mailbox.php?inbox><img height=12px style=border:none alt=inbox title=inbox src=pic/pn_inbox.gif></a> 0</span>");
+print("<span class=smallfont><a href=messages.php?action=viewmailbox><img height=14px style=border:none alt=inbox title=inbox src=pic/pn_inbox.gif></a> 0</span>");
 if ($outmessages)
-print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=12px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> $outmessages</span>");
+print("<span class=smallfont>&nbsp;&nbsp;<a href=messages.php?action=viewmailbox&box=-1><img height=14px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> $outmessages</span>");
 else
-print("<span class=smallfont>&nbsp;&nbsp;<a href=mailbox.php?outbox><img height=12px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> 0</span>");
+print("<span class=smallfont>&nbsp;&nbsp;<a href=messages.php?action=viewmailbox&box=-1><img height=14px style=border:none alt=sentbox title=sentbox src=pic/pn_sentbox.gif></a> 0</span>");
 }
 print("&nbsp;<a href=friends.php><img height=12px style=border:none alt=Buddylist title=Buddylist src=themes/large/pic/buddylist.gif></a>");
 print("&nbsp;<a href=users.php><img height=12px style=border:none alt=Buddylist title=Userlist src=pic/buddylist3.gif></a>");
@@ -414,14 +413,16 @@ print("<input type=\"hidden\" name=\"returnto\" value=\"" . htmlspecialchars($re
 if (isset($unread) && !empty($unread))
 {
   print("<table border=0 cellspacing=5 cellpadding=1 bgcolor=red  width='150' height='85'><tr><td class='cHs3' style=\"padding: 5px; background-image: url(pic/moonie.gif)\">\n");
-  print("<b><a href=mailbox.php?inbox><font color=white>You have $unread new message" . ($unread > 1 ? "s" : "") . " !<br /><br /><br /><br /></font></a></b>");
+  print("<b><a href=$BASEURL/messages.php?action=viewmailbox>You have $unread new message" . ($unread > 1 ? "s" : "") . " !<br /><br /><br /><br /></font></a></b>");
   print("</td></tr></table></p>\n");
 }
 //happy hour
+if ($CURUSER){
 if (happyHour("check")) {
 print("<table border=0 cellspacing=0 cellpadding=10  ><tr><td align=center style=\"background:#CCCCCC;color:#222222; padding:10px\">\n");
-print("<b>Hey its now happy hour ! ".((happyCheck("check") == 255) ? "Every torrent downloaded in the happy hour will is free" : "Only <a href=\"browse.php?cat=".happyCheck("check")."\">this category</a> is free this happy hour" )."<br/><font color=red>".happyHour("time")." </font> remaining from this happy hour!</b>");
+print("<b>Hey its now happy hour ! ".((happyCheck("check") == 255) ? "Every torrent downloaded in the happy hour is free" : "Only <a href=\"browse.php?cat=".happyCheck("check")."\">this category</a> is free this happy hour" )."<br/><font color=red>".happyHour("time")." </font> remaining from this happy hour!</b>");
 print("</td></tr></table>\n");
+}
 }
 //////////////////
 if ($CURUSER["tenpercent"] == "no") {
@@ -452,17 +453,15 @@ if ($CURUSER['override_class'] != 255 && $CURUSER) // Second condition needed so
       print("</td></tr></table></p>\n");
   }
 //=== help desk message
-if ($CURUSER['support'] == "yes" || $CURUSER['class'] > UC_MODERATOR){
-$resa = sql_query("select count(id) as ticket from helpdesk WHERE ticket ='0' AND closed ='no'");
+if (get_user_class() >= UC_MODERATOR){
+$resa = mysql_query("select count(id) as problems from helpdesk WHERE solved = 'no'");
 $arra = mysql_fetch_assoc($resa);
-$ticket = $arra[ticket];
-if ($ticket > 0){
-print("<table align=center border=0 cellspacing=0 cellpadding=10 bgcolor=red><tr><td style=\"padding: 10px; background-image: url(pic/gradient.png)\">\n");
-print("<font color=teal>Hi <b>$CURUSER[username]</b>, there is <b>$ticket active ticket(s)</b> at the help desk that requires attention.<br />Please click <b><a href=$BASEURL/helpdesk.php>Here</a></b> to check.</font>");
-print("</td></tr></table></p>\n");
+$problems = $arra['problems'];
+if ($problems > 0)
+echo("<p><table border=0 cellspacing=0 cellpadding=10 bgcolor=red><tr><td style='padding: 10px; background: #A60A15'>\n".
+"Hi <b>$CURUSER[username]</b>, there ".($problems == 1 ? 'is' : 'are')." <b>$problems question".($problems == 1 ? '' : 's')."</b> at the help desk that needs a reply.<br>please click <b><a href=$BASEURL/helpdesk.php?action=problems>HERE</a></b> to deal with it.".
+"</td></tr></table></p>\n");
 }
-}
-//===end
 if ($CURUSER && $CURUSER['country']==0)  {
 print("<table border=0 cellspacing=0 cellpadding=10 bgcolor=red><tr><td style=\"padding: 10px; background-image: url(pic/back_newpm.gif)\">\n");
 print("<b><a href=\"usercp.php\"><font color=white>Please choose your country in your profile !</font></a></b>");

@@ -6,8 +6,15 @@ if(!extension_loaded('zlib')){
 
 require_once("include/bittorrent.php");
 dbconn(false);
+maxcoder();
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
 
-loggedinorreturn();
 
 stdhead("Multi Upload");
 		
@@ -41,7 +48,7 @@ stdhead("Multi Upload");
 			print("<tr><td class='colhead'><b>Torrent Description</b></td><td class='colhead'><img src=\"pic/download.gif\" /></td></tr>");
 			$i = 0;
 			while($row = mysql_fetch_array($res)){
-			print("<tr><td><a class=\"index\" href='http://www.scene-base.net/details.php?id=$ids[$i]'\>" . htmlspecialchars($row["name"]) . "</a></td><td><a class=\"index\" href=\"download.php/$ids[$i]/" . rawurlencode($row["filename"]) . "\"><img src=\"pic/download.gif\" /></a></td></tr>");
+			print("<tr><td><a class=\"index\" href='http://yoursite/details.php?id=$ids[$i]'\>" . htmlspecialchars($row["name"]) . "</a></td><td><a class=\"index\" href=\"download.php/$ids[$i]/" . rawurlencode($row["filename"]) . "\"><img src=\"pic/download.gif\" /></a></td></tr>");
 			$i++;
 			}
 		print("</table>");

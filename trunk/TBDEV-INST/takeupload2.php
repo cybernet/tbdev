@@ -8,6 +8,7 @@ function bark($msg) {
 genbark($msg, "Upload failed!");
 }
 dbconn(); 
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");

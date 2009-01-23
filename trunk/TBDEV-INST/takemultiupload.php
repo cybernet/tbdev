@@ -8,6 +8,7 @@ function bark($msg) {
 genbark($msg, "Upload failed!");
 }
 dbconn(); 
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -192,7 +193,7 @@ list($ann[$i], $info[$i]) = dict_check($dict[$i], "announce(string):info");
 list($dname[$i], $plen[$i], $pieces[$i]) = dict_check($info[$i], "name(string):piece length(integer):pieces(string)");
 if (!in_array($ann[$i], $announce_urls, 1))
 bark("invalid announce url! in file no #$i must be " . $announce_urls[0] .
-" - Make sure its exactly like that even the port number should be in there like ':mega_shok.gif'");
+" - Make sure its exactly like that even the port number should be in there like '80'");
 if (strlen($pieces[$i]) % 20 != 0)
 bark("invalid pieces in file $i");
 $totallen = dict_get($info[$i], "length", "integer");

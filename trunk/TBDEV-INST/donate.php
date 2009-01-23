@@ -2,6 +2,8 @@
 require ("include/bittorrent.php");
 require ("include/bbcode_functions.php");
 dbconn();
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");

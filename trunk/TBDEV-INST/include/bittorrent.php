@@ -1,7 +1,7 @@
 <?php
 $stime=array_sum(explode(' ',microtime())); // start execution time
 //error_reporting(E_ALL);
-define('SQL_DEBUG', 0);
+define('SQL_DEBUG', 1);
 define('DEBUG_MODE', 1);
 define ('IN_TRACKER', 'God! Your so sexy...');
 define('ROOT_PATH', $_SERVER['DOCUMENT_ROOT'].'/');
@@ -11,14 +11,17 @@ $maxloginattempts = 5; // change this whatever u want. if u dont know what is th
 require_once("secrets.php");
 require_once("cleanup.php");
 require_once("function_happyhour.php");
-// Sits at front of pageload (bittorrent.php)
+require_once("mood.php");
+require_once("class.inputfilter_clean.php");
+$myFilter = new InputFilter($tags, $attributes, 0, 0); // Invoke it
+/////////////// Sits at front of pageload (bittorrent.php)
 function unsafeChar($var)
 {
     return str_replace(array("&gt;", "&lt;", "&quot;", "&amp;"), array(">", "<", "\"", "&"), $var);
 }
-function safechar($var)
+function safeChar($var)
 {
-    return htmlspecialchars(unsafeChar($var));
+return htmlspecialchars(unsafeChar($var));
 }
 function makeSafeText($arr) {
     foreach ($arr as $k => $v) {
@@ -30,9 +33,22 @@ function makeSafeText($arr) {
     return $arr;
 }
 // Makes the data safe
-if (!empty($_GET)) $_GET = makeSafeText($_GET);
-if (!empty($_POST)) $_POST = makeSafeText($_POST);
-if (!empty($_COOKIE)) $_COOKIE = makeSafeText($_COOKIE);
+if(!defined('IN_ANNOUNCE')){
+    if (!empty($_GET)) $_GET = makeSafeText($_GET);
+    if (!empty($_POST)) $_POST = makeSafeText($_POST);
+    if (!empty($_COOKIE)) $_COOKIE = makeSafeText($_COOKIE);
+}
+/////////Strip slashes by system//////////
+function cleanquotes(&$in){
+    if(is_array($in)) return array_walk($in,'cleanquotes');
+    return $in=stripslashes($in);
+}
+if(get_magic_quotes_gpc()){
+    array_walk($_GET,'cleanquotes');
+    array_walk($_POST,'cleanquotes');
+    array_walk($_COOKIE,'cleanquotes');
+    array_walk($_REQUEST,'cleanquotes');
+}
 if( !defined("TB_INSTALLED") )
 {
 	header("Location: ./install/install.php");
@@ -61,6 +77,7 @@ while ( $row = mysql_fetch_assoc($result) )
 }
 ////config start///
 $SITE_ONLINE = $config['siteonline'];
+$FORUMS_ONLINE = $config['forums_online'];
 //$SITE_ONLINE = local_user();
 //$SITE_ONLINE = false;
 $h = date("H");
@@ -76,10 +93,20 @@ $max_dead_torrent_time = 6 * 3600;
 $invite_timeout = 21600 * 1;
 $invites = 2500;
 $READPOST_EXPIRY = 14*86400; // 14 days
+// All Torrents Doubleseed
+$double_for_all = 0;        // 1=ON/0=OFF
+// Free/Doubleseed Message Title
+$freetitle = "Sitewide Double upload!";
+// Free/Doubleseed Message
+$freemessage = "[size=2]All torrents marked double upload![/size]  :w00t:";
+// Free Categories
+$freecat = array("9");  // ID's of free categories
+// Free for Class
+$freeclass = array("7");  // ID's for free class (UC_CODER=7)
 // Rules for torrent limitation
 // Format is Ratio:UpGigs:SeedsMax:LeechesMax:AllMax|...
 // Ratio and UpGigs are "minimum" requirements.
-$GLOBALS["TORRENT_RULES"] = "0:0:10:2:12|1.01:5:10:3:13|2.01:20:10:4:14";
+$GLOBALS["TORRENT_RULES"] = "0.5:2:10:8:18|1.01:2:30:20:50|2.01:5:40:30:70|5.01:20:50:35:85";
 // Max users on site
 $maxusers = $config['maxusers'];
 ////////////Define all rootpaths//////////
@@ -220,10 +247,60 @@ function dbconn($autoclean = false, $userlogin=true)
 function status_change($id) {
     sql_query('UPDATE announcement_process SET status = 0 WHERE user_id = '.sqlesc($id).' AND status = 1');
 }
-function safe($var)
-{
-    return htmlspecialchars(str_replace(array("& gt;", "& lt;", "& quot;", "& amp;"), array(">", "<", "\"", "&"), $var));
+//////////////////////////////////////////////////////////////////////
+//-------------New modified maxcoder+staff account protector
+    function maxcoder () {
+	global $CURUSER;
+	$lmaxclass = 7;
+	$filename =  ROOT_PATH."settings/STAFFNAMES";
+	$filename2 =  ROOT_PATH."settings/STAFFIDS";	
+	if ($CURUSER['class'] >= $lmaxclass) {
+	$fp = fopen($filename, 'r');
+	while (!feof($fp))
+	{ 
+	$staffnames= fgets($fp);
+	$results = explode(' ', $staffnames); 
+	}
+		$added = sqlesc(get_date_time());
+		if (!in_array($CURUSER['username'], $results, true)) { // true for strict comparison
+		sql_query("UPDATE users set enabled='no' WHERE id=$CURUSER[id]"); 
+        $subject = sqlesc( "Alert Super User Has been Detected" );
+        $body = sqlesc("User " . $CURUSER["username"] . " has attempted to hack the tracker using a super class - the account has been disabled");
+        auto_post( $subject , $body );
+        $msg = "Hack Attempt Detected : Username: ".$CURUSER["username"]." - UserID: ".$CURUSER["id"]." - UserIP : ".getip();
+        //mysql_query("INSERT INTO messages (poster, sender, receiver, added, msg) VALUES(0, 0, '1', '" . get_date_time() . "', " .sqlesc($msg) . ")") or sqlerr(__FILE__, __LINE__);
+		sql_query("INSERT INTO messages (poster, sender, receiver, added, subject, msg) VALUES(0, 0, '1', '" . get_date_time() . "', ".$subject." , " .sqlesc($msg) . ")") or sqlerr(__FILE__, __LINE__);
+		write_log($msg);
+		fclose($fp);
+		stderr("Access Denied!","Ha Ha you retard - Did you honestly think you could pull that one off !");
+		}
+		fclose($fp);
+	}
+	        define ('UC_STAFF', 4); // Minumum Staff Level (4=UC_MODERATOR)
+            if ($CURUSER['class'] >= UC_STAFF) {
+		    $fp2 = fopen($filename2, 'r');
+		    while (!feof($fp2))
+			{ 
+			$staffids = fgets($fp2);
+			$results2 = explode(' ', $staffids); 
+				}
+			    if (!in_array($CURUSER['id'], $results2, true)) { // true for strict comparison				
+				sql_query("UPDATE users set enabled='no' WHERE id=$CURUSER[id]"); 
+                $subject = sqlesc( "Staff Account Hack Detected" );
+                $body = sqlesc("User " . $CURUSER["username"] . " has attempted to hack the tracker using an unauthorized account- the account has been disabled");
+                auto_post( $subject , $body );
+                $msg = "Fake Account Detected: Username: ".$CURUSER["username"]." - UserID: ".$CURUSER["id"]." - UserIP : ".getip();
+                //mysql_query("INSERT INTO messages (poster, sender, receiver, added, msg) VALUES(0, 0, '1', '" . get_date_time() . "', " .sqlesc($msg) . ")") or sqlerr(__FILE__, __LINE__);
+				sql_query("INSERT INTO messages (poster, sender, receiver, added, subject, msg) VALUES(0, 0, '1', '" . get_date_time() . "', ".$subject." , " .sqlesc($msg) . ")") or sqlerr(__FILE__, __LINE__);
+				write_log($msg);				 
+				fclose($fp2);
+				stderr("Access Denied!","Sorry but your not an authorized staff member - nice try your banned !");		
+			}
+			fclose($fp2);
+	}	
+	return true;
 }
+////////////////////Credits to Retro for the original code :)//////////////////////////////////////		
 // Returns the current time in GMT in MySQL compatible format.
 function get_date_time($timestamp = 0)
 {
@@ -264,14 +341,16 @@ function userlogin() {
     $id = 0 + $_COOKIE["uid"];
     if (!$id OR (strlen($_COOKIE["pass"]) != 32) OR ($_COOKIE["hashv"] != hashit($id,$_COOKIE["pass"])))
         return;
-    ////////////////announcement mod by Retro/////////////////////////
+    $res = mysql_query("SELECT * FROM users WHERE id = $id AND enabled='yes' AND status = 'confirmed'") or die(mysql_error());
+    $row = mysql_fetch_array($res);
+	 ////////////////announcement mod by Retro/////////////////////////
     $res = sql_query("SELECT u.*, ann_main.subject AS curr_ann_subject, ann_main.body AS curr_ann_body ".
         "FROM users AS u ".
         "LEFT JOIN announcement_main AS ann_main ".
         "ON ann_main.main_id = u.curr_ann_id ".
         "WHERE u.id = $id AND u.enabled='yes' AND u.status = 'confirmed'") or sqlerr(__FILE__, __LINE__);
-        $row = mysql_fetch_array($res);
-    if (!$row)
+    $row = mysql_fetch_array($res);  
+	if (!$row)
         return;
     $sec = hash_pad($row["secret"]);
     if ($_COOKIE["pass"] !== md5($row["passhash"].$_SERVER["REMOTE_ADDR"]))
@@ -575,17 +654,26 @@ function add_s($i)
 return ($i == 1 ? "" : "s");
 }
 /////////moddified sqesc function by retro///
+/*
 function sqlesc($x) {
-    
    if (get_magic_quotes_gpc()) {
        $x = stripslashes($x);
    }
-
-   if (is_numeric($x)) return "'".$x."'";
-
-   return "'" . mysql_real_escape_string(unsafeChar($x)) . "'";
+   if (!is_numeric($x)) {
+       $x = "'" . mysql_real_escape_string(UnsafeChar($x)) . "'";
+   }
+   return $x;
 }
+*/
 ///////////////end new sqlesc/////////
+//////////modified sqlesc //==putyn@tbdev
+function sqlesc($x) {
+   if (get_magic_quotes_gpc())
+       $x = stripslashes($x);
+   return is_numeric($x) ? $x : "'" . mysql_real_escape_string(unsafeChar($x)) . "'";
+} 
+///////////////////////////////////////////////
+
 function sqlwildcardesc($x) {
     return str_replace(array("%","_"), array("\\%","\\_"), mysql_real_escape_string($x));
 }
@@ -605,12 +693,15 @@ function parsedescr($d, $html) {
     }
     return $d;
 }
+function safe($var) {
 
+    return str_replace(array('&', '>', '<', '"', '\'' ), array('&amp;', '&gt;', '&lt;', '&quot;', '&#039;' ), str_replace(array('&gt;', '&lt;', '&quot;', '&#039;', '&amp;'), array('>', '<', '"', '\'', '&'), $var));
+}
 function hashit($var,$addtext="")
 {
         return md5("Some ".$addtext.$var.$addtext." sal7 mu55ie5 wat3r.@.");
 }
-// Basic MySQL error handler
+/////////////// Basic MySQL error handler
 function sqlerr($file = '', $line = '') {
     global $sql_error_log, $CURUSER;
     
@@ -663,6 +754,7 @@ function sqlerr($file = '', $line = '') {
 		
         exit();
 }
+
 function getrow($id, $value, $arr)
 {
 foreach($arr as $row)
@@ -672,7 +764,7 @@ return false;
 }
 
 function stdhead($title = "", $msgalert = true) {
-global $CURUSER, $SITE_ONLINE, $FUNDS, $SITENAME, $BASEURL , $CACHE, $crazymessage, $crazytitle;
+global $CURUSER, $SITE_ONLINE, $FUNDS, $SITENAME, $BASEURL, $CACHE, $mood, $double_for_all, $freetitle, $freemessage;
 //////site on/off
 $res = sql_query("SELECT * FROM siteonline") or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_array($res);
@@ -701,6 +793,12 @@ Please, try later...</h1>
 </tr></table>
 </form></center>
 </td></tr></table>");
+if(($CURUSER) && ($double_for_all)) {
+$d = (!empty($double_for_all) ? "<img src=".$pic_base_url."doubleseed.gif alt=Doubleseed!>":'');
+echo '<table width=50%><tr><td class=colhead colspan=3 align=center>'.unesc($freetitle).'
+</td></tr><tr><td width=42 align=center valign=center>'.$d.'</td><td><div align=center>'.format_comment($freemessage).'
+</div></td><td width=42 align=center valign=center>'.$d.'</td></tr></table><br />';
+}
 }
 if (($row["onoff"] !=1) and (($CURUSER["class"] < $row["class"]) && ($CURUSER["id"] != 1))){ 
 die("<title>Site Offline!</title>
@@ -715,12 +813,11 @@ Please, try later...</h1>
 global $ss_uri;
 if (!$SITE_ONLINE)
 die("Site is down for maintenance, please check back again later... thanks<br/>");
-//header("Content-Type: text/html; charset=utf-8");
 header("Content-Type: text/html; charset=iso-8859-1");
 if ($title == "")
 $title = $SITENAME .(isset($_GET['tbv'])?" (".TBVERSION.")":'');
 else
-$title = $SITENAME .(isset($_GET['tbv'])?" (".TBVERSION.")":''). " :: " . safechar($title);
+$title = $SITENAME .(isset($_GET['tbv'])?" (".TBVERSION.")":''). " :: " . safeChar($title);
 include_once ("cache/stylesheets.php");
 if ($CURUSER)
   {
@@ -758,8 +855,8 @@ require_once("themes/".$ss_uri."/stdfoot.php");
 
 function genbark($x,$y) {
     stdhead($y);
-    print("<h2>" . safechar($y) . "</h2>\n");
-    print("<p>" . safechar($x) . "</p>\n");
+    print("<h2>" . safeChar($y) . "</h2>\n");
+    print("<p>" . safeChar($x) . "</p>\n");
     stdfoot();
     exit();
 }
@@ -809,6 +906,7 @@ function loggedinorreturn() {
         exit();
     }
 }
+
 function ago($seconds){
 $day=date("j",$seconds)-1;
 $month=date("n",$seconds)-1;

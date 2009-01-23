@@ -8,6 +8,8 @@ $id = 0 + $id;
 if (!$id)
 	die();
 dbconn();
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -33,9 +35,9 @@ else {
 	if (isset($_GET["returnto"]))
 		print("<input type=\"hidden\" name=\"returnto\" value=\"" . safechar($_GET["returnto"]) . "\" />\n");
 	print("<table border=\"1\" cellspacing=\"0\" cellpadding=\"10\">\n");
-	tr("URL", "<input type=text name=url size=80 value='".$row["url"]."'>", 1);
-	tr("Poster", "<input type=text name=poster size=80 value='".$row["poster"]."'><br>(Direct link for a poster image to be shown on the details page)\n", 1);
-	tr("Trailer", "<input type=text name=tube size=80 value='".$row["tube"]."'><br>(Direct link for youtube trailer)\n", 1);
+	tr("URL", "<input type=text name=url size=80 value='".safeChar($row["url"])."'>", 1);
+	tr("Poster", "<input type=text name=poster size=80 value='".safeChar($row["poster"])."'><br>(Direct link for a poster image to be shown on the details page)\n", 1);
+	tr("Trailer", "<input type=text name=tube size=80 value='".safeChar($row["tube"])."'><br>(Direct link for youtube trailer)\n", 1);
 	tr("Torrent name", "<input type=\"text\" name=\"name\" value=\"" . safechar($row["name"]) . "\" size=\"80\" />", 1);
 	tr("NFO file", "<input type=radio name=nfoaction value='keep' checked>Keep current<br>".
 	"<input type=radio name=nfoaction value='update'>Update:<br><input type=file name=nfo size=80>", 1);
@@ -65,6 +67,7 @@ else {
 
     if ($CURUSER["admin"] == "yes")
 		tr("Banned", "<input type=\"checkbox\" name=\"banned\"" . (($row["banned"] == "yes") ? " checked=\"checked\"" : "" ) . " value=\"1\" /> Banned", 1);
+      tr("Recommended Torrent","<input type=radio name=recommended" . ($row["recommended"] == "yes" ? " checked" : "") . " value=yes>Yes!<input type=radio name=recommended" . ($row["recommended"] == "no" ? " checked" : "") . " value=no>No!<br><font class=small size=1>IF you want to recommend this torrent!</font>",1);
     if(get_user_class() > UC_VIP)
     if ($row["countstats"] == "yes")
     $mess = " yes - this is a normal torrent!";
@@ -76,7 +79,7 @@ else {
     <option value="<?=safechar($row[countstats])?>"><?=safechar($row[countstats])?></option>
     <option value="yes"> yes </option><option value="no"> no </option></select> <?=$mess?></td></tr>
      <?php
-	if(get_user_class()>=UC_UPLOADER)
+    if(get_user_class()>=UC_UPLOADER)
     tr("VIP Torrent?", "<input type='checkbox' name='vip'" . (($row["vip"] == "yes") ? " checked='checked'" : "" ) . " value='1' /> If this one is checked, only VIPs can download this torrent", 1);
 	if(get_user_class() > UC_MODERATOR)
     tr("Sticky", "<input type='checkbox' name='sticky'" . (($row["sticky"] == "yes") ? " checked='checked'" : "" ) . " value='yes' />Set sticky this torrent!", 1);
@@ -144,7 +147,7 @@ echo "<label><input type=\"checkbox\" value=\"$apps[$x]\" name=\"apps[]\" class=
   print("<td><input name=\"reasontype\" type=\"radio\" value=\"1\">&nbsp;Dead </td><td> 0 seeders, 0 leechers = 0 peers total</td></tr>\n");
   print("<tr><td><input name=\"reasontype\" type=\"radio\" value=\"2\">&nbsp;Dupe</td><td><input type=\"text\" size=\"40\" name=\"reason[]\"></td></tr>\n");
   print("<tr><td><input name=\"reasontype\" type=\"radio\" value=\"3\">&nbsp;Nuked</td><td><input type=\"text\" size=\"40\" name=\"reason[]\"></td></tr>\n");
-  print("<tr><td><input name=\"reasontype\" type=\"radio\" value=\"4\">&nbsp;Yoursite rules</td><td><input type=\"text\" size=\"40\" name=\"reason[]\">(req)</td></tr>");
+  print("<tr><td><input name=\"reasontype\" type=\"radio\" value=\"4\">&nbsp;$BASEURL rules</td><td><input type=\"text\" size=\"40\" name=\"reason[]\">(req)</td></tr>");
   print("<tr><td><input name=\"reasontype\" type=\"radio\" value=\"5\" checked>&nbsp;Other:</td><td><input type=\"text\" size=\"40\" name=\"reason[]\">(req)</td></tr>\n");
 	print("<input type=\"hidden\" name=\"id\" value=\"$id\">\n");
 	if (isset($_GET["returnto"]))

@@ -3,6 +3,7 @@ require "include/bittorrent.php";
 require_once "include/user_functions.php";
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -11,221 +12,224 @@ print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was 
 die();
 }
 parked();
-// Standard Administrative PM Replies
-$pm_std_reply[1] = "Read the bloody FAQ and stop bothering me!";
-$pm_std_reply[2] = "Die! Die! Die!";
 
-// Standard Administrative PMs
-$pm_template['1'] = array("Ratio warning","Hi,\n
-You may have noticed, if you have visited the forum, that Yoursite is disabling the accounts of all users with low share ratios.\n
-I am sorry to say that your ratio is a little too low to be acceptable. You need to seed [insert amount of data here] in order for your ratio to reach the minimum acceptable level. You have [insert time period here] to get your share ratio to an acceptable level, otherwise, your membership here will be at risk.\n
-If you would like your account to remain open, you must ensure that your ratio increases dramatically in the next day or two, to get as close to 1.0 as possible.\n
-I am sure that you will appreciate the importance of sharing your downloads.
-You may PM any Moderator, if you believe that you are being treated unfairly.\n
-Thank you for your cooperation.");
-$pm_template['2'] = array("Avatar warning", "Hi,\n
-You may not be aware that there are new guidelines on avatar sizes in the rules, in particular \"Resize
-your images to a width of 150 px and a size of no more than 150 KB.\"\n
-I'm sorry to say your avatar doesn't conform to them. Please change it as soon as possible.\n
-We understand this may be an inconvenience to some users but feel it is in the community's best interest.\n
-Thanks for the cooperation.");
-$pm_template['3'] = array("Port warning", "Hi,\n
-Currently you are showing as not being connectable from other peers. This may be due to the ports you are using, or incorrectly configured network involving your firewall and/or router. Please change your port range, or check to ensure that the relevant ports are indeed open in your network AND your bittorrent application. If you use a firewall or a router you will have to apply changes there too.\n
-Please read the FAQ regarding this issue! \n
-If you cannot find an answer there, do not hesitate to post in the HELP section of the user forum. We understand this may be an inconvenience but feel it is in the community's best interest.\n
-Thanks for the cooperation.");
-$pm_template['4'] = array("Description warning","Hi,\n
-Thank you for contributing to our community by uploading. To make it easier for other members of the tracker we would appreciate it, if you could give the torrent(s) a better/different description. It doesn't have to be a long text. Just the category (like PLUG-IN, GRAPHIC, VIDEO,...) and a little additional information for people that are not sure what this is. You can even display a hyperlink to the company's homepage. It is easy to just copy and paste the description from the developer's site. \n
-Please refer to this topic xxxxxxxxxxxxxx Thank you for your cooperation.\n");
-$pm_template['5'] = array("Serial warning", "Hi,\n
-Please do NOT post questions for serials or cracks in the user forum!!!\n
-Please read the FAQ and the Rules regarding this issue!\n
-Thanks for the cooperation.");
-$pm_template['6'] = array("Requests", "Hi,\n
-All requests should be directed to the Requests section. Your post has been deleted to tidy up the forum. If you find that you cannot make a request, it is likely that you have not achieved the required share ratio of .50 or greater.\n
-Thanks for the cooperation.");
+//=== functions
 
-
-// Standard Administrative MMs
-$mm_template['1'] = $pm_template['1'];
-$mm_template['2'] = array("Downtime warning","We'll be down for a few hours");
-$mm_template['3'] = array("Change warning","The tracker has been updated. Read
-the forums for details.");
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST')
-{ //////// MM //
-if (get_user_class() < UC_MODERATOR)
-stderr("Error", "Permission denied");
-
-$n_pms = $_POST['n_pms'];
-$pmees = $_POST['pmees'];
-$auto = $_POST['auto'];
-
-if ($auto)
-$body=$mm_template[$auto][1];
-
-stdhead("Send message", false);
-
-?>
-<table class=main width=750 border=0 cellspacing=0 cellpadding=0>
-<tr><td class=embedded><div align=center>
-<h1>Mass Message to <?=$n_pms?> user<?=($n_pms>1?"s":"")?>!</h1>
-<form method=post action=takemessage.php>
-<? if ($_SERVER["HTTP_REFERER"]) { ?>
-<input type=hidden name=returnto value=<?=$_SERVER["HTTP_REFERER"]?>>
-<? } ?>
-<table border=1 cellspacing=0 cellpadding=5>
-<TR>
-<TD colspan="2"><B>Subject: </B>
-<INPUT name="subject" type="text" size="76"></TD>
-</TR>
-<tr><td colspan="2"><div align="center">
-<textarea name=msg cols=80 rows=15><?=safechar($body)?></textarea>
-</div></td></tr>
-<tr><td colspan="2"><div align="center"><b>Comment: </b>
-<input name="comment" type="text" size="70">
-</div></td></tr>
-<tr><td><div align="center"><b>From: </b>
-<?=$CURUSER['username']?>
-<input name="sender" type="radio" value="self" checked>
-System
-<input name="sender" type="radio" value="system">
-</div></td>
-<td><div align="center"><b>Take snapshot:</b> <input name="snap" type="checkbox" value="1">
-</div></td></tr>
-<tr><td colspan="2" align=center><input type=submit value="Send it!" class=btn>
-</td></tr></table>
-<input type=hidden name=pmees value="<?=$pmees?>">
-<input type=hidden name=n_pms value=<?=$n_pms?>>
-</form><br><br>
-<form method=post action=<?=$_SERVER['PHP_SELF']?>>
-<table border=1 cellspacing=0 cellpadding=5>
-<tr><td>
-<b>Templates:</b>
-<select name="auto">
-<?php
-for ($i = 1; $i <= count($mm_template); $i++) {
-echo "<option value=$i ".($auto == $i?"selected":"").
-">".$mm_template[$i][0]."</option>\n";}
-?>
-</select>
-<input type=submit value="Use" class=btn>
-</td></tr></table>
-<input type=hidden name=pmees value="<?=$pmees?>">
-<input type=hidden name=n_pms value=<?=$n_pms?>>
-</form></div></td></tr></table>
-<?php
-} else { //////// PM //
-$receiver = 0+$_GET["receiver"];
-    if (!is_valid_id($receiver))
-      die;
-
-    $replyto = 0+$_GET["replyto"];
-    if ($replyto && !is_valid_id($replyto))
-      die;
-
-$auto = $_GET["auto"];
-$std = $_GET["std"];
-
-if (($auto || $std ) && get_user_class() < UC_MODERATOR)
-die("Permission denied.");
-
-$res = mysql_query("SELECT * FROM users WHERE id=$receiver") or die(mysql_error());
-$user = mysql_fetch_assoc($res);
-if (!$user)
-die("No user with that ID.");
-
-if ($auto)
-$body = $pm_std_reply[$auto];
-if ($std)
-$body = $pm_template[$std][1];
-
-if ($replyto)
+//===set MAX message amount for users... in out and other... and...
+//=== possibly merge this function with the one below and return an array :P
+function maxbox($class) 
 {
-$res = mysql_query("SELECT * FROM messages WHERE id=$replyto") or sqlerr();
-$msga = mysql_fetch_assoc($res);
-if ($msga["receiver"] != $CURUSER["id"])
-die;
-$res = mysql_query("SELECT username FROM users WHERE id=" . $msga["sender"]) or sqlerr();
-$usra = mysql_fetch_assoc($res);
-$body .= "\n\n\n-------- $usra[username] wrote: --------\n$msga[msg]\n";
-$subject = "Re: " . safechar($msga['subject']);
+switch ($class)
+  {
+case UC_CODER:
+$maxbox = 500;
+ break;
+case UC_SYSOP:
+$maxbox = 500;
+     break;
+case UC_ADMINISTRATOR:
+$maxbox = 400;
+     break;
+case UC_MODERATOR:
+$maxbox = 300;
+     break;
+case UC_VIP:
+$maxbox = 150;
+     break;
+ case UC_POWER_USER:
+$maxbox = 100;
+     break;
+	 case UC_USER:
+$maxbox = 50;
+     break;
+  }
+return   $maxbox;
+}  
+
+//=== takesendmessage... delete the other one \o/
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//=== first the draft stuff... if posting a new draft and not previewing it, enter it into DB :D
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+if ($_POST['draft'] == 'yes' && $_POST['buttonval'] == 'Save'){
+
+//=== make sure they wrote something :P
+if (!$_POST['subject']) stderr('Error!','To save a message in your draft folder, it must have a subject!');
+if (!$_POST['body']) stderr('Error!','To save a message in your draft folder, it must have body text!');
+
+$body = sqlesc($_POST['body']);
+$subject = sqlesc(htmlspecialchars($_POST['subject']));
+$draft = sqlesc(($_POST['draft'] === 'yes' ? 'yes' : 'no'));
+
+mysql_query('INSERT INTO messages (sender, receiver, added, msg, subject, location, draft, unread, saved) VALUES('.$CURUSER['id'].', '.$CURUSER['id'].','.sqlesc(get_date_time()).', '.$body.', '.$subject.', 0, '.$draft.',"no","yes")') or sqlerr(__FILE__, __LINE__);
+
+//=== Check if messages was saved as draft
+if (mysql_affected_rows() === 0)
+stderr('Error','Message wasn\'t saved!');
+header('Location: /messages.php?action=viewdrafts&new_draft=1');
+die();
+}//=== end save draft
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//=== now the basic takesendmessage scripts
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//=== check to see if it's a preview or a post
+if (isset($_POST['buttonval']) && $_POST['buttonval'] == 'Send'){
+if ($CURUSER['pm_max'] == 0) stderr("System Message","You PM rights have been revoked.");
+
+    // Anti Flood Code
+        // This code restricts PM sending to a set limit
+
+        if (!($CURUSER['pm_count'] < $CURUSER['pm_max']))
+                stderr('Notice','You have reached your PM limit. Please wait 15 minutes before retrying.');
+
+//=== check to see they have everything or...
+$receiver = sqlesc(0 + $_POST['receiver']);
+$subject = sqlesc(htmlspecialchars($_POST['subject']));
+$body = sqlesc(trim($_POST['body']));
+$save = sqlesc(($_POST['save'] === 1 ? 'yes' : 'no'));
+$urgent = sqlesc((($_POST['urgent'] === 'yes' &&  $CURUSER['class'] >= UC_MODERATOR) ? 'yes' : 'no'));
+$returnto = htmlspecialchars($_POST['returnto']);
+
+//=== get user info from DB
+$res_receiver = mysql_query('SELECT acceptpms, notifs, email, class, username FROM users WHERE id='.$receiver) or sqlerr(__FILE__, __LINE__);
+$arr_receiver = mysql_fetch_assoc($res_receiver);
+
+//=== errors for missing / bad input
+if (!is_valid_id(0 + $_POST['receiver']) || !$arr_receiver) stderr('Error', 'Member not found!!!');	    
+//if ($_SERVER['REQUEST_METHOD'] != 'POST') stderr('Error', 'Method');
+if (!$_POST['body'])   stderr('Error','No body text... Please enter something to send!');
+//=== simple stop XSS
+if (strpos($_SERVER['HTTP_REFERER'], $_SERVER['HTTP_HOST'])==false)  stderr('Error', 'So, thou common dog, didst thou disgorge thy glutton bosom?');
+/*
+//=== allow suspended users to PM / forward to staff only
+	if ($CURUSER['suspended'] === 'yes')
+	{
+	$res = mysql_query('SELECT id FROM users WHERE class >='.UC_MODERATOR) or sqlerr(__FILE__, __LINE__);
+        $row = mysql_fetch_assoc($res);
+        if (!in_array(0 + $_POST['receiver'], $row)) stderr('Error', 'Your account is suspended, you may only forward PMs to staff!');
+	}
+*/
+//=== make sure they have space
+$res_count = mysql_query('SELECT COUNT(*) FROM messages WHERE receiver = '.$receiver.' AND location = 1') or sqlerr(__FILE__, __LINE__);
+$arr_count = mysql_fetch_row($res_count);
+
+if ($arr_count[0] >= maxbox($arr_receiver['class'])  && $CURUSER['class'] < UC_MODERATOR) stderr('Sorry', 'Members PM box is full.');
+        // This code restricts PM sending to a set limit
+
+        if (!($CURUSER['pm_count'] < $CURUSER['pm_max']))
+                stderr('Notice','You have reached your PM limit. Please wait 15 minutes before retrying.');
+//=== Make sure recipient wants this message
+		if (get_user_class() < UC_MODERATOR)
+		{
+		switch(true){
+	case($arr_receiver['acceptpms'] == 'yes'):
+			$res2 = mysql_query('SELECT * FROM blocks WHERE userid='.$receiver.' AND blockid='.$CURUSER['id']) or sqlerr(__FILE__, __LINE__);
+			if (mysql_num_rows($res2) == 1) stderr('Refused', $arr_receiver['username'].' has blocked PMs from you.');
+		break;
+	case($arr_receiver['acceptpms'] == 'friends'):
+			$res2 = mysql_query('SELECT * FROM friends WHERE userid='.$receiver.' AND friendid='.$CURUSER['id']) or sqlerr(__FILE__, __LINE__);
+			if (mysql_num_rows($res2) != 1) stderr('Refused', $arr_receiver['username'].' only accepts PMs from members in their friends list.');
+		break;		
+	case($arr_receiver['acceptpms'] == 'no'):
+			stderr('Refused', $arr_receiver['username'].' does not accept PMs.');
+		break;		
+				}//===end if acceps PMs
+	  }//=== end if staff
+
+//=== ok all is well... post the message :D
+mysql_query('INSERT INTO messages (poster, sender, receiver, added, msg, subject, saved, location,urgent) VALUES('.$CURUSER["id"].', '.$CURUSER["id"].', '.$receiver.', '.sqlesc(get_date_time()).', '.$body.', '.$subject.', '.$save.', 1,'.$urgent.')') or sqlerr(__FILE__, __LINE__);
+// Update Last PM sent...
+mysql_query("UPDATE users SET pm_count = pm_count + 1 WHERE id = ".sqlesc($CURUSER['id'])) or sqlerr(__FILE__, __LINE__);
+
+//=== make sure it worked then...
+if (mysql_affected_rows() === 0)
+stderr('Error','Messages wasn\'t sent!');
+    	
+//=== if they just have to know about it right away... send them an email (if selected if profile)
+	  if (strpos($arr_receiver['notifs'], '[pm]') !== false)
+	  {
+	    $username = $CURUSER['username'];
+$body = <<<EOD
+You have received a PM from $username!
+
+You can use the URL below to view the message (you may have to login).
+
+$DEFAULTBASEURL/messages.php?action=viewmailbox
+
+--
+$SITENAME
+EOD;
+	    @mail($user['email'], "You have received a PM from " . $username . "!",
+	    	$body, "From: $SITEEMAIL", "-f$SITEEMAIL");
+	  }
+     
+//=== if returnto sent
+if ($returnto)
+header('Location: '.$returnto);
+else
+header('Location: messages.php?action=viewmailbox&sent=1');
+die();
+}//=== end of takesendmessage script
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//=== now the basic page for sendmessage
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//=== get info if any...
+$receiver = ($_GET['receiver'] ? (0 + $_GET['receiver']) : (0 + $_POST['receiver']));
+$replyto = ($_GET['replyto'] ? (0 + $_GET['replyto']) : (0 + $_POST['replyto']));
+$returnto = htmlspecialchars($_POST['returnto']);
+
+//=== errors if bad data sent
+if ($receiver == 0) stderr('Error', 'you can\'t PM the Sys-Bot... It won\'t write you back!');
+if (!is_valid_id($receiver) || $replyto && !is_valid_id($replyto)) stderr('Error', 'No member with that ID!');
+
+//=== make sure there is a member to send this to
+	$res_member = mysql_query('SELECT username FROM users WHERE id='.($receiver ? sqlesc($receiver) : ($replyto ? sqlesc($replyto) : ''))) or sqlerr(__FILE__,__LINE__);
+	$arr_member = mysql_fetch_assoc($res_member);
+	if (!$arr_member) stderr('Error', 'No member with that ID!');
+
+//=== if reply
+if($replyto){
+	//=== make sure they should be replying to this PM...
+	$res_old_message = mysql_query('SELECT receiver,sender,subject,msg FROM messages WHERE id='.sqlesc($replyto)) or sqlerr(__FILE__,__LINE__);
+	$arr_old_message = mysql_fetch_assoc($res_old_message);
+	if ($arr_old_message['receiver'] != $CURUSER['id']) stderr('Error', 'Slander, whose edge is sharper than the sword, whose tongue out venoms all the worms of Nile');
+
+	$body .= "\n\n\n-------- $arr_member[username] wrote: --------\n$arr_old_message[msg]\n";
+	$subject = 'Re: '.htmlspecialchars($arr_old_message['subject']);
 }
 
+//=== if preview or not replying	  
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+$subject = trim($_POST['subject']);
+$body = trim($_POST['body']);
+}	  
 
+//=== and finally print the basic page  :D
+stdhead((($_POST['draft'] == 'yes' || $_GET['draft'] == 'yes') ? 'write draft' : 'Send message'), false);
 
-stdhead("Send message", false);
-?>
-<table class=main width=750 border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>
-<div align=center>
-<h1>Message to <a href=userdetails.php?id=<?=$receiver?>><?=$user["username"]?></a></h1>
-<form name=message method=post action=takemessage.php>
-<? if ($_GET["returnto"] || $_SERVER["HTTP_REFERER"]) { ?>
-<input type=hidden name=returnto value=<?=$_GET["returnto"] ? $_GET["returnto"] : $_SERVER["HTTP_REFERER"]?>>
-<? } ?>
-<table class=message cellspacing=0 cellpadding=5>
-<TR>
-<TD colspan="2"><B>Subject: </B>
-<INPUT name="subject" type="text" size="76" value="<?=$subject?>"></TD>
-</TR>
-<tr><td<?=$replyto?" colspan=2":""?>>
-<?php
-textbbcode("message","msg","$body");
-?></td></tr>
-<tr>
-<? if ($replyto) { ?>
-<td align=center><input type=checkbox name='delete' value='yes' <?=$CURUSER['deletepms'] == 'yes'?"checked":""?>>Delete Message you´re reply
-<input type=hidden name=origmsg value=<?=$replyto?>></td>
-<? } ?>
-<td align=center><input type=checkbox name='save' value='yes' <?=$CURUSER['savepms'] == 'yes'?"checked":""?>>Save Message to sentbox</td></tr>
-<?
+echo'<h1>Message to <a class=altlink href=userdetails.php?id='.($receiver > 0 ? $receiver : $replyto ).'>'.$arr_member['username'].'</a></h1>'.
+'<table border=0 cellspacing=5 cellpadding=5 width=600><tr><td class=colhead>Send message</td></tr><form name=compose method=post action=?>'.
+'<tr><td colspan="2" class=clearalt6><b>Subject:&nbsp;&nbsp;</b><input name="subject" type="text" size="120" value="'.$subject.'"></td></tr><tr><td colspan=2 class=clearalt6>';
+textbbcode('compose','body',$body);
+echo'</td></tr><tr><td align=center class=clearalt6>'.($CURUSER['class']  >= UC_MODERATOR? '<b><font color=red>Mark as URGENT!</font></b> '.
+'<input type=checkbox name=urgent value=yes '.(($_POST['urgent'] && $_POST['urgent'] == 'yes') ? ' checked' : '').'>&nbsp;' : '').' save as Draft? '.
+'<input type=checkbox name=draft value=yes '.(($_POST['draft'] == 'yes' || $_GET['draft'] == 'yes' || $_GET['draft'] == 1) ? ' checked' : '').'>&nbsp;'.($replyto ? 'Delete message you are replying to? '.
+'<input type=checkbox name=delete value=yes '.($CURUSER['deletepms'] == 'yes' ? ' checked' : '').'><input type=hidden name=origmsg value='.$replyto.'>' : '').
+'Save message to Sentbox? <input type=checkbox name=save value=1'.($CURUSER['savepms'] == 'yes' ? ' checked' : '').'></td></tr>'.
+'<tr><td'.($replyto ? ' colspan=2' : '').' align=center class=clearalt6> '.
+'<input type=submit name=buttonval value='.(($_POST['draft'] == 'yes' || $_GET['draft'] == 'yes' || $_GET['draft'] == 1) ? 'Save' : 'Send').' class=button></td></tr></table>'.
+'<input type=hidden name=receiver value='.($receiver > 0 ? $receiver : $replyto ).'></form><br><br><br>';
 
-if (get_user_class() >= UC_ADMINISTRATOR)
-{
-?>
-<tr>
-<td colspan=1><div align="center"><b>Sender: </b>
-<?=$CURUSER['username']?>
-<input name="sender" type="radio" value="self" checked>
-System
-<input name="sender" type="radio" value="system">
-<?php
-}
-?>
-</div></td></tr><tr><td<?=$replyto?" colspan=2":""?> align=center><input type=submit value="OK!" class=btn></td></tr>
-</table>
-<input type=hidden name=receiver value=<?=$receiver?>>
-</form>
-
-<?php
-if (get_user_class() >= UC_MODERATOR)
-{
-?>
-<br><br>
-<form method=get action=<?=$_SERVER['PHP_SELF']?>>
-<table border=1 cellspacing=0 cellpadding=5>
-<tr><td>
-<b>PM Text :</b>
-<select name="std"><?
-for ($i = 1; $i <= count($pm_template); $i++)
-{
-echo "<option value=$i ".($std == $i?"selected":"").
-">".$pm_template[$i][0]."</option>\n";
-}?>
-</select>
-<? if ($_SERVER["HTTP_REFERER"]) { ?>
-<input type=hidden name=returnto value=<?=$_GET["returnto"]?$_GET["returnto"]:$_SERVER["HTTP_REFERER"]?>>
-<? } ?>
-<input type=hidden name=receiver value=<?=$receiver?>>
-<input type=hidden name=replyto value=<?=$replyto?>>
-<input type=submit value="Use it!" class=btn>
-</td></tr></table></form>
-<?php
-}
-?>
-
-</div></td></tr></table>
-<?
-}
 stdfoot();
 ?>

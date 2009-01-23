@@ -1,9 +1,10 @@
 <?php
 ob_start("ob_gzhandler");
 require ("include/bittorrent.php");
-require_once ("include/user_functions.php");
-require_once ("include/bbcode_functions.php");
+require ("include/function_cache.php");
+require ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -11,8 +12,8 @@ header("HTTP/1.0 404 Not Found");
 print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
 die();
 }
-if (get_user_class() < UC_POWER_USER)
-stderr("Error", "Permission denied.");
+
+
 /*
   function donortable($res, $frame_caption)
   {
@@ -69,7 +70,7 @@ stderr("Error", "Permission denied.");
     while ($a = mysql_fetch_assoc($res))
     {
       ++$num;
-      $highlight = $CURUSER["id"] == $a["userid"] ? " bgcolor=#CF8474" : "";
+      $highlight = $CURUSER["id"] == $a["userid"] ? " bgcolor=#777777" : "";
       if ($a["downloaded"])
       {
         $ratio = $a["uploaded"] / $a["downloaded"];
@@ -121,7 +122,8 @@ stderr("Error", "Permission denied.");
       }
       else
         $ratio = "Inf.";
-      print("<tr><td align=center>$num</td><td align=left><a href=details.php?id=" . $a["id"] . "&hit=1><b><font color='#".get_user_class_color($a['class'])."'>" . $a['name'] . "</font></b><b></b></a></td><td align=right>" . number_format($a["times_completed"]) .
+      print("<tr><td align=center>$num</td><td align=left><a href=details.php?id=" . $a["id"] . "&hit=1><b>" .
+        $a["name"] . "</b></a></td><td align=right>" . number_format($a["times_completed"]) .
 				"</td><td align=right>" . mksize($a["data"]) . "</td><td align=right>" . number_format($a["seeders"]) .
         "</td><td align=right>" . number_format($a["leechers"]) . "</td><td align=right>" . ($a["leechers"] + $a["seeders"]) .
         "</td><td align=right>$ratio</td>\n");
@@ -132,7 +134,7 @@ stderr("Error", "Permission denied.");
 
   function countriestable($res, $frame_caption, $what)
   {
-    global $CURUSER;
+    global $CURUSER, $pic_base_url;
     begin_frame($frame_caption, true);
     begin_table();
 ?>
@@ -155,7 +157,7 @@ stderr("Error", "Permission denied.");
  	    elseif ($what == "Ratio")
  	    	$value = number_format($a["r"],2);
 	    print("<tr><td align=center>$num</td><td align=left><table border=0 class=main cellspacing=0 cellpadding=0><tr><td class=embedded>".
-	      "<img align=center src=/pic/flag/$a[flagpic]></td><td class=embedded style='padding-left: 5px'><b>$a[name]</b></td>".
+	      "<img align=center src=\"{$pic_base_url}flag/{$a['flagpic']}\"></td><td class=embedded style='padding-left: 5px'><b>{$a['name']}</b></td>".
 	      "</tr></table></td><td align=right>$value</td></tr>\n");
 	  }
     end_table();
@@ -172,8 +174,8 @@ stderr("Error", "Permission denied.");
 		$n = 1;
 		while ($arr = mysql_fetch_assoc($res))
 		{
-      $highlight = $CURUSER["id"] == $arr["userid"] ? " bgcolor=#CF8474" : "";
-			print("<tr><td$highlight>$n</td><td$highlight><a href=userdetails.php?id=" . $arr["userid"] . "><b><font color='#".get_user_class_color($arr['class'])."'>" .$arr['username'] . "</font></b></td><td$highlight>" . mksize($arr["uprate"]) . "/s</td><td$highlight>" . mksize($arr["downrate"]) . "/s</td></tr>\n");
+      $highlight = $CURUSER["id"] == $arr["userid"] ? " bgcolor=#777777" : "";
+			print("<tr><td$highlight>$n</td><td$highlight><a href=userdetails.php?id=" . $arr["userid"] . "><b>" . $arr["username"] . "</b></td><td$highlight>" . mksize($arr["uprate"]) . "/s</td><td$highlight>" . mksize($arr["downrate"]) . "/s</td></tr>\n");
 			++$n;
 		}
 
@@ -185,11 +187,11 @@ stderr("Error", "Permission denied.");
   begin_main_frame();
 //  $r = mysql_query("SELECT * FROM users ORDER BY donated DESC, username LIMIT 100") or die;
 //  donortable($r, "Top 10 Donors");
-	$type = 0 + $_GET["type"];
-	if (!in_array($type,array(1,2,3,4)))
+	$type = isset($_GET["type"]) ? 0 + $_GET["type"] : 0;
+	if (!in_array($type,array(1,2,3)))
 		$type = 1;
-	$limit = 0 + $_GET["lim"];
-	$subtype = $_GET["subtype"];
+	$limit = isset($_GET["lim"]) ? 0 + $_GET["lim"] : false;
+	$subtype = isset($_GET["subtype"]) ? $_GET["subtype"] : false;
 
 	print("<p align=center>"  .
 		($type == 1 && !$limit ? "<b>Users</b>" : "<a href=topten.php?type=1>Users</a>") .	" | " .
@@ -204,51 +206,37 @@ stderr("Error", "Permission denied.");
 
   if ($type == 1)
   {
-
-// BEGIN CACHE ///////////////////////////////////////////////////////////
-
-     $cachefile = "$CACHE/topten/topten-type-".$type."-limit-".$lim."-poweruser-".$pu."-subtype-".$subtype.".html";
-     $cachetime = 100 * 60; // 100 minutes
-     // Serve from the cache if it is younger than $cachetime
-     if (file_exists($cachefile) && (time() - $cachetime
-        < filemtime($cachefile)))
-     {
-        include($cachefile);
-        print("<p align=center><font class=small>This page was last updated ".date('Y-m-d H:i:s', filemtime($cachefile)).". Started recording account xfer stats on 2008-06-01</font></p>");
-        end_main_frame();
-        stdfoot();
-
-        exit;
-     }
-     ob_start(); // start the output buffer
-
-/////////////////////////////////////////////////////////////////////////////////
-
-    $mainquery = "SELECT id as userid, class, username, added, uploaded, downloaded, uploaded / (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(added)) AS upspeed, downloaded / (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(added)) AS downspeed FROM users WHERE enabled = 'yes' AND anonymoustopten = 'no'";
+    cache_start(6000,topten1);
+    $mainquery = "SELECT id as userid, username, added, uploaded, downloaded, uploaded / (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(added)) AS upspeed, downloaded / (UNIX_TIMESTAMP(NOW()) - UNIX_TIMESTAMP(added)) AS downspeed FROM users WHERE enabled = 'yes'";
 
   	if (!$limit || $limit > 250)
   		$limit = 10;
 
-    if ($limit == 10 || $subtype == "wsh")
+  	if ($limit == 10 || $subtype == "ul")
   	{
-			$order = "uploaded / downloaded ASC, downloaded DESC";
-  		$extrawhere = " AND downloaded > 1073741824";
-	  	$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
-                print("<font size=3><b>Leeching:</b></font>");
-	  	usertable($r, "Top $limit Worst Sharers <font class=small>(with minimum 1 GB downloaded)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=wsh>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=wsh>Top 250</a>]</font>" : ""));
+			$order = "uploaded DESC";
+			$r = mysql_query($mainquery . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+	  	usertable($r, "Top $limit Uploaders" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=ul>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=ul>Top 250</a>]</font>" : ""));
 	  }
 
     if ($limit == 10 || $subtype == "dl")
   	{
 			$order = "downloaded DESC";
-		  $r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+		  $r = mysql_query($mainquery . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
 		  usertable($r, "Top $limit Downloaders" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=dl>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=dl>Top 250</a>]</font>" : ""));
+	  }
+
+    if ($limit == 10 || $subtype == "uls")
+  	{
+			$order = "upspeed DESC";
+			$r = mysql_query($mainquery . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+	  	usertable($r, "Top $limit Fastest Uploaders <font class=small>(average, includes inactive time)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=uls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=uls>Top 250</a>]</font>" : ""));
 	  }
 
     if ($limit == 10 || $subtype == "dls")
   	{
 			$order = "downspeed DESC";
-			$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+			$r = mysql_query($mainquery . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
 	  	usertable($r, "Top $limit Fastest Downloaders <font class=small>(average, includes inactive time)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=dls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=dls>Top 250</a>]</font>" : ""));
 	  }
 
@@ -257,61 +245,22 @@ stderr("Error", "Permission denied.");
 			$order = "uploaded / downloaded DESC";
 			$extrawhere = " AND downloaded > 1073741824";
 	  	$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
-                print("<p><br><font size=3><b>Seeding:</b></font>");
 	  	usertable($r, "Top $limit Best Sharers <font class=small>(with minimum 1 GB downloaded)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=bsh>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=bsh>Top 250</a>]</font>" : ""));
 		}
 
-  	if ($limit == 10 || $subtype == "ul")
+    if ($limit == 10 || $subtype == "wsh")
   	{
-			$order = "uploaded DESC";
-			$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
-	  	usertable($r, "Top $limit Uploaders" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=ul>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=ul>Top 250</a>]</font>" : ""));
+			$order = "uploaded / downloaded ASC, downloaded DESC";
+  		$extrawhere = " AND downloaded > 1073741824";
+	  	$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
+	  	usertable($r, "Top $limit Worst Sharers <font class=small>(with minimum 1 GB downloaded)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=wsh>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=wsh>Top 250</a>]</font>" : ""));
 	  }
-
-    if ($limit == 10 || $subtype == "uls")
-  	{
-			$order = "upspeed DESC";
-			$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
-	  	usertable($r, "Top $limit Fastest Uploaders <font class=small>(average, includes inactive time)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=uls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=uls>Top 250</a>]</font>" : ""));
-	  }
-
-// CACHE END //////////////////////////////////////////////////
-
-      // open the cache file for writing      
-      $fp = fopen($cachefile, 'w');
-      // save the contents of output buffer to the file    
-      fwrite($fp, ob_get_contents());
-      // close the file
-       fclose($fp);
-       // Send the output to the browser
-       ob_end_flush();
-
-/////////////////////////////////////////////////////////
-
+  register_shutdown_function("cache_end");
   }
 
   elseif ($type == 2)
   {
-
-// BEGIN CACHE ///////////////////////////////////////////////////////////
-
-     $cachefile = "$CACHE/topten/topten-type-".$type."-limit-".$lim."-poweruser-".$pu."-subtype-".$subtype.".html";
-     $cachetime = 100 * 60; // 100 minutes
-     // Serve from the cache if it is younger than $cachetime
-     if (file_exists($cachefile) && (time() - $cachetime
-        < filemtime($cachefile)))
-     {
-        include($cachefile);
-        print("<p align=center><font class=small>This page was last updated ".date('Y-m-d H:i:s', filemtime($cachefile)).". Started recording account xfer stats on 2008-06-01</font></p>");
-        end_main_frame();
-        stdfoot();
-
-        exit;
-     }
-     ob_start(); // start the output buffer
-
-/////////////////////////////////////////////////////////////////////////////////
-
+   	cache_start(6000,topten2);
    	if (!$limit || $limit > 50)
   		$limit = 10;
 
@@ -344,43 +293,11 @@ stderr("Error", "Permission denied.");
 		  $r = mysql_query("SELECT t.*, (t.size * t.times_completed + SUM(p.downloaded)) AS data FROM torrents AS t LEFT JOIN peers AS p ON t.id = p.torrent WHERE p.seeder = 'no' AND leechers >= 5 AND times_completed > 0 GROUP BY t.id ORDER BY seeders / leechers ASC, leechers DESC LIMIT $limit") or sqlerr();
 		  _torrenttable($r, "Top $limit Worst Seeded Torrents <font class=small>(with minimum 5 leechers, excluding unsnatched torrents)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=2&amp;lim=25&amp;subtype=wse>Top 25</a>] - [<a href=topten.php?type=2&amp;lim=50&amp;subtype=wse>Top 50</a>]</font>" : ""));
 		}
-
-// CACHE END //////////////////////////////////////////////////
-
-      // open the cache file for writing      
-      $fp = fopen($cachefile, 'w');
-      // save the contents of output buffer to the file    
-      fwrite($fp, ob_get_contents());
-      // close the file
-       fclose($fp);
-       // Send the output to the browser
-       ob_end_flush();
-
-/////////////////////////////////////////////////////////
-
+  register_shutdown_function("cache_end");
   }
   elseif ($type == 3)
   {
-
-// BEGIN CACHE ///////////////////////////////////////////////////////////
-
-     $cachefile = "$CACHE/topten/topten-type-".$type."-limit-".$lim."-poweruser-".$pu."-subtype-".$subtype.".html";
-     $cachetime = 1440 * 60; // 100 minutes
-     // Serve from the cache if it is younger than $cachetime
-     if (file_exists($cachefile) && (time() - $cachetime
-        < filemtime($cachefile)))
-     {
-        include($cachefile);
-        print("<p align=center><font class=small>This page was last updated ".date('Y-m-d H:i:s', filemtime($cachefile)).". Started recording account xfer stats on 2008-06-01</font></p>");
-        end_main_frame();
-        stdfoot();
-
-        exit;
-     }
-     ob_start(); // start the output buffer
-
-/////////////////////////////////////////////////////////////////////////////////
-
+  	cache_start(6000,topten3);
   	if (!$limit || $limit > 25)
   		$limit = 10;
 
@@ -407,44 +324,12 @@ stderr("Error", "Permission denied.");
 		  $r = mysql_query("SELECT c.name, c.flagpic, sum(u.uploaded)/sum(u.downloaded) AS r FROM users AS u LEFT JOIN countries AS c ON u.country = c.id WHERE u.enabled = 'yes' GROUP BY c.name HAVING sum(u.uploaded) > 1099511627776 AND sum(u.downloaded) > 1099511627776 AND count(u.id) >= 100 ORDER BY r DESC LIMIT $limit") or sqlerr();
 		  countriestable($r, "Top $limit Countries<font class=small> (ratio, with minimum 1TB uploaded, 1TB downloaded and 100 users)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=r>Top 25</a>]</font>" : ""),"Ratio");
 	  }
-
-// CACHE END //////////////////////////////////////////////////
-
-      // open the cache file for writing      
-      $fp = fopen($cachefile, 'w');
-      // save the contents of output buffer to the file    
-      fwrite($fp, ob_get_contents());
-      // close the file
-       fclose($fp);
-       // Send the output to the browser
-       ob_end_flush();
-
-/////////////////////////////////////////////////////////
-
+  register_shutdown_function("cache_end");
   }
 	elseif ($type == 4)
 	{
-
-// BEGIN CACHE ///////////////////////////////////////////////////////////
-
-     $cachefile = "$CACHE/topten/topten-type-".$type."-limit-".$lim."-poweruser-".$pu."-subtype-".$subtype.".html";
-     $cachetime = 20 * 60; // 100 minutes
-     // Serve from the cache if it is younger than $cachetime
-     if (file_exists($cachefile) && (time() - $cachetime
-        < filemtime($cachefile)))
-     {
-        include($cachefile);
-        print("<p align=center><font class=small>This page was last updated ".date('Y-m-d H:i:s', filemtime($cachefile)).". Started recording account xfer stats on 2008-06-01</font></p>");
-        end_main_frame();
-        stdfoot();
-
-        exit;
-     }
-     ob_start(); // start the output buffer
-
-/////////////////////////////////////////////////////////////////////////////////
-
-//		print("<h1 align=center><font color=red>Under construction!</font></h1>\n");
+//print("<h1 align=center><font color=red>Under construction!</font></h1>\n");
+  	cache_start(6000,topten4);
   	if (!$limit || $limit > 250)
   		$limit = 10;
 
@@ -468,24 +353,11 @@ stderr("Error", "Permission denied.");
 				$r = mysql_query("SELECT users.id AS userid, peers.id AS peerid, username, peers.uploaded, peers.downloaded,(peers.uploaded - peers.uploadoffset) / (UNIX_TIMESTAMP(last_action) - UNIX_TIMESTAMP(started)) AS uprate, IF(seeder = 'yes',(peers.downloaded - peers.downloadoffset)  / (finishedat - UNIX_TIMESTAMP(started)),(peers.downloaded - peers.downloadoffset) / (UNIX_TIMESTAMP(last_action) - UNIX_TIMESTAMP(started))) AS downrate FROM peers LEFT JOIN users ON peers.userid = users.id ORDER BY downrate DESC LIMIT $limit") or sqlerr();
 				peerstable($r, "Top $limit Fastest Downloaders" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=4&amp;lim=100&amp;subtype=dl>Top 100</a>] - [<a href=topten.php?type=4&amp;lim=250&amp;subtype=dl>Top 250</a>]</font>" : ""));
 	  	}
-
-// CACHE END //////////////////////////////////////////////////
-
-      // open the cache file for writing      
-      $fp = fopen($cachefile, 'w');
-      // save the contents of output buffer to the file    
-      fwrite($fp, ob_get_contents());
-      // close the file
-       fclose($fp);
-       // Send the output to the browser
-       ob_end_flush();
-
-/////////////////////////////////////////////////////////
-
+	register_shutdown_function("cache_end");
 	}
   end_main_frame();
-  print("<p><font class=small>Started recording account xfer stats on 2008-06-01</font></p>");
-stdfoot();
+  print("<p><font class=small>Started recording account xfer stats on 2008-06-02</font></p>");
+  stdfoot();
 ?>
 
 

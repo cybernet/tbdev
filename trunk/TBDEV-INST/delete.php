@@ -53,7 +53,7 @@ else
 deletetorrent($id);
 sql_query("UPDATE avps SET value_d='0000-00-00 00:00:00', value_s='' WHERE arg='bestfilmofweek' AND value_s=".$id);
 if ($CURUSER["anonymous"]=='yes')
-write_log("Torrent $id ($torrent) was deleted by Anonymous ($reasonstr)");
+write_log("Torrent $id ($torrent) was deleted by Anonymous $CURUSER[username] ($reasonstr)");
 else
 write_log("Torrent $id ($row[name]) was deleted by $CURUSER[username] ($reasonstr)");
 //===remove karma

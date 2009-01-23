@@ -1,8 +1,9 @@
 <?php
-require ("include/bittorrent.php");
+require_once("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
+maxcoder();	
 
 if(!logged_in())
 {
@@ -11,11 +12,12 @@ header("HTTP/1.0 404 Not Found");
 print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
 die();
 }
+parked();
 
 if (get_user_class() < UC_ADMINISTRATOR)
-hacker_dork("Ratio Edit - Nosey Cunt !");
+hacker_dork("Ratio Cheaters - Nosey Cunt !");
 
-stdhead("Ratio Cheats");
+stdhead("Cheaters");
 
 begin_main_frame();
 begin_frame("Cheating Users:", true);
@@ -65,7 +67,7 @@ return "Check All Remove"; }
 // End -->
 </script>
 
-<?php
+<?
 
 print("<table width=\"100%\">\n");
 
@@ -99,7 +101,7 @@ $cheater = "<b><a href=userdetails.php?id=$aaa[id]>$aaa[username]</a></b> has be
 
 print("<tr><td class=\"tableb\" width=\"10\" align=center>$arr[id]</td>");
 print("<td class=\"tableb\" align=left><a href=\"javascript: klappe_news('a$arr[id]')\">$aaa[username]</a> - Added: $arr[added]");
-print("<div id=\"ka$arr[id]\" style=\"display: none;\"><font color=\"gold\">$cheater</font></div></td>");
+print("<div id=\"ka$arr[id]\" style=\"display: none;\"><font color=\"red\">$cheater</font></div></td>");
 print("<td class=\"tableb\" valign=\"top\" width=10><input type=\"checkbox\" name=\"desact[]\" value=\"" . $aaa["id"] . "\"/></td>");
 print("<td class=\"tableb\" valign=\"top\" width=10><input type=\"checkbox\" name=\"remove[]\" value=\"" . $arr["id"] . "\"/></td></tr>");
 }
@@ -112,7 +114,7 @@ if (get_user_class() >= UC_MODERATOR)
 </td>
 </tr>
 </table></form>
-<?php
+<?
 }
 
 // will: added this for page links

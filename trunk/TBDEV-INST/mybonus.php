@@ -18,6 +18,7 @@ require ("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -55,20 +56,20 @@ break;
 case $amt == 1000.0:
 $amt = '10 GB';
 break;
-case $amt == 2000:
+case $amt == 2000.0:
 $amt = '25 GB';
 break;
-case $amt == 3750:
+case $amt == 4000.0:
 $amt = '50 GB';
 break;
-case $amt == 8000:
+case $amt == 8000.0:
 $amt = '100 GB';
 break;
-case $amt == 40000:
+case $amt == 40000.0:
 $amt = '520 GB';
 break;
 default:
-$amt = '1040 GB';
+$amt = '1 TB';
 }
 
 stdhead($CURUSER['username'] . "'s Karma Bonus Page");

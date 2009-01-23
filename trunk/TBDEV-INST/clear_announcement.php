@@ -4,6 +4,7 @@ require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 
 dbconn(false);
+maxcoder();	
 
 // Change the following lines to reflect your own server attributes
 if(!logged_in())

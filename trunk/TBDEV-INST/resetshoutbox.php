@@ -3,6 +3,7 @@ require ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -18,7 +19,7 @@ if (get_user_class() < UC_SYSOP){
 
 if($_GET['yes'] == 1){
 mysql_query("DELETE FROM shoutbox") or sqlerr(__FILE__, __LINE__);
-mysql_query("INSERT INTO shoutbox (userid, username, date, text) VALUES(2, 'Bot', UNIX_TIMESTAMP(NOW()), '".$SITENAME.")");
+//mysql_query("INSERT INTO shoutbox (userid, username, date, text) VALUES(2, 'Bot', UNIX_TIMESTAMP(NOW()), '".unsafeChar($SITENAME).")");
 echo "Threads in Shoutbox have been erased!";
 }
 else{

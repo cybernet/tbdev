@@ -1,8 +1,8 @@
 <?php
 require_once("include/bittorrent.php");
-require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -11,15 +11,9 @@ print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was 
 die();
 }
 
-function bark($text) 
-{ 
-print("<title>Error!</title>"); 
-print("<table width='100%' height='100%' style='border: 8px ridge #000000'><tr><td align='center'>"); 
-print("<center><h1 style='color: #CC3300;'>Error:</h1><h2>" . htmlspecialchars($text) . "</h2></center>"); 
-print("<center><INPUT TYPE='button' VALUE='Back' onClick=\"history.go(-1)\"></center>"); 
-print("</td></tr></table>"); 
-die; 
-} 
+function bark($msg) {
+	genbark($msg, "Rating failed!");
+}
 
 if (!isset($CURUSER))
 	bark("Must be logged in to vote");
@@ -36,19 +30,19 @@ $topic_id = (int)$_GET['topic_id'];
 if(!is_valid_id($topic_id))
 stderr("Error", "invalid topic id!");
 
-$res = mysql_query("SELECT topic, user FROM ratings WHERE topic = $topic_id AND user = $CURUSER[id]");
+$res = mysql_query("SELECT topic, user FROM ratings WHERE topic =".unsafeChar($topic_id)." AND user =".unsafeChar($CURUSER[id])."");
 $row = mysql_fetch_array($res);
 if ($row[topic] >= 1)
 bark("You have already rated this topic.");
 if ($row[topic] == 0)
-$res = mysql_query("UPDATE ratings SET rating = $rate_me WHERE topic = $topic_id AND user = $CURUSER[id]");
+$res = sql_query("UPDATE ratings SET rating = $rate_me WHERE topic =".unsafeChar($topic_id)." AND user =".unsafeChar($CURUSER[id])."");
 if (!$row)
-$res = mysql_query("INSERT INTO ratings (topic, user, rating, added) VALUES ($topic_id, " . $CURUSER["id"] . ", $rate_me, NOW())");
-mysql_query("UPDATE topics SET numratings = numratings + 1, ratingsum = ratingsum + $rate_me WHERE id = $topic_id");
+$res = sql_query("INSERT INTO ratings (topic, user, rating, added) VALUES (".unsafeChar($topic_id).", " . unsafeChar($CURUSER["id"]) . ", $rate_me, NOW())");
+sql_query("UPDATE topics SET numratings = numratings + 1, ratingsum = ratingsum + $rate_me WHERE id = ".unsafeChar($topic_id)."");
 //===add karma
-mysql_query("UPDATE users SET seedbonus = seedbonus+5.0 WHERE id = $CURUSER[id]") or sqlerr(__FILE__, __LINE__);
+sql_query("UPDATE users SET seedbonus = seedbonus+5.0 WHERE id =".unsafeChar($CURUSER[id])."") or sqlerr(__FILE__, __LINE__);
 //===end
-$refererto = str_replace ('&amp;', '&', safechar($_SERVER["HTTP_REFERER"]));
+$refererto = str_replace ('&amp;', '&', safeChar($_SERVER["HTTP_REFERER"]));
 $referer = ($_SERVER["HTTP_REFERER"] ? $refererto : "/forums.php?action=viewtopic&topicid=$topic_id");
 header("Refresh: 0; url=$referer");
 die;
@@ -65,7 +59,7 @@ $rating = 0 + $rating;
 if ($rating <= 0 || $rating > 5)
 	bark("invalid rating");
 
-$res = mysql_query("SELECT owner FROM torrents WHERE id = $id");
+$res = sql_query("SELECT owner FROM torrents WHERE id = ".unsafeChar($id)."");
 $row = mysql_fetch_array($res);
 if (!$row)
 	bark("no such torrent");
@@ -73,7 +67,7 @@ if (!$row)
 //if ($row["owner"] == $CURUSER["id"])
 //	bark("You can't vote on your own torrents.");
 
-$res = mysql_query("INSERT INTO ratings (torrent, user, rating, added) VALUES ($id, " . $CURUSER["id"] . ", $rating, NOW())");
+$res = sql_query("INSERT INTO ratings (torrent, user, rating, added) VALUES ($id, " . unsafeChar($CURUSER["id"]) . ", $rating, NOW())");
 if (!$res) {
 	if (mysql_errno() == 1062)
 		bark("You have already rated this torrent.");
@@ -81,9 +75,9 @@ if (!$res) {
 		bark(mysql_error());
 }
 
-mysql_query("UPDATE torrents SET numratings = numratings + 1, ratingsum = ratingsum + $rating WHERE id = $id");
+sql_query("UPDATE torrents SET numratings = numratings + 1, ratingsum = ratingsum + $rating WHERE id = ".unsafeChar($id)."");
 //===add karma
-mysql_query("UPDATE users SET seedbonus = seedbonus+5.0 WHERE id = $CURUSER[id]") or sqlerr(__FILE__, __LINE__);
+sql_query("UPDATE users SET seedbonus = seedbonus+5.0 WHERE id = ".unsafeChar($CURUSER[id])."") or sqlerr(__FILE__, __LINE__);
 //===end
 header("Refresh: 0; url=details.php?id=$id&rated=1");
 

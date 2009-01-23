@@ -6,6 +6,8 @@ require_once ("include/bbcode_functions.php");
 // 0 - No debug; 1 - Show and run SQL query; 2 - Show SQL query only
 $DEBUG_MODE = 0;
 dbconn();
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");

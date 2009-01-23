@@ -4,7 +4,9 @@ require ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn(true);
+maxcoder();
 loggedinorreturn();
+
 ///////////latest user - comment out if not required/////
 if ($CURUSER)
 {
@@ -28,7 +30,7 @@ while ($user = mysql_fetch_array($res) ) {
 } // end else
 foreach ($newestuser as $a)
 {
-  $latestuser = "<a href=userdetails.php?id=" . $a["id"] . ">" . $a["username"] . "</a>";
+  $latestuser = "<a href=userdetails.php?id=" . safeChar($a["id"]) . ">" .safeChar($a["username"]) . "</a>";
 }
 }
 }
@@ -50,6 +52,8 @@ $leechers = $a[9];
 $totaldownloaded = $a[10];
 $totaluploaded = $a[11];
 $totaldata = $a[12];
+$male = $a[13];
+$female= $a[14];
 } else {
 $warnedu = number_format(get_row_count("users", "WHERE warned='yes'"));
 $disabled = number_format(get_row_count("users", "WHERE enabled='no'"));
@@ -62,7 +66,8 @@ $row = mysql_fetch_assoc($result);
 $totaldownloaded = $row["totaldl"];
 $totaluploaded = $row["totalul"];
 $totaldata = $totaldownloaded+$totaluploaded;
-
+$male = number_format(get_row_count("users", "WHERE gender='Male'"));  
+$female = number_format(get_row_count("users", "WHERE gender='Female'"));
 $r = sql_query("SELECT value_u FROM avps WHERE arg='seeders'") or sqlerr(__FILE__, __LINE__);
 $a = mysql_fetch_row($r);
 $seeders = 0 + $a[0];
@@ -72,13 +77,13 @@ $leechers = 0 + $a[0];
 $seeders = get_row_count("peers", "WHERE seeder='yes'");
 $leechers = get_row_count("peers", "WHERE seeder='no'");
 if ($leechers == 0)
-  $ratio = 0;
+$ratio = 0;
 else
-  $ratio = round($seeders / $leechers * 100);
+$ratio = round($seeders / $leechers * 100);
 $peers = number_format($seeders + $leechers);
 $seeders = number_format($seeders);
 $leechers = number_format($leechers);
-$stats1 = array(1 => "$warnedu", "$disabled", "$registered","$unverified","$torrents","$ratio","$peers","$seeders","$leechers","$totaldownloaded","$totaluploaded","$totaldata");
+$stats1 = array(1 => "$warnedu", "$disabled", "$registered","$unverified","$torrents","$ratio","$peers","$seeders","$leechers","$totaldownloaded","$totaluploaded","$totaldata","$male","$female");
 $stats2 = serialize($stats1);
 $fh = fopen($file, "w");
 fwrite($fh,$stats2);
@@ -88,10 +93,21 @@ fclose($fh);
 $dt = gmtime() - 180;
 $dt = sqlesc(get_date_time($dt));
 $result = sql_query("SELECT SUM(last_access >= $dt) AS totalol FROM users") or sqlerr(__FILE__, __LINE__);
-
-while ($row = mysql_fetch_array ($result))
+while ($row = mysql_fetch_assoc($result))
 {
-$totalonline      = $row["totalol"];
+$totalonline = 0+$row['totalol'];
+}
+$rec = unserialize(@file_get_contents('cache/onlinerecord.txt'));
+if ($rec['record'] < $totalonline){
+$array_rec = array (
+'date' => get_date_time(),
+'record' => $totalonline
+);
+$array_rec = serialize($array_rec);
+$filenum = fopen ('cache/onlinerecord.txt','w+');
+$truncate = ftruncate($filenum, 0);
+$write = fwrite($filenum, $array_rec);
+fclose($filenum);
 }
 
 $file3 = "$CACHE/index/active.txt";
@@ -101,7 +117,7 @@ if (file_exists($file3) && filemtime($file3) > (time() - $expire)) {
 } else {
 $dt = gmtime() - 180;
 $dt = sqlesc(get_date_time($dt));
-$active1 = sql_query("SELECT id, username, class, donor FROM users WHERE last_access >= $dt ORDER BY class DESC") or print(mysql_error());
+$active1 = sql_query("SELECT id, username, class, donor FROM users WHERE last_access >= ".unsafeChar($dt)." ORDER BY class DESC") or sqlerr(__FILE__, __LINE__);
 while ($active2 = mysql_fetch_array($active1) ) {
         $active3[] = $active2;
     }
@@ -117,29 +133,28 @@ foreach ($active3 as $arr)
   switch ($arr["class"])
   {
 case UC_CODER:
-   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . safeChar($arr['username'])."</font>";
    break;
 case UC_SYSOP:
-   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
-   //$arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'>".$arr['username']."</font>";
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . safeChar($arr['username'])."</font>";
    break;
 case UC_ADMINISTRATOR:
-   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
    break;
 case UC_MODERATOR:
-   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
    break;
 case UC_UPLOADER:
-   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
    break;
 case UC_VIP:
-   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
    break;
 case UC_POWER_USER:
-   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
    break;
 case UC_USER:
-   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . htmlspecialchars($arr['username'])."</font>";
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
    break;
 }
 $donator = $arr["donor"] === "yes";
@@ -161,30 +176,118 @@ if (!$activeusers)
 $activeusers = "There have been no active users in the last 15 minutes.";
 stdhead();
 ///////comment-out to disable latest member display/////
+echo("<img src='cimage.php'>");
+echo("<br />");
 echo "<font class=small><b>Welcome to our newest member, <b>$latestuser</b> !</font>\n";
 ///////////////////////////////////////////////////////
 //Start of Last X torrents with poster mod
-$query="SELECT id, name, poster FROM torrents WHERE poster <> '' ORDER BY added DESC limit 20";
+$query="SELECT id, name, poster FROM torrents WHERE poster <> '' ORDER BY added DESC limit 15";
 $result=mysql_query($query);$num = mysql_num_rows($result);
 // count rows
 if ($CURUSER['tohp'] == "yes") {
 echo("<h2><center>Latest Torrents</center></h2>");
 echo '<table cellpadding=5 width=735><td colspan=4><td><tr><marquee scrollAmount=3 onMouseover="this.scrollAmount=0" onMouseout="this.scrollAmount=3" scrolldelay="0" direction="right">';
 $i=20;
-while ($row = mysql_fetch_assoc($result))  {  $id = $row['id'];
-$name = $row['name'];
-$poster = $row['poster'];
+while ($row = mysql_fetch_assoc($result))  {  $id = unsafeChar($row['id']);
+$name = safeChar($row['name']);
+$poster = safeChar($row['poster']);
 $name = str_replace('_', ' ' , $name);
 $name = str_replace('.', ' ' , $name);
 $name = substr($name, 0, 50);
 if($i==0)echo'</marquee></tr></td><td><tr><marquee scrollAmount=3 onMouseover="this.scrollAmount=0" onMouseout="this.scrollAmount=3" scrolldelay="0" direction="right">';
-echo "<a href=$BASEURL/details.php?id=$id title=\"$name\"><img src=$poster width=\"100\" height=\"120\" title=\"$name\" border=0 /></a>";  #<br />$name
+echo "<a href=$BASEURL/details.php?id=$id title=\"$name\"><img src=\"".safeChar($poster)."\" width=\"100\" height=\"120\" title=\"$name\" border=0 /></a>";
 $i++;
 }
 echo "</marquee></tr></td></table>";
 }
 //////////End poster mod
-///////////////news///////////////////////////////////
+//////////////recommeded torrents///////////////
+$rezfive = mysql_query("SELECT id, recommended, name, poster FROM torrents WHERE recommended = 'yes' ORDER BY added DESC LIMIT 7") or sqlerr(__FILE__, __LINE__);
+if ($CURUSER['rohp'] == "yes") {
+print '<h2 align=center><font color=silver>Recommend Torrents</font></h2><table width=737 border=0 ><tr>';
+if (mysql_num_rows($rezfive) > 0) {
+while ($fiverow = mysql_fetch_assoc($rezfive)) { 
+$poster = (!empty($fiverow["poster"]) ? (str_replace(" ", "%20", safeChar($fiverow['poster']))) : 'pic/poster.jpg');
+//print ("<td><a href=\"".$BASEURL."/details.php?id=".$fiverow['id']."\" title=\"$name\" border=0 /><img src=\"".$poster."\" width=\"100\" height=\"120\"/></a><br /></td>");
+print ("<td><a href=\"".$BASEURL."/details.php?id=".$fiverow['id']."\"/><img src=\"".safeChar($poster)."\" width=\"100\" height=\"120\" border=0 /></a><br /></td>");
+}
+}
+echo "</tr></table>";
+}
+///////////
+///////////////Birthday cache///////////////////////////////////
+$file8 = "$CACHE/index/birthday.txt";
+//$expire = 30; // 30 seconds
+$expire = 21600; // 6 hours
+if (file_exists($file8) && filemtime($file8) > (time() - $expire)) {
+    $res3 = unserialize(file_get_contents($file8));
+} else {
+$today= date("'%'-m-d");
+$current_date = getdate();
+list($year1, $month1, $day1) = split('-', $currentdate);
+$res1 = sql_query("SELECT id, username, birthday, class, gender, donor FROM users WHERE MONTH(birthday) = '".unsafeChar($current_date['mon'])."' AND DAYOFMONTH(birthday) = '".unsafeChar($current_date['mday'])."' ORDER BY class DESC ") or sqlerr(__FILE__, __LINE__);
+while ($res2 = mysql_fetch_array($res1) ) {
+        $res3[] = $res2;
+    }
+    $OUTPUT = serialize($res3);
+    $fp = fopen($file8,"w");
+    fputs($fp, $OUTPUT);
+    fclose($fp);
+} // end else
+
+if ( is_array( $res3 ) )
+foreach ($res3 as $arr)
+{
+$birthday = date($arr["birthday"]);
+   if ($birthdayusers) $birthdayusers .= ",\n";
+   switch ($arr["class"])
+  {
+case UC_CODER:
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
+   break;
+case UC_SYSOP:
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
+   break;
+case UC_ADMINISTRATOR:
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
+   break;
+case UC_MODERATOR:
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
+   break;
+case UC_UPLOADER:
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
+   break;
+case UC_VIP:
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
+   break;
+case UC_POWER_USER:
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
+   break;
+case UC_USER:
+   $arr["username"] = " <font color='#".get_user_class_color($arr['class'])."'> " . SafeChar($arr['username'])."</font>";
+   break;
+}
+
+$donator = $arr["donor"] === "yes";
+if ($donator)
+ $birthdayusers .= "<nobr>";
+$warned = $arr["warned"] === "yes";
+if ($warned)
+ $birthdayusers .= "<nobr>";
+
+if ($CURUSER)
+$birthdayusers .= "<a href=userdetails.php?id={$arr["id"]}><b>{$arr["username"]}</b></a>";
+else
+$birthdayusers .= "<b>{$arr["username"]}</b>";
+if ($donator)
+$birthdayusers .= "<img src={$pic_base_url}star.gif alt='Donated {$$arr["donor"]}'></nobr>";
+if ($warned)
+$birthdayusers .= "<img src={$pic_base_url}warned.gif alt='Warned {$$arr["warned"]}'></nobr>";
+}
+if (!$birthdayusers)
+$birthdayusers = "There Is No Member Birthdays Today.";
+////////////////////////////
+//////////////////news cache/////////////
 $cachefile = "cache/news".($CURUSER['class'] >= UC_ADMINISTRATOR ? 'staff' : '').".html";
 if (file_exists($cachefile))
 {
@@ -210,7 +313,7 @@ if (mysql_num_rows($res) > 0)
 ?><table width='100%' border='1' cellspacing='0' cellpadding='10'><tr><td class='text'><ul><?php
 for ($i = 0; $arr = mysql_fetch_assoc($res); ++$i)
 {
-?><a href="javascript: klappe_news('a<?php echo $arr['id']; ?>')"><br><img border="0" src="pic/<?php echo ($i > 0 ? 'plus' : 'minus'); ?>.gif" id="pica<?php echo $arr['id']; ?>" alt="Show/Hide">&nbsp;<?php echo gmdate("Y-m-d", strtotime($arr['added'])); ?> - <b><?php echo ($arr['sticky']=="yes" ? "<img src='pic/sticky.gif' border='0' alt='sticky'>" : ""); ?>&nbsp;&nbsp;<?php echo safechar($arr['title']); ?></b><?php echo ($i > 0 ? "&nbsp;&nbsp;Posted by&nbsp;".safechar($arr['username']) : ''); ?></a><?php
+?><a href="javascript: klappe_news('a<?php echo $arr['id']; ?>')"><br><img border="0" src="pic/<?php echo ($i > 0 ? 'plus' : 'minus'); ?>.gif" id="pica<?php echo $arr['id']; ?>" alt="Show/Hide">&nbsp;<?php echo gmdate("Y-m-d", strtotime($arr['added'])); ?> - <b><?php echo ($arr['sticky']=="yes" ? "<img src='pic/sticky.gif' border='0' alt='sticky'>" : ""); ?>&nbsp;&nbsp;<?php echo safeChar($arr['title']); ?></b><?php echo ($i > 0 ? "&nbsp;&nbsp;Posted by&nbsp;".safeChar($arr['username']) : ''); ?></a><?php
 if ($CURUSER['class'] >= UC_ADMINISTRATOR)
 {
 ?>&nbsp;<font size="-2"> &nbsp; [<a class='altlink' href='/news.php?action=edit&newsid=<?php echo $arr['id']; ?>&returnto=<?php echo urlencode($_SERVER['PHP_SELF']); ?>'><b>E</b></a>]</font><?php
@@ -231,7 +334,7 @@ ob_flush();
 }
 ?><?php
 ///////////////news end////////////////////////
-////////////////changelog start////////////////
+////////////////changelog cache////////////////
 $cachefile = "cache/changelog".($CURUSER['class'] >= UC_ADMINISTRATOR ? 'staff' : '').".html";
 if (file_exists($cachefile))
 {
@@ -257,7 +360,7 @@ if (mysql_num_rows($res) > 0)
 
 for ($i = 0; $arr = mysql_fetch_assoc($res); ++$i)
 {
-?><a href="javascript: klappe_news('a<?php echo $arr['id']; ?>')"><br><img border="0" src="pic/<?php echo ($i > 0 ? 'plus' : 'minus'); ?>.gif" id="pica<?php echo $arr['id']; ?>" alt="Show/Hide">&nbsp;<?php echo gmdate("Y-m-d", strtotime($arr['added'])); ?> - <b><?php echo ($arr['sticky']=="yes" ? "<img src='pic/sticky.gif' border='0' alt='sticky'>" : ""); ?>&nbsp;&nbsp;<?php echo safechar($arr['title']); ?></b><?php echo ($i > 0 ? "&nbsp;&nbsp;Posted by&nbsp;".safechar($arr['username']) : ''); ?></a><?php
+?><a href="javascript: klappe_news('a<?php echo $arr['id']; ?>')"><br><img border="0" src="pic/<?php echo ($i > 0 ? 'plus' : 'minus'); ?>.gif" id="pica<?php echo $arr['id']; ?>" alt="Show/Hide">&nbsp;<?php echo gmdate("Y-m-d", strtotime($arr['added'])); ?> - <b><?php echo ($arr['sticky']=="yes" ? "<img src='pic/sticky.gif' border='0' alt='sticky'>" : ""); ?>&nbsp;&nbsp;<?php echo safeChar($arr['title']); ?></b><?php echo ($i > 0 ? "&nbsp;&nbsp;Posted by&nbsp;".safeChar($arr['username']) : ''); ?></a><?php
 if ($CURUSER['class'] >= UC_SYSOP)
 {
 ?>&nbsp;<font size="-2"> &nbsp; [<a class='altlink' href='/changelog.php?action=edit&changelogid=<?php echo $arr['id']; ?>&returnto=<?php echo urlencode($_SERVER['PHP_SELF']); ?>'><b>E</b></a>]</font><?php
@@ -277,7 +380,7 @@ ob_flush();
 }
 ?><?php
 /////////////////changelog end///////////////
-/////////theme selector//////////////////
+/////////cached theme selector//////////////////
 $stylesheets = "<option value=0>---- None selected ----</option>\n";
 $stylesheet ='';
 include 'include/cache/stylesheets.php';
@@ -303,12 +406,17 @@ begin_table("Theme");?>
 end_table();
 ?>
 <?php
+/////// best film of the week by dokty - tbdev.net///////////
+$resbest = sql_query("SELECT torrents.id, torrents.leechers, torrents.seeders, categories.image, categories.name as catname, torrents.name, torrents.times_completed FROM torrents INNER JOIN categories ON categories.id=torrents.category INNER JOIN avps ON torrents.id=avps.value_s WHERE avps.arg='bestfilmofweek' LIMIT 1") or sqlerr(__FILE__,__LINE__);
+$arrbest = mysql_fetch_assoc($resbest);
+if ($arrbest)
+print("<h2><center>&nbsp;Best Film of the Week</h2></center><table width=100% border=1 cellspacing=0 cellpadding=10><tr><td align=center><table border=1 cellspacing=0 cellpadding=5><tr><td class=colhead align=left>Type</td><td class=colhead align=left>Name</td><td class=colhead align=left>Snatched</td><td class=colhead align=left>Seeders</td><td class=colhead align=left>Leechers</td></tr><tr><td align=center><img border='0' src='pic/".htmlentities($arrbest["image"])."' alt='".htmlentities($arrbest["catname"])."' title='".htmlentities($arrbest["catname"])."' /></td><td style='padding-right: 5px'><a href=details.php?id=".$arrbest["id"]."><b>".htmlentities($arrbest["name"])."</b></td><td align=center>".$arrbest["times_completed"]."</td><td align=center>".$arrbest["seeders"]."</td><td align=center>".$arrbest["leechers"]."</td></tr></table></td></tr></table>");
+?>
+<?php
 require_once("include/function_forumpost.php");
 latestforumposts();
 ?>
-
 <h2 align="center">Polls
-
 <?php
 if ($CURUSER['class'] >= UC_SYSOP)
 {
@@ -375,6 +483,23 @@ if(cookieValue && cookieValue.length>0)displayResultsWithoutVoting(<? echo $poll
 <center><b><a href="#activeusers" onclick="closeit('div2');"><font color="red">[
 Hide</font></a></b> | <b><a href="#activeusers" onclick="showit('div2');">
 <font color="red">Show ]</font></a></b></center>
+<table align="center" border="1" width="760">
+	</tr>
+</table>
+<?
+if ($CURUSER['bohp'] == "yes") { ?>
+	<h2><center>Member's Birthday's</center></h2>
+<div id="div7" style="display: none;">
+	<table border="1" cellpadding="10" cellspacing="0" width="760">
+		<tr class="ttable">
+			<td class="text"><?=$birthdayusers?></td>
+		</tr>
+	</table>
+</div>
+<center><b><a href="#activeusers" onclick="closeit('div7');"><font color="red">[
+Hide</font></a></b> | <b><a href="#birthdayusers" onclick="showit('div7');">
+<font color="red">Show ]</font></a></b></center>
+<? } ?>
 <h2></h2>
 <center><b>Tracker Statistics </b></center>
 <div id="div3" style="display: none;">
@@ -386,6 +511,14 @@ Hide</font></a></b> | <b><a href="#activeusers" onclick="showit('div2');">
 				<tr>
 					<td class="rowhead">Online Since</td>
 					<td align="right"><b><?=$config['onlinesince']?></b></td>
+				</tr>
+                	<tr>
+					<td class="rowhead">Online </td>
+					<td align="right"><b><?php echo $totalonline;?></b></td>
+				</tr>
+                	<tr>
+					<td class="rowhead">Record</td>
+					<td align="right"><b><?php echo $rec['record'].' at '.$rec['date'];?></b></td>
 				</tr>
 				<tr>
 					<td class="rowhead">Max Users <img src="pic/buddylist.gif"></td>
@@ -401,7 +534,19 @@ Hide</font></a></b> | <b><a href="#activeusers" onclick="showit('div2');">
 					<img src="pic/buddylist.gif"></td>
 					<td align="right"><?=$unverified?></td>
 				</tr>
-				<tr>
+                                                                 <tr>
+					<td class="rowhead">Male Users
+					<img src="pic/male.gif"></td>
+					<td align="right"><?=$male?></td>
+				</tr>
+                                                                 <tr>
+					<td class="rowhead">Female Users
+					<img src="pic/female.gif"></td>
+					<td align="right"><?=$female?></td>
+				</tr>
+				<?php 
+                if (get_user_class() >= UC_MODERATOR) { ?>
+                <tr>
 					<td class="rowhead">Warned Users <img src="pic/warned8.gif"></td>
 					<td align="right"><?=$warnedu?></td>
 				</tr>
@@ -409,7 +554,10 @@ Hide</font></a></b> | <b><a href="#activeusers" onclick="showit('div2');">
 					<td class="rowhead">Banned Users <img src="pic/warned1.gif"></td>
 					<td align="right"><?=$disabled?></td>
 				</tr>
-				<tr>
+                <? } ?>
+				<?php 
+                if (get_user_class() >= UC_POWER_USER) { ?>
+                <tr>
 					<td class="rowhead">Torrents <img src="pic/torrents.gif"></td>
 					<td align="right"><?=$torrents?></td>
 				</tr>
@@ -438,6 +586,7 @@ Hide</font></a></b> | <b><a href="#activeusers" onclick="showit('div2');">
 					<td align="right"><?=$ratio?></td>
 				</tr>
 				<? } ?>
+				<? } ?>
 			</table>
 			</b></td>
 		</tr>
@@ -454,7 +603,7 @@ Hide</font></a></b> | <b><a href="#activeusers" onclick="showit('div2');">
 		<td align="center">
 		<p>Donations</p>
 		<a href="donate.php">
-		<img alt="Make A Donation" src="pic/makedonation.gif"></a><?php
+		<img border="0" alt="Make A Donation" src="pic/makedonation.gif"></a><?php
 //====donation progress bar by snuggles enjoy
 $total_funds1 = sql_query("SELECT sum(cash) as total_funds FROM funds");
 $arr_funds = mysql_fetch_array($total_funds1);
@@ -500,56 +649,6 @@ if ($CURUSER["gotgift"] == 'no') {
 	</tr>
 </table>
 </td></tr></table>
-<!--<br>
-<div align=center>
-<h2><script language="JavaScript1.2">
-var message="InstallerV1 ® Powered By TBdev.net"
-var neonbasecolor="black"
-var neontextcolor="blue"
-var neontextcolor2="#FF0000"
-var flashspeed=30	       // speed of flashing in milliseconds
-var flashingletters=4     // number of letters flashing in neontextcolor
-var flashingletters2=1  // number of letters flashing in neontextcolor2 (0 to disable)
-var flashpause=0         // the pause between flash-cycles in milliseconds
-///No need to edit below this line/////
-var n=0
-if (document.all||document.getElementById){
-document.write('<font color="'+neonbasecolor+'">')
-for (m=0;m<message.length;m++)
-document.write('<span id="neonlight'+m+'">'+message.charAt(m)+'</span>')
-document.write('</font>')
-}
-else
-document.write(message)
-function crossref(number){
-var crossobj=document.all? eval("document.all.neonlight"+number) : document.getElementById("neonlight"+number)
-return crossobj
-}
-function neon(){
-//Change all letters to base color
-if (n==0){
-for (m=0;m<message.length;m++)
-crossref(m).style.color=neonbasecolor
-}
-//cycle through and change individual letters to neon color
-crossref(n).style.color=neontextcolor
-if (n>flashingletters-1) crossref(n-flashingletters).style.color=neontextcolor2 
-if (n>(flashingletters+flashingletters2)-1) crossref(n-flashingletters-flashingletters2).style.color=neonbasecolor
-if (n<message.length-1)
-n++
-else{
-n=0
-clearInterval(flashing)
-setTimeout("beginneon()",flashpause)
-return
-}
-}
-function beginneon(){
-if (document.all||document.getElementById)
-flashing=setInterval("neon()",flashspeed)
-}
-beginneon()
-</script></h2></div>--->
 <?
 print("<p align=center><font class=small>Updated ".date('Y-m-d H:i:s', filemtime($file))."</font></p>");
 stdfoot();

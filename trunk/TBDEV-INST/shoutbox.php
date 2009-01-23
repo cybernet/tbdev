@@ -3,6 +3,7 @@ require_once("include/bittorrent.php");
 require_once "include/user_functions.php";
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -220,12 +221,10 @@ if ($rowowner["class"] == "0")
 $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
 
 
-			
-	                    $edit= (get_user_class() >= UC_MODERATOR ? "<a href=/shoutbox.php?edit=".$arr['id']."><img src=".$pic_base_url."button_edit2.gif border=0 title=\"Edit Shout\"/></a> " : "");
-		    $del= (get_user_class() >= UC_MODERATOR ? "<a href=/shoutbox.php?del=".$arr['id']."><img src=".$pic_base_url."button_delete2.gif border=0 title=\"Delete Single Shout\"/></a> " : "");
-		    $delall= (get_user_class() >= UC_SYSOP ? "<a href=/shoutbox.php?delall><img src=".$pic_base_url."button_delete2.gif border=0 title=\"Empty Shout\"/></a> " : "");
-		    $pm = "<span class='date' color=$dtcolor><a target=_blank href=sendmessage.php?receiver=$arr[userid]><img src=".$pic_base_url."button_pm2.gif border=0 title=\"Pm User\"/></a></span>\n";
-                                    //if($arr[userid])$pm = "<span class='date' color=$dtcolor><a target=_blank href=sendmessage.php?receiver=$arr[userid]><img src=".$pic_base_url."button_pm2.gif border=0 title=\"Pm User\"/></a></span>\n";
+$edit= (get_user_class() >= UC_MODERATOR ? "<a href=/shoutbox.php?edit=".$arr['id']."><img src=".$pic_base_url."button_edit2.gif border=0 title=\"Edit Shout\"/></a> " : "");
+$del= (get_user_class() >= UC_MODERATOR ? "<a href=/shoutbox.php?del=".$arr['id']."><img src=".$pic_base_url."button_delete2.gif border=0 title=\"Delete Single Shout\"/></a> " : "");
+$delall= (get_user_class() >= UC_SYSOP ? "<a href=/shoutbox.php?delall><img src=".$pic_base_url."button_delete2.gif border=0 title=\"Empty Shout\"/></a> " : "");
+$pm = "<span class='date' color=$dtcolor><a target=_blank href=sendmessage.php?receiver=$arr[userid]><img src=".$pic_base_url."button_pm2.gif border=0 title=\"Pm User\"/></a></span>\n";
          $datum = gmdate("d M h:i",$arr["date"] + ($CURUSER['dst'] + $CURUSER["timezone"]) * 60);
          print("<tr $bg><td><span class='date'><font color=$fontcolor>['$datum']</font></span>\n$del $delall $edit $pm <a href='userdetails.php?id=".$arr["userid"]."' target='_blank'>$usercolor</a>\n" .
 		($arr2["donor"] == "yes" ? "<img src=pic/star.gif alt='DONOR'>\n" : "") .

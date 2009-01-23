@@ -1,8 +1,10 @@
 <?php
 require_once("include/user_functions.php");
-function torrenttable($res, $variant = "index") {
-	global $pic_base_url, $CURUSER;
-    if ($CURUSER["class"] < UC_USER)
+function torrenttable($records, $variant = "index") {
+	global $pic_base_url, $CURUSER, $freecat;
+//== uncomment to enable wait times
+/*    
+if ($CURUSER["class"] < UC_USER)
   {
 	  $gigs = $CURUSER["uploaded"] / (1024*1024*1024);
 	  $ratio = (($CURUSER["downloaded"] > 0) ? ($CURUSER["uploaded"] / $CURUSER["downloaded"]) : 0);
@@ -11,7 +13,7 @@ function torrenttable($res, $variant = "index") {
 	  elseif ($ratio < 0.8 || $gigs < 8) $wait = 0;
 	  elseif ($ratio < 0.95 || $gigs < 9.5) $wait = 0;
       else $wait = 0;
-      }
+      }*/
 ?>
 <table border="1" cellspacing=0 cellpadding=5>
 <tr>
@@ -97,7 +99,7 @@ if (get_user_class() >= UC_MODERATOR) {
 print("<form method=post action=deltorrent.php?mode=delete>");
 }
 print("</tr>\n");
-while ($row = mysql_fetch_assoc($res)) {
+foreach ($records as $row) {
 //if ($CURUSER['split'] == "yes") {
 $browse = $_SERVER["REQUEST_URI"];
 $page = array ("/browse.php","/browse.php?page=1","/browse.php?page=2","/browse.php?page=3","/browse.php?page=4","/browse.php?page=5","/browse.php?page=6");
@@ -124,7 +126,7 @@ $cleandate = "<tr><td colspan=14><b>$day_added</b></td></tr>\n"; // This also...
 /** Prevent that "torrents added..." wont appear again with the same date **/
 $prevdate = $thisdate;
 $man = array(
-    'Jan' => 'Januar',
+    'Jan' => 'January',
     'Feb' => 'February',
     'Mar' => 'March',
     'Apr' => 'April',
@@ -166,7 +168,7 @@ print("<tr class=highlight>\n");
 } else {
 print("<tr>\n");
 }*/ 
-///////comment out to disable/////////////////
+///////uncomment out to disable highlight/////////////////
 ///////highlight torrenttable/////warning high querys comment out to save your server :)///////////
 $id = $row['id'];
 if ($CURUSER["ttablehl"] != "yes")
@@ -197,10 +199,15 @@ echo'<tr '.$bgc.'>';
         if (isset($row["cat_name"])) 
         {
         print("<a href=\"browse.php?cat=" . $row["category"] . "\">");
+        if (in_array($row["cat_id"], $freecat))
+        print("<img border=\"0\" src=\"{$pic_base_url}cat_free.gif\" alt=\"{$row['cat_name']}\" />");
+        else
+        {
         if (isset($row["cat_pic"]) && $row["cat_pic"] != "")
         print("<img border=\"0\" src=\"{$pic_base_url}{$row['cat_pic']}\" alt=\"{$row['cat_name']}\" />");
         else
         print($row["cat_name"]);
+        }
         print("</a>");
         }
         else
@@ -216,10 +223,9 @@ echo'<tr '.$bgc.'>';
         $nuked = ($row[nuked]=="yes" ? "&nbsp;<img src='pic/nuked.gif' border=0 title='nuked' alt='Nuked'/>" : "");
         $newtag = ((sql_timestamp_to_unix_timestamp($row['added']) >= $_SESSION['browsetime'])? '&nbsp;<img src='.$pic_base_url.'new.gif alt=NEW!>' : '');
         $viponly = ($row[vip]=="yes" ? "<img src='pic/star.gif' border=0 title='Vip Torrent' />" : "");
-        //$newtag = ((sql_timestamp_to_unix_timestamp($row['added']) >= $_SESSION['browsetime'])? '&nbsp;<b><font color=red>NEW!</font></b>' : '');
-        //if ($row["free"] == "yes" || (happyHour("check") && (happyCheck("check") == 255) || happyCheck("check") == $row["category"]) )
-        //$freeicon = "<img src=\"pic/freedownload.gif\" border=\"0\" title=\"Free Leech\"  />";
-        /////////freeslot in use on browse//////////      
+        if ($row["countstats"] == "no")
+        $freeicon = "<img src=\"pic/freedownload.gif\" border=\"0\" title=\"Free Leech\"  />";
+		/////////freeslot in use on browse//////////      
         $freeimg = '<img src="/pic/freedownload.gif" border=0"/>';
         $doubleimg = '<img src="/pic/doubleseed.gif" border=0"/>';
         $isdlfree = ($row['doubleslot'] == 'yes' ? ' '.$doubleimg.' slot in use' : '');
@@ -235,24 +241,27 @@ echo'<tr '.$bgc.'>';
         //userclass color mod//
         /////////////////////////////////////////////////////
         $sticky = ($row[sticky]=="yes" ? "<img src='pic/sticky.gif' border='0' alt='sticky'>" : "");
-        //////comment out to use balloon tooltips///           
-        print("<td align=left><a href=\"details.php?");
+        //////uncomment to use standard no tooltips
+		/*
+		print("<td align=left><a href=\"details.php?");
         if ($variant == "mytorrents")
         print("returnto=" . urlencode($_SERVER["REQUEST_URI"]) . "&amp;");
         print("id=$id");
         if ($variant == "index")
-        print("&amp;hit=1");              
+        print("&amp;hit=1");    
+		*/          
         /////////////////////////////////////////////////////
-        if($row['afterpre'] == 'N/A') {
+        /* //== uncomment to use pretimes on browse
+		if($row['afterpre'] == 'N/A') {
         $preres = "";
         } elseif(!empty($row['afterpre'])) {
         $preres = "Uploaded ".safechar($row[afterpre])." after pre";
         } else {
         $preres = "";
         }
+		*/
         //////////////////////////////////////////////////////////////////////////
-        ////////balloon tooltips - higher query counts when in use/// uncomment then comment out and the above code to enable/////      
-        /*
+        ////////balloon tooltips - higher query counts when in use/// uncomment then comment out and the above code to enable/////             
         $preparing_baloon=sql_query("SELECT poster FROM torrents WHERE id=$id LIMIT 0, 255") or sqlerr();
         $poster=mysql_fetch_array($preparing_baloon);
         $poster=$poster[poster];
@@ -269,11 +278,11 @@ echo'<tr '.$bgc.'>';
         $dispname = "<font color='#".get_user_class_color( $uclass)."'>". safechar($row["name"]) . "</font>";
         //userclass color mod ==end
         $dispname = ereg_replace('\.', ' ', $dispname);
-        $baloon= print("<td align=left><a href=details.php?id=$id onmouseover=\"return overlib('<table width=100%><tr><td><img src=$poster width=128 height=150></td><td>$des</td></tr></table>', VAUTO, BGCOLOR, '#006600', WIDTH, 400, DELAY, 200);\" onmouseout=\"return nd();\";><b>" . CutName($dispname, $char) . " $description</b></a></a>&nbsp;<a href=\"#\" onclick=\"show_details('".$row['id']."', 'details'); return false;\"><img src=\"/pic/plus.gif\" border=\"0\" title=\"Show torrent info in this page\"/></a>&nbsp;$sticky&nbsp;$request&nbsp;$scene&nbsp;$nuked<br />$nukereason&nbsp;$preres".(sql_timestamp_to_unix_timestamp($row['added']) >= $CURUSER['last_browse'] ? " <img src=/pic/new.gif alt=NEW!>" : "")."\n");             
-        */
-        /////////end balloon tootips///////////            
+        echo ((in_array($row["cat_id"], $freecat)) ? '&nbsp;<img src=\"pic/freedownload.gif />' : '');
+		$baloon= print("<td align=left><a href=details.php?id=$id onmouseover=\"return overlib('<table width=100%><tr><td><img src=$poster width=128 height=150></td><td>$des</td></tr></table>', VAUTO, BGCOLOR, '#FF0000', WIDTH, 400, DELAY, 200);\" onmouseout=\"return nd();\";><b>" . CutName($dispname, $char) . " $description</b></a></a>&nbsp;<a href=\"#\" onclick=\"show_details('".$row['id']."', 'details'); return false;\"><img src=\"/pic/plus.gif\" border=\"0\" title=\"Show torrent info in this page\"/></a>&nbsp;$sticky&nbsp;$request&nbsp;$scene&nbsp;$nuked<br />$nukereason&nbsp;$preres&nbsp;$newtag&nbsp;$viponly$freeicon\n");                             
+		/////////end balloon tootips///////////            
         //////comment out when tooltips are enabled///
-        print("\"><b>" . CutName($dispname, $char) . " $description</b></a>&nbsp;&nbsp;<a href=\"#\" onclick=\"show_details('".$row['id']."', 'details'); return false;\"><img src=\"/pic/plus.gif\" border=\"0\" title=\"Show torrent info in this page\"/></a>&nbsp;&nbsp;$sticky&nbsp;$request&nbsp;$scene&nbsp;$nuked<br />$nukereason&nbsp;$preres&nbsp;$newtag&nbsp;$viponly\n");
+        //print("\"><b>" . CutName($dispname, $char) . " $description</b></a>&nbsp;&nbsp;<a href=\"#\" onclick=\"show_details('".$row['id']."', 'details'); return false;\"><img src=\"/pic/plus.gif\" border=\"0\" title=\"Show torrent info in this page\"/></a>&nbsp;&nbsp;$sticky&nbsp;$request&nbsp;$scene&nbsp;$nuked<br />$nukereason&nbsp;$preres&nbsp;$newtag&nbsp;$viponly$freeicon\n");
         ////////////////////////////////////////////////////          
         ////////////Freeslot indicator//uncomment to use//
         echo ($isdlfree.''.$isdouble);
@@ -297,8 +306,7 @@ echo'<tr '.$bgc.'>';
         //////torrent added/genre/checked////
         //echo ($added);
         echo ($genre);
-        echo $checked;
-        ////////end////        
+        echo $checked;     
         /*
         ///////// displays you as a seeder or leecher on browse as gif not highlightcolor
         $seedleech = sql_query("SELECT seeder FROM peers WHERE torrent = '$id' and userid='".unsafeChar($CURUSER['id'])."'");
@@ -308,12 +316,12 @@ echo'<tr '.$bgc.'>';
         	///////////// seeding///////////////
     			if($seedleechdisplay['seeder']=="yes")
     			{
-    				print("<img border=\"0\" src=\"/pic/arrowup.gif\" alt=\"Seeding\"/>");
+    			print("<img border=\"0\" src=\"/pic/arrowup.gif\" alt=\"Seeding\"/>");
     			}
     			/////////////////////Leeching///////
     			else
     			{
-    				print("<img border=\"0\" src=\"/pic/arrowdown.gif\" alt=\"Leeching\"/>");
+    			print("<img border=\"0\" src=\"/pic/arrowdown.gif\" alt=\"Leeching\"/>");
     			}
   			} 
   			print("</td>\n");*/
@@ -321,7 +329,9 @@ echo'<tr '.$bgc.'>';
             $bms = mysql_fetch_assoc($bm);
             $bookmarked = (empty($bms)?'<a href=\'bookmark.php?torrent='.$id.'&action=add\'><img src=\''.$pic_base_url.'bookmark.gif\' border=\'0\' alt=\'Bookmark it!\' title=\'Bookmark it!\'></a>':'<a href="bookmark.php?torrent='.$id.'&action=delete"><img src=\''.$pic_base_url.'plus2.gif\' border=\'0\' alt=\'Delete Bookmark!\' title=\'Delete Bookmark!\'></a>');
             echo ($variant == 'index' ? '<td align=right>'.$bookmarked.'</td>' : '');
-  			if ($wait)
+  			                //== uncomment to enable wait times
+                                                                /*
+                                                                if ($wait)
 				{
 				  $elapsed = floor((gmtime() - strtotime($row["added"])) / 3600);
 	        if ($elapsed < $wait)
@@ -331,7 +341,7 @@ echo'<tr '.$bgc.'>';
 	        }
 	        else
 	          print("<td align=center><nobr>None</nobr></td>\n");
-        }
+        }*/
         if ($variant == "mytorrents")
         print("<td align=\"center\"><a href=\"edit.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]) . "&amp;id=" . $row["id"] . "\">edit</a>\n");
         print("</td>\n");
@@ -405,10 +415,10 @@ echo'<tr '.$bgc.'>';
         if ($row["times_completed"] != 1)
           $_s = "s";
         if (get_user_class() >= UC_MODERATOR) {
-        print("<td align=center>".($row["times_completed"] > 0 ? "<a href=snatches.php?id=$id>".number_format($row["times_completed"])."<br>time$_s</a>" : "0 times")."</td>\n");
+        print("<td align=center>".($row["times_completed"] > 0 ? "<a href=snatches.php?id=$id>".safeChar(number_format($row["times_completed"]))."<br>time$_s</a>" : "0 times")."</td>\n");
         }
         else
-        print("<td align=center>".($row["times_completed"] > 0 ?"".number_format($row["times_completed"])."<br>time$_s</a>" : "0 times")."</td>\n");
+        print("<td align=center>".($row["times_completed"] > 0 ?"".safeChar(number_format($row["times_completed"]))."<br>time$_s</a>" : "0 times")."</td>\n");
 
         if ($row["seeders"]) {
             if ($variant == "index")
