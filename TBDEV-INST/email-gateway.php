@@ -3,7 +3,7 @@ require ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
-
+maxcoder();
 $id = 0 + $_GET["id"];
 if (!$id)
 	stderr("Error", "Bad or missing ID.");

@@ -1,8 +1,13 @@
 <?php
+/******************************************
+* Updated usercp.php By Bigjoos
+* Credits: Djlee's code from takeprofileedit.php - Retro for the original idea
+****************************************************************************************/
 require_once("include/bittorrent.php");
-require_once ("include/user_functions.php");
+//require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -80,90 +85,89 @@ print("<table border=1 cellspacing=0 cellpadding=0 align=center><tr>");
 print("<td width=502 valign=top>");
 
 print("<table width=502 border=1>");
-
 $maxbox = 100;
 $maxpic = "warn";
 
-$res3 = sql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>-1") or print(mysql_error());
+$res3 = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>-1") or print(mysql_error());
 $arr3 = mysql_fetch_row($res3);
 $outmessages = $arr3[0];
 $filled = (($outmessages / $maxbox) * 100);
-$outpic = get_percent_completed_image(round($filled), $maxpic);
+$outpic = get_percent_inbox_image(round($filled), $maxpic);
 $out = number_format($filled,0);
 
-$res2 = sql_query("SELECT COUNT(*) FROM messages WHERE sender=" . $CURUSER["id"] . " ") or print(mysql_error());
+$res2 = mysql_query("SELECT COUNT(*) FROM messages WHERE sender=" . $CURUSER["id"] . " AND saved='yes'") or print(mysql_error());
 $arr2 = mysql_fetch_row($res2);
 $savedmessages = $arr2[0];
 $filled = (($savedmessages / $maxbox) * 100);
-$savedpic = get_percent_completed_image(round($filled), $maxpic);
+$savedpic = get_percent_inbox_image(round($filled), $maxpic);
 $saved = number_format($filled,0);
 
-$res1 = sql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>1") or print(mysql_error());
+$res1 = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>1") or print(mysql_error());
 $arr1 = mysql_fetch_row($res1);
 $inmessages = $arr1[0];
 $filled = (($inmessages / $maxbox) * 100);
-$inpic = get_percent_completed_image(round($filled), $maxpic);
+$inpic = get_percent_inbox_image(round($filled), $maxpic);
 $in = number_format($filled,0);
 
-$res = sql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location=1 AND unread='yes'") or print(mysql_error());
+$res = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location=1 AND unread='yes'") or print(mysql_error());
 $arr = mysql_fetch_row($res);
 $unread = $arr[0];
-
 
 //---------
 // Progress Bar
 //-------------
-$res1 = sql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>0") or print(mysql_error());
+$res1 = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>0") or print(mysql_error());
 
 $arr1 = mysql_fetch_row($res1);
 
 $mainbox = $arr1[0];
 
-$res1 = sql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>2") or print(mysql_error());
+$res1 = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>2") or print(mysql_error());
 
 $arr1 = mysql_fetch_row($res1);
 
 $abox = $arr1[0];
 
-$res1 = sql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>3") or print(mysql_error());
+$res1 = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>3") or print(mysql_error());
+
 $arr1 = mysql_fetch_row($res1);
 
 $bbox = $arr1[0];
 
-$res1 = sql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>4") or print(mysql_error());
+$res1 = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location>4") or print(mysql_error());
 
 $arr1 = mysql_fetch_row($res1);
 
 $cbox = $arr1[0];
 
-$res1 = sql_query("SELECT COUNT(*) FROM messages WHERE sender=" . $CURUSER["id"] . "") or print(mysql_error());
+
+$res1 = mysql_query("SELECT COUNT(*) FROM messages WHERE sender=" . $CURUSER["id"] . " AND saved='yes'") or print(mysql_error());
 
 $arr1 = mysql_fetch_row($res1);
 
 $outbox = $arr1[0];
 
-
-$boo = get_percent_completed_image(floor($mainbox))." ";
-
-
-$boo2 = get_percent_completed_image(floor($outbox))." ";
+$boo = get_percent_inbox_image(floor($mainbox))." ";
 
 
-$boo3 = get_percent_completed_image(floor($abox))." ";
+$boo2 = get_percent_inbox_image(floor($outbox))." ";
 
-$boo4 = get_percent_completed_image(floor($bbox))." ";
 
-$boo5 = get_percent_completed_image(floor($cbox))." ";
+$boo3 = get_percent_inbox_image(floor($abox))." ";
+
+$boo4 = get_percent_inbox_image(floor($bbox))." ";
+
+$boo5 = get_percent_inbox_image(floor($cbox))." ";
 //---------
 // END Progress Bar
 //-----------------
-print("<tr><td class=colhead width=166 height=18><a href=inbox.php>Inbox</a></td><td class=colhead width=166><a href=inbox.php?out=1>
-Sentbox</a></td></tr>");
-print("<tr><td>$boo</td><td>$boo2</td></tr>");
-print("<tr align=center><td> ($mainbox)</td><td> ($outbox)</td></tr>");
+
+print("<tr><td class=colhead width=166 height=18><a href=messages.php?action=viewmailbox&box=1>Inbox</a></td><td class=colhead width=166><a href=messages.php?action=viewmailbox&box=-1>
+Sentbox</a></td><td class=colhead width=168><a href=messages.php?action=viewmailbox&box=0>Createdbox</a></td></tr>");
+print("<tr><td>$boo</td><td>$boo2</td><td>$boo3</td></tr>");
+print("<tr align=center><td> ($mainbox)</td><td> ($outbox)</td><td>($cbox)</td></tr>");
 print("<tr><td colspan=3 height=25><b>You have $unread new messages</b></td></tr>");
 print("<tr><td colspan=3 height=25><a href=users.php><b>Find User/Browse User List</b></a></td></tr>");
-
 print("</table>");
 print("<table width=502 border=1>");
 
@@ -209,7 +213,7 @@ tr("Account parked",
 ///parked mod//// comment out of not required//
 ////annonymous mod//////
 tr("Anonymous", "<input type=checkbox name=anonymous" . ($CURUSER["anonymous"] == "yes" ? " checked" : "") . "> (Anonymous Status - You profile is protected!)",1);
-tr("Anonymous in Top10", "<input type=checkbox name=anonymoustopten" . ($CURUSER["anonymoustopten"] == "yes" ? " checked" : "") . "> Check this not to be shown in Top10",1);
+tr("Anonymous in Top10", "<input type=checkbox name=anonymoustopten" . ($CURUSER["anonymoustopten"] == "yes" ? " checked" : "") . "> Check this to hide your username from the site Top10",1);
 ////annonymous mod////comment out if not required
 //////////////////////////hide snatch lists////////////////
 tr("Hide current seed and leech","<input type=radio name=hidecur" . ($CURUSER["hidecur"] == "yes" ? " checked" : "") . " value=yes>Yes<input type=radio name=hidecur" .  ($CURUSER["hidecur"] == "no" ? " checked" : "") . " value=no>No",1);
@@ -279,6 +283,10 @@ tr("Torrents On Homepage",
 "<input type=radio name=tohp" . ($CURUSER["tohp"] == "yes" ? " checked" : "") . " value=yes>yes
 <input type=radio name=tohp" .  ($CURUSER["tohp"] == "no" ? " checked" : "") . " value=no>no"
 ,1);
+tr("Recommended Torrents On Homepage",
+"<input type=radio name=rohp" . ($CURUSER["rohp"] == "yes" ? " checked" : "") . " value=yes>yes
+<input type=radio name=rohp" .  ($CURUSER["rohp"] == "no" ? " checked" : "") . " value=no>no"
+,1);
 tr("User Class Colour On Browse", "<input type=checkbox name=view_uclass" . ($CURUSER["view_uclass"] == "yes" ? " checked" : "") . "> Select to display uploaders user class colour on <a href=browse.php>browse</a>",1);
 tr("Clear New Tag Manualy", "<input type=checkbox name=update_new" . ($CURUSER["update_new"] == "yes" ? " checked" : "") . ">(Default value for \"New Tag on browse\")",1);
 print("<tr><td class=colhead colspan=2 height=18><a href=mytorrents.php>My Torrents</a></td></tr>");
@@ -330,6 +338,7 @@ $pos_opt .= "<option value=200".($pos_per_pg == 200 ? " selected" : "") .">200</
 $pos_opt .= "</select>";
 echo "Posts per Page: ".$pos_opt."";
 ///////////////////////////////////////////////////////////////////////////////////////
+
 ////////////up/down speed//////////////////
 $dlspeed = "<option value=0>---- None selected ----</option>\n";
 foreach ($speed as $key => $value)
@@ -369,8 +378,63 @@ tr("Gender",
 tr("Shoutbox Color", "<input type=radio name=shoutboxbg" . ($CURUSER["shoutboxbg"] == "1" ? " checked" : "") . " value=1>white
 <input type=radio name=shoutboxbg" . ($CURUSER["shoutboxbg"] == "2" ? " checked" : "") . " value=2>Grey<input type=radio name=shoutboxbg" . ($CURUSER["shoutboxbg"] == "3" ? " checked" : "") . " value=3>black"
 ,1);
+tr("Show Members Birthday's Block",
+"<input type=radio name=bohp" . ($CURUSER["bohp"] == "yes" ? " checked" : "") . " value=yes>yes
+<input type=radio name=bohp" .  ($CURUSER["bohp"] == "no" ? " checked" : "") . " value=no>no"
+,1);
 tr("Userbar", "<img src=\"bar.php/".$CURUSER["id"].".png\" border=\"0\"><br />This is your userbar.You can place it in the signature on the forum.<br />your ratings will be visible<br /><br />Here's the  <b>BB- code</b> for the insert into the signature on the forums:<br /><input type=\"text\" size=65 value=\"[url=$DEFAULTBASEURL][img]$DEFAULTBASEURL/bar.php/".$CURUSER["id"].".png[/img][/url]\" readonly />",1);
 tr("Forum online user's ", "<input type=checkbox name=forumview" . ($CURUSER["forumview"] == "yes" ? " checked" : "") . "> (View the forum online user's as either username or avatar !)",1);
+///////////////// Birthday mod /////////////////////
+$birthday = $CURUSER["birthday"];
+$birthday = date("Y-m-d", strtotime($birthday));
+list($year1, $month1, $day1) = split('-', $birthday);
+if ($CURUSER[birthday] == "0000-00-00")
+{
+        $year .= "<select name=year><option value=\"0000\">--</option>\n";
+        $i = "1920";
+        while($i <= (date('Y',time())-13))
+        {
+                $year .= "<option value=" .$i. ">".$i."</option>\n";
+                $i++;
+        }
+        $year .= "</select>\n";
+        $birthmonths = array(
+        "01" => "January",
+        "02" => "Febuary",
+        "03" => "March",
+        "04" => "May",
+        "05" => "April",
+        "06" => "June",
+        "07" => "July",
+        "08" => "August",
+        "09" => "September",
+        "10" => "October",
+        "11" => "November",
+        "12" => "December",
+        );
+        $month = "<select name=\"month\"><option value=\"00\">--</option>\n";
+        foreach ($birthmonths as $month_no => $show_month)
+        {
+                $month .= "<option value=$month_no>$show_month</option>\n";
+        }
+        $month .= "</select>\n";
+        $day .= "<select name=day><option value=\"00\">--</option>\n";
+        $i = 1;
+        while($i <= 31)
+        {
+                if($i < 10)
+                {
+                        $day .= "<option value=0".$i. ">0".$i."</option>\n";
+                }
+                else
+                {
+                        $day .= "<option value=".$i.">".$i."</option>\n";
+                }
+                $i++;
+        }
+        $day .="</select>\n";
+        tr("Birthdate", $year . $month . $day ,1);
+}
 }
 else
 {
@@ -416,12 +480,14 @@ print("<tr><td align=left> <a href=usercp.php?action=security>Security</td></tr>
 print("<tr><td align=left> <a href=usercp.php?action=torrents>Torrents</td></tr>");
 print("<tr><td align=left> <a href=usercp.php?action=personal>Personal</td></tr>");
 print("<tr><td align=left> <a href=invite.php>Invites</td></tr>");
-
 print("<tr><td align=left>  <a href=tenpercent.php>Lifesaver</td></tr>");
-
 if (get_user_class() >= UC_POWER_USER)
 
 print("<tr><td class=colhead width=150 height=18>$CURUSER[username]'s Entertainment</td></tr>");
+
+if (get_user_class() >= UC_USER)
+
+print("<tr><td align=left>  <a href=topmoods.php>Top Member Mood's</td></tr>");
 
 if (get_user_class() >= UC_POWER_USER)
 
@@ -430,7 +496,6 @@ print("<tr><td align=left>  <a href=blackjack.php>BlackJack</td></tr>");
 if (get_user_class() >= UC_VIP)
 
 print("<tr><td align=left>  <a href=hangman.php>Hangman</td></tr>");
-
 
 if (get_user_class() >= UC_POWER_USER)
 
@@ -448,6 +513,11 @@ print("<tr><td align=left>  <a href=usersearch1.php>Find User</td></tr>");
 if (get_user_class() > UC_MODERATOR)
 
 print("<tr><td align=left>  <a href=news.php>Add & Edit News</td></tr>");
+
+if (get_user_class() > UC_MODERATOR)
+
+print("<tr><td align=left>  <a href=changelog.php>Add & Edit Change Log</td></tr>");
+
 
 if (get_user_class() > UC_MODERATOR)
 
@@ -475,7 +545,6 @@ print("<tr><td align=left>  <a href=forummanage.php>Forum Manage</td></tr>");
 print("</table>");
 print("</td></tr></table>");
 ?>
-
 <?
 stdfoot();
 ?>

@@ -70,7 +70,7 @@ background-color : #242428;
     td.colhead {
 	border-style: solid solid none solid;
 	border-width: 0px;
-     background-image: url(../../../themes/S-Graw/images/gradient.png);
+     background-image: url('pic/gradient.png');
 background-repeat: repeat-x no-repeat-y;
 	background-color: #3BB9FF;
 }
@@ -200,8 +200,8 @@ margin-bottom : 0;
 input, select, textarea {
 font-family : tahoma;
 font-size : 8pt;
-color : teal; 
-background-image: url(../../../themes/S-Graw/images/gradient.png);
+color : white; 
+background-image: url('pic/gradient.png');
 background-repeat: repeat-x no-repeat-y;
 background-color: black;
 border : 1px solid #777777;

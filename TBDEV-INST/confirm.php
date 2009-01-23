@@ -1,5 +1,6 @@
 <?php
 require_once("include/bittorrent.php");
+maxcoder();
 $id = 0 + $_GET["id"];
 $md5 = $_GET["secret"];
 if (!$id)

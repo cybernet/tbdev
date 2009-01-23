@@ -2,8 +2,16 @@
 ob_start("ob_gzhandler");
 require_once("include/bittorrent.php");
 dbconn(false);
-loggedinorreturn();
 stdhead();
+maxcoder();
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
+
 begin_main_frame();
 
 /************************************************************************/
@@ -26,9 +34,9 @@ global $bgcolor2;
 
 error_reporting (E_ALL ^ E_WARNING ^ E_NOTICE);
 //SHOUTcast server settings, needed to get the XML output from the DNAS
-$shout_server = "91.121.20.172";
-$shout_port = "8000";
-$shout_password = "dj1234";
+$shout_server = "";
+$shout_port = "";
+$shout_password = "";
 
 //Set this to whatever the bitrate you are streaming at is
 $bitrate="128 kbps";
@@ -46,7 +54,7 @@ if (!$shout_socket)
 {
 print "<center>";
 print "<img src=pic/off.gif>";
-print "<b><font size=3><font color=yellow><img src=pic/off.gif><br />Scene-Base Radio - Offline</b></font><br>";
+print "<b><font size=3><font color=yellow><img src=pic/off.gif><br /> Radio - Offline</b></font><br>";
 print "Artist: <b> N/A</b><br>";
 print "Song: <b>N/A</b><br>";
 print "Bitrate: <b>N/A</b><br>";
@@ -216,29 +224,17 @@ if($success!=2 && $connected==1){
 ?>
 <br>
 <p>
-<?
-print "<b><font size=3><font color=red>To find out when your favourite DJ's are playing, or request to be a DJ <a href='calendar.php'>click here</a></b></font><br><br><br>";
-print "<b><font size=3><font color=yellow>Scene-Base Radio</b></font><br>";
-print "<b>$servertitle</b><br>";
-print "Genre: <b>$servergenre</b><br>";
-print "Artist: <b> $nowplaying[0]</b><br>";
-print "Song: <b>$nowplaying[1]</b><br>";
-print "Bitrate: <b>$bitrate</b><br>";
-print "Listeners: <b>$currentlisteners/$maxlisteners</b><br>";
-print "Time: <b>".date ("h:i:s A")."</b><br>";
-
-?>
 <p>
 <?
 ?>
-<center><a href="http://91.121.20.172:8000/listen.pls" onmouseover="roll_over('winamp', 'pic/winamp_over.png')"
+<center><a href="/listen.pls" onmouseover="roll_over('winamp', 'pic/winamp_over.png')"
 onmouseout="roll_over('winamp', 'pic/winamp.png')" style="border:hidden;" ><img src="pic/winamp.png" name="winamp" alt="click here to listen with Winamp" style="border:hidden;"></a><a href="listen.asx" onmouseover="roll_over('wmp', 'pic/wmp_over.png')"
 onmouseout="roll_over('wmp', 'pic/wmp.png')" style="border:hidden;" ><img src="pic/wmp.png" name="wmp" alt="click here to listen with Windows Media Player" style="border:hidden;"></a></center></span>
 <?
 }
 else{
 print "<center>";
-print "<b><font size=3><font color=yellow>Scene-Base Radio - Offline</b></font><br>";
+print "<b><font size=3><font color=yellow> Radio - Offline</b></font><br>";
 print "Artist: <b> N/A</b><br>";
 print "Song: <b>N/A</b><br>";
 print "Bitrate: <b>N/A</b><br>";

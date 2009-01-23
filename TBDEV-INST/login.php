@@ -1,14 +1,11 @@
 <?php
-require_once ("include/bittorrent.php");
-require_once ("include/user_functions.php");
-require_once ("include/bbcode_functions.php");
-
-
+require_once "include/bittorrent.php" ;
+//require_once "include/user_functions.php";
 //ini_set('session.use_trans_sid', '0');
-
+maxcoder();
 // Begin the session
 session_start();
-(time() - $_SESSION['captcha_time'] < 10) ? exit('No Spam - 10 Sec Delay - Stop Hammering !') : NULL;
+(time() - $_SESSION['captcha_time'] < 10) ? exit('NO SPAM!') : NULL;
 
 stdhead("Login");
 
@@ -25,9 +22,9 @@ if (!empty($_GET["returnto"])) {
 <script type="text/javascript" src="captcha/captcha.js"></script>
 
 <form method="post" action="takelogin.php">
-<table align="center" border="1" cellpadding=10>
+<table align="center" border="0" cellpadding=5>
   <tr><center><font color="white">
-    	<p><b>Note:</b> You need cookies enabled to log in.<b>[<?=$maxloginattempts;?>]</b> 
+    	<p><b>Note:</b> You need cookies enabled to log in.<b>[<?=$maxloginattempts;?>]</b>
 		failed logins in a row will result in banning your ip</p>
 	<p>You have <b><?=remaining ();?></b> login attempt(s).</p></center>
 
@@ -44,7 +41,7 @@ if (!empty($_GET["returnto"])) {
     <td>
       <div id="captchaimage">
       <a href="<?php echo $_SERVER['PHP_SELF']; ?>" onclick="refreshimg(); return false;" title="Click to refresh image">
-      <img class="cimage" src="captcha/GD_Security_image.php?<?php echo time(); ?>" alt="Captcha image" />
+      <img class="cimage" src="captcha/GD_Security_image.php?<?php echo time(); ?>" alt="Captcha image is messed atm" />
       </a>
       </div>
      </td>
@@ -68,15 +65,13 @@ if (!empty($_GET["returnto"])) {
 <?
 
 if (isset($returnto))
-	print("<input type=\"hidden\" name=\"returnto\" value=\"" . safechar($returnto) . "\" />\n");
+	print("<input type=\"hidden\" name=\"returnto\" value=\"" . htmlentities($returnto) . "\" />\n");
 
 ?>
 </form>
-<center>
-	<p>Forget password? <a href="resetpw.php"><font color="red">Click here</a> to retrieve your password!</p><p></font>
-	New Member? <a href="signup.php">Sign-Up</a></p>
-	<p>
-	Got A Invite Code? <a href="invite_signup.php">Invite Sign-Up</a></p>
+<center><p>Please Note : Do not use IE to sign up or use this site</p>
+	<p>Forget password? <a href="resetpw.php">Click <font color="green">here</a></font><font color="red"> to retrieve your password!</font></p>
+	<p>New Member? <a href="signup.php">Sign-Up</a></p>
 	<a href="http://www.mozilla.com" />
 	<img alt="Get Firefox" border="0" src="/pic/firefox.png"></a>
 	<a href="http://www.utorrent.com" />

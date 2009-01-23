@@ -1,7 +1,7 @@
 <?php
 require_once("include/bittorrent.php");
 dbconn();
-
+maxcoder();
 $res = mysql_query("SELECT COUNT(*) FROM users") or sqlerr(__FILE__, __LINE__);
 $arr = mysql_fetch_row($res);
 if ($arr[0] >= $invites)

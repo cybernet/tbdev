@@ -1,49 +1,33 @@
-<?PHP
+<?php
+/********************************************************************************
+PM system based on the wonderful work of Tux... but finally I found it was so re-written and different I
+thought it should have it's own' little section...
+added:
+search, drafts, avatars, max boxes, max messages, urgent (for staff), security, and much more lol...
+
+all credit and kudos to Tux for coming up with the great idea of this PM system,
+and credit to the various coders at TBDev who's code I may have pinched,
+as well as my mom, who without her, I'd not be typing this...
+
+btw... sendmessage.php was a mess... so I re-did it to work with this code...
+and takesendmessage.php should just be deleted... no need for it...
+
+cheers,
+snuggs
+
+*******************************************************************************/
 ob_start('ob_gzhandler');
 require_once('include/bittorrent.php');
+require_once('include/bbcode_functions.php');
 dbconn();
-loggedinorreturn();
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// PM system based on the wonderful work of Tux... but finally I found it was so re-written and different I
-// thought it should have it's own' little section...
-// added:
-// search, drafts, avatars, max boxes, max messages, urgent (for staff), security, and much more lol...
-//
-// all credit and kudos to Tux for coming up with the great idea of this PM system,
-// and credit to the various coders at TBDev who's code I may have pinched,
-// as well as my mom, who without her, I'd not be typing this...
-//
-// btw... sendmessage.php was a mess... so I re-did it to work with this code...
-// and takesendmessage.php should just be deleted... no need for it...
-//
-// more notes...
-//this is a work in progress... I have many things in here that are css related...
-// I'll either remove them for the final, or add them to the mod...
-// also...
-// I have a totally different site code then the default... for now, I hope I fixed / made it all fit with the default...
-// if not... well it will be by the time I'm done...
-//
-// finally...
-// DO NOT!!! just install this... it's not done, and possibly not safe!!!!
-// if you are interested in de-bugging or making the code better... PLEASE feel free to add to it / post...
-// DO NOT think this is safe / done / complete etc... IT'S NOT!!!
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-functions below:
-function maxbox
-&
-function maxboxes
-should be either moved to global, or added to send message and left here...
-(also, both should be made into one function, and return an array (maxbox,maxboxes) why have 2 functions when we could have just one?)
-
-still to do...
-tidy up code... there are a few messy things lol
-perhaps turn the $h1_thingie into an array (or why bother?)
-MAKE SURE EVERYTHING WORKS PMSL!
-*/
-
+maxcoder();
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
 
 // Define constants
 define('PM_DELETED',0); // Message was deleted
@@ -59,7 +43,7 @@ function maxbox($class)
 switch ($class)
 {
 case UC_CODER:
-$maxbox = 700;
+$maxbox = 500;
 break;
 case UC_SYSOP:
 $maxbox = 500;
@@ -89,7 +73,7 @@ function maxboxes($class)
 switch ($class)
 {
 case UC_CODER:
-$maxbox = 40;
+$maxboxes = 40;
 break;
 case UC_SYSOP:
 $maxboxes = 40;
@@ -109,9 +93,6 @@ break;
 case UC_USER:
 $maxboxes = 5;
 break;
-case UC_PEASANT:
-$maxboxes = 2;
-break;
 }
 return $maxboxes;
 }
@@ -123,7 +104,7 @@ function safe_box_name($box_name)
 
 //== only safe characters are allowed in PM box names
 
-$allowedchars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
+$allowedchars = 'abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
 
 for ($i = 0; $i < strlen($box_name); ++$i)
 
@@ -218,7 +199,7 @@ $h1_thingie .= ($_GET['sent'] ? '<h1 align=center>message sent!</h1>' : '');
 
 //=== get action and check to see if it's ok...
 $possible_actions = array('viewmailbox','viewdrafts', 'use_draft','send_draft','viewmessage','move','forward','forward_pm','editmailboxes','editmailboxes2','delete','search', 'viewinbox', 'move_or_delete_multi');
-$action = ($_GET['action'] ? htmlspecialchars($_GET['action']) : ($_POST['action'] ? htmlspecialchars($_POST['action']) : 'viewinbox'));
+$action = ($_GET['action'] ? htmlspecialchars($_GET['action']) : ($_POST['action'] ? htmlspecialchars($_POST['action']) : 'viewmailbox'));
 if (!in_array($action, $possible_actions)) stderr('Error', 'A ruffian that will swear, drink, dance, revel the night, rob, murder and commit the oldest of ins the newest kind of ways.');
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -252,7 +233,7 @@ $res_count = mysql_query("SELECT COUNT(*) FROM messages WHERE ".($mailbox === PM
 $arr_count = mysql_fetch_row($res_count);
 $messages = $arr_count[0];
 $filled = (($messages / maxbox($CURUSER['class'])) * 100);
-$mailbox_pic = get_percent_completed_image(round($filled), $maxpic);
+$mailbox_pic = get_percent_inbox_image(round($filled), $maxpic);
 $num_messages = number_format($filled,0);
 
 //=== get mailbox name
@@ -285,8 +266,7 @@ echo '<table width=95%><tr><td colspan=5 class=colhead align=center>'.$other_box
 '<tr><td width=1% class=colhead>&nbsp;&nbsp;</td><td class=colhead><a class=altlink href=?action=viewmailbox&box='.$mailbox.$q.($page > 1 ? '&page='.$page : '').'&order_by=subject'.$desc_asc.' title="order by subject '.($_GET['DESC'] ? 'ascending' : 'descending').'">Subject</a> </td><td width=35% class=colhead><a class=altlink href=?action=viewmailbox&box='.$mailbox.$q.($page > 1 ? '&page='.$page : '').'&order_by=username'.$desc_asc.' title="order by member name '.($_GET['DESC'] ? 'ascending' : 'descending').'">'.($mailbox === PM_SENTBOX ? 'Sent to' : 'Sender').'</a></td><td width=1% class=colhead><a class=altlink href=?action=viewmailbox&box='.$mailbox.$q.($page > 1 ? '&page='.$page : '').'&order_by=date'.$desc_asc.' title="order by date '.($_GET['DESC'] ? 'ascending' : 'descending').'">Date</td><td width=1% class=colhead>&nbsp;&nbsp;</td></tr>';
 
 //=== get message info we need to display then all nice and tidy like \o/
-$res = mysql_query("SELECT m.id,m.sender,m.receiver,m.added,m.subject,m.unread,m.urgent,u.avatar,u.offensiv
-e_avatar,u.username,u.id AS user_id FROM messages AS m LEFT JOIN users AS u ON u.id=m.".($mailbox === PM_SENTBOX ? 'receiver' : 'sender')." WHERE ".($mailbox === PM_INBOX ? "receiver=".$CURUSER['id']." AND location = 1" : ($mailbox === PM_SENTBOX ? "sender=".$CURUSER['id']." AND (saved = 'yes' || unread= 'yes')" : "receiver=".sqlesc($CURUSER['id'])." AND location=".sqlesc($mailbox)))." ORDER BY $order_by ".($_GET['ASC'] ? 'ASC ' : ($_GET['DESC'] ? 'DESC ' : 'DESC ')).$LIMIT) or sqlerr(__FILE__,__LINE__);
+$res = mysql_query("SELECT m.id,m.sender,m.receiver,m.added,m.subject,m.unread,m.urgent,u.avatar,u.username,u.id AS user_id FROM messages AS m LEFT JOIN users AS u ON u.id=m.".($mailbox === PM_SENTBOX ? 'receiver' : 'sender')." WHERE ".($mailbox === PM_INBOX ? "receiver=".$CURUSER['id']." AND location = 1" : ($mailbox === PM_SENTBOX ? "sender=".$CURUSER['id']." AND (saved = 'yes' || unread= 'yes')" : "receiver=".sqlesc($CURUSER['id'])." AND location=".sqlesc($mailbox)))." ORDER BY $order_by ".($_GET['ASC'] ? 'ASC ' : ($_GET['DESC'] ? 'DESC ' : 'DESC ')).$LIMIT) or sqlerr(__FILE__,__LINE__);
 
 if (mysql_num_rows($res) === 0)
 echo'<td colspan=5 align=center class=clearalt7><b>No Messages. in '.$mailbox_name.'</b></td>';
@@ -306,13 +286,12 @@ $friends = ($friend ? '&nbsp;[ <a class=altlink href=friends.php?action=delete&t
 }
 
 //=== avatar stuff
-$avatar = (!$row['avatar'] ? '<img width=30 src=pic/default_avatar.gif align=middle>' : '<img width=30 src='.htmlspecialchars($row['avatar']).' align=middle>');
-$avatar = (($row['offensive_avatar']==='yes' && $CURUSER['view_offensive_avatar'] === 'no') ? '<img width=30 src=pic/fuzzybunny.gif align=middle>' : $avatar);
+$avatar = ($CURUSER['show_pm_avatar'] === 'yes' ? (!$row['avatar'] ? '<img width=30 src=pic/default_avatar.gif align=middle> ' : '<img width=30 src='.htmlspecialchars($row['avatar']).' align=middle> ') : '');
 
 //=== print the damn thing :P
 echo($row['unread'] === 'yes' ? '<tr><td class='.$class.'><img src=pic/inbox_full.gif alt=Unread></td>' : '<tr><td class='.$class.'><img src=pic/outbox.gif alt=Read></td>').'<td class='.$class.'>'.
 '<a class=altlink href=?action=viewmessage&id='.$row['id'].'>'.($row['subject'] !== '' ? htmlspecialchars($row['subject']) : 'No Subject').'</a> '.($row['unread'] === 'yes' ? '&nbsp;&nbsp;&nbsp;<font color=red>[ un-read ]</font>' : '').($row['urgent'] === 'yes' ? '&nbsp;&nbsp;&nbsp;<font color=red><b>URGENT!</b></font>' : '').'</td>'.
-'<td class='.$class.'>'.($CURUSER['show_pm_avatar'] === 'yes' ? $avatar.' ' : '').($row['user_id'] == 0 ? 'System' : '<b><a class=altlink href=userdetails.php?id='.$row['user_id'].'>'.$row['username'].'</a></b>'.$friends).'</td><td nowrap class='.$class.'>'.$row['added'].'</td>'.($_GET['check'] === 'yes' ? '<td class='.$class.'><input type=checkbox name="pm[]" value='.$row['id'].' /></td></tr>' : '<td class='.$class.'><input type=checkbox name="pm[]" value='.$row['id'].' /></td></tr>');
+'<td class='.$class.'>'.$avatar.($row['user_id'] == 0 ? 'System' : '<b><a class=altlink href=userdetails.php?id='.$row['user_id'].'>'.$row['username'].'</a></b>'.$friends).'</td><td nowrap class='.$class.'>'.$row['added'].'</td>'.($_GET['check'] === 'yes' ? '<td class='.$class.'><input type=checkbox name="pm[]" value='.$row['id'].' /></td></tr>' : '<td class='.$class.'><input type=checkbox name="pm[]" value='.$row['id'].' /></td></tr>');
 }
 }
 
@@ -334,7 +313,7 @@ $per_page_drop_down .= '</select><input type=hidden name=box value="'.$mailbox.'
 $show_pm_avatar_drop_down = '<form><select name=show_pm_avatar ONCHANGE="location = this.options[this.selectedIndex].value;"><option value="?action=viewmailbox&box='.$mailbox.$q.($page > 1 ? '&page='.$page : '').($_GET['order_by'] ? '&order_by='.$order_by : '').($_GET['DESC'] ? '&DESC=1' : ($_GET['ASC'] ? '&ASC=1' : '')).'&show_pm_avatar=yes" '.($CURUSER['show_pm_avatar'] === 'yes' ? ' selected' : '').'>show avatars on PM list</option><option value="?action=viewmailbox&box='.$mailbox.$q.($page > 1 ? '&page='.$page : '').($_GET['order_by'] ? '&order_by='.$order_by : '').($_GET['DESC'] ? '&DESC=1' : ($_GET['ASC'] ? '&ASC=1' : '')).'&show_pm_avatar=no" '.($CURUSER['show_pm_avatar'] === 'no' ? ' selected' : '').'>don\'t show avatars on PM list</option></select><input type=hidden name=box value="'.$mailbox.'"></form>';
 
 //=== the bottom
-echo'<tr><td colspan=5 align=right class='.$class2.'><a class=altlink href="java script:SetChecked(1,\'pm[]\')"> select all</a> - <a class=altlink href="java script:SetChecked(0,\'pm[]\')">un-select all</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
+echo'<tr><td colspan=5 align=right class='.$class2.'><a class=altlink href="javascript:SetChecked(1,\'pm[]\')"> select all</a> - <a class=altlink href="javascript:SetChecked(0,\'pm[]\')">un-select all</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
 '<input class=button type=submit name=move value="Move to"> '.get_all_boxes().' or '.
 '<input class=button type=submit name=delete value=Delete> selected messages.</td></tr></table></form><div align=left>'.
 '<img src=pic/inbox_full.gif alt=Unread /> Unread Messages.<br><img src=pic/outbox.gif alt=Read /> Read Messages.</div>'.($pages > 1 ? $menu : '').
@@ -364,8 +343,8 @@ if (!in_array($order_by, $good_order_by)) stderr('Error', 'Tempt not too much th
 $res_count = mysql_query('SELECT COUNT(*) FROM messages WHERE draft=\'yes\' AND sender='.$CURUSER['id']) or sqlerr(__FILE__,__LINE__);
 $arr_count = mysql_fetch_row($res_count);
 $messages = $arr_count[0];
-$filled = (($messages / maxboxes($CURUSER['class'])) * 100);
-$mailbox_pic = get_percent_completed_image(round($filled), $maxpic);
+$filled = (($messages / maxbox($CURUSER['class'])) * 100);
+$mailbox_pic = get_percent_inbox_image(round($filled), $maxpic);
 $num_messages = number_format($filled,0);
 
 //=== get mailbox name
@@ -431,7 +410,7 @@ $iii = $iii + 10;
 $per_page_drop_down .= '</select></form>';
 
 //=== the bottom
-echo'<tr><td colspan=5 align=right class='.$class2.'><a class=altlink href="java script:SetChecked(1,\'pm[]\')"> select all</a> - <a class=altlink href="java script:SetChecked(0,\'pm[]\')">un-select all</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
+echo'<tr><td colspan=5 align=right class='.$class2.'><a class=altlink href="javascript:SetChecked(1,\'pm[]\')"> select all</a> - <a class=altlink href="javascript:SetChecked(0,\'pm[]\')">un-select all</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.
 '<input class=button type=submit name=delete value=Delete> selected messages.</td></tr></table></form>'.($pages > 1 ? $menu : '').
 '<br><div align=center><table><tr><td>'.$per_page_drop_down.'</td><td></td></tr></table><br><a class=altlink href=?action=search>Search Messages</a> || <a class=altlink href=?action=editmailboxes>PM box Manager / PM settings</a> || <a class=altlink href=/sendmessage.php?receiver='.$CURUSER['id'].'&draft=1>write new Draft</a></div>';
 stdfoot();
@@ -453,7 +432,7 @@ $message = mysql_fetch_assoc($res);
 if (!$res) stderr('Error','You do not have permission to view this message.');
 
 //=== get user stuff
-$res_user_stuff = mysql_query('SELECT username,id,avatar,offensive_avatar FROM users WHERE id='.($message['sender'] === $CURUSER['id'] ? sqlesc($message['receiver']) : sqlesc($message['sender']))) or sqlerr(__FILE__,__LINE__);
+$res_user_stuff = mysql_query('SELECT username,id,avatar FROM users WHERE id='.($message['sender'] === $CURUSER['id'] ? sqlesc($message['receiver']) : sqlesc($message['sender']))) or sqlerr(__FILE__,__LINE__);
 $arr_user_stuff = mysql_fetch_assoc($res_user_stuff);
 $id = ($message['sender'] === $CURUSER['id'] ? $message['receiver'] : $message['sender']);
 
@@ -464,10 +443,9 @@ mysql_query("UPDATE messages SET unread='no' WHERE id=" . sqlesc($pm_id) . " AND
 $res_friend = mysql_query('SELECT id FROM friends WHERE userid='.$CURUSER['id'].' AND friendid='.$id) or sqlerr(__FILE__,__LINE__);
 $friend = mysql_fetch_assoc($res_friend);
 
-//=== avatar stuff...
-$avatar = (!$arr_user_stuff['avatar'] ? '<img width=80 src=pic/default_avatar.gif>' : '<img width=80 src='.htmlspecialchars($arr_user_stuff['avatar']).'>');
-$avatar = (($arr_user_stuff['offensive_avatar']==='yes' && $CURUSER['view_offensive_avatar'] === 'no') ? '<img width=80 src=pic/fuzzybunny.gif>' : $avatar);
-$avatar = ($CURUSER['avatars'] == 'yes' ? $avatar : '');
+//=== avatar stuff
+$avatar = ($CURUSER['show_pm_avatar'] === 'yes' ? (!$row['avatar'] ? '<img width=30 src=pic/default_avatar.gif align=middle> ' : '<img width=30 src='.htmlspecialchars($row['avatar']).' align=middle> ') : '');
+
 
 //=== Display the fuckin message already!
 stdhead('PM '.htmlspecialchars($subject));
@@ -496,8 +474,6 @@ $res = mysql_query('SELECT * FROM messages WHERE id='.sqlesc($pm_id)) or sqlerr(
 $message = mysql_fetch_assoc($res);
 
 if (mysql_num_rows($res) === 0) stderr('Error','She hath more hair than wit, and more faults than hairs, and more wealth than faults.');
-
-
 
 //=== print out the page
 stdhead('Use Draft');
@@ -531,15 +507,15 @@ if (mysql_num_rows($res_username) === 0) stderr('Error','Sorry, there is no user
 //=== make sure the reciever has space in their box
 $res_count = mysql_query('SELECT COUNT(*) FROM messages WHERE receiver = '.sqlesc($to_username['id']).' AND location = 1') or sqlerr(__FILE__, __LINE__);
 
-if (mysql_num_rows($res_count) > maxbox($to_username['class']) && $CURUSER['class'] < UC_MODERATOR) stderr('Sorry', 'Members mailbox is full.');
-
+if (mysql_num_rows($res_count) > (maxbox($to_username['class'])*3) && $CURUSER['class'] < UC_MODERATOR) stderr('Sorry', 'Members mailbox is full.');
+/*
 //=== allow suspended users to PM staff only
 if ($CURUSER['suspended'] === 'yes'){
 $res = mysql_query("SELECT id FROM users WHERE class >= ".UC_MODERATOR) or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_assoc($res);
 if (!in_array($to, $row)) stderr('Error', 'Your account is suspended, you may only send PMs to staff!');
 }
-
+*/
 //=== Other then from staff, Make sure recipient wants this message...
 if ($CURUSER['class'] < UC_MODERATOR) {
 
@@ -606,7 +582,7 @@ mysql_query('UPDATE messages SET location=0, unread=\'no\' WHERE id='.$id) or sq
 
 //=== just update if it's not deleted
 elseif ($message['sender'] == $CURUSER['id'] && $message['location'] != PM_DELETED)
-mysql_query('UPDATE messages SET saved=\'no\', unread=\'no\' WHERE id='.$id) or sqlerr(__FILE__,__LINE__);
+mysql_query('UPDATE messages SET saved=\'no\' WHERE id='.$id) or sqlerr(__FILE__,__LINE__);
 
 //=== see if it worked :D
 if (mysql_affected_rows() === 0) stderr('Error','Message could not be deleted! <a class=altlink href='.$BASEURL.'/messages.php?action=viewmessage&id='.$id.'>BACK</a> to message.');
@@ -627,7 +603,7 @@ $pm_id = 0 + $_POST['id'];
 $pm_box = 0 + $_POST['box'];
 $pm_messages = $_POST['pm'];
 if ($_POST['move']){
-@mysql_query("UPDATE messages SET saved='yes', location=" . sqlesc($pm_box) . " WHERE id IN (" . implode(", ", array_map("sqlesc",$pm_messages)) . ') AND receiver=' . $CURUSER['id']);//=== Move multiple messages
+@mysql_query("UPDATE messages SET  location=" . sqlesc($pm_box) . " WHERE id IN (" . implode(", ", array_map("sqlesc",$pm_messages)) . ') AND receiver=' . $CURUSER['id']);//=== Move multiple messages
 
 //=== Check if messages were moved
 if (@mysql_affected_rows() === 0)
@@ -654,7 +630,7 @@ mysql_query('UPDATE messages SET location=0, unread=\'no\' WHERE id='.$id) or sq
 
 //=== just update if it's not deleted
 elseif ($message['sender'] == $CURUSER['id'] && $message['location'] != PM_DELETED)
-mysql_query('UPDATE messages SET saved=\'no\', unread=\'no\' WHERE id='.$id) or sqlerr(__FILE__,__LINE__);
+mysql_query('UPDATE messages SET saved=\'no\' WHERE id='.$id) or sqlerr(__FILE__,__LINE__);
 }
 
 //=== Check if messages were deleted
@@ -736,15 +712,15 @@ if (mysql_num_rows($res_username) === 0) stderr('Error','Sorry, there is no user
 //=== make sure the reciever has space in their box
 $res_count = mysql_query('SELECT COUNT(*) FROM messages WHERE receiver = '.sqlesc($to_username['id']).' AND location = 1') or sqlerr(__FILE__, __LINE__);
 
-if (mysql_num_rows($res_count) > maxbox($to_username['class']) && $CURUSER['class'] < UC_MODERATOR) stderr('Sorry', 'Members mailbox is full.');
-
+if (mysql_num_rows($res_count) > (maxbox($to_username['class'])*3) && $CURUSER['class'] < UC_MODERATOR) stderr('Sorry', 'Members mailbox is full.');
+/*
 //=== allow suspended users to PM / forward to staff only
 if ($CURUSER['suspended'] === 'yes'){
 $res = mysql_query("SELECT id FROM users WHERE class >= ".UC_MODERATOR) or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_assoc($res);
 if (!in_array($to, $row)) stderr('Error', 'Your account is suspended, you may only forward PMs to staff!');
 }
-
+*/
 //=== Other then from staff, Make sure recipient wants this message...
 if ($CURUSER['class'] < UC_MODERATOR) {
 
@@ -787,47 +763,39 @@ if ($action === 'editmailboxes'){
 $res = mysql_query('SELECT * FROM pmboxes WHERE userid='.sqlesc($CURUSER['id']).' ORDER BY name ASC') or sqlerr(__FILE__,__LINE__);
 
 //=== get all PM boxes for editing
-if (mysql_num_rows($res) === 0)
-$all_my_boxes .= '<span align=center><b>There are no PM boxes to edit.</b></span>';
-else{
 while ($row = mysql_fetch_assoc($res)){
 //==== get count from PM boxes
-$res_count = mysql_query('SELECT COUNT(*) FROM messages WHERE location ='.(0 + $row['boxnumber']).' AND receiver='.$CURUSER['id']) or sqlerr(__FILE__,__LINE__);
+$res_count = mysql_query('SELECT COUNT(*) FROM messages WHERE  location ='.(0 + $row['boxnumber']).' AND receiver='.$CURUSER['id']) or sqlerr(__FILE__,__LINE__);
 $arr_count = mysql_fetch_row($res_count);
 $messages = $arr_count[0];
-$all_my_boxes .= '<tr><td class=clearalt6 align=right width=110>Box # '.(0 + $row['boxnumber']).' <b>'.htmlspecialchars($row['name']).':</b> </td><td class=clearalt6 align=left><input type=text name=edit'.(0 + $row['id']).' value="'.htmlspecialchars($row['name']).'" size=40 maxlength=14> [ contains '.$messages.' messages ]</td></tr>';
-}
-$all_my_boxes .= '<tr><td class=clearalt6 align=left width colspan=2><b>Please note!!!</b> if you delete the name of one or more boxes, all messages in that directory will be sent to your inbox!!!<li>If you wish to delete the messages as well, you can do that from the main page.</li></td></tr><tr><td class=clearalt6 align=center width colspan=2><input class=button type=submit value=Edit></td></tr>';
+$all_my_boxes .= '<tr><td class=clearalt6 align=right width=110>Box # '.($row['boxnumber'] -1).' <b>'.htmlspecialchars($row['name']).':</b> </td><td class=clearalt6 align=left><input type=text name=edit'.(0 + $row['id']).' value="'.htmlspecialchars($row['name']).'" size=40 maxlength=14> [ contains '.$messages.' messages ]</td></tr>';
 }
 
-//=== per page drop down
+$all_my_boxes .= ($all_my_boxes == '' ?  '<tr><td class=clearalt6 colspan=2 align=left><b>There are currently no PM boxes to edit.</b><br></td></tr>' : '<tr><td class=clearalt6 colspan=2 align=left>You may edit the names of your PM boxes here.<br>If you wish to delete 1 or more PM boxes, remove the name from the text field leaving it blank.</td></tr><tr><td class=clearalt6 align=left width colspan=2><b>Please note!!!</b> if you delete the name of one or more boxes,  all messages in that directory will be sent to your inbox!!!<li>If you wish to delete the messages as well, you can do that from the main page.</li></td></tr><tr><td class=clearalt6 align=center width colspan=2><input class=button type=submit value=Edit></td></tr>');
+
+//=== per page drop down 
 $iii = 20;
-
 while($iii <= (maxbox($CURUSER['class']) > 200 ? 200 : maxbox($CURUSER['class']))){
 $per_page_drop_down .= '<option value='.$iii.' '.($CURUSER['pms_per_page'] == $iii ? ' selected' : '').'>'.$iii.' PMs per page</option>';
-
 $iii = $iii + 10;
-
 }
 
-
 //=== make up page
-stdhead('Editing PM boxes');
+stdhead('Editing PM boxes'); 
 
-echo '<font size="+2">Editing PM boxes</font>'.$h1_thingie.'<table><tr><td class=colhead colspan=2 align=left>Add PM boxes</td></tr><tr>'.
+echo '<font size="+2">Editing PM boxes</font>'.$h1_thingie.'<table><tr><td class=colhead2 colspan=2 align=left>Add PM boxes</td></tr><tr>'.
 '<td class=clearalt6 colspan=2 align=left>As a '.get_user_class_name($CURUSER['class']).' you may have up to '.maxboxes($CURUSER['class']).' PM box'.(maxboxes($CURUSER['class']) !== 1 ? 'es' : '').' other then your in, sent and draft boxes.<br>'.
 'Currently you have '.mysql_num_rows($res).' custom box'.(mysql_num_rows($res) !== 1 ? 'es' : '').' <br>You may add up to '.(maxboxes($CURUSER['class']) - mysql_num_rows($res)).' more extra mailboxes.<br>'.
 '<br><b>The following characters can be used: </b> a-z, A-Z, 1-9, - and _ [ all other characters will be ignored ]<br></td></tr>'.
 '<form action=?action=editmailboxes2&action2=add method=post>';
 //=== make loop for oh let's say 5 boxes...
-for ($ii=1;$ii<6;$ii++)
+for ($ii=1;$ii<6;$ii++) 
 echo'<tr><td class=clearalt6 align=right width=110><b>add '.$ii.' more box'.($ii !== 1 ? 'es' : '').':</b> </td><td class=clearalt6 align=left><input type=text name="new[]" size=40 maxlength=14></td></tr>';
 
 echo'<tr><td class=clearalt6 colspan=2 align=left><br>only fill in add as many boxes that you would like to add and click <input class=button type=submit value=Add> [ blank entries will be ignored ]</form><br><br></td></tr>'.
-'<tr><td class=colhead colspan=2 align=left>Edit / Delete PM boxes</td></tr><tr><td class=clearalt6 colspan=2 align=left>You may edit the names of your PM boxes here.<br>'.
-'If you wish to delete 1 or more PM boxes, remove the name from the text field leaving it blank.</td></tr>'.
+'<tr><td class=colhead2 colspan=2 align=left>Edit / Delete PM boxes</td></tr>'.
 '<form action=?action=editmailboxes2 method=post><input type=hidden name=action2 value=edit_boxes>'.$all_my_boxes.'</form>'.
-'<tr><td class=colhead colspan=2 align=left>PM settings</td></tr><tr><td class=clearalt6 colspan=2 align=left><b>Set the default number of messages to be viewed per page.</b>'.
+'<tr><td class=colhead2 colspan=2 align=left>PM settings</td></tr><tr><td class=clearalt6 colspan=2 align=left><b>Set the default number of messages to be viewed per page.</b>'.
 '<form action=? method=get> <select name=change_pm_number>'.$per_page_drop_down.'</select> please select how many PMs you would like to see per page, and click change.'.
 '<input class=button type=submit value=change><input type=hidden name=edit_mail_boxes value=1></form><br><b>Show avatars on PM list?</b>'.
 '<form action=? method=get><select name=show_pm_avatar><option value=yes '.($CURUSER['show_pm_avatar'] === 'yes' ? ' selected' : '').'>show avatars on PM list</option>'.
@@ -853,31 +821,23 @@ if ($action2 === 'add'){
 
 //=== make sure they posted something...
 if ($_POST['new'] === '')
-
 stderr('Error', 'to add new PM boxes you MUST enter at least one PM box name!');
 
 //=== Get current highest box number
-$res = mysql_query("SELECT MAX(boxnumber) FROM pmboxes WHERE userid=" . sqlesc($CURUSER['id'])) or sqlerr(__FILE__,__LINE__);
-$box = mysql_fetch_array($res);
-$box = ($box < 2 ? 1 : ($box[0]));
+$res = mysql_query("SELECT MAX(boxnumber) AS top_box FROM pmboxes WHERE userid=" . sqlesc($CURUSER['id'])) or sqlerr(__FILE__,__LINE__);
+$box_arr = mysql_fetch_assoc($res);
+$box = ($box_arr['top_box'] < 3 ? 2 : $box_arr['top_box']);
 
 //=== let's add the new boxes to the DB
 $new_box = $_POST['new'];
 
-
-
 foreach ($new_box as $key => $add_it) {
-if (safe_box_name($add_it) && $add_it !== ''){
-
-++$box;
-
-$name = sqlesc(htmlspecialchars($add_it));
-
-mysql_query("INSERT INTO pmboxes (userid, name, boxnumber) VALUES (" . sqlesc($CURUSER['id']) . ", ".$name.", $box)") or sqlerr(__FILE__,__LINE__);
+	if (safe_box_name($add_it) && $add_it !== ''){
+	$name = sqlesc(htmlspecialchars($add_it));
+	mysql_query("INSERT INTO pmboxes (userid, name, boxnumber) VALUES (" . sqlesc($CURUSER['id']) . ", ".$name.", $box)") or sqlerr(__FILE__,__LINE__);
+	}
+	++$box;
 $worked = '&boxes=1';
-
-}
-
 }
 
 //=== redirect back with messages :P
@@ -891,33 +851,32 @@ if ($action2 === 'edit_boxes'){
 //=== get info
 $res = mysql_query('SELECT * FROM pmboxes WHERE userid='.sqlesc($CURUSER['id'])) or sqlerr(__FILE__,__LINE__);
 
-if (mysql_num_rows($res) === 0) stderr('Error','No Mailboxes to edit');
+if (mysql_num_rows($res) === 0) stderr(' Error','No Mailboxes to edit');
+
+
 
 while ($row = mysql_fetch_assoc($res)){
 
-//=== if name different AND safe, update it
-if (safe_box_name($_POST['edit'.$row['id']]) && $_POST['edit'.$row['id']] !== '' && $_POST['edit'.$row['id']] !== $row['name']){
+	//=== if name different AND safe, update it
+	if (safe_box_name($_POST['edit'.$row['id']]) && $_POST['edit'.$row['id']] !== '' && $_POST['edit'.$row['id']] !== $row['name']){
+	$name = sqlesc(htmlspecialchars($_POST['edit'.$row['id']]));
+	mysql_query('UPDATE pmboxes SET name='.$name.' WHERE id='.sqlesc($row['id']).' LIMIT 1') or sqlerr(__FILE__,__LINE__);
+	$worked = '&name=1';		
+	}
+	
+	//=== if name is empty, delete the box(es) and send the PMs back to the inbox.. 
+	if ($_POST['edit'.$row['id']] == ''){
+	//=== get messages to move
+	$remove_messages_res = mysql_query('SELECT id FROM messages WHERE location='.sqlesc($row['boxnumber']).'  AND receiver='.sqlesc($CURUSER['id'])) or sqlerr(__FILE__,__LINE__);
+	//== move the messages to the inbox
+	while ($remove_messages_arr = mysql_fetch_assoc($remove_messages_res))
+	mysql_query('UPDATE messages SET location=1 WHERE id='.sqlesc($remove_messages_arr['id'])) or sqlerr(__FILE__,__LINE__);
 
-$name = sqlesc(htmlspecialchars($_POST['edit'.$row['id']]));
-mysql_query('UPDATE pmboxes SET name='.$name.' WHERE id='.sqlesc($row['id']).' LIMIT 1') or sqlerr(__FILE__,__LINE__);
-$worked = '&name=1';
-
-}
-
-//=== if name is empty, delete the box(es) and send the PMs back to the inbox..
-if ($_POST['edit'.$row['id']] == ''){
-//=== get messages to move
-$remove_messages_res = mysql_query('SELECT id FROM messages WHERE saved=\'yes\' AND location='.sqlesc($row['boxnumber']).' AND receiver='.sqlesc($CURUSER['id'])) or sqlerr(__FILE__,__LINE__);
-//== move the messages to the inbox
-while ($remove_messages_arr = mysql_fetch_assoc($remove_messages_res))
-mysql_query('UPDATE messages SET location=1 WHERE id='.sqlesc($remove_messages_arr['id'])) or sqlerr(__FILE__,__LINE__);
-
-//== delete the box
-
-mysql_query('DELETE FROM pmboxes WHERE id='.sqlesc($row['id']).' LIMIT 1') or sqlerr(__FILE__,__LINE__);
-$deleted = '&box_delete=1';
-}
-
+	//== delete the box
+	mysql_query('DELETE FROM pmboxes WHERE id='.sqlesc($row['id']).'  LIMIT 1') or sqlerr(__FILE__,__LINE__);
+	$deleted = '&box_delete=1';
+	}
+	
 }
 
 //=== redirect back with messages :P
@@ -937,7 +896,14 @@ if ($action === 'search'){
 $keywords = htmlspecialchars($_POST['keywords']);
 $member = htmlspecialchars($_POST['member']);
 $mailbox = ($_POST['box'] ? (0 + $_POST['box']) : 1);
+$all_boxes = (0 + $_POST['all_boxes']);
 $sender_reciever = ($mailbox >= 1 ? 'sender' : 'receiver');
+
+//== query stuff
+$what_in_out = ($mailbox >= 1 ? "AND receiver=".sqlesc($CURUSER['id'])." AND saved='yes'" : "AND sender=".sqlesc($CURUSER['id'])." AND saved='yes'");
+$location = ($all_boxes ? 'AND location != 0' : 'AND location = '.sqlesc($mailbox));
+$limit = ($_POST['limit'] ? (0 + $_POST['limit']) : 25);
+$desc_asc = (($_POST['ASC'] == 1) ? 'ASC' : 'DESC');
 
 //=== search in
 $subject = (0 + $_POST['subject']);
@@ -966,15 +932,18 @@ $get_all_boxes .= '<option value='.$row['boxnumber'].' '.($row['boxnumber'] == $
 //=== make up page
 stdhead('Search Messages');
 
-echo'<h1>Search Messages</h1><form action=?action=search method=post><table width=90%><tr><td class=colhead align=center colspan=2>Search Messages:</td></tr>'.
+echo'<br><form action=?action=search method=post><table width=90%><tr><td class=colhead align=center colspan=2><h1>Search Messages</h1></td></tr>'.
 
 '<tr><td class=clearalt6 align=right><b>search terms:</b></td><td align=left class=clearalt6><input type=text size=40 name=keywords value="'.$keywords.'"> [ words to search for. common words are ignored ]</td></tr>'.
-'<tr><td class=clearalt6 align=right><b>search box:</b></td><td align=left class=clearalt6><select name=box><option value=1 '.($mailbox == 1 ? 'selected' : '').'>Inbox</option><option value="-1" '.($mailbox == '-1' ? 'selected' : '').'>Sentbox</option>'.$get_all_boxes.'</select></td></tr>'.
+'<tr><td class=clearalt6 align=right><b>search box:</b></td><td align=left class=clearalt6><select name=box><option value=1 '.($mailbox == PM_INBOX ? 'selected' : '').'>Inbox</option><option value="-1" '.($mailbox == PM_SENTBOX ? 'selected' : '').'>Sentbox</option>'.$get_all_boxes.'</select></td></tr>'.
+'<tr><td class=clearalt6 align=right> or <b>search all boxes:</b></td><td align=left class=clearalt6><input name=all_boxes type=checkbox value=1 '.($all_boxes == 1 ? ' checked' : '').'> [ if checked the above box selection will be ignored ]</td></tr>'.
 '<tr><td class=clearalt6 align=right><b>by member:</b></td><td align=left class=clearalt6><input type=text size=15 name=member value="'.$member.'"> [ search messages by this member only ]</td></tr>'.
-'<tr><td class=clearalt6 align=right><b>search in:</b></td><td align=left class=clearalt6><input name=subject type=checkbox value=1 '.($subject == 1 ? ' checked' : '').'> subject [ default ] <input name=text type=checkbox value=1 '.($text === 1 ? ' checked' : '').'> message text [ select one or both. if none selected, subject is assumed ]</td></tr>'.
+'<tr><td class=clearalt6 align=right><b>search in:</b></td><td align=left class=clearalt6><input name=subject type=checkbox value=1 '.($subject == 1 ? ' checked' : '').'> subject [ default ] <input name=text type=checkbox value=1 '.($text === 1 ? ' checked' : '').'> message text [ select one or both. if none selected, both are assumed ]</td></tr>'.
 
-'<tr><td class=clearalt6 align=right><b>sort by:</b></td><td class=clearalt6><select name=sort><option value=relevance'.($sort === 'relevance' ? ' selected' : '').'>relevance</option><option value=subject'.($sort === 'subject' ? ' selected' : '').'>subject</option><option value=added '.($sort === 'added' ? ' selected' : '').'>added</option><option value='.$sender_reciever.($sort === $sender_reciever ? ' selected' : '').'>member</option></select></td></tr>'.
+'<tr><td class=clearalt6 align=right><b>sort by:</b></td><td class=clearalt6><select name=sort><option value=relevance'.($sort === 'relevance' ? ' selected' : '').'>relevance</option><option value=subject'.($sort === 'subject' ? ' selected' : '').'>subject</option><option value=added '.($sort === 'added' ? ' selected' : '').'>added</option><option value='.$sender_reciever.($sort === $sender_reciever ? ' selected' : '').'>member</option></select><input name=ASC type=radio value=1 '.(($_POST['ASC'] == 1) ? ' checked' : '').'> Ascending <input name=ASC type=radio value=2 '.(($_POST['ASC'] == 2 || !$_POST['ASC']) ? ' checked' : '').'> Descending</td></tr>'.
 
+'<tr><td class=clearalt6 align=right><b>show:</b></td><td align=left class=clearalt6><select name=limit><option value=25'.(($limit == 25 || !$limit) ? ' selected' : '').'>first 25 results</option><option value=50'.($limit == 50 ? ' selected' : '').'>first 50 results</option><option value=75'.($limit == 75 ? ' selected' : '').'>first 75 results</option><option value=100'.($limit == 100 ? ' selected' : '').'>first 100 results</option><option value=150'.($limit == 150 ? ' selected' : '').'>first 150 results</option><option value=200'.($limit == 200 ? ' selected' : '').'>first 200 results</option><option value=1000'.($limit == 1000 ? ' selected' : '').'>all results</option></select></td></tr>'.
+($limit < 100 ?'<tr><td class=clearalt6 align=right><b>display as:</b></td><td align=left class=clearalt6><input name=as_list_post type=radio value=1 '.((0 + $_POST['as_list_post'] == 1 || !$_POST['as_list_post']) ? ' checked' : '').'> <b>list </b><input name=as_list_post type=radio value=2 '.((0 + $_POST['as_list_post'] == 2) ? ' checked' : '').'> <b> message</b></td></tr>' : '').
 '<tr><td colspan=2 align=center class=clearalt6><input type=submit value=search class=button></td></tr></table></form>';
 
 
@@ -990,30 +959,30 @@ switch(true)
 {
 //=== if only member name is entered and no search string... get all messages by that member
 case (!$keywords && $member):
-$res_search = mysql_query("SELECT * FROM messages WHERE sender=".sqlesc($arr_username['id'])." AND saved='yes' AND location=$mailbox AND receiver=".sqlesc($CURUSER['id'])." ORDER BY ".sqlesc($sort)." DESC") or sqlerr(__FILE__,__LINE__);
+$res_search = mysql_query("SELECT * FROM messages WHERE sender=".sqlesc($arr_username['id'])." AND saved='yes' $location AND receiver=".sqlesc($CURUSER['id'])." ORDER BY ".sqlesc($sort)." $desc_asc LIMIT ".sqlesc($limit)) or sqlerr(__FILE__,__LINE__);
 break;
 //=== if just subject
 case ($subject && !$text):
-$res_search = mysql_query("SELECT *, MATCH(subject) AGAINST('$search' IN BOOLEAN MODE) AS relevance FROM messages WHERE ( MATCH(subject) AGAINST ('$search' IN BOOLEAN MODE) ) $and_member AND location=$mailbox ".($mailbox >= 1 ? "AND receiver=".sqlesc($CURUSER['id'])." AND saved='yes'" : "AND sender=".sqlesc($CURUSER['id'])." AND saved='yes'")." ORDER BY ".sqlesc($sort)." DESC") or sqlerr(__FILE__,__LINE__);
+$res_search = mysql_query("SELECT *, MATCH(subject) AGAINST('$search' IN BOOLEAN MODE) AS relevance FROM messages WHERE ( MATCH(subject) AGAINST ('$search' IN BOOLEAN MODE) ) $and_member $location $what_in_out ORDER BY ".sqlesc($sort)." $desc_asc LIMIT ".sqlesc($limit)) or sqlerr(__FILE__,__LINE__);
 break;
 //=== if just message
 case (!$subject && $text):
-$res_search = mysql_query("SELECT *, MATCH(msg) AGAINST('$search' IN BOOLEAN MODE) AS relevance FROM messages WHERE ( MATCH(msg) AGAINST ('$search' IN BOOLEAN MODE) ) $and_member AND location=$mailbox ".($mailbox >= 1 ? "AND receiver=".sqlesc($CURUSER['id'])." AND saved='yes'" : "AND sender=".sqlesc($CURUSER['id'])." AND saved='yes'")." ORDER BY ".sqlesc($sort)." DESC") or sqlerr(__FILE__,__LINE__);
+$res_search = mysql_query("SELECT *, MATCH(msg) AGAINST('$search' IN BOOLEAN MODE) AS relevance FROM messages WHERE ( MATCH(msg) AGAINST ('$search' IN BOOLEAN MODE) ) $and_member $location $what_in_out ORDER BY ".sqlesc($sort)." $desc_asc LIMIT ".sqlesc($limit)) or sqlerr(__FILE__,__LINE__);;
 break;
 //=== if subject and message
 case ($subject && $text || !$subject && !$text):
-$res_search = mysql_query("SELECT *, ( (1.3 * (MATCH(subject) AGAINST ('$search' IN BOOLEAN MODE))) + (0.6 * (MATCH(msg) AGAINST ('$search' IN BOOLEAN MODE)))) AS relevance FROM messages WHERE ( MATCH(subject,msg) AGAINST ('$search' IN BOOLEAN MODE) ) $and_member AND location=$mailbox ".($mailbox >= 1 ? "AND receiver=".sqlesc($CURUSER['id'])." AND saved='yes'" : "AND sender=".sqlesc($CURUSER['id'])." AND saved='yes'")." ORDER BY ".sqlesc($sort)." DESC") or sqlerr(__FILE__,__LINE__);
+$res_search = mysql_query("SELECT *, ( (1.3 * (MATCH(subject) AGAINST ('$search' IN BOOLEAN MODE))) + (0.6 * (MATCH(msg) AGAINST ('$search' IN BOOLEAN MODE)))) AS relevance FROM messages WHERE ( MATCH(subject,msg) AGAINST ('$search' IN BOOLEAN MODE) ) $and_member $location $what_in_out ORDER BY ".sqlesc($sort)." $desc_asc LIMIT ".sqlesc($limit)) or sqlerr(__FILE__,__LINE__);
 break;
 }
 
 $num_resault = mysql_num_rows($res_search);
 
 //=== show the search resaults \o/o\o/o\o/
-echo'<h1>your search for '.($keywords ? '"'.$keywords.'"' : ($member ? 'member '.htmlspecialchars($arr_username['username']).'\'s PMs' : '')).'</h1><p align=center>returned <b>'.$num_resault.'</b> match'.($num_resault === 1 ? '' : 'es').'! '.($num_resault === 0 ? ' better luck next time...' : '').'</p>';
+echo'<h1>your search for '.($keywords ? '"'.$keywords.'"' : ($member ? 'member '.htmlspecialchars($arr_username['username']).'\'s PMs' : '')).'</h1><p align=center>'.($num_resault < $limit ? 'returned' : 'showing first').' <b>'.$num_resault.'</b> match'.($num_resault === 1 ? '' : 'es').'! '.($num_resault === 0 ? ' better luck next time...' : '').'</p>';
 
 //=== let's make the table
-echo($num_resault > 0 ?'<table width=95%><tr><td colspan=5 class=colhead align=center><font size=4>'.$mailbox_name.'</font></td></tr>'.
-'<tr><td width=1% class=colhead>&nbsp;&nbsp;</td><td class=colhead>Subject </td><td width=35% class=colhead>'.($mailbox === PM_SENTBOX ? 'Sent to' : 'Sender').'</td><td width=1% class=colhead> Date</td></tr>' : '');
+echo($num_resault > 0 ?'<table width=95%>'.((0 + $_POST['as_list_post'] == 2) ? '' : '<tr><td colspan=5 class=colhead align=center><font size=4>'.$mailbox_name.'</font></td></tr>'.
+'<tr><td width=1% class=colhead>&nbsp;&nbsp;</td><td class=colhead>Subject </td><td width=35% class=colhead>'.($mailbox === PM_SENTBOX ? 'Sent to' : 'Sender').'</td><td width=1% class=colhead> Date</td></tr>') : '');
 
 while ($row = mysql_fetch_assoc($res_search)){
 //=======change colors
@@ -1025,13 +994,25 @@ $class2 = 'clearalt'.($count==0?7:6);
 if (!$member){
 $res_username = mysql_query('SELECT username,id FROM users WHERE id='.sqlesc($row[$sender_reciever]).' LIMIT 1') or sqlerr(__FILE__,__LINE__);
 $arr_username = mysql_fetch_array($res_username);
-
 $the_username = '<a class=altlink href=userdetails.php?id='.$arr_username['id'].'>'.htmlspecialchars($arr_username['username']).'</a>';
 }
 
+//=== if searching all boxes...
+$arr_box = ($row['location'] == 1 ? 'Inbox' : ($row['location'] < 1 ? 'Sentbox' : ''));
+if($all_boxes && $arr_box === ''){
+$res_box_name = mysql_query('SELECT name FROM pmboxes WHERE userid='.$CURUSER['id']. ' AND boxnumber='.sqlesc($row['location'])) or sqlerr(__FILE__,__LINE__);
+$arr_box_name = mysql_fetch_assoc($res_box_name);
+$arr_box = $arr_box_name['name'];
+}
+
+//==== highlight search terms... from Jaits search forums mod
+$body = str_ireplace($keywords,'<font style=\'background-color:yellow;font-weight:bold;color:black;\'>'.$keywords.'</font>', format_comment($row['msg']));
+$subject = str_ireplace($keywords,'<font style=\'background-color:yellow;font-weight:bold;color:black;\'>'.$keywords.'</font>', htmlspecialchars($row['subject']));
+
 //=== print the damn thing :P
-echo'<tr><td class='.$class.'><img src=pic/outbox.gif alt=Read></td><td class='.$class.'><a class=altlink href=?action=viewmessage&id='.$row['id'].'>'.($row['subject'] !== '' ? htmlspecialchars($row['subject']) : 'No Subject').'</a></td>'.
-'<td class='.$class.'>'.($row[$sender_reciever] == 0 ? 'System' : '<b>'.$the_username.'</b>').'</td><td nowrap class='.$class.'>'.$row['added'].'</td></tr>';
+//=== if it's as a list or as posts...
+echo((0 + $_POST['as_list_post'] == 2) ? '<tr><td class=colhead colspan=4>message from: '.($row[$sender_reciever] == 0 ? 'System' : '<b>'.$the_username.'</b>').'</td></tr><tr><td class='.$class2.' colspan=4><b>subject:</b> <a class=altlink href=?action=viewmessage&id='.$row['id'].'>'.($row['subject'] !== '' ? $subject : 'No Subject').'</a> '.($all_boxes ? '[ found in '.$arr_box.' ]' : '').' at: '.$row['added'].' GMT ('.(get_elapsed_time(sql_timestamp_to_unix_timestamp($row['added']))).' ago)</td></tr><tr><td class='.$class.' colspan=4>'.$body.'</td></tr>' : '<tr><td class='.$class.'><img src=pic/outbox.gif alt=Read></td><td class='.$class.'><a class=altlink href=?action=viewmessage&id='.$row['id'].'>'.($row['subject'] !== '' ? $subject : 'No Subject').'</a> '.($all_boxes ? '[ found in '.$arr_box.' ]' : '').'</td>'.
+'<td class='.$class.'>'.($row[$sender_reciever] == 0 ? 'System' : '<b>'.$the_username.'</b>').'</td><td nowrap class='.$class.'>'.$row['added'].' GMT ('.(get_elapsed_time(sql_timestamp_to_unix_timestamp($row['added']))).' ago) </td></tr>');
 }
 }
 

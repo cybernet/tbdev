@@ -2,6 +2,7 @@
 ///////Ei theme fix for flash menu..straight redirect to forums.php by Bigjoos////////
 require "include/bittorrent.php";
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");

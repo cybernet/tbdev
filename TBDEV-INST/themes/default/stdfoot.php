@@ -30,7 +30,7 @@ if (get_user_class() >= UC_SYSOP) { ?><h2><font size=1pt><?php echo $SITENAME?> 
 if (get_user_class() >= UC_SYSOP) {
 if (DEBUG_MODE && $query_stat) {
         foreach ($query_stat as $key => $value) {
-            print("[".($key+1)."] => <b>".($value["seconds"] > 0.01 ? "<font color=\"red\" title=\"I suggest you should optimize this query.\">".$value["seconds"]."</font>" : "<font color=\"green\" title=\"This query doesn't need's optimization.\">".$value["seconds"]."</font>" )."</b> [$value[query]]<br />\n");
+            print("[".safechar(($key+1))."] => <b>".($value["seconds"] > 0.01 ? "<font color=\"red\" title=\"You should optimize this query.\">".safechar($value["seconds"])."</font>" : "<font color=\"green\" title=\"This query doesn't need optimized.\">".safechar($value["seconds"])."</font>" )."</b> [$value[query]]<br />\n");
         }
     }
    }

@@ -3,6 +3,7 @@ require_once("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -41,6 +42,10 @@ stdhead("Bonus Slots Manager");
 <td class=colhead colspan=3 align=left>All Staff</td>
 <td class=colhead> <input name="class" type="radio" value=">= 3"></td>
 </tr>
+<tr>
+<td class=colhead colspan=3 align=left>All Power Users</td>
+<td class=colhead><input name="class" type="radio" value="= 1"></td></td>
+</tr>
 </table>
 
 <table>
@@ -53,9 +58,9 @@ stdhead("Bonus Slots Manager");
 <p><input type="submit" name="0" value="Reset Slots to Zero" onClick="return confirm('Are you sure you want to reset this classes slots to zero?')"></p>
 </table>
 
-<br>
+<br />
 </form>
 
-<?
+<?php
 stdfoot();
 ?>

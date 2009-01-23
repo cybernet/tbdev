@@ -7,6 +7,7 @@ require_once "include/bbcode_functions.php";
 $action = isset($_GET["action"]) ?$_GET["action"] : '';
 
 dbconn(false);
+maxcoder();	
 
 if(!logged_in())
 {

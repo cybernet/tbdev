@@ -4,6 +4,7 @@ require_once "include/bittorrent.php";
 require_once "include/user_functions.php";
 require_once "include/bbcode_functions.php";
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -42,7 +43,7 @@ if ($action == 'add')
 {
 
 $torrentid = (int)$_GET['torrent'];
-$sure = safechar($_GET['sure']);
+$sure = safeChar($_GET['sure']);
 if (!is_valid_id($torrentid))
 stderr("Error", "Invalid ID.");
 
@@ -73,7 +74,7 @@ if ($action == 'delete')
 {
 
 $torrentid = (int)$_GET['torrent'];
-$sure = safechar($_GET['sure']);
+$sure = safeChar($_GET['sure']);
 if (!is_valid_id($torrentid))
 stderr("Error", "Invalid ID.");
 
@@ -99,7 +100,7 @@ elseif ($action == 'public')
 {
 
 $torrentid = (int)$_GET['torrent'];
-$sure = safechar($_GET['sure']);
+$sure = safeChar($_GET['sure']);
 if (!is_valid_id($torrentid))
 stderr("Error", "Invalid ID.");
 
@@ -127,7 +128,7 @@ elseif ($action == 'private')
 {
 
 $torrentid = (int)$_GET['torrent'];
-$sure = safechar($_GET['sure']);
+$sure = safeChar($_GET['sure']);
 if (!is_valid_id($torrentid))
 stderr("Error", "Invalid ID.");
 

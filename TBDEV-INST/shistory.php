@@ -4,6 +4,7 @@ require_once("include/bittorrent.php");
 require_once "include/user_functions.php";
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -39,21 +40,21 @@ else
 		$resowner = sql_query("SELECT id, username, class FROM users WHERE id=$arr[userid]") or print(mysql_error());
 		$rowowner = mysql_fetch_array($resowner); 
          
-         if ($rowowner["class"] == "7")
+        if ($rowowner["class"] == "7")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
-        elseif ($rowowner["class"] == "6")
+        if ($rowowner["class"] == "6")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
-        elseif ($rowowner["class"] == "5")
+        if ($rowowner["class"] == "5")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
-        elseif ($rowowner["class"] == "4")
+        if ($rowowner["class"] == "4")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
-        elseif ($rowowner["class"] == "3")
+        if ($rowowner["class"] == "3")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
-        elseif ($rowowner["class"] == "2")
+        if ($rowowner["class"] == "2")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
-        elseif ($rowowner["class"] == "1")
+        if ($rowowner["class"] == "1")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
-        elseif ($rowowner["class"] == "0")
+        if ($rowowner["class"] == "0")
         $usercolor= " <font color='#".get_user_class_color($rowowner['class'])."'>".safechar($rowowner['username'])."</font>";
 
 		$pm = "<span class='date'>[<a target=_blank href=sendmessage.php?receiver=$arr[userid]>pm</a>]</span>\n";

@@ -3,6 +3,8 @@ require_once("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -17,10 +19,10 @@ hacker_dork("Inactive Users - Nosey Cunt !");
 //made by putyn @ tbdev.net
 //email part by x0r @ tbdev.net
 //config
-$sitename = "chat2pals.co.uk"; // Sitename, format: site.com
-$replyto = "noreply@chat2pals.co.uk"; // The Reply-to email.
+$sitename = "$sitename.co.uk"; // Sitename, format: site.com
+$replyto = "noreply@$sitename.org"; // The Reply-to email.
 $record_mail = true; // set this true or false . If you set this true every time whene you send a mail the time , userid , and the number of mail sent will be recorded
-$days = 2; //number of days of inactivite
+$days = 50; //number of days of inactivite
 //end config
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {

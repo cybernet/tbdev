@@ -4,6 +4,7 @@ require_once("include/bittorrent.php");
 require_once("include/bbcode_functions.php");
 require_once("include/user_functions.php");
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -28,24 +29,28 @@ $player = UC_POWER_USER;
 if (get_user_class() < $player)
 stderr("Sorry ".$CURUSER["username"]  , "The MODERATOR do not allow your class to play casino. Power Users and above only.");
 if ($_POST["agree"]=="Yes"){
-mysql_query("UPDATE users SET casagree = 'yes' WHERE id = '".unsafechar($CURUSER['id'])."'");
+mysql_query("UPDATE users SET casagree = 'yes' WHERE id = '".unsafeChar($CURUSER['id'])."'");
 header("Location: $BASEURL/casino.php");
 }elseif ($_POST["agree"]=="No"){
 header("Location: $BASEURL/index.php");
 }
 ////////////////////////////////////////////////standard html begin
 stdhead(casino);
+begin_main_frame();
+begin_table();
 print("<form name=agree method=post action=$phpself>");
 print("<table width=\"700\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"><tr><td class=\"embedded\">");
 begin_frame("Casino Agreement");
 tr("Yes I have read this agreement and understand this agreement, Please take me to the casino",'<input name="agree" type="radio" checked value="Yes">',1);
 tr("No I do not agree with this agreement, return to the home page ",'<input name="agree" type="radio" value="No">',1);
 tr("Submit:","<input type=submit value='Submit!' >",1);
-print("<center><h1>" . safechar($CURUSER[username]) . "</h1></center>");
+print("<center><h1>" . safeChar($CURUSER[username]) . "</h1></center>");
 print("<center><h2>Please read fully, You must pick yes to enter the casino<h2></center>");
 print("If you agree yes to this page you will not have to see it again.<br><br> WARNING: Using the casino can hurt your overall site ratio !!!<br><br>WARNING: You will be betting your upload credits.<br><br>If you loose a bet the amount of the bet will be deducted from your upload total.<br><br>Use the casino at your own risk, We are not responsible if you bet to much and cause yourself to loose upload credits<br><br>");
 Print("You can lose power user status if you lose upload credit and drop below the min ratio for power user.<br><br>See FAQ for min ratio.<br><br>You can receive a ratio warning if your ratio is to low from losing in the casino.<br><br>Staff will not give you back lost upload credits.<br><br>");
 print("Winners are picked by random system and there is no set pattern.<br><br>Lost upload is either give to the winner or just removed from your account.<br><br>However if you win the amout won is added to your upload total.");
+end_table();
 end_frame();
+end_main_frame();
 stdfoot();
 ?>

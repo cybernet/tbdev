@@ -1,0 +1,374 @@
+<html><head>
+<title>more clickable smilies</title>
+</head>
+<BODY BGCOLOR="#000000" TEXT="#ffffff" LINK="#ff0000" VLINK="#808080">
+
+<script language=javascript>
+
+function SmileIT(smile,form,text){
+window.opener.document.forms[form].elements[text].value = window.opener.document.forms[form].elements[text].value+" "+smile+" ";
+window.opener.document.forms[form].elements[text].focus();
+window.close();
+}
+</script>
+
+<table class="lista" width="100%" cellpadding="1" cellspacing="1">
+<tr>
+
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':-)','shbox','shbox_text')"><img border=0 src=pic/smilies/smile1.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':smile:','shbox','shbox_text')"><img border=0 src=pic/smilies/smile2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':-D','shbox','shbox_text')"><img border=0 src=pic/smilies/grin.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':lol:','shbox','shbox_text')"><img border=0 src=pic/smilies/laugh.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':w00t:','shbox','shbox_text')"><img border=0 src=pic/smilies/w00t.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':-P','shbox','shbox_text')"><img border=0 src=pic/smilies/tongue.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(';-)','shbox','shbox_text')"><img border=0 src=pic/smilies/wink.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':-|','shbox','shbox_text')"><img border=0 src=pic/smilies/noexpression.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':-/','shbox','shbox_text')"><img border=0 src=pic/smilies/confused.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':-(','shbox','shbox_text')"><img border=0 src=pic/smilies/sad.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':\'-(','shbox','shbox_text')"><img border=0 src=pic/smilies/cry.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':weep:','shbox','shbox_text')"><img border=0 src=pic/smilies/weep.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':-O','shbox','shbox_text')"><img border=0 src=pic/smilies/ohmy.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':o)','shbox','shbox_text')"><img border=0 src=pic/smilies/clown.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT('8-)','shbox','shbox_text')"><img border=0 src=pic/smilies/cool1.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT('|-)','shbox','shbox_text')"><img border=0 src=pic/smilies/sleeping.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':innocent:','shbox','shbox_text')"><img border=0 src=pic/smilies/innocent.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':whistle:','shbox','shbox_text')"><img border=0 src=pic/smilies/whistle.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':unsure:','shbox','shbox_text')"><img border=0 src=pic/smilies/unknw.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':closedeyes:','shbox','shbox_text')"><img border=0 src=pic/smilies/closedeyes.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':cool:','shbox','shbox_text')"><img border=0 src=pic/smilies/cool2.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':fun:','shbox','shbox_text')"><img border=0 src=pic/smilies/fun.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':thumbsup:','shbox','shbox_text')"><img border=0 src=pic/smilies/thumbsup.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':thumbsdown:','shbox','shbox_text')"><img border=0 src=pic/smilies/thumbsdown.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':blush:','shbox','shbox_text')"><img border=0 src=pic/smilies/blush.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':yes:','shbox','shbox_text')"><img border=0 src=pic/smilies/yes.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':no:','shbox','shbox_text')"><img border=0 src=pic/smilies/no.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':love:','shbox','shbox_text')"><img border=0 src=pic/smilies/love.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':?:','shbox','shbox_text')"><img border=0 src=pic/smilies/question.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':!:','shbox','shbox_text')"><img border=0 src=pic/smilies/excl.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':idea:','shbox','shbox_text')"><img border=0 src=pic/smilies/idea.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':arrow:','shbox','shbox_text')"><img border=0 src=pic/smilies/arrow.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':arrow2:','shbox','shbox_text')"><img border=0 src=pic/smilies/arrow2.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hmm:','shbox','shbox_text')"><img border=0 src=pic/smilies/hmm.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hmmm:','shbox','shbox_text')"><img border=0 src=pic/smilies/hmmm.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':huh:','shbox','shbox_text')"><img border=0 src=pic/smilies/huh.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':geek:','shbox','shbox_text')"><img border=0 src=pic/smilies/geek.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':look:','shbox','shbox_text')"><img border=0 src=pic/smilies/look.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rolleyes:','shbox','shbox_text')"><img border=0 src=pic/smilies/rolleyes.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':kiss:','shbox','shbox_text')"><img border=0 src=pic/smilies/kiss.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':shifty:','shbox','shbox_text')"><img border=0 src=pic/smilies/shifty.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':blink:','shbox','shbox_text')"><img border=0 src=pic/smilies/blink.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':smartass:','shbox','shbox_text')"><img border=0 src=pic/smilies/smartass.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':sick:','shbox','shbox_text')"><img border=0 src=pic/smilies/sick.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':crazy:','shbox','shbox_text')"><img border=0 src=pic/smilies/crazy.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':wacko:','shbox','shbox_text')"><img border=0 src=pic/smilies/wacko.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':alien:','shbox','shbox_text')"><img border=0 src=pic/smilies/alien.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':wizard:','shbox','shbox_text')"><img border=0 src=pic/smilies/wizard.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':wave:','shbox','shbox_text')"><img border=0 src=pic/smilies/wave.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':wavecry:','shbox','shbox_text')"><img border=0 src=pic/smilies/wavecry.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':baby:','shbox','shbox_text')"><img border=0 src=pic/smilies/baby.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':angry:','shbox','shbox_text')"><img border=0 src=pic/smilies/angry.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':ras:','shbox','shbox_text')"><img border=0 src=pic/smilies/ras.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':sly:','shbox','shbox_text')"><img border=0 src=pic/smilies/sly.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':devil:','shbox','shbox_text')"><img border=0 src=pic/smilies/devil.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':evil:','shbox','shbox_text')"><img border=0 src=pic/smilies/evil.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':evilmad:','shbox','shbox_text')"><img border=0 src=pic/smilies/evilmad.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':sneaky:','shbox','shbox_text')"><img border=0 src=pic/smilies/sneaky.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':axe:','shbox','shbox_text')"><img border=0 src=pic/smilies/axe.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':slap:','shbox','shbox_text')"><img border=0 src=pic/smilies/slap.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':wall:','shbox','shbox_text')"><img border=0 src=pic/smilies/wall.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rant:','shbox','shbox_text')"><img border=0 src=pic/smilies/rant.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':jump:','shbox','shbox_text')"><img border=0 src=pic/smilies/jump.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':yucky:','shbox','shbox_text')"><img border=0 src=pic/smilies/yucky.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':nugget:','shbox','shbox_text')"><img border=0 src=pic/smilies/nugget.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':smart:','shbox','shbox_text')"><img border=0 src=pic/smilies/smart.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':shutup:','shbox','shbox_text')"><img border=0 src=pic/smilies/shutup.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':shutup2:','shbox','shbox_text')"><img border=0 src=pic/smilies/shutup2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':crockett:','shbox','shbox_text')"><img border=0 src=pic/smilies/crockett.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':zorro:','shbox','shbox_text')"><img border=0 src=pic/smilies/zorro.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':snap:','shbox','shbox_text')"><img border=0 src=pic/smilies/snap.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':beer:','shbox','shbox_text')"><img border=0 src=pic/smilies/beer.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':beer2:','shbox','shbox_text')"><img border=0 src=pic/smilies/beer2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':drunk:','shbox','shbox_text')"><img border=0 src=pic/smilies/drunk.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':strongbench:','shbox','shbox_text')"><img border=0 src=pic/smilies/strongbench.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':weakbench:','shbox','shbox_text')"><img border=0 src=pic/smilies/weakbench.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':dumbells:','shbox','shbox_text')"><img border=0 src=pic/smilies/dumbells.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':music:','shbox','shbox_text')"><img border=0 src=pic/smilies/music.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':stupid:','shbox','shbox_text')"><img border=0 src=pic/smilies/stupid.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':dots:','shbox','shbox_text')"><img border=0 src=pic/smilies/dots.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':offtopic:','shbox','shbox_text')"><img border=0 src=pic/smilies/offtopic.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':spam:','shbox','shbox_text')"><img border=0 src=pic/smilies/spam.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':oops:','shbox','shbox_text')"><img border=0 src=pic/smilies/oops.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':lttd:','shbox','shbox_text')"><img border=0 src=pic/smilies/lttd.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':please:','shbox','shbox_text')"><img border=0 src=pic/smilies/please.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':sorry:','shbox','shbox_text')"><img border=0 src=pic/smilies/sorry.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hi:','shbox','shbox_text')"><img border=0 src=pic/smilies/hi.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':yay:','shbox','shbox_text')"><img border=0 src=pic/smilies/yay.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':cake:','shbox','shbox_text')"><img border=0 src=pic/smilies/cake.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hbd:','shbox','shbox_text')"><img border=0 src=pic/smilies/hbd.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':band:','shbox','shbox_text')"><img border=0 src=pic/smilies/band.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':punk:','shbox','shbox_text')"><img border=0 src=pic/smilies/punk.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rofl:','shbox','shbox_text')"><img border=0 src=pic/smilies/rofl.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':bounce:','shbox','shbox_text')"><img border=0 src=pic/smilies/bounce.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':mbounce:','shbox','shbox_text')"><img border=0 src=pic/smilies/mbounce.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':thankyou:','shbox','shbox_text')"><img border=0 src=pic/smilies/thankyou.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':gathering:','shbox','shbox_text')"><img border=0 src=pic/smilies/gathering.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hang:','shbox','shbox_text')"><img border=0 src=pic/smilies/hang.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':chop:','shbox','shbox_text')"><img border=0 src=pic/smilies/chop.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rip:','shbox','shbox_text')"><img border=0 src=pic/smilies/rip.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':whip:','shbox','shbox_text')"><img border=0 src=pic/smilies/whip.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':judge:','shbox','shbox_text')"><img border=0 src=pic/smilies/judge.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':chair:','shbox','shbox_text')"><img border=0 src=pic/smilies/chair.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':tease:','shbox','shbox_text')"><img border=0 src=pic/smilies/tease.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':box:','shbox','shbox_text')"><img border=0 src=pic/smilies/box.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':boxing:','shbox','shbox_text')"><img border=0 src=pic/smilies/boxing.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':guns:','shbox','shbox_text')"><img border=0 src=pic/smilies/guns.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':shoot:','shbox','shbox_text')"><img border=0 src=pic/smilies/shoot.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':shoot2:','shbox','shbox_text')"><img border=0 src=pic/smilies/shoot2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':flowers:','shbox','shbox_text')"><img border=0 src=pic/smilies/flowers.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':wub:','shbox','shbox_text')"><img border=0 src=pic/smilies/wub.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':lovers:','shbox','shbox_text')"><img border=0 src=pic/smilies/lovers.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':kissing:','shbox','shbox_text')"><img border=0 src=pic/smilies/kissing.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':kissing2:','shbox','shbox_text')"><img border=0 src=pic/smilies/kissing2.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':console:','shbox','shbox_text')"><img border=0 src=pic/smilies/console.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':group:','shbox','shbox_text')"><img border=0 src=pic/smilies/group.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hump:','shbox','shbox_text')"><img border=0 src=pic/smilies/hump.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hooray:','shbox','shbox_text')"><img border=0 src=pic/smilies/hooray.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':happy2:','shbox','shbox_text')"><img border=0 src=pic/smilies/happy2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':clap:','shbox','shbox_text')"><img border=0 src=pic/smilies/clap.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':clap2:','shbox','shbox_text')"><img border=0 src=pic/smilies/clap2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':weirdo:','shbox','shbox_text')"><img border=0 src=pic/smilies/weirdo.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':yawn:','shbox','shbox_text')"><img border=0 src=pic/smilies/yawn.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':bow:','shbox','shbox_text')"><img border=0 src=pic/smilies/bow.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':dawgie:','shbox','shbox_text')"><img border=0 src=pic/smilies/dawgie.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':cylon:','shbox','shbox_text')"><img border=0 src=pic/smilies/cylon.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':book:','shbox','shbox_text')"><img border=0 src=pic/smilies/book.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':fish:','shbox','shbox_text')"><img border=0 src=pic/smilies/fish.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':mama:','shbox','shbox_text')"><img border=0 src=pic/smilies/mama.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':pepsi:','shbox','shbox_text')"><img border=0 src=pic/smilies/pepsi.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':medieval:','shbox','shbox_text')"><img border=0 src=pic/smilies/medieval.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rambo:','shbox','shbox_text')"><img border=0 src=pic/smilies/rambo.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':ninja:','shbox','shbox_text')"><img border=0 src=pic/smilies/ninja.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hannibal:','shbox','shbox_text')"><img border=0 src=pic/smilies/hannibal.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':party:','shbox','shbox_text')"><img border=0 src=pic/smilies/party.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':snorkle:','shbox','shbox_text')"><img border=0 src=pic/smilies/snorkle.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':evo:','shbox','shbox_text')"><img border=0 src=pic/smilies/evo.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':king:','shbox','shbox_text')"><img border=0 src=pic/smilies/king.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':chef:','shbox','shbox_text')"><img border=0 src=pic/smilies/chef.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':mario:','shbox','shbox_text')"><img border=0 src=pic/smilies/mario.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':pope:','shbox','shbox_text')"><img border=0 src=pic/smilies/pope.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':fez:','shbox','shbox_text')"><img border=0 src=pic/smilies/fez.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':cap:','shbox','shbox_text')"><img border=0 src=pic/smilies/cap.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':cowboy:','shbox','shbox_text')"><img border=0 src=pic/smilies/cowboy.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':pirate:','shbox','shbox_text')"><img border=0 src=pic/smilies/pirate.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':pirate2:','shbox','shbox_text')"><img border=0 src=pic/smilies/pirate2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rock:','shbox','shbox_text')"><img border=0 src=pic/smilies/rock.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':cigar:','shbox','shbox_text')"><img border=0 src=pic/smilies/cigar.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':icecream:','shbox','shbox_text')"><img border=0 src=pic/smilies/icecream.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':oldtimer:','shbox','shbox_text')"><img border=0 src=pic/smilies/oldtimer.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':trampoline:','shbox','shbox_text')"><img border=0 src=pic/smilies/trampoline.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':banana:','shbox','shbox_text')"><img border=0 src=pic/smilies/bananadance.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':smurf:','shbox','shbox_text')"><img border=0 src=pic/smilies/smurf.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':yikes:','shbox','shbox_text')"><img border=0 src=pic/smilies/yikes.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':osama:','shbox','shbox_text')"><img border=0 src=pic/smilies/osama.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':saddam:','shbox','shbox_text')"><img border=0 src=pic/smilies/saddam.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':santa:','shbox','shbox_text')"><img border=0 src=pic/smilies/santa.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':indian:','shbox','shbox_text')"><img border=0 src=pic/smilies/indian.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':pimp:','shbox','shbox_text')"><img border=0 src=pic/smilies/pimp.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':nuke:','shbox','shbox_text')"><img border=0 src=pic/smilies/nuke.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':jacko:','shbox','shbox_text')"><img border=0 src=pic/smilies/jacko.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':ike:','shbox','shbox_text')"><img border=0 src=pic/smilies/ike.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':greedy:','shbox','shbox_text')"><img border=0 src=pic/smilies/greedy.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':super:','shbox','shbox_text')"><img border=0 src=pic/smilies/super.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':wolverine:','shbox','shbox_text')"><img border=0 src=pic/smilies/wolverine.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':spidey:','shbox','shbox_text')"><img border=0 src=pic/smilies/spidey.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':spider:','shbox','shbox_text')"><img border=0 src=pic/smilies/spider.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':bandana:','shbox','shbox_text')"><img border=0 src=pic/smilies/bandana.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':construction:','shbox','shbox_text')"><img border=0 src=pic/smilies/construction.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':sheep:','shbox','shbox_text')"><img border=0 src=pic/smilies/sheep.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':police:','shbox','shbox_text')"><img border=0 src=pic/smilies/police.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':detective:','shbox','shbox_text')"><img border=0 src=pic/smilies/detective.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':bike:','shbox','shbox_text')"><img border=0 src=pic/smilies/bike.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':fishing:','shbox','shbox_text')"><img border=0 src=pic/smilies/fishing.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':clover:','shbox','shbox_text')"><img border=0 src=pic/smilies/clover.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':horse:','shbox','shbox_text')"><img border=0 src=pic/smilies/horse.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':shit:','shbox','shbox_text')"><img border=0 src=pic/smilies/shit.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':soldiers:','shbox','shbox_text')"><img border=0 src=pic/smilies/soldiers.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':blum:','shbox','shbox_text')"><img border=0 src=pic/smilies/blum.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':congrat:','shbox','shbox_text')"><img border=0 src=pic/smilies/clapping2.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':thedevil:','shbox','shbox_text')"><img border=0 src=pic/smilies/diablo.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':drinks2:','shbox','shbox_text')"><img border=0 src=pic/smilies/drinks2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rose:','shbox','shbox_text')"><img border=0 src=pic/smilies/give_rose.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':good:','shbox','shbox_text')"><img border=0 src=pic/smilies/good.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hi2:','shbox','shbox_text')"><img border=0 src=pic/smilies/hi2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':pardon:','shbox','shbox_text')"><img border=0 src=pic/smilies/pardon.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rofl2:','shbox','shbox_text')"><img border=0 src=pic/smilies/rofl2.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':spite:','shbox','shbox_text')"><img border=0 src=pic/smilies/spiteful.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':)','shbox','shbox_text')"><img border=0 src=pic/smilies/smile1.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':wink:','shbox','shbox_text')"><img border=0 src=pic/smilies/wink.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':D','shbox','shbox_text')"><img border=0 src=pic/smilies/grin.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':P','shbox','shbox_text')"><img border=0 src=pic/smilies/tongue.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':(','shbox','shbox_text')"><img border=0 src=pic/smilies/sad.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':\'(','shbox','shbox_text')"><img border=0 src=pic/smilies/cry.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':|','shbox','shbox_text')"><img border=0 src=pic/smilies/noexpression.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':Boozer:','shbox','shbox_text')"><img border=0 src=pic/smilies/alcoholic.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':deadhorse:','shbox','shbox_text')"><img border=0 src=pic/smilies/deadhorse.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':spank:','shbox','shbox_text')"><img border=0 src=pic/smilies/spank.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':yoji:','shbox','shbox_text')"><img border=0 src=pic/smilies/yoji.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':locked:','shbox','shbox_text')"><img border=0 src=pic/smilies/locked.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':grrr:','shbox','shbox_text')"><img border=0 src=pic/smilies/angry.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT('O:-','shbox','shbox_text')"><img border=0 src=pic/smilies/innocent.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':sleeping:','shbox','shbox_text')"><img border=0 src=pic/smilies/sleeping.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT('-_-','shbox','shbox_text')"><img border=0 src=pic/smilies/unsure.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':clown:','shbox','shbox_text')"><img border=0 src=pic/smilies/clown.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':mml:','shbox','shbox_text')"><img border=0 src=pic/smilies/mml.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rtf:','shbox','shbox_text')"><img border=0 src=pic/smilies/rtf.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':morepics:','shbox','shbox_text')"><img border=0 src=pic/smilies/morepics.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rb:','shbox','shbox_text')"><img border=0 src=pic/smilies/rb.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':rblocked:','shbox','shbox_text')"><img border=0 src=pic/smilies/rblocked.gif></a></td>
+</tr>
+<tr>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':maxlocked:','shbox','shbox_text')"><img border=0 src=pic/smilies/maxlocked.gif></a></td>
+	<td class="lista" align="center"><a href="javascript: SmileIT(':hslocked:','shbox','shbox_text')"><img border=0 src=pic/smilies/hslocked.gif></a></td></tr>
+</table>
+<div align="center">
+<a href="javascript: window.close()">CLOSE</a>
+</div>

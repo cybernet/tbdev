@@ -4,13 +4,14 @@
 // www.martijnswebhosting.tk 
 // Made for Anouksweb.nl 
 //
-//Byte caculator modified for tbdev by Bigjoos
 //                                   
 ////////////////////////////////////////////////////
 require_once("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");

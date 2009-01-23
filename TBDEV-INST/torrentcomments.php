@@ -3,6 +3,8 @@ require "include/bittorrent.php";
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -54,17 +56,17 @@ begin_frame();
 $count = 0;
 foreach ($rows as $row)
 {
-$subres = mysql_query("SELECT name from torrents where id=" . $row["torrent"]) or sqlerr(__FILE__, __LINE__);
+$subres = mysql_query("SELECT name from torrents where id=" . unsafeChar($row["torrent"])) or sqlerr(__FILE__, __LINE__);
 $subrow = mysql_fetch_array($subres);
-print("<br /><a href=\"details.php?id=" . $row["torrent"] . "\">" . $subrow["name"] . "</a><br />\n");
+print("<br /><a href=\"details.php?id=" . safeChar($row["torrent"]) . "\">" . safeChar($subrow["name"]) . "</a><br />\n");
 print("<p class=sub>#" . $row["id"] . " by ");
 if (isset($row["username"])) {
-print("<a name=comm". $row["id"] . " href=userdetails.php?id=" . $row["user"] . "><b>" . safechar($row["username"]) . "</b></a>" . ($row["warned"] == "yes" ? "<img src=" . "pic/warned.gif alt=\"Warned\">" : ""));
+print("<a name=comm". $row["id"] . " href=userdetails.php?id=" . safeChar($row["user"]) . "><b>" . safechar($row["username"]) . "</b></a>" . ($row["warned"] == "yes" ? "<img src=" . "pic/warned.gif alt=\"Warned\">" : ""));
 }
 else {
-print("<a name=\"comm" . $row["id"] . "\"><i>(orphaned)</i></a>\n");
+print("<a name=\"comm" . safeChar($row["id"]) . "\"><i>(orphaned)</i></a>\n");
 }
-print(" at " . $row["added"] . " GMT" .
+print(" at " . safeChar($row["added"]) . " GMT" .
 "- [<a href=comment.php?action=edit&cid=$row[id]>Edit</a>]" .
 "- [<a href=deletecomment.php?id=$row[id]>Delete</a>]</p>\n");
 $avatar = ($CURUSER["avatars"] == "yes" ? safechar($row["avatar"]) : "");

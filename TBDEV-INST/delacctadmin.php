@@ -3,6 +3,8 @@ require_once("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -29,10 +31,10 @@ if (mysql_num_rows($res) != 1)
 $arr = mysql_fetch_assoc($res);
 
 $id = $arr['id'];
-$res = mysql_query("DELETE FROM users WHERE id=$id") or sqlerr();
+$res = mysql_query("DELETE FROM users WHERE id=".unsafeChar($id)."") or sqlerr();
 if (mysql_affected_rows() != 1)
   stderr("Error", "Unable to delete the account.");
-stderr("Success", "The account <b>htmlspecialchars($username)</b> was deleted.");
+stderr("Success", "The account <b>".safeChar($username)."</b> was deleted.");
 }
 stdhead("Delete account");
 ?>

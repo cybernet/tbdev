@@ -2,6 +2,7 @@
 require_once("include/bittorrent.php");
 require_once ("include/user_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");

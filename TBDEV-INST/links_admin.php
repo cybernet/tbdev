@@ -48,7 +48,7 @@ Do_links_Delete();
 
 
 stdhead("links Admin");
-
+begin_table();
 echo'<div class=faqhead>Edit Section</div><div class=faqbody><form name=inputform method=post action=links_admin.php><input type=hidden name=action value=edit />Section<input type=radio name=option value=heading /> Text<input type=radio name=option value=body /><br /><br /><select name=cat><option value=0>--Select One--</option>';
 
 foreach ( $cats as $v) {
@@ -262,5 +262,6 @@ stdfoot();
 die;
 }
 echo "<br /><p align='center' style='color:orange;font-weight:bold;'>links system based on FAQ System 2006 © CoLdFuSiOn</p>";
+end_table();
 stdfoot();
 ?>

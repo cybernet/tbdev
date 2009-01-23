@@ -1,29 +1,35 @@
 <?php
 require ("include/bittorrent.php");
-require ("include/user_functions.php");
+//require ("include/user_functions.php");
 require ("include/bbcode_functions.php");
 dbconn();
-loggedinorreturn();
+maxcoder();
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
 
-
-if (get_user_class() < UC_MODERATOR)
+if (get_user_class() < UC_CODER)
 hacker_dork("Forum Manage - Nosey Cunt !");
 
-$id = 0 + $_GET['id'];
+$id = (int) + $_GET['id'];
 // DELETE FORUM ACTION
 if ($_GET['action'] == "del") {
 
 
 if (!$id) { header("Location: $BASEURL/forummanage.php"); die();}
 
-$result = sql_query ("SELECT * FROM topics where forumid = '".$_GET['id']."'");
+$result = sql_query ("SELECT * FROM topics where forumid = '".unsafeChar($_GET['id'])."'");
 if ($row = mysql_fetch_array($result)) {
 do {
-sql_query ("DELETE FROM posts where topicid = '".$row["id"]."'") or sqlerr(__FILE__, __LINE__);
+sql_query ("DELETE FROM posts where topicid = '".unsafeChar($row["id"])."'") or sqlerr(__FILE__, __LINE__);
 } while($row = mysql_fetch_array($result));
 }
-sql_query ("DELETE FROM topics where forumid = '".$_GET['id']."'") or sqlerr(__FILE__, __LINE__);
-sql_query ("DELETE FROM forums where id = '".$_GET['id']."'") or sqlerr(__FILE__, __LINE__);
+sql_query ("DELETE FROM topics where forumid = '".unsafeChar($_GET['id'])."'") or sqlerr(__FILE__, __LINE__);
+sql_query ("DELETE FROM forums where id = '".unsafeChar($_GET['id'])."'") or sqlerr(__FILE__, __LINE__);
 
 header("Location: $BASEURL/forummanage.php");
 die();
@@ -79,13 +85,13 @@ $result = sql_query ("SELECT  * FROM forums ORDER BY sort ASC");
 if ($row = mysql_fetch_array($result)) {
 do {
 $forid = $row['forid'];
-$res2 = sql_query("SELECT name FROM overforums WHERE id=$forid");
+$res2 = sql_query("SELECT name FROM overforums WHERE id=".unsafeChar($forid)."");
 $arr2 = mysql_fetch_array($res2);
 $name = $arr2['name'];
 
 
-echo "<tr><td><a href=forums.php?action=viewforum&forumid=".$row["id"]."><b>".$row["name"]."</b></a><br>".$row["description"]."</td>";
-echo "<td>".$name."</td><td>" . get_user_class_name($row["minclassread"]) . "</td><td>" . get_user_class_name($row["minclasswrite"]) . "</td><td>" . get_user_class_name($row["minclasscreate"]) . "</td><td align=center nowrap><b><a href=\"".$PHP_SELF."?action=editforum&id=".$row["id"]."\">Edit</a>&nbsp;|&nbsp;<a href=\"javascript:confirm_delete('".$row["id"]."');\"><font color=red>Delete</font></a></b></td></tr>";
+echo "<tr><td><a href=forums.php?action=viewforum&forumid=".safeChar($row["id"])."><b>".safeChar($row["name"])."</b></a><br>".safeChar($row["description"])."</td>";
+echo "<td>".safeChar($name)."</td><td>" . get_user_class_name($row["minclassread"]) . "</td><td>" . get_user_class_name($row["minclasswrite"]) . "</td><td>" . get_user_class_name($row["minclasscreate"]) . "</td><td align=center nowrap><b><a href=\"".$PHP_SELF."?action=editforum&id=".safeChar($row["id"])."\">Edit</a>&nbsp;|&nbsp;<a href=\"javascript:confirm_delete('".$row["id"]."');\"><font color=red>Delete</font></a></b></td></tr>";
 
 
 } while($row = mysql_fetch_array($result));
@@ -196,7 +202,7 @@ end_frame(); ?>
 
 //EDIT PAGE FOR THE FORUMS
 
-$id = 0 + ($_GET["id"]);
+$id = (int) + ($_GET["id"]);
 begin_frame("Edit Forum");
 $result = sql_query ("SELECT * FROM forums where id = ".sqlesc($id));
 if ($row = mysql_fetch_array($result)) {

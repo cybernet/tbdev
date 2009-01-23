@@ -5,6 +5,7 @@ require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 
 dbconn(false);
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -13,7 +14,7 @@ print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was 
 die();
 }
 stdhead("Chat");
-begin_main_frame();
+begin_table();
 ?>
 <center>
 <head>
@@ -36,9 +37,8 @@ eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,scrollbars=0,lo
 <br />
 </tr>
 <?php
-stdfoot();
+end_table();
 ?>
 <?php
-end_frame();
-end_main_frame();
+stdfoot();
 ?>

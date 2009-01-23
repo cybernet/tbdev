@@ -9,7 +9,7 @@ if(phpversion() >= "4.2.0"){
 ?>
 <html>
 <head>
-<title>tbV1.1 Whois Query</title>
+<title>Tbdev Installer Whois Query</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script>
 function m(el) {
@@ -295,6 +295,6 @@ if( ($queryType=="all") || ($queryType=="tr") )
 ?>
 
 <hr>
-<p align="right"><font color="#cccccc">TBD-We provide you! </a><br>
-Copyright &copy; 2008-<?php echo date('Y');?>, Sky</font></p>
+<p align="right"><font color="#cccccc">TBdev-Installer</a><br>
+<?php echo date('Y');?></font></p>
 

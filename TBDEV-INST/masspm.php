@@ -3,6 +3,7 @@ require ("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -30,7 +31,7 @@ if ($num == $_POST["numclasses"]){
  $res = mysql_query("SELECT id FROM users");
  $msg = $_POST['message']  . "\n\nNOTICE: This is a mass pm, it has been sent to everyone";
 }else{
- $res = mysql_query("SELECT id FROM users where id = 1".$querystring) or sqlerr(__FILE__, __LINE__);
+ $res = mysql_query("SELECT id FROM users where id = 1".unsafeChar($querystring)) or sqlerr(__FILE__, __LINE__);
  $msg = $_POST['message']  . "\n\nNOTICE: This is a mass pm, it has been sent to the following classes: " . substr($classnames,0,(strlen($classnames)-2));
 }
 

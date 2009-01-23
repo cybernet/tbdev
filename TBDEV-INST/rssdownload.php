@@ -1,6 +1,7 @@
 <?php
 require_once("include/bittorrent.php");
 dbconn(false);
+maxcoder();
 $url = $_SERVER['REQUEST_URI'];
 $url_array=explode("/",$url);
 $passkey= $url_array[3];

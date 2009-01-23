@@ -1,8 +1,8 @@
 <?php
 /******************************************
 * Updated takeeditusercp.php By Bigjoos
-* Credits: Djlee's code from takeprofileedit.php - Retro for the original idea
-*********************************************************************************/
+* Credits: Djlee's code from takeprofileedit.php - Retro for the original idea - credits to the original usercp coder
+**********************************************************************************************************************/
 require_once("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
@@ -10,19 +10,97 @@ function bark($msg) {
 genbark($msg, "Update failed!");
 }
 dbconn();
-loggedinorreturn();
+maxcoder();
+if(!logged_in())
+{
+header("HTTP/1.0 404 Not Found");
+// moddifed logginorreturn by retro//Remember to change the following line to match your server
+print("<html><h1>Not Found</h1><p>The requested URL /{$_SERVER['PHP_SELF']} was not found on this server.</p><hr /><address>Apache/1.1.11 (xxxxx) Server at ".$_SERVER['SERVER_NAME']." Port 80</address></body></html>\n");
+die();
+}
+//====== CoLdFuSiOn's anti injection script
+function check_avatar($url) {
+
+        $allow_dynamic_img = 0; //You alter this value at your own peril!
+    
+        $img_ext = 'jpg,gif,png'; //image extension. Careful what you put here!
+    
+        if (!$url) return; //empty? send it back!
+        
+        $url = trim($url);
+        
+        $default = 'http://localhost/warn.jpg'; //this is what is returned if all fails
+        
+        /*
+        * Check for any dynamic stuff!
+        */
+        
+        if ($allow_dynamic_img != 1)
+        {
+            if (preg_match( "/[?&;]/", $url))
+            {
+                return $default;
+            }
+            
+            if (preg_match( "/javascript(\:|\s)/i", $url ))
+            {
+                return $default;
+            }
+        }
+        
+                /*
+        * Check the extension
+        */
+        
+        if ($img_ext)
+        {
+            $extension = preg_replace( "#^.*\.(\S+)$#", "\\1", $url );
+            
+            $extension = strtolower($extension);
+            
+            if ( (! $extension) OR ( preg_match( "#/#", $extension ) ) )
+            {
+                return $default;
+            }
+            
+            $img_ext = strtolower($img_ext);
+            
+            if ( ! preg_match( "/".preg_quote($extension, '/')."(,|$)/", $img_ext ))
+            {
+                return $default;
+            }
+            
+            //$url = xss_detect($url);
+            if (xss_detect($url))
+                return 'wanker!!!';
+        }
+        
+        /*
+        * Take a stab at getting a good image url
+        */
+        
+        if (!preg_match( "/^(http|https|ftp):\/\//i", $url )) {
+            return $default;
+        }
+        /*
+        * done all we can at this point!
+        */
+        
+        $url = str_replace( ' ', '%20', $url );
+        
+        return $url;
+
+}
 $action = isset($_GET["action"]) ?$_GET["action"] : '';
 $updateset = array();
+
 if ($action == "avatar")
 {
 /////////////avatar check
-if(($avatars = ($_POST["avatars"] != "" ? "yes" : "no")) != $CURUSER["avatars"])
-$updateset[] = "avatars = '$avatars'";
-if(isset($_POST["avatar"]) && (($avatar = $_POST["avatar"]) != $CURUSER["avatar"])) {
-if (!preg_match("/^http:\/\/[^\s'\"<>]+\.(jpg|gif|png)$/i", $avatar))
-bark("Avatar MUST be in jpg, gif or png format. Make sure you include http:// in the URL.");
-$updateset[] = "avatar = " . sqlesc($avatar);
-}
+$avatars = ($_POST['avatars'] != '' ? 'yes' : 'no');
+$avatar = check_avatar($_POST['avatar']);
+$updateset[] = 'avatars = ' . sqlesc($avatars);
+$updateset[] = 'avatar = ' . sqlesc($avatar);
 ////////custom-title check/////////////////
 if(isset($_POST["title"]) && $CURUSER["class"] >= UC_VIP && ($title = $_POST["title"]) != $CURUSER["title"]) {
 $ctnotallow = array("sysop","administrator","admin","mod","moderator","vip","motherfucker");
@@ -48,18 +126,22 @@ $action = "signature";
 else if ($action == "security")
 {
 ////////password////////
-if (!mkglobal("email:chpassword:passagain:secretanswer"))
-bark("missing form data");
+$changedemail = 0;
+
 if ($chpassword != "") {
-if (strlen($chpassword) > 40)
-bark("Sorry, password is too long (max is 40 chars)");
-if ($chpassword != $passagain)
-bark("The passwords didn't match. Try again.");
-$sec = mksecret();
-$passhash = md5($sec . $chpassword . $sec);
-$updateset[] = "secret = " . sqlesc($sec);
-$updateset[] = "passhash = " . sqlesc($passhash);
-logincookie($CURUSER["id"], $passhash);
+	if (strlen($chpassword) > 40)
+		bark("Sorry, password is too long (max is 40 chars)");
+	if ($chpassword != $passagain)
+		bark("The passwords didn't match. Try again.");
+if ($CURUSER["passhash"] != md5($CURUSER["secret"] . $oldpassword . $CURUSER["secret"]))
+bark("Old Password!.");
+	$sec = mksecret();
+
+  $passhash = md5($sec . $chpassword . $sec);
+
+	$updateset[] = "secret = " . sqlesc($sec);
+	$updateset[] = "passhash = " . sqlesc($passhash);
+	logincookie($CURUSER["id"], md5($passhash.$_SERVER["REMOTE_ADDR"]));
 }
 ///////////secret hint and answer by neptune///////////
 if ($secretanswer != '') {
@@ -69,16 +151,6 @@ if ($secretanswer != '') {
               $new_secret_answer = md5($secretanswer);
               $updateset[] = "hintanswer = " . sqlesc($new_secret_answer); 
               }
-/////////////////////////email///////////////              
-if ($email != $CURUSER["email"]) {
-if (!validemail($email))
-bark("That doesn't look like a valid email address.");
-$r = mysql_query("SELECT id FROM users WHERE email=" . sqlesc($email)) or sqlerr();
-if (mysql_num_rows($r) > 0)
-bark("The e-mail address " . htmlspecialchars($email) . " is already in use.");
-$changedemail = 1;
-}
-$urladd = "";
 ////////////email changed?////////
 if ($changedemail) {
 $sec = mksecret();
@@ -104,11 +176,14 @@ $urladd .= "&mailsent=1";
 ////passkey///
 if ($_POST['resetpasskey'] == 1)
 {
-$res = mysql_query("SELECT warned, enabled, username, class, passhash, passkey FROM users WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
-$arr = mysql_fetch_assoc($res) or puke();
-$newpasskey = md5($arr['username'].get_date_time().$arr['passhash']);
-$modcomment = gmdate("Y-m-d") . " - Passkey ".$arr['passkey']." Reset to ".$newpasskey." by " . $CURUSER['username'] . ".\n" . $modcomment;
-$updateset[] = "passkey=".sqlesc($newpasskey);
+$res = mysql_query('SELECT username, passhash, oldpasskey, passkey FROM users WHERE id='.$CURUSER['id']) or sqlerr(__FILE__, __LINE__);
+$arr = mysql_fetch_assoc($res);
+$oldpasskey = "[$arr[passkey]]$arr[oldpasskey]";
+if (strlen($oldpasskey)>30)
+stderr('Error', 'You have reset your passkey too many times, ask an admin for permission');
+$updateset[] = 'oldpasskey = ' . sqlesc($oldpasskey);
+$passkey= md5($arr['username'].get_date_time().$arr['passhash']);
+$updateset[] = 'passkey = ' . sqlesc($passkey);
 }
 /////parked/////
 if(isset($_POST["parked"]) && ($parked = $_POST["parked"]) != $CURUSER["parked"])
@@ -147,6 +222,9 @@ $updateset[] = "split = " . sqlesc($split);
 ///////show torrents on homepage///////////
 $tohp = ($_POST["tohp"] == "yes" ? "yes" : "no");
 $updateset[] = "tohp = " . sqlesc($tohp);
+///////show recommended torrents on homepage///////////
+$rohp = ($_POST["rohp"] == "yes" ? "yes" : "no");
+$updateset[] = "rohp = " . sqlesc($rohp);
 //////////////User class colour on browse///
 $view_uclass= (isset($_POST['view_uclass']) && $_POST["view_uclass"] != "" ? "yes" : "no");
 $updateset[] = "view_uclass= '$view_uclass'";
@@ -177,9 +255,19 @@ if(isset($_POST["gender"]) && ($gender = $_POST["gender"]) != $CURUSER["gender"]
 $updateset[] = "gender = " . sqlesc($gender);
 $shoutboxbg = 0 + $_POST["shoutboxbg"];
 $updateset[] = "shoutboxbg = " . sqlesc($shoutboxbg);
+///////show birthdays on homepage///////////
+$bohp = ($_POST["bohp"] == "yes" ? "yes" : "no");
+$updateset[] = "bohp = " . sqlesc($bohp);
 ///////forum online users as avatar///////////
 $forumview= (isset($_POST['forumview']) && $_POST["forumview"] != "" ? "yes" : "no");
 $updateset[] = "forumview= '$forumview'";
+///////////////// Birthday mod updated /////////////////////
+//checkdate( (int)year, (int)month, (int)day ) ? 'is true' : 'is false';
+if(($year = $_POST["year"]) > 0 && ($month = $_POST["month"]) > 0 && ($day = $_POST["day"]) > 0 && $CURUSER['birthday'] != ($bday = date($year.$month.$day)))
+//$updateset['bday'] = checkdate($month, $day, $year) ? "$day-$month-$year" : '00-00-0000';
+$updateset[] = "birthday= " . sqlesc($bday);
+//if ($birthday !='--')
+//$updateset[] = 'birthday = ' . sqlesc($birthday);
 $action = "personal";
 }
 else if ($action == "pm")

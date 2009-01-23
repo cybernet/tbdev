@@ -6,6 +6,8 @@ require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 
 dbconn(false);
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -85,7 +87,7 @@ $wherea[] = "sticky = 'yes'";
 $category = (int)$_GET["cat"];
 
 $all = $_GET["all"];
-
+$blah = $_GET['blah'];
 if (!$all)
 	if (!$_GET && $CURUSER["notifs"])
 	{
@@ -124,6 +126,18 @@ if (!$all)
 if ($all)
 {
 	$wherecatina = array();
+if ($_GET["blah"] == 1)
+{
+$addparam .= "blah=1&amp;";
+$wherea[] = "MATCH (search_text, ori_descr) AGAINST (" . sqlesc($searchstr) . ")";
+
+}
+
+elseif ($_GET["blah"] == 2)
+{
+$addparam .= "blah=2&amp;";
+$wherea[] = "MATCH (search_text, ori_descr) AGAINST (" . sqlesc($searchstr) . ")";
+}
   $addparam = "";
 }
 
@@ -134,12 +148,15 @@ elseif (count($wherecatina) == 1)
 
 $wherebase = $wherea;
 
-if (isset($cleansearchstr))
-{
-	$wherea[] = "MATCH (search_text, ori_descr) AGAINST (" . sqlesc($searchstr) . ")";
-	//$wherea[] = "0";
-	$addparam .= "search=" . urlencode($searchstr) . "&amp;";
-	$orderby = "";
+if (isset($cleansearchstr)) {
+  if ($blah == 0) {
+    $wherea[] = "torrents.name LIKE (" . sqlesc($searchstr) . ")";
+  } elseif ($blah == 1) {
+    $wherea[] = "MATCH (search_text, ori_descr) AGAINST (" . sqlesc($searchstr) . ")";
+  } elseif ($blah == 2) {
+    $wherea[] = "MATCH (search_text, ori_descr) AGAINST (" . sqlesc($searchstr) . ")";
+  }
+    $addparam .= "search=" . urlencode($searchstr) . "&";
 }
 
 $where = implode(" AND ", $wherea);
@@ -165,9 +182,19 @@ if (!$count && isset($cleansearchstr)) {
 		if ($sc > 5)
 			break;
 		$ssa = array();
-		foreach (array("search_text", "ori_descr") as $sss)
-			$ssa[] = "$sss LIKE '%" . sqlwildcardesc($searchss) . "%'";
-		$wherea[] = "(" . implode(" OR ", $ssa) . ")";
+		if ($blah == 0) {
+          foreach (array("torrents.name") as $sss)
+            $ssa[] = "$sss LIKE '%" . sqlwildcardesc($searchss) . "%'";
+            $wherea[] = "(" . implode(" OR ", $ssa) . ")";
+        } elseif ($blah == 1) {
+          foreach (array("search_text", "ori_descr") as $sss)
+            $ssa[] = "$sss LIKE '%" . sqlwildcardesc($searchss) . "%'";
+            $wherea[] = "(" . implode(" OR ", $ssa) . ")";
+        } elseif ($blah == 2) {
+          foreach (array("search_text", "ori_descr") as $sss)
+            $ssa[] = "$sss LIKE '%" . sqlwildcardesc($searchss) . "%'";
+            $wherea[] = "(" . implode(" OR ", $ssa) . ")";
+   }
 	}
 	if ($sc) {
 		$where = implode(" AND ", $wherea);
@@ -198,10 +225,28 @@ if ($addparam != "") {
     }
 	
 	list($pagertop, $pagerbottom, $limit) = pager($torrentsperpage, $count, "browse.php?" . $addparam);
-    $query = "SELECT torrents.id, torrents.category, torrents.leechers, torrents.seeders, torrents.request, torrents.checked_by, torrents.scene, torrents.nuked, torrents.nukereason, torrents.newgenre, torrents.afterpre, torrents.countstats, torrents.name, torrents.vip, torrents.sticky, torrents.times_completed, torrents.size, torrents.added, torrents.comments,torrents.numfiles,torrents.filename,torrents.multiplicator,torrents.anonymous,torrents.owner,IF(torrents.nfo <> '', 1, 0) as nfoav," .
+                if (!$searchstr && $torrentsperpage && !isset($_GET["page"]) && !isset($_GET["incldead"]) && !isset($_GET["cat"]) && !$addparam)
+                $file = "cache/browse/type-".$orderby."-".$torrentsperpage.".txt"; //Modify this line to fit your current configuration
+                else
+                $file = false;
+                $expire = 30; // Yes, I mean 30 secs :P
+                if (file_exists($file) && filemtime($file) > (time() - $expire)) {
+                $records = unserialize(file_get_contents($file));
+                 } else {
+                 $query = "SELECT torrents.id, torrents.category, torrents.leechers, torrents.seeders, torrents.request, torrents.scene, torrents.nuked, torrents.nukereason, torrents.newgenre, torrents.checked_by,  torrents.afterpre, torrents.countstats, torrents.name, torrents.vip, torrents.sticky, torrents.times_completed, torrents.size, torrents.added, torrents.comments,torrents.numfiles,torrents.filename,torrents.multiplicator,torrents.anonymous,torrents.owner,IF(torrents.nfo <> '', 1, 0) as nfoav," .
 //	"IF(torrents.numratings < $minvotes, NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, categories.name AS cat_name, categories.image AS cat_pic, users.username FROM torrents LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
 	"freeslots.free AS freeslot, freeslots.doubleup AS doubleslot, categories.name AS cat_name, categories.image AS cat_pic, users.username FROM torrents LEFT JOIN freeslots ON (torrents.id=freeslots.torrentid AND freeslots.userid={$CURUSER[id]}) LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
 	$res = mysql_query($query) or die(mysql_error());
+                while ($record = mysql_fetch_array($res) ) {
+                 $records[] = $record;
+                 }
+                 if (!$searchstr && !isset($_GET["page"]) && !isset($_GET["incldead"]) && !isset($_GET["cat"]) && !$addparam) {
+                 $OUTPUT = serialize($records);
+                 $fp = fopen($file,"w");
+                 fputs($fp, $OUTPUT);
+                 fclose($fp);
+                 }
+                 }
 }
 else
 	unset($res);
@@ -260,7 +305,7 @@ foreach ($cats as $cat)
     $countcats = get_row_count('torrents', "WHERE category = $cat[id]");
     $catsperrow = 5;
     print(($i && $i % $catsperrow == 0) ? "</tr><tr>" : "");
-    print("<td class=bottom style=\"padding-bottom: 2px;padding-left: 7px\"><input name=c$cat[id] type=\"checkbox\" " . (in_array($cat[id],$wherecatina) ? "checked " : "") . "value=1><a class=catlink href=browse.php?cat=$cat[id]>" . safechar($cat[name]) . "</a>&nbsp;($countcats)</td>\n");
+    print("<td class=bottom style=\"padding-bottom: 2px;padding-left: 7px\"><input name=c$cat[id] type=\"checkbox\" " . (in_array($cat[id],$wherecatina) ? "checked " : "") . "value=1><a class=catlink href=browse.php?cat=$cat[id]>" . safeChar($cat[name]) . "</a>&nbsp;($countcats)</td>\n");
     $i++;
 }
 else
@@ -269,7 +314,7 @@ if ($CURUSER["imagecats"] == 'yes')
 foreach ($cats as $cat)
 {
    $catsperrow = 5;
-   $catz = ($CURUSER['imagecats']=='yes' ? '<img border=0 src='.$pic_base_url.'' . safechar($cat['image']) . '>' : safechar($cat['name']));
+   $catz = ($CURUSER['imagecats']=='yes' ? '<img border=0 src='.$pic_base_url.'' . safeChar($cat['image']) . '>' : safeChar($cat['name']));
    print(($i && $i % $catsperrow == 0) ? "</tr><tr>" : "");
    print("<td align=center class=bottom style=\"padding-bottom: 2px;padding-left: 7px\"><input name=c$cat[id] type=\"checkbox\" " . (in_array($cat[id],$wherecatina) ? "checked " : "") . "value=1><a class=catlink href=browse.php?cat=$cat[id]>".$catz."</a></td>\n");
    $i++;
@@ -302,7 +347,11 @@ if ($lastrowcols != 0)
 <option value="1"<? print($_GET["incldead"] == 1 ? " selected" : ""); ?>>including dead</option>
 <option value="2"<? print($_GET["incldead"] == 2 ? " selected" : ""); ?>>only dead</option>
 			</select>
-  	</td>
+            <select name=blah>
+<option value="0">Name</option>
+<option value="1"<? print($blah == 1 ? " selected" : ""); ?>>Description</option>
+<option value="2"<? print($blah == 2 ? " selected" : ""); ?>>Both</option>
+                        </select></td>
 <?php
 if ($ncats % $catsperrow == 0)
 	print("<td class=bottom style=\"padding-left: 15px\" rowspan=$nrows valign=center align=right>$alllink</td>\n");
@@ -325,7 +374,7 @@ if ($ncats % $catsperrow == 0)
 <form method="get" action=browse.php>
 <p align="center">
 Search:
-<input type="text" id="searchinput" name="search" autocomplete="off" style="width: 240px;" ondblclick="suggest(event.keyCode,this.value);" onkeyup="suggest(event.keyCode,this.value);" onkeypress="return noenter(event.keyCode);" value="<?= safechar($searchstr) ?>" />
+<input type="text" id="searchinput" name="search" autocomplete="off" style="width: 240px;" ondblclick="suggest(event.keyCode,this.value);" onkeyup="suggest(event.keyCode,this.value);" onkeypress="return noenter(event.keyCode);" value="<?= safeChar($searchstr) ?>" />
 in
 <select name="cat">
 <option value="0">(all types)</option>
@@ -336,7 +385,7 @@ foreach ($cats as $cat) {
 $catdropdown .= "<option value=\"" . $cat["id"] . "\"";
 if ($cat["id"] == $_GET["cat"])
 $catdropdown .= " selected=\"selected\"";
-$catdropdown .= ">" . safechar($cat["name"]) . "</option>\n";
+$catdropdown .= ">" . safeChar($cat["name"]) . "</option>\n";
 }
 $deadchkbox = "<input type=\"checkbox\" name=\"incldead\" value=\"1\"";
 if ($_GET["incldead"])
@@ -356,30 +405,6 @@ $deadchkbox .= " /> including dead torrents\n";
 
 <center>
 <table border="1" cellpadding="5" cellspacing="0" width="760">
-	<tr>
-		<td align="center" class="colhead"><b>Sort By Function Legend::Click on 
-		the images to sort results::</b></td>
-	</tr>
-	</td>
-	</tr>
-	<tr>
-		<td class="stats"><strong><center><u>Icon :</u> [
-		<img alt="<? print("" .INFO. "")?>&lt;p" border="none" src="pic/plus.gif"> 
-		= Info | <img alt="<? print("" .SEEDER. "")?>&lt;p" border="none" src="pic/seeder.gif"> 
-		= Seedbox |
-		<img alt="<? print("" .STICKY. "")?>&lt;p" border="none" src="pic/sticky.gif">= 
-		Sticky |
-		<img alt="<? print("" .FILES. "")?>&lt;p" border="none" src="pic/files.gif">= 
-		Files |
-		<img alt="<? print("" .COMMENTS. "")?>&lt;p" border="none" src="pic/comments.gif"> 
-		= Comments |
-		<img alt="<? print("" .SNATCHED. "")?>&nbsp;&lt;p" border="none" src="pic/top2.gif"> 
-		= Snatched |
-		<img alt="<? print("" .SEEDERS. "")?>&nbsp;&lt;p" border="none" src="pic/arrowup2.gif"> 
-		= Seeders |
-		<img alt="<? print("" .LEECHERS. "")?>&nbsp;&lt;p" border="none" src="pic/arrowdown2.gif"> 
-		= Leechers | <img alt="Upped" by="" src="/pic/upper.gif">&nbsp; = Upped 
-		By ]</center></strong>
 	   	<p><center>[ Highlight colors = <font color="#00AB3F">Seeding </font>|<font color="#b22222"> Leeching</font> | <font color="teal">Free</font> |<font color="orange"> Scene</font> |<font color="#777777"> Request</font> | <font color="red">Nuked</font> | <font color="gold">Sticky</font> ]
         </center>
 	    <center><font color="white">NeedSeed Link :[</font><a href="needseed.php"><font color="white"> 
@@ -393,7 +418,7 @@ $deadchkbox .= " /> including dead torrents\n";
 
 <?php
 if (isset($cleansearchstr))
-print("<h2>Search results for \"" . safechar($searchstr) . "\"</h2>\n");
+print("<h2>Search results for \"" . safeChar($searchstr) . "\"</h2>\n");
 if ($CURUSER['update_new'] != 'no')
 {
 //=== if you want a button
@@ -404,7 +429,7 @@ echo'<a href="?clear_new=1"><input type=submit value="clear new tag" class=butto
 if ($count) {
 	print($pagertop);
 
-	torrenttable($res);
+	torrenttable($records);
 
 	print($pagerbottom);
 }

@@ -3,6 +3,7 @@ require ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -20,7 +21,7 @@ if ($action == 'delete')
 {
 $newsid = (int)$_GET['newsid'];
 //$sure = (int)$_GET['sure'];
-isset($_GET['sure']) && $sure = safechar($_GET['sure']);
+isset($_GET['sure']) && $sure = safeChar($_GET['sure']);
 if (!is_valid_id($newsid))
 stderr("Error", "Invalid ID.");
 $hash = md5('the salt to'.$newsid.'add'.'mu55y');
@@ -100,9 +101,9 @@ print("<h1>Edit News Item</h1>\n");
 print("<form method=post action=?action=edit&newsid=$newsid>\n");
 print("<table border=1 cellspacing=0 cellpadding=5>\n");
 print("<input type=hidden name=returnto value=$returnto>\n");
-print("<tr><td><input type=text name=title value=\"".safechar($arr['title'])."\"></td></tr>\n");
+print("<tr><td><input type=text name=title value=\"".safeChar($arr['title'])."\"></td></tr>\n");
 print("<tr><td align=left style='padding: 0px'>");
-print("<tr><td style='padding: 0px'><textarea name=body cols=145 rows=5 style='border: 0px'>" . safechar($arr["body"]) . "</textarea></td></tr>\n");
+print("<tr><td style='padding: 0px'><textarea name=body cols=145 rows=5 style='border: 0px'>" . safeChar($arr["body"]) . "</textarea></td></tr>\n");
 print("<tr><td class=\"rowhead\">Sticky</td><td style='padding: 10px'><input type=radio " . ($arr["sticky"] == "yes" ? " checked" : "") . " name=sticky value=yes>Yes<input name=sticky type=radio value=no " . ($arr["sticky"] == "no" ? " checked" : "") . " >No</td></tr>\n");
 print("<tr><td colspan=\"2\" align=center><input type=submit value='Okay' class=btn></td></tr>\n");
 print("</table>\n");
@@ -118,9 +119,9 @@ if ($warning)
 print("<p><font size=-3>($warning)</font></p>");
 print("<form method=post name=\"compose\" action=?action=add>");
 print("<table border=1 cellspacing=0 cellpadding=5>\n");
-print("<tr><td><input type=text name=title value=\"".safechar($arr['title'])."\"></td></tr>\n");
+print("<tr><td><input type=text name=title value=\"".safeChar($arr['title'])."\"></td></tr>\n");
 print("<tr><td align=left style='padding: 0px'>");
-textbbcode("compose","body",($quote?(("[quote=".safechar($arr["username"])."]".safechar(unesc($arr["body"]))."[/quote]")):""));
+textbbcode("compose","body",($quote?(("[quote=".safeChar($arr["username"])."]".safeChar(unesc($arr["body"]))."[/quote]")):""));
 print("<tr><td class=\"rowhead\">Sticky</td><td style='padding: 10px'><input type=radio checked name=sticky value=yes>Y<input name=sticky type=radio value=no>N</td></tr>\n");
 print("<tr><td colspan=\"2\" class=\"rowhead\"><input type=submit value='Okay' class=btn></td></tr>\n");
 print("</table></form><br><br>\n");

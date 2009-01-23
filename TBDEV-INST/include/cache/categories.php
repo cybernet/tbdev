@@ -19,7 +19,7 @@ $categories	=	array (
 					array (
 							'id'			=>	'3',
 							'name'			=>	'Movies/SVCD',
-							'image'			=>	'cat_movies.gif'
+							'image'			=>	'cat_svcd.gif'
 					),
 					array (
 							'id'			=>	'4',
@@ -54,12 +54,12 @@ $categories	=	array (
 					array (
 							'id'			=>	'10',
 							'name'			=>	'Movies/XviD',
-							'image'			=>	'cat_movies.gif'
+							'image'			=>	'cat_xvid.gif'
 					),
 					array (
 							'id'			=>	'11',
 							'name'			=>	'Movies/DVD-R',
-							'image'			=>	'cat_movies.gif'
+							'image'			=>	'cat_dvdr.gif'
 					),
 					array (
 							'id'			=>	'12',

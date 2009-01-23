@@ -1,4 +1,5 @@
 <?php
+define('IN_ANNOUNCE',true);
 require_once("include/bittorrent.php");
 require_once("include/benc.php");
 

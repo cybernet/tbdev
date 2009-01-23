@@ -3,6 +3,8 @@ require ("include/bittorrent.php");
 require ("include/user_functions.php");
 require ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();	
+
 stdhead("Downloaded Files");
 ?>
 <table class=main width=750 border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>

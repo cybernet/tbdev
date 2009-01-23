@@ -3,6 +3,8 @@ require_once("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn(false);
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -45,7 +47,7 @@ Do_Faq_Add();
 
 
 stdhead("FAQAdmin");
-
+begin_table();
 echo "<div class='faqhead'>Edit Category</div><div class='faqbody'>";
 
 echo "<form name='inputform' method='post' action='faqadmin.php'>";
@@ -311,7 +313,7 @@ die;
 }
 
 echo "<br /><p align='center' style='color:orange;font-weight:bold;'>FAQ System 2006 © CoLdFuSiOn</p>";
-
+end_table();
 stdfoot();
 
 ?>

@@ -1,9 +1,10 @@
 <?php
-///////////////moddified mytorrents.php by Bigjoos////////////
+///////////////Updated mytorrents.php by Bigjoos////////////
 require_once("include/bittorrent.php");
 require_once("include/bbcode_functions.php");
 require_once("include/user_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -13,12 +14,12 @@ die();
 }
 stdhead("".safechar($CURUSER["username"])."'s Completed torrent's ");
 
-$rescount = mysql_query("SELECT COUNT(*) FROM torrents WHERE owner = ". safechar($CURUSER[id]) ." $limit") or sqlerr();
+$rescount = mysql_query("SELECT COUNT(*) FROM torrents WHERE owner = ". unsafeChar($CURUSER[id]) ." $limit") or sqlerr(__FILE__, __LINE__);
 $rowcount = mysql_fetch_array($rescount);
 $count = $rowcount[0];
 $mytorrentsperpage = 15;
 list($pagertop, $pagerbottom, $limit) = pager($mytorrentsperpage, $count, "mytorrents.php?");
-$res = mysql_query("SELECT * FROM torrents WHERE owner = ". $CURUSER[id] ." $limit");
+$res = mysql_query("SELECT * FROM torrents WHERE owner = ". unsafeChar($CURUSER[id]) ." $limit") or sqlerr(__FILE__, __LINE__);
 if (mysql_num_rows($res)) {
   print("$pagerbottom");
   print("<table width=80% border=0 cellspacing=0 cellpadding=3 align=center>");
@@ -43,7 +44,7 @@ if (mysql_num_rows($res)) {
 
   While ($row = mysql_fetch_assoc($res)) {
     print("<tr>");
-    $cat = mysql_query("SELECT image FROM categories WHERE id = ". $row["category"] ."");
+    $cat = mysql_query("SELECT image FROM categories WHERE id = ". unsafeChar($row["category"]) ."") or sqlerr(__FILE__, __LINE__);
     while ($catrow = mysql_fetch_assoc($cat)) {
       print("<td width=5%><img src=pic/$catrow[image]></td>");
     }
@@ -56,37 +57,37 @@ if (mysql_num_rows($res)) {
     #$smallname = safechar($row["name"]);
     //// smallname mytorrents end
 
-    print("<td><a href=details.php?id=". $row[id] ."><b>". $smallname ."</b></a></td>");
+    print("<td><a href=details.php?id=". $row[id] ."><b>". safeChar($smallname) ."</b></a></td>");
 
     //// colored yes/no for visible
-    if ($row["visible"] == 'yes') {
+    if (safeChar($row["visible"]) == 'yes') {
       $visible = "<font color=green>Yes</font>";
     }
     else {
       $visible = "<font color=red>No</font>";
     }
     //// colored yes/no for visible end
-    print("<td align=center>". $visible ."</td>");
+    print("<td align=center>".$visible."</td>");
        //// colored yes/no for golden torrents
-    if ($row["countstats"] == 'no')
+    if (safeChar($row["countstats"]) == 'no')
       $countstats = "<font color=green>Yes</font>";
     else
       $countstats = "<font color=red>No</font>";
     //// colored yes/no for golden torrents end
     print("<td align=center>".($countstats)."</td>");
-    print("<td align=center><a href=edit.php?id=". $row[id] .">Edit</a></td>");
-    print("<td align=center><a href=details.php?id=". $row[id] ."&filelist=1#filelist>". $row["numfiles"] ."</a></td>");
-    print("<td align=center><a href=details.php?id=".$row[id] ."&page=0#startcomments>". $row["comments"] ."</a></td>");
-    print("<td align=center>". $row["views"] ."</td>");
-    print("<td align=center>". $row["hits"] ."</td>");
-    print("<td align=center>". $row["added"] ."</td>");
-    print("<td align=center>". $row["last_action"] ."</td>");
-    print("<td align=center>". mksize($row["size"]) ."</td>");
+    print("<td align=center><a href=edit.php?id=". safeChar($row[id]) .">Edit</a></td>");
+    print("<td align=center><a href=details.php?id=". safeChar($row[id]) ."&filelist=1#filelist>". safeChar($row["numfiles"]) ."</a></td>");
+    print("<td align=center><a href=details.php?id=". safeChar($row[id]) ."&page=0#startcomments>". safeChar($row["comments"]) ."</a></td>");
+    print("<td align=center>". safeChar($row["views"]) ."</td>");
+    print("<td align=center>". safeChar($row["hits"]) ."</td>");
+    print("<td align=center>". safeChar($row["added"]) ."</td>");
+    print("<td align=center>". safeChar($row["last_action"]) ."</td>");
+    print("<td align=center>". safeChar(mksize($row["size"])) ."</td>");
 
     //// Progress Bar
 	$seedersProgressbar = array();
 	$leechersProgressbar = array();
-	$resProgressbar = mysql_query("SELECT p.seeder, p.to_go, t.size FROM torrents AS t LEFT JOIN peers AS p ON t.id = p.torrent WHERE  p.torrent = ". $row[id] ."") or sqlerr();
+	$resProgressbar = mysql_query("SELECT p.seeder, p.to_go, t.size FROM torrents AS t LEFT JOIN peers AS p ON t.id = p.torrent WHERE  p.torrent = ". unsafeChar($row[id]) ."") or sqlerr(__FILE__, __LINE__);
 	$progressPerTorrent = 0;
 	$iProgressbar = 0;
 	while ($rowProgressbar = mysql_fetch_array($resProgressbar)) {
@@ -99,30 +100,30 @@ if (mysql_num_rows($res)) {
 	$picProgress = get_percent_completed_image(floor($progressTotal))." <br>(".round($progressTotal)."%)";
     //// End Progress Bar
 
-    print("<td align=center>". $picProgress ."</td>");
+    print("<td align=center>".$picProgress."</td>");
 
     //// red color by 0 times complete
     if ($row["times_completed"] == '0')
-      $times_completed = "<font color=red>". $row["times_completed"] ." x</font>";
+      $times_completed = "<font color=red>". safeChar($row["times_completed"]) ." x</font>";
     elseif($row["times_completed"] < '2')
-      $times_completed = "<font color=darkred>". $row["times_completed"] ." x</font>";
+      $times_completed = "<font color=darkred>". safeChar($row["times_completed"]) ." x</font>";
     elseif($row["times_completed"] < '5')
-      $times_completed = "<font color=green>". $row["times_completed"] ." x</font>";
+      $times_completed = "<font color=green>". safeChar($row["times_completed"]) ." x</font>";
     else
-      $times_completed = "<font color=#FFFFFF>". $row["times_completed"] ." x</font>";
+      $times_completed = "<font color=#FFFFFF>". safeChar($row["times_completed"]) ." x</font>";
     //// red color by 0 seeders end
 
-    print("<td align=center><a href=snatches.php?id=". $row[id] .">". $times_completed ."</a></td>");
+    print("<td align=center><a href=snatches.php?id=". $row[id] .">".$times_completed."</a></td>");
 
     //// red color by 0 times complete
     if ($row["seeders"] == '0')
-      $seeders = "<font color=red>". $row["seeders"] ."</font>";
+      $seeders = "<font color=red>". safeChar($row["seeders"]) ."</font>";
     elseif($row["seeders"] < '2')
-      $seeders = "<font color=darkred>". $row["seeders"] ."</font>";
+      $seeders = "<font color=darkred>". safeChar($row["seeders"]) ."</font>";
     elseif($row["seeders"] < '5')
-      $seeders = "<font color=green>". $row["seeders"] ."</font>";
+      $seeders = "<font color=green>". safeChar($row["seeders"]) ."</font>";
     else
-      $seeders = "<font color=#FFFFFF>". $row["seeders"] ."</font>";
+      $seeders = "<font color=#FFFFFF>". safeChar($row["seeders"]) ."</font>";
     //// red color by 0 seeders end
 
     print("<td align=center><a href=details.php?id=". $row[id] ."&dllist=1#seeders>". $seeders ."</a></td>");

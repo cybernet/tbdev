@@ -4,6 +4,7 @@ require_once ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
+maxcoder();	
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -38,7 +39,7 @@ LEFT JOIN faq_categories c ON c.cid = f.cid
 GROUP BY cid, id");
 
 $cat_placeholder = '';
-
+begin_table();
 while ($arr=mysql_fetch_assoc($res)){
 if($arr['cid'] != $cat_placeholder)
 print '<br /><div class="fcell_header">'. $arr['fcat_name'] . '</div><br />';
@@ -49,4 +50,6 @@ print "<div align='left' id='box_".$arr['id']."' style='display:none' class='faq
 $cat_placeholder = $arr['cid'];
 }
 echo "<br /><p align='center' style='color:orange;font-weight:bold;'>FAQ System 2006 &copy; CoLdFuSiOn</p>";
-stdfoot(); ?>
+end_table();
+stdfoot(); 
+?>

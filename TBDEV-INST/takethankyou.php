@@ -3,6 +3,7 @@ require_once("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -27,23 +28,23 @@ $id = 0 + $id;
 if (!$id)
 die();
 
-$res = mysql_query("SELECT 1 FROM torrents WHERE id = $id");
+$res = mysql_query("SELECT 1 FROM torrents WHERE id =".unsafeChar($id)."");
 $row = mysql_fetch_array($res);
 if (!$row)
 die();
 
-$ras = mysql_query("select 1 from thanks WHERE torid='$id' AND uid =" .$CURUSER["id"]. " ") or die(mysql_error());
+$ras = mysql_query("select 1 from thanks WHERE torid='$id' AND uid =" .unsafeChar($CURUSER["id"]). " ") or die(mysql_error());
 $raw = mysql_fetch_array($ras);
 if ($raw)
 bark("You already thanked.");
 
 $text = ":thankyou:";
 
-mysql_query("INSERT INTO thanks (uid, torid, thank_date) VALUES (" .$CURUSER["id"]. ",$id, '" . get_date_time() . "')");
+mysql_query("INSERT INTO thanks (uid, torid, thank_date) VALUES (" .unsafeChar($CURUSER["id"]). ",$id, '" . unsafeChar(get_date_time()) . "')");
  
 mysql_query("INSERT INTO comments (user, torrent, added, text, ori_text) VALUES (" .
-     $CURUSER["id"] . ",$id, '" . get_date_time() . "', " . sqlesc($text) .
-      "," . sqlesc($text) . ")");
+     unsafeChar($CURUSER["id"]) . ",$id, '" . unsafeChar(get_date_time()) . "', " . unsafeChar($text) .
+      "," . unsafeChar($text) . ")");
 
 
 $newid = mysql_insert_id();

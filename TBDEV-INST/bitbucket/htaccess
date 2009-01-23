@@ -1,6 +1,6 @@
 RewriteEngine on
 RewriteCond %{HTTP_REFERER} !^$
-RewriteCond %{HTTP_REFERER} !^http://(www\.)?chat2pals.co.uk(/)?.*$     [NC]
-RewriteCond %{HTTP_REFERER} !^http://(www\.)?scene-base.net(/)?.*$     [NC]
+RewriteCond %{HTTP_REFERER} !^http://(www\.)?yoursite.com(/)?.*$     [NC]
+RewriteCond %{HTTP_REFERER} !^http://(www\.)?second-site.com(/)?.*$     [NC]
 RewriteCond %{HTTP_REFERER} !^http://(www\.)?athirdsite.com(/)?.*$     [NC]
-RewriteRule .*\.(gif|jpg|jpeg|bmp)$ http://chat2pals.co.uk/pic/warn.jpg [R,NC]
+RewriteRule .*\.(gif|jpg|jpeg|bmp)$ http://yoursite.com/pic/warn.jpg [R,NC]

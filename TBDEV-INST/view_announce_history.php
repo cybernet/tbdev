@@ -3,9 +3,8 @@ ob_start("ob_gzhandler");
 require ("include/bittorrent.php");
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
-
 dbconn(false);
-
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -49,7 +48,7 @@ if ($x[0] == $id)
 list(,$subject,$body) = $x;
 
 if (empty($subject) OR empty($body)) { stdmsg('Error','ID does not exist'); stdfoot(); die(); }
-
+begin_table();
 ?>
 <table width="100%" border="0" cellpadding="4" cellspacing="0">
 <tr>
@@ -65,10 +64,11 @@ if (empty($subject) OR empty($body)) { stdmsg('Error','ID does not exist'); stdf
 </tr>
 </table>
 <?php
+end_table();
 stdfoot();
 die();
 }
-
+begin_table();
 ?>
 <table align=center width='30%' border="0" cellpadding="4" cellspacing="0">
 <tr>
@@ -82,5 +82,6 @@ $x[0].'>'.safe($x[1]).'</a></td></tr>'."\n");
 ?></tr></td>
 </table>
 <?php
-
+end_table();
+stdfoot();
 ?>

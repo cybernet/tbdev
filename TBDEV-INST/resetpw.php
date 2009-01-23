@@ -7,10 +7,9 @@
  * @time 13 min
  * @copyright 2008
  */
- 
-require('include/bittorrent.php');
+ require('include/bittorrent.php');
 dbconn();
-
+maxcoder();
 if ($CURUSER) stderr('Error', 'What the hell are you trying to do? You are already logged in!');
 
 $step = (isset($_GET["step"]) ? (int)$_GET["step"] : (isset($_POST["step"]) ? (int)$_POST["step"] : ''));

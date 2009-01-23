@@ -4,6 +4,8 @@ require_once("include/bbcode_functions.php");
 require_once("include/user_functions.php");
 parked();
 dbconn(false);
+maxcoder();	
+
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");

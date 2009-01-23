@@ -3,6 +3,7 @@ require ("include/bittorrent.php");
 require_once("include/user_functions.php");
 require_once("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -18,21 +19,6 @@ if (isset($act) && $act == 'change')
 {
 $uid = $uid = (int)$_POST["uid"];
 $uname = sqlesc($_POST["uname"]);
-
-function validusername($uname)
-{
-if ($uname == "")
-return false;
-
-// The following characters are allowed in user names
-$allowedchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-for ($i = 0; $i < strlen($uname); ++$i)
-if (strpos($allowedchars, $uname[$i]) === false)
-return false;
-
-return true;
-}
 
 if ($_POST["uname"] == "" || $_POST["uid"] == "")
 stderr("Error", "UserName or ID missing");

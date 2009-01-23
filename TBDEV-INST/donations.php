@@ -19,7 +19,7 @@ $total_donors = 0 + $_GET["total_donors"];
 if($total_donors != '1')
 stderr("Error", "I smell a rat!");
 
-$res = mysql_query("SELECT COUNT(*) FROM users WHERE total_donated != '0.00'");
+$res = mysql_query("SELECT COUNT(*) FROM users WHERE total_donated != '0.00'") or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_array($res);
 $count = $row[0];
 list($pagertop, $pagerbottom, $limit) = pager(25, $count, "donations.php?");
@@ -30,14 +30,14 @@ stderr("Sorry", "no donors found!");
 $users = number_format(get_row_count("users", "WHERE total_donated != '0.00'"));
 stdhead("Donor List:: All Donations");
 begin_frame("Donor List: All Donations [ $users ]", true);
-$res=mysql_query("SELECT id,username,email,added,donated,total_donated FROM users WHERE total_donated != '0.00' ORDER BY id DESC $limit") or print(mysql_error());
+$res=mysql_query("SELECT id,username,email,added,donated,total_donated FROM users WHERE total_donated != '0.00' ORDER BY id DESC $limit") or sqlerr(__FILE__, __LINE__);
 }
 //===end total donors
 else{
-$res = mysql_query("SELECT COUNT(*) FROM users WHERE donor='yes'");
+$res = mysql_query("SELECT COUNT(*) FROM users WHERE donor='yes'") or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_array($res);
 $count = $row[0];
-list($pagertop, $pagerbottom, $limit) = pager(25, $count, "donorlist.php?");
+list($pagertop, $pagerbottom, $limit) = pager(25, $count, "donations.php?");
 
 if (mysql_num_rows($res) == 0)
 stderr("Sorry", "no donors found!");
@@ -45,7 +45,7 @@ stderr("Sorry", "no donors found!");
 $users = number_format(get_row_count("users", "WHERE donor='yes'"));
 stdhead("Donor List:: Current Donors");
 begin_frame("Donor List: Current Donors [ $users ]", true);
-$res=mysql_query("SELECT id,username,email,added,donated,total_donated FROM users WHERE donor='yes' ORDER BY id DESC $limit") or print(mysql_error());
+$res=mysql_query("SELECT id,username,email,added,donated,total_donated FROM users WHERE donor='yes' ORDER BY id DESC $limit") or sqlerr(__FILE__, __LINE__);
 }
 
 begin_table();
@@ -66,13 +66,13 @@ $count2 = 0;
 $class = "clearalt6";
 }
 //=======end
-echo "<tr><td valign=bottom class=$class><a class=altlink href=userdetails.php?id=" . $arr[id] . ">" . $arr[id] . "</a></td>".
-"<td align=left valign=bottom class=$class><b><a class=altlink href=userdetails.php?id=" . $arr[id] . ">". $arr[username] . "</b>".
-"</td><td align=left valign=bottom class=$class><a class=altlink href=mailto:" . $arr[email] . ">" . $arr[email] . "</a>".
-"</td><td align=left valign=bottom class=$class><font size=\"-3\">" . $arr[added] . "</font></a>".
+echo "<tr><td valign=bottom class=$class><a class=altlink href=userdetails.php?id=" . safeChar($arr[id]) . ">" . safeChar($arr[id]) . "</a></td>".
+"<td align=left valign=bottom class=$class><b><a class=altlink href=userdetails.php?id=" . safeChar($arr[id]) . ">". safeChar($arr[username]) . "</b>".
+"</td><td align=left valign=bottom class=$class><a class=altlink href=mailto:" . safeChar($arr[email]) . ">" . safeChar($arr[email]) . "</a>".
+"</td><td align=left valign=bottom class=$class><font size=\"-3\">" . safeChar($arr[added]) . "</font></a>".
 "</td><td align=left valign=bottom class=$class>";
 
-$r = @mysql_query("SELECT donoruntil FROM users WHERE id=$arr[id]") or sqlerr();
+$r = @mysql_query("SELECT donoruntil FROM users WHERE id=".sqlesc($arr[id])."") or sqlerr();
 $user = mysql_fetch_array($r);
 $donoruntil = $user['donoruntil'];
 if ($donoruntil == '0000-00-00 00:00:00')
@@ -80,9 +80,9 @@ echo "n/a";
 else
 echo "<font size=\"-3\"><p>$donoruntil [ " . mkprettytime(strtotime($donoruntil) - gmtime()) . " ] to go...</font></p>";
 
-echo "</td><td align=left valign=bottom class=$class><b>$" . $arr[donated] . "</b></td>".
-"<td align=left valign=bottom class=$class><b>$" . $arr[total_donated] . "</b></td>".
-"<td align=left valign=bottom class=$class><b><a class=altlink href=sendmessage.php?receiver=" . $arr[id] . ">PM</a></b></td></tr>";
+echo "</td><td align=left valign=bottom class=$class><b>£" . safeChar($arr[donated]) . "</b></td>".
+"<td align=left valign=bottom class=$class><b>£" . safeChar($arr[total_donated]) . "</b></td>".
+"<td align=left valign=bottom class=$class><b><a class=altlink href=sendmessage.php?receiver=" . safeChar($arr[id]) . ">PM</a></b></td></tr>";
 }
 end_table();
 end_frame();

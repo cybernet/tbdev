@@ -4,6 +4,7 @@ require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 
 dbconn(true);
+maxcoder();
 stdhead("Uploaders");
 if(!logged_in())
 {

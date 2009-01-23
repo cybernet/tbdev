@@ -3,6 +3,7 @@ require "include/bittorrent.php";
 require_once ("include/user_functions.php");
 require_once ("include/bbcode_functions.php");
 dbconn();
+maxcoder();
 if(!logged_in())
 {
 header("HTTP/1.0 404 Not Found");
@@ -12,7 +13,7 @@ die();
 }
 if (get_user_class() < UC_CODER)
 hacker_dork("Db Stuff - Nosey Cunt !");
-$allowed_ids = array(1,39);
+$allowed_ids = array(1);
 if (!in_array($CURUSER['id'],$allowed_ids))
 	stderr('Error', 'Access Denied!');
 stdhead("MySQL Query Editor");
