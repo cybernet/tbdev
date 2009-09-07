@@ -34,7 +34,7 @@ stdhead();
 ?>
 <p>The official IRC channel is <a href='irc://<?php echo $irc_url; ?>'><?php echo $irc_channel; ?></a> on the <a href='http://www.gigadactyl.com'>gigadactyl</a> network.</p>
 <div class="borderwrap" align='center'>
-	<div class="maintitle"><?php echo $SITENAME?></div>
+	<div class="maintitle"><?php echo $TBDEV['site_name']?></div>
 	<div class="row1" align='center'><applet code='IRCApplet.class' codebase="./javairc/" archive="irc.jar,pixx.jar" width='640' height='400'>
 <param name="CABINETS" value="irc.cab,securedirc.cab,pixx.cab" />
 <param name="nick" value="<?php echo $nick?>" />
@@ -42,7 +42,7 @@ stdhead();
 <param name="fullname" value="Java User" />
 <param name="host" value="<?php echo $irc_url?>" />
 <param name="gui" value="pixx" />
-<param name="quitmessage" value="<?php echo $SITENAME?> forever!" />
+<param name="quitmessage" value="<?php echo $TBDEV['site_name']?> forever!" />
 <param name="asl" value="true" />
 <param name="command1" value="/join <?php echo $irc_channel?>" />
 <param name="style:bitmapsmileys" value="true" />
