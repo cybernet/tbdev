@@ -79,7 +79,7 @@ function showForums() {
 	} 
 	} 
 	else 
-	{print "<tr><td>Sorry, no records were found!</td></tr>";}       
+	{print "<tr><td colspan='7'>Sorry, no records were found!</td></tr>";}       
 	echo "</table>";
 	
 	end_main_frame();
