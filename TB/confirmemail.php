@@ -18,37 +18,49 @@
 */
 require_once "include/bittorrent.php";
 
-if (!preg_match(':^/(\d{1,10})/([\w]{32})/(.+)$:', $_SERVER["PATH_INFO"], $matches))
-	httperr();
+    if ( !isset($_GET['uid']) OR !isset($_GET['key']) OR !isset($_GET['email']) )
+      stderr('USER ERROR', 'Idiot, no data!');
 
-$id = 0 + $matches[1];
-$md5 = $matches[2];
-$email = urldecode($matches[3]);
+    if (! preg_match( "/^(?:[\d\w]){32}$/", $_GET['key'] ) )
+		{
+			stderr( 'USER ERROR', 'No key set' );
+		}
+		
+		if (! preg_match( "/^(?:\d){1,}$/", $_GET['uid'] ) )
+		{
+			stderr( 'USER ERROR', 'No ID set' );
+		}
 
-if (!$id)
-	httperr();
+    $id = intval($_GET['uid']);
+    $md5 = $_GET['key'];
+    $email = urldecode($_GET['email']);
+    
+    if( !validemail($email) )
+      stderr('USER ERROR', 'Not a real email address!');
 
 dbconn();
 
 
-$res = mysql_query("SELECT editsecret FROM users WHERE id = $id");
-$row = mysql_fetch_assoc($res);
+    $res = mysql_query("SELECT editsecret FROM users WHERE id = $id");
+    $row = mysql_fetch_assoc($res);
 
-if (!$row)
-	httperr();
+    if (!$row)
+      stderr('USER ERROR', 'Cannot complete');
 
-$sec = hash_pad($row["editsecret"]);
-if (preg_match('/^ *$/s', $sec))
-	httperr();
-if ($md5 != md5($sec . $email . $sec))
-	httperr();
+    $sec = hash_pad($row["editsecret"]);
+    
+    if (preg_match('/^ *$/s', $sec))
+      stderr('USER ERROR', 'Cannot complete');
+      
+    if ($md5 != md5($sec . $email . $sec))
+      stderr('USER ERROR', 'Cannot complete');
 
-mysql_query("UPDATE users SET editsecret='', email=" . sqlesc($email) . " WHERE id=$id AND editsecret=" . sqlesc($row["editsecret"]));
+   @mysql_query("UPDATE users SET editsecret='', email=" . sqlesc($email) . " WHERE id=$id AND editsecret=" . sqlesc($row["editsecret"]));
 
-if (!mysql_affected_rows())
-	httperr();
+    if (!mysql_affected_rows())
+      stderr('USER ERROR', 'Cannot complete');
 
-header("Refresh: 0; url={$TBDEV['baseurl']}/my.php?emailch=1");
+    header("Refresh: 0; url={$TBDEV['baseurl']}/my.php?emailch=1");
 
 
 ?>
