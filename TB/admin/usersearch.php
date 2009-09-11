@@ -72,7 +72,7 @@ if (isset($_GET['h']))
 }
 else
 {
-	echo "<p align='center'>(<a href='admin.php?action=usersearch&h=1'>Instructions</a>)";
+	echo "<p align='center'>(<a href='admin.php?action=usersearch&amp;h=1'>Instructions</a>)";
 	echo "&nbsp;-&nbsp;(<a href='admin.php?action=usersearch'>Reset</a>)</p>\n";
 }
 
@@ -128,7 +128,7 @@ $highlight = " bgcolor='lightgrey'";
   <td valign="middle" class='rowhead'>Mask:</td>
   <td<?php echo (isset($_POST['ma'])&&!empty($_POST['ma']))?$highlight:""?>><input name="ma" type="text" value="<?php echo isset($_POST['ma'])?$_POST['ma']:""?>" maxlength="17" /></td>
   <td valign="middle" class='rowhead'>Class:</td>
-  <td<?php echo (isset($_POST['c']) && !empty($_POST['c']))?$highlight:""?>><select name="c"><option value='1'>(any)</option>
+  <td<?php echo (isset($_POST['c']) && !empty($_POST['c']))?$highlight:""?>><select name="c"><option value=''>(any)</option>
   <?php
   $class = isset($_POST['c']) ? (int)$_POST['c'] : '';
   if (!is_valid_id($class))
@@ -284,10 +284,12 @@ function haswildcard($text){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-if (count($_POST) > 0 && !isset($_POST['h']))
+if (count($_POST) > 0 );//&& isset($_POST['n']))
 {
 	// name
-  $names = isset($_POST['h']) ? explode(' ',trim($_POST['n'])) : array(0=>'');
+	$name_is = '';
+	$names_exc = 0;
+  $names = isset($_POST['n']) ? explode(' ',trim($_POST['n'])) : array(0=>'');
   if ($names[0] !== "")
   {
 		foreach($names as $name)
@@ -307,11 +309,11 @@ if (count($_POST) > 0 && !isset($_POST['h']))
 	    foreach($names_inc as $name)
 	    {
       	if (!haswildcard($name))
-	        $name_is .= (isset($name_is)?" OR ":"")."u.username = ".sqlesc($name);
+	        $name_is .= (!empty($name_is)?" OR ":"")."u.username = ".sqlesc($name);
 	      else
 	      {
 	        $name = str_replace(array('?','*'), array('_','%'), $name);
-	        $name_is .= (isset($name_is)?" OR ":"")."u.username LIKE ".sqlesc($name);
+	        $name_is .= (!empty($name_is)?" OR ":"")."u.username LIKE ".sqlesc($name);
 	      }
 	    }
       $where_is .= $name_is.")";
@@ -615,29 +617,29 @@ if (count($_POST) > 0 && !isset($_POST['h']))
   if (is_set_not_empty('d'))
   {
   	$date = trim($_POST['d']);
-  	if (!$date = mkdate($date))
+  	if (!$date = strtotime($date))
   	{
     	stdmsg("Error", "Invalid date.");
     	stdfoot();
       die();
     }
+    
     $q .= ($q ? "&amp;" : "") . "d=$date";
     $datetype = $_POST['dt'];
 		$q .= ($q ? "&amp;" : "") . "dt=$datetype";
     if ($datetype == "0")
     // For mySQL 4.1.1 or above use instead
     // $where_is .= (isset($where_is)?" AND ":"")."DATE(added) = DATE('$date')";
-    $where_is .= (!empty($where_is)?" AND ":"").
-    		"(added - UNIX_TIMESTAMP('$date')) BETWEEN 0 and 86400";
+    $where_is .= (!empty($where_is)?" AND ":"")."(added - $date) BETWEEN 0 and 86400";
     else
     {
       $where_is .= (!empty($where_is)?" AND ":"")."u.added ";
       if ($datetype == "3")
       {
-        $date2 = mkdate(trim($_POST['d2']));
+        $date2 = strtotime(trim($_POST['d2']));
         if ($date2)
         {
-          if (!$date = mkdate($date))
+          if (!$date = strtotime($date))
           {
             stdmsg("Error", "Invalid date.");
             stdfoot();
@@ -665,7 +667,7 @@ if (count($_POST) > 0 && !isset($_POST['h']))
   if (is_set_not_empty('ls'))
   {
   	$last = trim($_POST['ls']);
-  	if (!$last = mkdate($last))
+  	if (!$last = strtotime($last))
   	{
     	stdmsg("Error", "Invalid date.");
     	stdfoot();
@@ -678,13 +680,13 @@ if (count($_POST) > 0 && !isset($_POST['h']))
     // For mySQL 4.1.1 or above use instead
     // $where_is .= (isset($where_is)?" AND ":"")."DATE(added) = DATE('$date')";
     	$where_is .= (!empty($where_is)?" AND ":"").
-      		"(last_access - UNIX_TIMESTAMP('$last')) BETWEEN 0 and 86400";
+      		"(last_access - $last) BETWEEN 0 and 86400";
     else
     {
     	$where_is .= (!empty($where_is)?" AND ":"")."u.last_access ";
       if ($lasttype == "3")
       {
-      	$last2 = mkdate(trim($_POST['ls2']));
+      	$last2 = strtotime(trim($_POST['ls2']));
         if ($last2)
         {
         	$where_is .= " BETWEEN '$last' and '$last2'";
@@ -824,25 +826,25 @@ if (count($_POST) > 0 && !isset($_POST['h']))
   	if ($count > $perpage)
   		echo $pager['pagertop'];
     echo "<table border='1' cellspacing='0' cellpadding='5'>\n";
-    echo "<tr class='rowhead'><td align='left'>Name</td>
-    		<td align='left'>Ratio</td>
-        <td align='left'>IP</td>
-        <td align='left'>Email</td>".
-        "<td align='left'>Joined:</td>".
-        "<td align='left'>Last seen:</td>".
-        "<td align='left'>Status</td>".
-        "<td align='left'>Enabled</td>".
-        "<td>pR</td>".
-        "<td>pUL (MB)</td>".
-        "<td>pDL (MB)</td>".
-        "<td>History</td></tr>";
+    echo "<tr><td class='colhead' align='left'>Name</td>
+    		<td class='colhead' align='left'>Ratio</td>
+        <td class='colhead' align='left'>IP</td>
+        <td class='colhead' align='left'>Email</td>".
+        "<td class='colhead' align='left'>Joined:</td>".
+        "<td class='colhead' align='left'>Last seen:</td>".
+        "<td class='colhead' align='left'>Status</td>".
+        "<td class='colhead' align='left'>Enabled</td>".
+        "<td class='colhead'>pR</td>".
+        "<td class='colhead'>pUL (MB)</td>".
+        "<td class='colhead'>pDL (MB)</td>".
+        "<td class='colhead'>History</td></tr>";
         $ids = '';
     while ($user = mysql_fetch_array($res))
     {
-    	if ($user['added'] == '0000-00-00 00:00:00')
-      	$user['added'] = '---';
-      if ($user['last_access'] == '0000-00-00 00:00:00')
-      	$user['last_access'] = '---';
+    	//if ($user['added'] == '0000-00-00 00:00:00')
+      	//$user['added'] = '---';
+      //if ($user['last_access'] == '0000-00-00 00:00:00')
+      	//$user['last_access'] = '---';
 
       if ($user['ip'])
       {
@@ -893,8 +895,8 @@ if (count($_POST) > 0 && !isset($_POST['h']))
 					($user["warned"] == "yes" ? "<img src=\"pic/warned.gif\" alt=\"Warned\" />" : "") . "</td>
           <td>" . ratios($user['uploaded'], $user['downloaded']) . "</td>
           <td>" . $ipstr . "</td><td>" . $user['email'] . "</td>
-          <td><div align='center'>" . $user['added'] . "</div></td>
-          <td><div align='center'>" . $user['last_access'] . "</div></td>
+          <td><div align='center'>" . get_date($user['added'], '') . "</div></td>
+          <td><div align='center'>" . get_date($user['last_access'], '',0,1) . "</div></td>
           <td><div align='center'>" . $user['status'] . "</div></td>
           <td><div align='center'>" . $user['enabled']."</div></td>
           <td><div align='center'>" . ratios($pul,$pdl) . "</div></td>
