@@ -218,7 +218,7 @@ echo("<tr>\n<td align='center'><img src=\"pic/readpm.gif\" title='Read Message' 
 echo("<td align='left'><a href=\"messages.php?action=viewmessage&amp;id=" . $row['id'] . "\">" .
 $subject . "</a></td>\n");
 echo("<td align='left'>$username</td>\n");
-echo("<td nowrap='nowrap'>" . $row['added'] . "</td>\n");
+echo("<td nowrap='nowrap'>" . get_date($row['added'], '') . "</td>\n");
 echo("<td><input type=\"checkbox\" name=\"messages[]\" value=\"" . $row['id'] . "\" /></td>\n</tr>\n");
 }
 }
@@ -296,7 +296,7 @@ $reply = " [ <a href=\"sendmessage.php?receiver=" . $message['sender'] . "&amp;r
 }
 }
 $body = format_comment($message['msg']);
-$added = $message['added'];
+$added = get_date($message['added'], '');
 if ($CURUSER['class'] >= UC_MODERATOR && $message['sender'] == $CURUSER['id'])
 {
 $unread = ($message['unread'] == 'yes' ? "<span style=\"color: #FF0000;\"><b>(New)</b></a>" : "");
@@ -332,7 +332,8 @@ stdhead("PM ($subject)", false); ?>
 <td colspan="2" align="left"><?php echo $body?></td>
 </tr>
 <tr>
-<td align='left'><form action="messages.php" method="post">
+<td colspan='2'><div style='float:left;vertical-align:middle'>
+<form action="messages.php" method="post">
 <input type="hidden" name="action" value="moveordel" />
 <input type="hidden" name="id" value="<?php echo $pm_id?>" />
 Move to: <select name="box"><option value="1">Inbox</option><?
@@ -342,8 +343,8 @@ while ($row = mysql_fetch_assoc($res))
 echo("<option value=\"" . $row['boxnumber'] . "\">" . htmlspecialchars($row['name']) . "</option>\n");
 }?>
 </select> <input type="submit" name="move" value="Move" class="btn" />
-</form></td>
-<td align="right"><font color='white'>[ <a href="messages.php">Return To Inbox</a> ] [ <a href="messages.php?action=deletemessage&amp;id=<?php echo $pm_id?>">Delete</a> ]<?php echo $reply?> [ <a href="messages.php?action=forward&amp;id=<?php echo $pm_id?>">Forward PM</a> ]</font></td>
+</form></div>
+<span style='float:right;vertical-align:inherit'><a href="messages.php"><span class='btn'>Return To Inbox</span></a>&nbsp;<a href="messages.php?action=deletemessage&amp;id=<?php echo $pm_id?>"><span class='btn'>Delete</span></a>&nbsp;<?php echo $reply?>&nbsp;<a href="messages.php?action=forward&amp;id=<?php echo $pm_id?>"><span class='btn'>Forward PM</span></a></span></td>
 </tr>
 </table><?php
 stdfoot();
