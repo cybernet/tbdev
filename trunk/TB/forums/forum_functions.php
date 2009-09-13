@@ -121,27 +121,27 @@ $res = mysql_query(
 
   function insert_quick_jump_menu($currentforum = 0)
   {
-    print("<p align=center><form method=get action=? name=jump>\n");
+    print("<div style='text-align:center;'><form method='get' action='forums.php?' name='jump'>\n");
 
-    print("<input type=hidden name=action value=viewforum>\n");
+    print("<input type='hidden' name='action' value='viewforum' />\n");
 
     print("Quick jump: ");
 
-    print("<select name=forumid onchange=\"if(this.options[this.selectedIndex].value != -1){ forms['jump'].submit() }\">\n");
+    print("<select name='forumid' onchange=\"if(this.options[this.selectedIndex].value != -1){ forms['jump'].submit() }\">\n");
 
     $res = mysql_query("SELECT * FROM forums ORDER BY name") or sqlerr(__FILE__, __LINE__);
 
     while ($arr = mysql_fetch_assoc($res))
     {
       if (get_user_class() >= $arr["minclassread"])
-        print("<option value=" . $arr["id"] . ($currentforum == $arr["id"] ? " selected>" : ">") . $arr["name"] . "\n");
+        print("<option value='{$arr["id"]}' ". ($currentforum == $arr["id"] ? " selected='selected'>" : ">") . $arr["name"] . "</option>\n");
     }
 
     print("</select>\n");
 
-    print("<input type=submit value='Go!'>\n");
+    print("<input type='submit' value='Go!' />\n");
 
-    print("</form>\n</p>");
+    print("</form>\n</div>");
   }
 
   //-------- Inserts a compose frame

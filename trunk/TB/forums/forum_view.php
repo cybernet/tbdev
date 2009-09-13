@@ -77,14 +77,14 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     //------ Build menu
 
-    $menu = "<p align=center><b>\n";
+    $menu = "<p style='text-align:center;'><b>\n";
 
     $lastspace = false;
 
     for ($i = 1; $i <= $pages; ++$i)
     {
     	if ($i == $page)
-        $menu .= "<font class=gray>$i</font>\n";
+        $menu .= "<font class='gray'>$i</font>\n";
 
       elseif ($i > 3 && ($i < $pages - 2) && ($page - $i > 3 || $i - $page > 3))
     	{
@@ -98,7 +98,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
       else
       {
-        $menu .= "<a href=?action=viewforum&forumid=$forumid&page=$i>$i</a>\n";
+        $menu .= "<a href='forums.php?action=viewforum&amp;forumid=$forumid&amp;page=$i'>$i</a>\n";
 
         $lastspace = false;
       }
@@ -106,21 +106,21 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         $menu .= "</b>|<b>\n";
     }
 
-    $menu .= "<br>\n";
+    $menu .= "<br />\n";
 
     if ($page == 1)
-      $menu .= "<font class=gray>&lt;&lt; Prev</font>";
+      $menu .= "<font class='gray'>&lt;&lt; Prev</font>";
 
     else
-      $menu .= "<a href=?action=viewforum&forumid=$forumid&page=" . ($page - 1) . ">&lt;&lt; Prev</a>";
+      $menu .= "<a href='forums.php?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page - 1) . "'>&lt;&lt; Prev</a>";
 
     $menu .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     if ($last == $num)
-      $menu .= "<font class=gray>Next &gt;&gt;</font>";
+      $menu .= "<font class='gray'>Next &gt;&gt;</font>";
 
     else
-      $menu .= "<a href=?action=viewforum&forumid=$forumid&page=" . ($page + 1) . ">Next &gt;&gt;</a>";
+      $menu .= "<a href='forums.php?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page + 1) . "'>Next &gt;&gt;</a>";
 
     $menu .= "</b></p>\n";
 
@@ -143,8 +143,8 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
       $htmlout .= "<table border='1' cellspacing='0' cellpadding='5' width='80%'>";
 
-      $htmlout .= "<tr><td class=colhead align=left>Topic</td><td class=colhead>Replies</td><td class=colhead>Views</td>\n" .
-        "<td class=colhead align=left>Author</td><td class=colhead align=left>Last&nbsp;post</td>\n";
+      $htmlout .= "<tr><td class='colhead' style='align:left;'>Topic</td><td class='colhead'>Replies</td><td class='colhead'>Views</td>\n" .
+        "<td class='colhead' style='align:left;'>Author</td><td class='colhead' style='align:left;'>Last&nbsp;post</td>\n";
 
       $htmlout .= "</tr>\n";
 
@@ -179,10 +179,10 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
         if ($tpages > 1)
         {
-          $topicpages = " (<img src=\"{$forum_pic_url}multipage.gif\">";
+          $topicpages = " (<img src=\"{$forum_pic_url}multipage.gif\" alt='' title='' />";
 
           for ($i = 1; $i <= $tpages; ++$i)
-            $topicpages .= " <a href=?action=viewtopic&topicid=$topicid&page=$i>$i</a>";
+            $topicpages .= " <a href='forums.php?action=viewtopic&amp;topicid=$topicid&amp;page=$i'>$i</a>";
 
           $topicpages .= ")";
         }
@@ -203,7 +203,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 		
         $lpuserid = 0 + $arr["userid"];
 
-        $lpadded = "<nobr>" . get_date( $arr['added'],'') . "</nobr>";
+        $lpadded = "<span style='white-space: nowrap;'>" . get_date( $arr['added'],'') . "</span>";
 
         //------ Get name of last poster
 
@@ -213,7 +213,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         {
           $arr = mysql_fetch_assoc($res);
 
-          $lpusername = "<a href=userdetails.php?id=$lpuserid><b>$arr[username]</b></a>";
+          $lpusername = "<a href='userdetails.php?id=$lpuserid'><b>{$arr['username']}</b></a>";
         }
         else
           $lpusername = "unknown[$topic_userid]";
@@ -226,7 +226,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         {
           $arr = mysql_fetch_assoc($res);
 
-          $lpauthor = "<a href=userdetails.php?id=$topic_userid><b>$arr[username]</b></a>";
+          $lpauthor = "<a href='userdetails.php?id=$topic_userid'><b>{$arr['username']}</b></a>";
         }
         else
           $lpauthor = "unknown[$topic_userid]";
@@ -245,15 +245,15 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
         $topicpic = ($locked ? ($new ? "lockednew" : "locked") : ($new ? "unlockednew" : "unlocked"));
 
-        $subject = ($sticky ? "Sticky: " : "") . "<a href=?action=viewtopic&topicid=$topicid><b>" .
+        $subject = ($sticky ? "Sticky: " : "") . "<a href='forums.php?action=viewtopic&amp;topicid=$topicid'><b>" .
         htmlentities($topicarr["subject"], ENT_QUOTES) . "</b></a>$topicpages";
 
-        $htmlout .= "<tr><td align=left><table border=0 cellspacing=0 cellpadding=0><tr>" .
-        "<td class=embedded style='padding-right: 5px'><img src=\"{$forum_pic_url}{$topicpic}.gif\">" .
-        "</td><td class=embedded align=left>\n" .
-        "$subject</td></tr></table></td><td align=right>$replies</td>\n" .
-        "<td align=right>$views</td><td align=left>$lpauthor</td>\n" .
-        "<td align=left>$lpadded<br>by&nbsp;$lpusername</td>\n";
+        $htmlout .= "<tr><td style='align:left;'><table border='0' cellspacing='0' cellpadding='0'><tr>" .
+        "<td class='embedded' style='padding-right: 5px'><img src='{$forum_pic_url}{$topicpic}.gif' alt='' title='' />" .
+        "</td><td class='embedded' style='align:left;'>\n" .
+        "$subject</td></tr></table></td><td style='align:right;'>$replies</td>\n" .
+        "<td style='align:right;'>$views</td><td style='align:left;'>$lpauthor</td>\n" .
+        "<td style='align:left;'>$lpadded<br />by&nbsp;$lpusername</td>\n";
 
         $htmlout .= "</tr>\n";
       } // while
@@ -264,16 +264,16 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     } // if
     else
-      print("<p align=center>No topics found</p>\n");
+      print("<p style='text-align:center;'>No topics found</p>\n");
 
-    $htmlout .= "<p><table class=main border=0 cellspacing=0 cellpadding=0><tr valign=center>\n";
+    $htmlout .= "<table class='main' border='0' cellspacing='0' cellpadding='0'><tr valign='middle'>\n";
 
-    $htmlout .= "<td class=embedded><img src=\"{$forum_pic_url}unlockednew.gif\" style='margin-right: 5px'></td><td class=embedded>New posts</td>\n";
+    $htmlout .= "<td class='embedded'><img src=\"{$forum_pic_url}unlockednew.gif\" style='margin-right: 5px' alt='' title='' /></td><td class='embedded'>New posts</td>\n";
 
-    $htmlout .= "<td class=embedded><img src=\"{$forum_pic_url}locked.gif\" style='margin-left: 10px; margin-right: 5px'>" .
-    "</td><td class=embedded>Locked topic</td>\n";
+    $htmlout .= "<td class='embedded'><img src=\"{$forum_pic_url}locked.gif\" style='margin-left: 10px; margin-right: 5px' alt='' title='' />" .
+    "</td><td class='embedded'>Locked topic</td>\n";
 
-    $htmlout .= "</tr></table></p>\n";
+    $htmlout .= "</tr></table>\n";
 
     $arr = get_forum_access_levels($forumid) or die;
 
@@ -282,17 +282,17 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     if (!$maypost)
       $htmlout .= "<p><i>You are not permitted to start new topics in this forum.</i></p>\n";
 
-    $htmlout .= "<p><table border=0 class=main cellspacing=0 cellpadding=0><tr>\n";
+    $htmlout .= "<table border='0' class='main' cellspacing='0' cellpadding='0'><tr>\n";
 
-    $htmlout .= "<td class=embedded><form method=get action=?><input type=hidden " .
-    "name=action value=viewunread><input type=submit value='View unread' class=btn></form></td>\n";
+    $htmlout .= "<td class='embedded'><form method='get' action='forums.php?'><input type='hidden' " .
+    "name='action' value='viewunread' /><input type='submit' value='View unread' class='btn' /></form></td>\n";
 
     if ($maypost)
-      $htmlout .= "<td class=embedded><form method=get action=?><input type=hidden " .
-      "name=action value=newtopic><input type=hidden name=forumid " .
-      "value=$forumid><input type=submit value='New topic' class=btn style='margin-left: 10px'></form></td>\n";
+      $htmlout .= "<td class='embedded'><form method='get' action='forums.php?'><input type='hidden' " .
+      "name='action' value='newtopic' /><input type='hidden' name='forumid' " .
+      "value='$forumid' /><input type='submit' value='New topic' class='btn' style='margin-left: 10px' /></form></td>\n";
 
-    $htmlout .= "</tr></table></p>\n";
+    $htmlout .= "</tr></table>\n";
     
     echo $htmlout;
 

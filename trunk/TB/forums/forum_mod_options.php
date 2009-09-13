@@ -124,5 +124,83 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
   	die;
   }
 
+  //-------- Action: Delete topic
+
+  if ($action == "deletetopic")
+  {
+    $topicid = (int)$_POST["topicid"];
+    $forumid = (int)$_POST["forumid"];
+
+    if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
+      die;
+
+    $sure = isset($_POST["sure"]) ? $_POST["sure"] : 0;
+
+    if (!$sure)
+    {
+      stdhead("Delete Topic");
+      print("<table><tr><td align='right'>Sanity check: You are about to delete a topic.</td></tr>");
+      print("<tr><td>\n");
+	    print("<form method='post' action='forums.php?action=deletetopic'>\n");
+	    print("<input type='hidden' name='action' value='deletetopic' />\n");
+	    print("<input type='hidden' name='topicid' value='$topicid' />\n");
+	    print("<input type='hidden' name='forumid' value='$forumid' />\n");
+	    print("<input type='checkbox' name='sure' value='1' />I'm sure\n");
+	    print("<input type='submit' value='Okay' />\n");
+	    print("</form></td></tr>\n");
+	    print("</table>\n");
+      stdfoot();
+      exit();
+    }
+
+    @mysql_query("DELETE FROM topics WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
+
+    @mysql_query("DELETE FROM posts WHERE topicid=$topicid") or sqlerr(__FILE__, __LINE__);
+
+    header("Location: {$TBDEV['baseurl']}/forums.php?action=viewforum&forumid=$forumid");
+
+    die;
+  }
+
+
+  //-------- Action: Move topic
+
+  if ($action == "movetopic")
+  {
+    $forumid = (int)$_POST["forumid"];
+
+    $topicid = (int)$_POST["topicid"];
+
+    if (!is_valid_id($forumid) || !is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
+      die;
+
+    // Make sure topic and forum is valid
+
+    $res = @mysql_query("SELECT minclasswrite FROM forums WHERE id=$forumid") or sqlerr(__FILE__, __LINE__);
+
+    if (mysql_num_rows($res) != 1)
+      stderr("Error", "Forum not found.");
+
+    $arr = mysql_fetch_row($res);
+
+    if (get_user_class() < $arr[0])
+      die;
+
+    $res = @mysql_query("SELECT subject,forumid FROM topics WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
+
+    if (mysql_num_rows($res) != 1)
+      stderr("Error", "Topic not found.");
+
+    $arr = mysql_fetch_assoc($res);
+
+    if ($arr["forumid"] != $forumid)
+      @mysql_query("UPDATE topics SET forumid=$forumid WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
+
+    // Redirect to forum page
+
+    header("Location: {$TBDEV['baseurl']}/forums.php?action=viewforum&forumid=$forumid");
+
+    die;
+  }
 
 ?>

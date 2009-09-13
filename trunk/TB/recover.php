@@ -65,7 +65,7 @@ After you do this, your password will be reset and emailed back
 to you.
 
 --
-$TBDEV['site_name']
+{$TBDEV['site_name']}
 EOD;
 
   @mail($arr["email"], "{$TBDEV['site_name']} password reset confirmation", $body, "From: {$TBDEV['site_email']}")

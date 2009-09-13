@@ -42,11 +42,11 @@ $TBDEV['time_date'] = '';
 $TBDEV['mysql_host'] = "localhost";
 $TBDEV['mysql_user'] = "root";
 $TBDEV['mysql_pass'] = "blank";
-$TBDEV['mysql_db']   = "mytbdev";
+$TBDEV['mysql_db']   = "tb";
 
 // Cookie setup
-$TBDEV['cookie_prefix']  = 'tbdev_'; // This allows you to have multiple trackers, eg for demos, testing etc.
-$TBDEV['cookie_path']    = '/test'; // ATTENTION: You should never need this unless the above applies eg: /tbdev
+$TBDEV['cookie_prefix']  = 'tbalpha_'; // This allows you to have multiple trackers, eg for demos, testing etc.
+$TBDEV['cookie_path']    = '/TB_ALPHA'; // ATTENTION: You should never need this unless the above applies eg: /tbdev
 $TBDEV['cookie_domain']  = ''; // set to eg: .somedomain.com or is subdomain set to: .sub.somedomain.com
                               
 $TBDEV['site_online'] = 1;
@@ -83,8 +83,22 @@ $TBDEV['announce_urls'][] = "http://localhost/test/announce.php";
 
 if ($_SERVER["HTTP_HOST"] == "")
   $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
-$TBDEV['baseurl'] = "http://" . $_SERVER["HTTP_HOST"]."/test";
+  
+$TBDEV['baseurl'] = "http://" . $_SERVER["HTTP_HOST"]."/TB_ALPHA";
 
+/*
+* DO NOT UNCOMMENT THIS: IT'S FOR LATER USE!
+$host = getenv( 'SERVER_NAME' );
+$script = getenv( 'SCRIPT_NAME' );
+$script = str_replace( "\\", "/", $script );
+
+  if( $host AND $script )
+  {
+    $script = str_replace( '/index.php', '', $script );
+
+    $TBDEV['baseurl'] = "http://{$host}{$script}";
+  }
+*/
 //set this to true to make this a tracker that only registered users may use
 //$TBDEV['membersonly'] = 1; //deprecated no longer needed
 
