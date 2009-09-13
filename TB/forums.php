@@ -77,6 +77,8 @@
     case 'setlocked':
     case 'renametopic':
     case 'setsticky':
+    case 'deletetopic':
+    case 'movetopic':
       require_once "forums/forum_mod_options.php";
       exit();
       break;
@@ -107,13 +109,13 @@ function std_view() {
 
   $htmlout = "<h1>Forums</h1>\n";
   
-  $htmlout .= "<div style='width:80%'><p align=right><span class='btn'><a href='forums.php?action=search'>Search</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>View unread</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>Catch up</a></span></p></div>";
+  $htmlout .= "<div style='width:80%'><p style='text-align:right;'><span class='btn'><a href='forums.php?action=search'>Search</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>View unread</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>Catch up</a></span></p></div>";
   
-  $htmlout .="<table border=1 cellspacing=0 cellpadding=5 width='80%'>\n";
+  $htmlout .="<table border='1' cellspacing='0' cellpadding='5' width='80%'>\n";
 
-  $htmlout .= "<tr><td class=colhead align=left>Forum</td><td class=colhead align=right>Topics</td>" .
-  "<td class=colhead align=right>Posts</td>" .
-  "<td class=colhead align=left>Last post</td></tr>\n";
+  $htmlout .= "<tr><td class='colhead' style='text-align:left;'>Forum</td><td class='colhead' style='text-align:right;'>Topics</td>" .
+  "<td class='colhead' style='text-align:right;'>Posts</td>" .
+  "<td class='colhead' style='text-align:left;'>Last post</td></tr>\n";
 
   while ($forums_arr = mysql_fetch_assoc($forums_res))
   {
@@ -162,9 +164,9 @@ function std_view() {
 
       $lasttopic = htmlspecialchars($post_arr['subject']);
 
-      $lastpost = "<nobr>$lastpostdate<br>" .
-      "by <a href=userdetails.php?id=$lastposterid><b>$lastposter</b></a><br>" .
-      "in <a href=?action=viewtopic&topicid=$lasttopicid&amp;page=p$lastpostid#$lastpostid><b>$lasttopic</b></a></nobr>";
+      $lastpost = "<span style='white-space: nowrap;'>$lastpostdate</span><br />" .
+      "by <a href='userdetails.php?id=$lastposterid'><b>$lastposter</b></a><br />" .
+      "in <a href='forums.php?action=viewtopic&amp;topicid=$lasttopicid&amp;page=p$lastpostid#$lastpostid'><b>$lasttopic</b></a>";
 
       $r = mysql_query("SELECT lastpostread FROM readposts WHERE userid={$CURUSER['id']} AND topicid=$lasttopicid") or sqlerr(__FILE__, __LINE__);
 
@@ -191,17 +193,18 @@ function std_view() {
       $lastpost = "N/A";
       $img = "unlocked";
     }
-    $htmlout .= "<tr><td align=left><table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded style='padding-right: 5px'>".
-    "<img src=\"{$forum_pic_url}$img.gif\"></td>".
-    "<td class=embedded><a href=?action=viewforum&forumid=$forumid><b>$forumname</b></a><br>\n" .
-    "$forumdescription</td></tr></table></td><td align=right>$topiccount</td>".
-    "</td><td align=right>$postcount</td>" .
-    "<td align=left>$lastpost</td></tr>\n";
+    $htmlout .= "<tr><td style='text-align:left;'>".
+    "<img src=\"{$forum_pic_url}$img.gif\" alt='' title='' />".
+    "<a href='forums.php?action=viewforum&amp;forumid=$forumid'><b>$forumname</b></a><br />\n" .
+    "$forumdescription</td>".
+    "<td style='text-align:right;'>$topiccount</td>".
+    "<td style='text-align:right;'>$postcount</td>" .
+    "<td style='text-align:left;'>$lastpost</td></tr>\n";
   }
 
   $htmlout .= "</table>\n<br />\n";
 
-  $htmlout .= "<div style='width:80%'><p align=right><span class='btn'><a href='forums.php?action=search'>Search</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>View unread</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>Catch up</a></span></p></div>";
+  $htmlout .= "<div style='width:80%'><p style='text-align:right;'><span class='btn'><a href='forums.php?action=search'>Search</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>View unread</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>Catch up</a></span></p></div>";
   
   echo $htmlout;
 

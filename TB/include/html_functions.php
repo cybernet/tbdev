@@ -21,7 +21,7 @@
 
   function begin_main_frame()
   {
-    print("<table class='main' width='750' border='0' cellspacing='0' cellpadding='0'>" .
+    print("<table class='main' width='750px' border='0' cellspacing='0' cellpadding='0'>" .
       "<tr><td class='embedded'>\n");
   }
 

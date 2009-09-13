@@ -105,27 +105,27 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     for ($i = 1; $i <= $pages; ++$i)
     {
       if ($i == $page)
-        $pagemenu .= "<font class=gray><b>$i</b></font>\n";
+        $pagemenu .= "<font class='gray'><b>$i</b></font>\n";
 
       else
-        $pagemenu .= "<a href=?action=viewtopic&topicid=$topicid&page=$i><b>$i</b></a>\n";
+        $pagemenu .= "<a href='forums.php?action=viewtopic&amp;topicid=$topicid&amp;page=$i'><b>$i</b></a>\n";
     }
 
     if ($page == 1)
-      $pagemenu .= "<br><font class=gray><b>&lt;&lt; Prev</b></font>";
+      $pagemenu .= "<br /><font class='gray'><b>&lt;&lt; Prev</b></font>";
 
     else
-      $pagemenu .= "<br><a href=?action=viewtopic&topicid=$topicid&page=" . ($page - 1) .
-        "><b>&lt;&lt; Prev</b></a>";
+      $pagemenu .= "<br /><a href='forums.php?action=viewtopic&amp;topicid=$topicid&amp;page=" . ($page - 1) .
+        "'><b>&lt;&lt; Prev</b></a>";
 
     $pagemenu .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     if ($page == $pages)
-      $pagemenu .= "<font class=gray><b>Next &gt;&gt;</b></font></p>\n";
+      $pagemenu .= "<font class='gray'><b>Next &gt;&gt;</b></font></p>\n";
 
     else
-      $pagemenu .= "<a href=?action=viewtopic&topicid=$topicid&page=" . ($page + 1) .
-        "><b>Next &gt;&gt;</b></a></p>\n";
+      $pagemenu .= "<a href='forums.php?action=viewtopic&amp;topicid=$topicid&amp;page=" . ($page + 1) .
+        "'><b>Next &gt;&gt;</b></a></p>\n";
 
     //------ Get posts
 
@@ -142,7 +142,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 	
 	echo "<script type='text/javascript' src='./scripts/popup.js'></script>";
 	
-    print("<a name=top><h1><a href=?action=viewforum&forumid=$forumid>$forum</a> &gt; $subject</h1>\n");
+    print("<a name='top'></a><a href='forums.php?action=viewforum&amp;forumid=$forumid'>$forum</a> &gt; $subject\n");
 
     print($pagemenu);
 
@@ -150,7 +150,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     begin_main_frame();
 
-    begin_frame();
+    //begin_frame();
 
     $pc = mysql_num_rows($res);
 
@@ -204,23 +204,23 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
         if (!$title)
           $title = get_user_class_name($arr["class"]);
 
-        $by = "<a href=userdetails.php?id=$posterid><b>$postername</b></a>" . ($arr["donor"] == "yes" ? "<img src=".
-        "\"{$TBDEV['pic_base_url']}star.gif\" alt='Donor'>" : "") . ($arr["enabled"] == "no" ? "<img src=\"".
-        "\"{$TBDEV['pic_base_url']}disabled.gif\" alt=\"This account is disabled\" style='margin-left: 2px'>" : ($arr["warned"] == "yes" ? "<a href=rules.php#warning class=altlink><img src=\"{$pic_base_url}warned.gif\" alt=\"Warned\" border=0></a>" : "")) . " ($title)";
+        $by = "<a href='userdetails.php?id=$posterid'><b>$postername</b></a>" . ($arr["donor"] == "yes" ? "<img src='".
+        "{$TBDEV['pic_base_url']}star.gif' alt='Donor' />" : "") . ($arr["enabled"] == "no" ? "<img src='".
+        "{$TBDEV['pic_base_url']}disabled.gif' alt='This account is disabled' style='margin-left: 2px' />" : ($arr["warned"] == "yes" ? "<a href='rules.php#warning' class='altlink'><img src='{$pic_base_url}warned.gif' alt='Warned' border='0' /></a>" : "")) . " ($title)";
       }
 
       if ($CURUSER["avatars"] == "yes")
           {
-            $avatar = $arr['avatar'] ? "<div style='text-align:center;padding:5px;'><img width={$arr['av_w']} height={$arr['av_h']} src='".htmlentities($arr['avatar'], ENT_QUOTES)."' /></div>" : "<img width=100 src='{$forum_pic_url}default_avatar.gif' />";
+            $avatar = $arr['avatar'] ? "<div style='text-align:center;padding:5px;'><img width='{$arr['av_w']}' height='{$arr['av_h']}' src='".htmlentities($arr['avatar'], ENT_QUOTES)."' alt='' /></div>" : "<img width='100' src='{$forum_pic_url}default_avatar.gif' alt='' />";
           }
       else
-            $avatar = "<img width=100 src='{$forum_pic_url}default_avatar.gif' />";
+            $avatar = "<img width='100' src='{$forum_pic_url}default_avatar.gif' alt='' />";
 
-      print("<a name=$postid>\n");
+      print("<a name='$postid'></a>\n");
 
       if ($pn == $pc)
       {
-        print("<a name=last>\n");
+        print("<a name='last'></a>\n");
         //..rp..
 /* if ($postid > $lpr)
 mysql_query("UPDATE readposts SET lastpostread=$postid WHERE userid=$userid AND topicid=$topicid") or sqlerr(__FILE__, __LINE__);
@@ -228,20 +228,20 @@ mysql_query("UPDATE readposts SET lastpostread=$postid WHERE userid=$userid AND 
 //..rp..
       }
 
-      print("<p class=sub><table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded width=99%>#$postid by $by at $added");
+      print("<table border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded' width='99%'>#$postid by $by at $added");
 
       if (!$locked || get_user_class() >= UC_MODERATOR)
-				print(" - [<a href=?action=quotepost&topicid=$topicid&postid=$postid><b>Quote</b></a>]");
+				print(" - [<a href='forums.php?action=quotepost&amp;topicid=$topicid&amp;postid=$postid'><b>Quote</b></a>]");
 
       if (($CURUSER["id"] == $posterid && !$locked) || get_user_class() >= UC_MODERATOR)
-        print(" - [<a href=?action=editpost&postid=$postid><b>Edit</b></a>]");
+        print(" - [<a href='forums.php?action=editpost&amp;postid=$postid'><b>Edit</b></a>]");
 
       if (get_user_class() >= UC_MODERATOR)
-        print(" - [<a href=?action=deletepost&postid=$postid><b>Delete</b></a>]");
+        print(" - [<a href='forums.php?action=deletepost&amp;postid=$postid'><b>Delete</b></a>]");
 
-      print("</td><td class=embedded width=1%><a href=#top><img src=\"{$forum_pic_url}top.gif\" border=0 alt='Top'></a></td></tr>");
+      print("</td><td class='embedded' width='1%'><a href='#top'><img src='{$forum_pic_url}top.gif' border='0' alt='Top' /></a></td></tr>");
 
-      print("</table></p>\n");
+      print("</table>\n");
 
       begin_table(true);
 
@@ -258,8 +258,8 @@ mysql_query("UPDATE readposts SET lastpostread=$postid WHERE userid=$userid AND 
       }
 
 		$member_reputation = $arr['username'] != '' ? get_reputation($arr) : '';
-      print("<tr valign=top><td width=150 align=center style='padding: 0px'>" .
-        ($avatar ? $avatar : ""). "<br /><div>$member_reputation</div></td><td class=comment>$body</td></tr>\n");
+      print("<tr valign='top'><td width='150' align='center' style='padding: 0px'>" .
+        ($avatar ? $avatar : ""). "<br /><div>$member_reputation</div></td><td class='comment'>$body</td></tr>\n");
 
       end_table();
     
@@ -278,59 +278,8 @@ mysql_query("UPDATE readposts SET lastpostread=$postid WHERE userid=$userid AND 
 	//..rp..
 	
 	
-    //------ Mod options
 
-	  if (get_user_class() >= UC_MODERATOR)
-	  {
-	    attach_frame();
-
-	    $res = mysql_query("SELECT id,name,minclasswrite FROM forums ORDER BY name") or sqlerr(__FILE__, __LINE__);
-	    print("<table border=0 cellspacing=0 cellpadding=0>\n");
-
-	    print("<form method=post action=forums.php?action=setsticky>\n");
-	    print("<input type=hidden name=topicid value=$topicid>\n");
-	    print("<input type=hidden name=returnto value=$_SERVER[REQUEST_URI]>\n");
-	    print("<tr><td class=embedded align=right>Sticky:</td>\n");
-	    print("<td class=embedded><input type=radio name=sticky value='yes' " . ($sticky ? " checked" : "") . "> Yes <input type=radio name=sticky value='no' " . (!$sticky ? " checked" : "") . "> No\n");
-	    print("<input type=submit value='Set'></td></tr>");
-	    print("</form>\n");
-
-	    print("<form method=post action=forums.php?action=setlocked>\n");
-	    print("<input type=hidden name=topicid value=$topicid>\n");
-	    print("<input type=hidden name=returnto value=$_SERVER[REQUEST_URI]>\n");
-	    print("<tr><td class=embedded align=right>Locked:</td>\n");
-	    print("<td class=embedded><input type=radio name=locked value='yes' " . ($locked ? " checked" : "") . "> Yes <input type=radio name=locked value='no' " . (!$locked ? " checked" : "") . "> No\n");
-	    print("<input type=submit value='Set'></td></tr>");
-	    print("</form>\n");
-
-	    print("<form method=post action=forums.php?action=renametopic>\n");
-	    print("<input type=hidden name=topicid value=$topicid>\n");
-	    print("<input type=hidden name=returnto value=$_SERVER[REQUEST_URI]>\n");
-	    print("<tr><td class=embedded align=right>Rename topic:</td><td class=embedded><input type=text name=subject size=60 maxlength=$maxsubjectlength value=\"" . htmlspecialchars($subject) . "\">\n");
-	    print("<input type=submit value='Okay'></td></tr>");
-	    print("</form>\n");
-
-	    print("<form method=post action=forums.php?action=movetopic&topicid=$topicid>\n");
-	    print("<tr><td class=embedded>Move this thread to:&nbsp;</td><td class=embedded><select name=forumid>");
-
-	    while ($arr = mysql_fetch_assoc($res))
-	      if ($arr["id"] != $forumid && get_user_class() >= $arr["minclasswrite"])
-	        print("<option value=" . $arr["id"] . ">" . $arr["name"] . "\n");
-
-	    print("</select> <input type=submit value='Okay'></form></td></tr>\n");
-	    print("<tr><td class=embedded>Delete topic</td><td class=embedded>\n");
-	    print("<form method=get action=forums.php>\n");
-	    print("<input type=hidden name=action value=deletetopic>\n");
-	    print("<input type=hidden name=topicid value=$topicid>\n");
-	    print("<input type=hidden name=forumid value=$forumid>\n");
-	    print("<input type=checkbox name=sure value=1>I'm sure\n");
-	    print("<input type=submit value='Okay'>\n");
-	    print("</form>\n");
-	    print("</td></tr>\n");
-	    print("</table>\n");
-	  }
-
-  	end_frame();
+  	//end_frame();
 
   	end_main_frame();
 
@@ -352,21 +301,81 @@ mysql_query("UPDATE readposts SET lastpostread=$postid WHERE userid=$userid AND 
 
 	  //------ "View unread" / "Add reply" buttons
 
-	  print("<p><table class=main border=0 cellspacing=0 cellpadding=0><tr>\n");
-	  print("<td class=embedded><form method=get action=?>\n");
-	  print("<input type=hidden name=action value=viewunread>\n");
-	  print("<input type=submit value='View Unread' class=btn>\n");
+	  print("<table class='main' border='0' cellspacing='0' cellpadding='0'><tr>\n");
+	  print("<td class='embedded'><form method='post' action='forums.php?action=viewunread'>\n");
+	  print("<input type='hidden' name='action' value='viewunread' />\n");
+	  print("<input type='submit' value='View Unread' class='btn' />\n");
 	  print("</form></td>\n");
 
     if ($maypost)
     {
-      print("<td class=embedded style='padding-left: 10px'><form method=get action=?>\n");
-      print("<input type=hidden name=action value=reply>\n");
-      print("<input type=hidden name=topicid value=$topicid>\n");
-      print("<input type=submit value='Add Reply' class=btn>\n");
+      print("<td class='embedded' style='padding-left: 10px'><form method='post' action='forums.php?action=reply'>\n");
+      print("<input type='hidden' name='action' value='reply' />\n");
+      print("<input type='hidden' name='topicid' value='$topicid' />\n");
+      print("<input type='submit' value='Add Reply' class='btn' />\n");
       print("</form></td>\n");
     }
-    print("</tr></table></p>\n");
+    print("</tr></table>\n");
+    
+    //------ Mod options
+
+	  if (get_user_class() >= UC_MODERATOR)
+	  {
+	    //attach_frame();
+      $req_uri = htmlentities($_SERVER['PHP_SELF']);
+      
+	    $res = mysql_query("SELECT id,name,minclasswrite FROM forums ORDER BY name") or sqlerr(__FILE__, __LINE__);
+	    
+	    print("<table border='1' cellspacing='0' cellpadding='0'>\n");
+
+	    print("<tr><td align='right'>Sticky:</td>\n");
+	    print("<td>");
+	    print("<form method='post' action='forums.php?action=setsticky'>\n");
+	    print("<input type='hidden' name='topicid' value='$topicid' />\n");
+	    print("<input type='hidden' name='returnto' value='{$req_uri}' />\n");
+	    print("<input type='radio' name='sticky' value='yes' " . ($sticky ? " checked='checked'" : "") . " /> Yes <input type='radio' name='sticky' value='no' " . (!$sticky ? " checked='checked'" : "") . " /> No\n");
+	    print("<input type='submit' value='Set' /></form>\n</td></tr>");
+
+	    
+	    print("<tr><td align='right'>Locked:</td>\n");
+	    print("<td >");
+	    print("<form method='post' action='forums.php?action=setlocked'>\n");
+	    print("<input type='hidden' name='topicid' value='$topicid' />\n");
+	    print("<input type='hidden' name='returnto' value='{$req_uri}' />\n");
+	    print("<input type='radio' name='locked' value='yes' " . ($locked ? " checked='checked'" : "") . " /> Yes <input type='radio' name='locked' value='no' " . (!$locked ? " checked='checked'" : "") . " /> No\n");
+	    print("<input type='submit' value='Set' /></form>\n</td></tr>");
+
+	    
+	    print("<tr><td align='right'>Rename topic:</td>");
+	    print("<td >");
+	    print("<form method='post' action='forums.php?action=renametopic'>\n");
+	    print("<input type='hidden' name='topicid' value='$topicid' />\n");
+	    print("<input type='hidden' name='returnto' value='{$req_uri}' />\n");
+	    print("<input type='text' name='subject' size='60' maxlength='$maxsubjectlength' value='" . htmlspecialchars($subject) . "' />\n");
+	    print("<input type='submit' value='Okay' /></form></td></tr>");
+
+	    
+	    print("<tr><td align='right'>Move this thread to:&nbsp;</td>");
+	    print("<td>");
+	    print("<form method='post' action='forums.php?action=movetopic&amp;topicid=$topicid'>\n");
+	    print("<select name='forumid'>");
+
+	    while ($arr = mysql_fetch_assoc($res))
+	      if ($arr["id"] != $forumid && get_user_class() >= $arr["minclasswrite"])
+	        print("<option value='" . $arr["id"] . "'>" . $arr["name"] . "</option>\n");
+
+	    print("</select> <input type='submit' value='Okay' /></form></td></tr>\n");
+	    
+	    print("<tr><td align='right'>Delete topic:</td><td>\n");
+	    print("<form method='post' action='forums.php?action=deletetopic'>\n");
+	    print("<input type='hidden' name='action' value='deletetopic' />\n");
+	    print("<input type='hidden' name='topicid' value='$topicid' />\n");
+	    print("<input type='hidden' name='forumid' value='$forumid' />\n");
+	    print("<input type='checkbox' name='sure' value='1' />I'm sure\n");
+	    print("<input type='submit' value='Okay' />\n");
+	    print("</form></td></tr>\n");
+	    print("</table>\n");
+	  }
 
     //------ Forum quick jump drop-down
 
