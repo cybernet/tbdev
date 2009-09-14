@@ -121,7 +121,7 @@ function isproxy()
     // check if email addy is already in use
     $a = (@mysql_fetch_row(@mysql_query("select count(*) from users where email='$email'"))) or die(mysql_error());
     if ($a[0] != 0)
-      bark("The e-mail address is already in use.");
+      stderr( 'USER ERROR', "The e-mail address is already in use.");
 
     // TIMEZONE STUFF
     if(isset($_POST["user_timezone"]) && preg_match('#^\-?\d{1,2}(?:\.\d{1,2})?$#', $_POST['user_timezone']))

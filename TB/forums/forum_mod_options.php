@@ -128,8 +128,8 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
   if ($action == "deletetopic")
   {
-    $topicid = (int)$_POST["topicid"];
-    $forumid = (int)$_POST["forumid"];
+    $topicid = isset($_POST["topicid"]) ? (int)$_POST["topicid"] : 0;
+    $forumid = isset($_POST["forumid"]) ? (int)$_POST["forumid"] : 0;
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
       die;
