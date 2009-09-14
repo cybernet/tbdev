@@ -126,7 +126,7 @@ if ($mode == 'edit')
 	  
 	  $htmlout .= "<input type='hidden' name='newsid' value='$newsid' />\n";
 	  
-	  $htmlout .= "<input type='hidden' name='action' value='edit' />\n";
+	  $htmlout .= "<input type='hidden' name='mode' value='edit' />\n";
 	  
 	  $htmlout .= "<table border='1' cellspacing='0' cellpadding='5'>\n";
 	  

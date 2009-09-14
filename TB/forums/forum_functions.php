@@ -159,7 +159,7 @@ $res = mysql_query(
 
       $forumname = $arr["name"];
 
-      print("<p align=center>New topic in <a href=?action=viewforum&forumid=$id>$forumname</a> forum</p>\n");
+      print("<p style='text-align:center;'>New topic in <a href='forums.php?action=viewforum&amp;forumid=$id'>$forumname</a> forum</p>\n");
     }
     else
     {
@@ -169,25 +169,25 @@ $res = mysql_query(
 
       $subject = htmlentities($arr["subject"], ENT_QUOTES);
 
-      print("<p align=center>Reply to topic: <a href=?action=viewtopic&topicid=$id>$subject</a></p>");
+      print("<p style='text-align:center;'>Reply to topic: <a href='forums.php?action=viewtopic&amp;topicid=$id'>$subject</a></p>");
     }
 
     begin_frame("Compose", true);
 
-    print("<form method=post action=forums.php?action=post>\n");
+    print("<form method='post' action='forums.php?action=post'>\n");
 
     if ($newtopic)
-      print("<input type=hidden name=forumid value=$id>\n");
+      print("<input type='hidden' name='forumid' value='$id' />\n");
 
     else
-      print("<input type=hidden name=topicid value=$id>\n");
+      print("<input type='hidden' name='topicid' value='$id' />\n");
 
     begin_table();
 
     if ($newtopic)
-      print("<tr><td class=rowhead>Subject</td>" .
-        "<td align=left style='padding: 0px'><input type=text size=100 maxlength=$maxsubjectlength name=subject " .
-        "style='border: 0px; height: 19px'></td></tr>\n");
+      print("<tr><td class='rowhead'>Subject</td>" .
+        "<td align='left' style='padding: 0px'><input type='text' size='100' maxlength='$maxsubjectlength' name='subject' " .
+        "style='border: 0px; height: 19px' /></td></tr>\n");
 
     if ($quote)
     {
@@ -203,18 +203,18 @@ $res = mysql_query(
 	   $arr = mysql_fetch_assoc($res);
     }
 
-    print("<tr><td class=rowhead>Body</td><td align=left style='padding: 0px'>" .
-    "<textarea name=body cols=100 rows=20 style='border: 0px'>".
-    ($quote?(("[quote=".htmlspecialchars($arr["username"])."]".htmlspecialchars($arr["body"])."[/quote]")):"").
+    print("<tr><td class='rowhead'>Body</td><td align='left' style='padding: 0px'>" .
+    "<textarea name='body' cols='100' rows='20' style='border: 0px'>".
+    ($quote?(("[quote=".htmlspecialchars($arr["username"])."]".htmlspecialchars($arr["body"])."[/quote]\n")):"").
     "</textarea></td></tr>\n");
 
-    print("<tr><td colspan=2 align=center><input type=submit class=btn value='Submit'></td></tr>\n");
+    print("<tr><td colspan='2' align='center'><input type='submit' class='btn' value='Submit' /></td></tr>\n");
 
     end_table();
 
     print("</form>\n");
 
-		print("<p align=center><a href=tags.php target=_blank>Tags</a> | <a href=smilies.php target=_blank>Smilies</a></p>\n");
+		print("<p style='text-align:center;'><a href='tags.php' target='_blank'>Tags</a> | <a href='smilies.php' target='_blank'>Smilies</a></p>\n");
 
     end_frame();
 
@@ -236,17 +236,17 @@ $res = mysql_query(
 
       	if ($CURUSER["avatars"] == "yes")
           {
-            $avatar = $user['avatar'] ? "<img width={$user['av_w']} height={$user['av_h']} src='".htmlentities($user['avatar'], ENT_QUOTES)."' />" : "<img width=100 src='{$forum_pic_url}default_avatar.gif' />";
+            $avatar = $user['avatar'] ? "<img width='{$user['av_w']}' height='{$user['av_h']}' src='".htmlentities($user['avatar'], ENT_QUOTES)."' alt='' />" : "<img width='100' src='{$forum_pic_url}default_avatar.gif' alt='default' />";
           }
           else
-            $avatar = "<img width=100 src='{$forum_pic_url}default_avatar.gif' />";
+            $avatar = "<img width='100' src='{$forum_pic_url}default_avatar.gif' alt='' />";
 
-        print("<p class=sub>#" . $post["id"] . " by " . $user["username"] . " on " . get_date( $post['added'],''));
+        print("<p class='sub'>#" . $post["id"] . " by " . $user["username"] . " on " . get_date( $post['added'],''). "</p>");
 
         begin_table(true);
 
-        print("<tr valign=top><td width=150 align=center style='padding: 0px'>" . ($avatar ? $avatar : "").
-          "</td><td class=comment>" . format_comment($post["body"]) . "</td></tr>\n");
+        print("<tr valign='top'><td width='150' align='center' style='padding: 0px'>" . ($avatar ? $avatar : "").
+          "</td><td class='comment'>" . format_comment($post["body"]) . "</td></tr>\n");
 
         end_table();
 

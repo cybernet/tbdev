@@ -101,9 +101,9 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
   if ($action == "deletepost")
   {
-    $postid = 0+$_GET["postid"];
+    $postid = isset($_GET["postid"]) ? (int)$_GET["postid"] : 0;
 
-    $sure = $_GET["sure"];
+    $sure = isset($_GET["sure"]) ? $_GET["sure"] : 0;
 
     if (get_user_class() < UC_MODERATOR || !is_valid_id($postid))
       die;
@@ -124,7 +124,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     if ($arr[0] < 2)
       stderr("Error", "Can't delete post; it is the only post of the topic. You should\n" .
-      "<a href=?action=deletetopic&topicid=$topicid&sure=1>delete the topic</a> instead.\n");
+      "<a href='forums.php?action=deletetopic&amp;topicid=$topicid&amp;sure=1'>delete the topic</a> instead.\n");
 
 
     //------- Get the id of the last post before the one we're deleting
@@ -135,7 +135,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 		else
 		{
 			$arr = mysql_fetch_row($res);
-			$redirtopost = "&page=p$arr[0]#$arr[0]";
+			$redirtopost = "&amp;page=p{$arr[0]}#{$arr[0]}";
 		}
 
     //------- Make sure we know what we do :-)
@@ -143,12 +143,12 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     if (!$sure)
     {
       stderr("Delete post", "Sanity check: You are about to delete a post. Click\n" .
-      "<a href=?action=deletepost&postid=$postid&sure=1>here</a> if you are sure.");
+      "<a href='forums.php?action=deletepost&amp;postid=$postid&amp;sure=1'>here</a> if you are sure.");
     }
 
     //------- Delete post
 
-    mysql_query("DELETE FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
+    @mysql_query("DELETE FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
 
     //------- Update topic
 
