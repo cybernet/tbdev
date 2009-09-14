@@ -854,7 +854,7 @@ if (count($_POST) > 0 );//&& isset($_POST['n']))
     	  if ($array[0] == 0)
       		$ipstr = $user['ip'];
 	  	  else
-	      	$ipstr = "<a href='testip.php?ip=".$user['ip']."'><font color='#FF0000'><b>".$user['ip']."</b></font></a>";
+	      	$ipstr = "<a href='admin.php?action=testip&amp;ip={$user['ip']}'><font color='#FF0000'><b>{$user['ip']}</b></font></a>";
 			}
 			else
       	$ipstr = "---";

@@ -93,7 +93,7 @@ else
 	$arr["first"] = long2ip($arr["first"]);
 	$arr["last"] = long2ip($arr["last"]);
  	  print("<tr><td>".get_date($arr['added'],'')."</td><td align='left'>{$arr['first']}</td><td align='left'>{$arr['last']}</td><td align='left'><a href='userdetails.php?id={$arr['addedby']}'>{$arr['username']}".
- 	    "</a></td><td align='left'>".htmlentities($arr['comment'], ENT_QUOTES)."</td><td><a href='bans.php?remove={$arr['id']}'>Remove</a></td></tr>\n");
+ 	    "</a></td><td align='left'>".htmlentities($arr['comment'], ENT_QUOTES)."</td><td><a href='admin.php?action=bans&amp;remove={$arr['id']}'>Remove</a></td></tr>\n");
   }
   print("</table>\n");
   

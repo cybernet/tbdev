@@ -309,7 +309,8 @@ mysql_query("UPDATE readposts SET lastpostread=$postid WHERE userid=$userid AND 
 
     if ($maypost)
     {
-      print("<td class='embedded' style='padding-left: 10px'><form method='post' action='forums.php?action=reply'>\n");
+      print("<td class='embedded' style='padding-left: 10px'>");
+      print("<form method='post' action='forums.php?action=reply&amp;topicid={$topicid}'>\n");
       print("<input type='hidden' name='action' value='reply' />\n");
       print("<input type='hidden' name='topicid' value='$topicid' />\n");
       print("<input type='submit' value='Add Reply' class='btn' />\n");
@@ -357,7 +358,8 @@ mysql_query("UPDATE readposts SET lastpostread=$postid WHERE userid=$userid AND 
 	    
 	    print("<tr><td align='right'>Move this thread to:&nbsp;</td>");
 	    print("<td>");
-	    print("<form method='post' action='forums.php?action=movetopic&amp;topicid=$topicid'>\n");
+	    print("<form method='post' action='forums.php?action=movetopic'>\n");
+	    print("<input type='hidden' name='topicid' value='$topicid' />\n");
 	    print("<select name='forumid'>");
 
 	    while ($arr = mysql_fetch_assoc($res))

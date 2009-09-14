@@ -26,11 +26,24 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
   //-------- Action: Reply
 if ($action == "reply")
   {
-    $topicid = (int)$_GET["topicid"];
+    $topicid = isset($_GET["topicid"]) ? (int)$_GET["topicid"] : 0;
 
     if (!is_valid_id($topicid))
       header("Location: {$TBDEV['baseurl']}/forums.php");
+    
+    $q = @mysql_query( "SELECT t.id, f.minclassread, f.minclasswrite 
+                        FROM topics t
+                        LEFT JOIN forums f ON t.forumid = f.id
+                        WHERE t.id = $topicid");
 
+    if( mysql_num_rows($q) != 1 )
+      stderr('USER ERROR', 'You didn\'t specify a topic!');
+    
+    $check = @mysql_fetch_assoc($q);
+    
+    if( $CURUSER['class'] < $check['minclassread'] OR $CURUSER['class'] < $check['minclasswrite'] )
+      stderr('USER ERROR', 'You don\'t have correct permissions for this topic!');
+    
     stdhead("Post reply");
 
     begin_main_frame();
@@ -48,11 +61,24 @@ if ($action == "reply")
 
 if ($action == "quotepost")
 	{
-		$topicid = (int)$_GET["topicid"];
+		$topicid = isset($_GET["topicid"]) ? (int)$_GET["topicid"] : 0;
 
 		if (!is_valid_id($topicid))
 			header("Location: {$TBDEV['baseurl']}/forums.php");
 
+    $q = @mysql_query( "SELECT t.id, f.minclassread, f.minclasswrite 
+                        FROM topics t
+                        LEFT JOIN forums f ON t.forumid = f.id
+                        WHERE t.id = $topicid");
+
+    if( mysql_num_rows($q) != 1 )
+      stderr('USER ERROR', 'You didn\'t specify a topic!');
+    
+    $check = @mysql_fetch_assoc($q);
+    
+    if( $CURUSER['class'] < $check['minclassread'] OR $CURUSER['class'] < $check['minclasswrite'] )
+      stderr('USER ERROR', 'You don\'t have correct permissions for this topic!');
+    
     stdhead("Post reply");
 
     begin_main_frame();
@@ -64,6 +90,6 @@ if ($action == "quotepost")
     stdfoot();
 
     die;
-  }
+}
 
 ?>
