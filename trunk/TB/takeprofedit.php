@@ -109,6 +109,11 @@ $avatar = trim( urldecode( $_POST["avatar"] ) );
 										)      );
 										
       }
+      else 
+      {
+        $image['img_width'] = $img_size[0];
+        $image['img_height'] = $img_size[1];
+      }
       
 $updateset[] = "av_w = " . $image['img_width'];
 $updateset[] = "av_h = " . $image['img_height'];

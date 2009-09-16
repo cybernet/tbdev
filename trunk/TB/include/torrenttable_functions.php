@@ -250,7 +250,7 @@ function commenttable($rows)
     	$text .= "<p><font size='1' class='small'>Last edited by <a href='userdetails.php?id={$row['editedby']}'><b>{$row['username']}</b></a> at ".get_date($row['editedat'],'DATE')."</font></p>\n";
 		begin_table(true);
 		print("<tr valign='top'>\n");
-		print("<td align='center' width='150' style='padding: 0px'><img width='150' src=\"{$avatar}\" alt='' /></td>\n");
+		print("<td align='center' width='150' style='padding: 0px'><img width=\"{$row[av_w]}\" height=\"{$row[av_h]}\" src=\"{$avatar}\" alt='' /></td>\n");
 		print("<td class='text'>$text</td>\n");
 		print("</tr>\n");
      end_table();

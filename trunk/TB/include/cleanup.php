@@ -85,7 +85,7 @@ function docleanup() {
 		$delids = array();
 		while ($row = mysql_fetch_array($res,MYSQL_NUM)) {
 			$id = $row[0];
-			if ($ar[$id])
+			if (isset($ar[$id]) && $ar[$id])
 				continue;
 			$delids[] = $id;
 		}
