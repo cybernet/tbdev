@@ -67,7 +67,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
       $subject = sqlesc($subject);
 
-      mysql_query("INSERT INTO topics (userid, forumid, subject) VALUES($userid, $forumid, $subject)") or sqlerr(__FILE__, __LINE__);
+      @mysql_query("INSERT INTO topics (userid, forumid, subject) VALUES($userid, $forumid, $subject)") or sqlerr(__FILE__, __LINE__);
 
       $topicid = mysql_insert_id() or stderr("Error", "No topic ID returned");
     }
@@ -93,7 +93,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     $body = sqlesc($body);
 
-    mysql_query("INSERT INTO posts (topicid, userid, added, body) " .
+    @mysql_query("INSERT INTO posts (topicid, userid, added, body) " .
     "VALUES($topicid, $userid, $added, $body)") or sqlerr(__FILE__, __LINE__);
 
     $postid = mysql_insert_id() or die("Post id n/a");

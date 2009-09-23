@@ -42,7 +42,7 @@ loggedinorreturn();
 $id = 0 + $_GET["id"];
 
 if (!isset($id) || !is_valid_id($id))
-	die();
+	stderr('USER ERROR', 'Bad id'); 
 	
 	
 	if (isset($_GET["hit"])) {
@@ -76,8 +76,8 @@ if (!$row || ($row["banned"] == "yes" && !$moderator))
 
 
 
-
-		stdhead("Details for torrent \"" . htmlentities($row["name"], ENT_QUOTES) . "\"");
+    $HTMLOUT = '';
+		
 
 		if ($CURUSER["id"] == $row["owner"] || get_user_class() >= UC_MODERATOR)
 			$owned = 1;
@@ -87,23 +87,23 @@ if (!$row || ($row["banned"] == "yes" && !$moderator))
 		$spacer = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 		if (isset($_GET["uploaded"])) {
-			print("<h2>Successfully uploaded!</h2>\n");
-			print("<p>You can start seeding now. <b>Note</b> that the torrent won't be visible until you do that!</p>\n");
+			$HTMLOUT .= "<h2>Successfully uploaded!</h2>\n";
+			$HTMLOUT .= "<p>You can start seeding now. <b>Note</b> that the torrent won't be visible until you do that!</p>\n";
 		}
 		elseif (isset($_GET["edited"])) {
-			print("<h2>Successfully edited!</h2>\n");
+			$HTMLOUT .= "<h2>Successfully edited!</h2>\n";
 			if (isset($_GET["returnto"]))
-				print("<p><b>Go back to <a href=\"" . htmlspecialchars($_GET["returnto"]) . "\">whence you came</a>.</b></p>\n");
+				$HTMLOUT .= "<p><b>Go back to <a href='" . htmlspecialchars($_GET["returnto"]) . "'>whence you came</a>.</b></p>\n";
 		}
 		/* elseif (isset($_GET["searched"])) {
 			print("<h2>Your search for \"" . htmlspecialchars($_GET["searched"]) . "\" gave a single result:</h2>\n");
 		} */
 		elseif (isset($_GET["rated"]))
-			print("<h2>Rating added!</h2>\n");
+			$HTMLOUT .= "<h2>Rating added!</h2>\n";
 
     $s = htmlentities( $row["name"], ENT_QUOTES );
-		print("<h1>$s</h1>\n");
-                print("<table width='750' border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n");
+		$HTMLOUT .= "<h1>$s</h1>\n";
+    $HTMLOUT .= "<table width='750' border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
 
 		$url = "edit.php?id=" . $row["id"];
 		if (isset($_GET["returnto"])) {
@@ -118,31 +118,31 @@ if (!$row || ($row["banned"] == "yes" && !$moderator))
 //			$s .= " $spacer<$editlink>[Edit torrent]</a>";
 //		tr("Name", $s, 1);
 
-		print "<tr><td class='rowhead' width='1%'>Download</td><td width='99%' align='left'><a class='index' href='download.php?torrent=$id'>" . htmlspecialchars($row["filename"]) . "</a></td></tr>";
+		$HTMLOUT .= "<tr><td class='rowhead' width='1%'>Download</td><td width='99%' align='left'><a class='index' href='download.php?torrent=$id'>" . htmlspecialchars($row["filename"]) . "</a></td></tr>";
 
 		function hex_esc($matches) {
 			return sprintf("%02x", ord($matches[0]));
 		}
-		tr("Info hash", preg_replace_callback('/./s', "hex_esc", hash_pad($row["info_hash"])));
+		$HTMLOUT .= tr("Info hash", preg_replace_callback('/./s', "hex_esc", hash_pad($row["info_hash"])));
 
 		if (!empty($row["descr"]))
-			print("<tr><td style='vertical-align:top'>Description</td><td><div style='background-color:#d9e2ff;width:100%;height:150px;overflow: auto'>". str_replace(array("\n", "  "), array("<br>\n", "&nbsp; "), format_comment( $row["descr"] ))."</div></td></tr>");
+			$HTMLOUT .= "<tr><td style='vertical-align:top'>Description</td><td><div style='background-color:#d9e2ff;width:100%;height:150px;overflow: auto'>". str_replace(array("\n", "  "), array("<br>\n", "&nbsp; "), format_comment( $row["descr"] ))."</div></td></tr>";
 			
-if (get_user_class() >= UC_POWER_USER && $row["nfosz"] > 0)
-  print("<tr><td class='rowhead'>NFO</td><td align='left'><a href='viewnfo.php?id=$row[id]'><b>View NFO</b></a> (" .
-     mksize($row["nfosz"]) . ")</td></tr>\n");
+    if (get_user_class() >= UC_POWER_USER && $row["nfosz"] > 0)
+      $HTMLOUT .= "<tr><td class='rowhead'>NFO</td><td align='left'><a href='viewnfo.php?id=$row[id]'><b>View NFO</b></a> (" .mksize($row["nfosz"]) . ")</td></tr>\n";
+      
 		if ($row["visible"] == "no")
-			tr("Visible", "<b>no</b> (dead)", 1);
+			$HTMLOUT .= tr("Visible", "<b>no</b> (dead)", 1);
 		if ($moderator)
-			tr("Banned", $row["banned"]);
+			$HTMLOUT .= tr("Banned", $row["banned"]);
 
 		if (isset($row["cat_name"]))
-			tr("Type", $row["cat_name"]);
+			$HTMLOUT .= tr("Type", $row["cat_name"]);
 		else
-			tr("Type", "(none selected)");
+			$HTMLOUT .= tr("Type", "(none selected)");
 
-		tr("Last&nbsp;seeder", "Last activity " .get_date( $row['lastseed'],'',0,1));
-		tr("Size",mksize($row["size"]) . " (" . number_format($row["size"]) . " bytes)");
+		$HTMLOUT .= tr("Last&nbsp;seeder", "Last activity " .get_date( $row['lastseed'],'',0,1));
+		$HTMLOUT .= tr("Size",mksize($row["size"]) . " (" . number_format($row["size"]) . " bytes)");
 /*
 		$s = "";
 		$s .= "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\"><tr><td valign=\"top\" class=embedded>";
@@ -202,44 +202,46 @@ if (!empty($xrow))
 
 */
 
-		tr("Added", get_date( $row['added'],'LONG'));
-		tr("Views", $row["views"]);
-		tr("Hits", $row["hits"]);
-		tr("Snatched", $row["times_completed"] . " time(s)");
+		$HTMLOUT .= tr("Added", get_date( $row['added'],'LONG'));
+		$HTMLOUT .= tr("Views", $row["views"]);
+		$HTMLOUT .= tr("Hits", $row["hits"]);
+		$HTMLOUT .= tr("Snatched", $row["times_completed"] . " time(s)");
 
 		$keepget = "";
 		$uprow = (isset($row["username"]) ? ("<a href='userdetails.php?id=" . $row["owner"] . "'><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>unknown</i>");
 		if ($owned)
 			$uprow .= " $spacer<$editlink><b>[Edit this torrent]</b></a>";
-		tr("Upped by", $uprow, 1);
+		$HTMLOUT .= tr("Upped by", $uprow, 1);
 
 		if ($row["type"] == "multi") {
 			if (!isset($_GET["filelist"]))
-				tr("Num files<br /><a href=\"filelist.php?id=$id\" class=\"sublink\">[See full list]</a>", $row["numfiles"] . " files", 1);
+				$HTMLOUT .= tr("Num files<br /><a href=\"filelist.php?id=$id\" class=\"sublink\">[See full list]</a>", $row["numfiles"] . " files", 1);
 			else {
-				tr("Num files", $row["numfiles"] . " files", 1);
+				$HTMLOUT .= tr("Num files", $row["numfiles"] . " files", 1);
 
 				
 			}
 		}
 
-		tr("Peers<br /><a href=\"peerlist.php?id=$id#seeders\" class=\"sublink\">[See full list]</a>", $row["seeders"] . " seeder(s), " . $row["leechers"] . " leecher(s) = " . ($row["seeders"] + $row["leechers"]) . " peer(s) total", 1);
-		print "</table>";
+		$HTMLOUT .= tr("Peers<br /><a href=\"peerlist.php?id=$id#seeders\" class=\"sublink\">[See full list]</a>", $row["seeders"] . " seeder(s), " . $row["leechers"] . " leecher(s) = " . ($row["seeders"] + $row["leechers"]) . " peer(s) total", 1);
+		$HTMLOUT .= "</table>";
 
 		//stdhead("Comments for torrent \"" . $row["name"] . "\"");
-		print("<h1>Comments for <a href='details.php?id=$id'>" . htmlentities( $row["name"], ENT_QUOTES ) . "</a></h1>\n");
+		$HTMLOUT .= "<h1>Comments for <a href='details.php?id=$id'>" . htmlentities( $row["name"], ENT_QUOTES ) . "</a></h1>\n";
 
 
-	print("<p><a name=\"startcomments\"></a></p>\n");
+    $HTMLOUT .= "<p><a name=\"startcomments\"></a></p>\n");
 
-	$commentbar = "<p align='center'><a class='index' href='comment.php?action=add&amp;tid=$id'>Add a comment</a></p>\n";
+    $commentbar = "<p align='center'><a class='index' href='comment.php?action=add&amp;tid=$id'>Add a comment</a></p>\n";
 
-	$count = $row['comments'];
+    $count = $row['comments'];
 
-	if (!$count) {
-		print("<h2>No comments yet</h2>\n");
-	}
-	else {
+    if (!$count) 
+    {
+      $HTMLOUT .= "<h2>No comments yet</h2>\n";
+    }
+    else 
+    {
 		$pager = pager(20, $count, "details.php?id=$id&amp;", array('lastpagedefault' => 1));
 
 		$subres = mysql_query("SELECT comments.id, text, user, comments.added, editedby, editedat, avatar, warned, ".
@@ -249,17 +251,17 @@ if (!empty($xrow))
 		while ($subrow = mysql_fetch_assoc($subres))
 			$allrows[] = $subrow;
 
-		print($commentbar);
-		print($pager['pagertop']);
+		$HTMLOUT .= $commentbar;
+		$HTMLOUT .= $pager['pagertop'];
 
-		commenttable($allrows);
+		$HTMLOUT .= commenttable($allrows);
 
-		print($pager['pagerbottom']);
+		$HTMLOUT .= $pager['pagerbottom'];
 	}
 
-	print($commentbar);
+    $HTMLOUT .= $commentbar;
 
-
-stdfoot();
+///////////////////////// HTML OUTPUT ////////////////////////////
+    print stdhead("Details for torrent \"" . htmlentities($row["name"], ENT_QUOTES) . "\"") . $HTMLOUT . stdfoot();
 
 ?>

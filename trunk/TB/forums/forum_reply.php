@@ -44,15 +44,15 @@ if ($action == "reply")
     if( $CURUSER['class'] < $check['minclassread'] OR $CURUSER['class'] < $check['minclasswrite'] )
       stderr('USER ERROR', 'You don\'t have correct permissions for this topic!');
     
-    stdhead("Post reply");
+    $HTMLOUT = '';
 
-    begin_main_frame();
+    $HTMLOUT .= begin_main_frame();
 
-    insert_compose_frame($topicid, false);
+    $HTMLOUT .= insert_compose_frame($topicid, false);
 
-    end_main_frame();
+    $HTMLOUT .= end_main_frame();
 
-    stdfoot();
+    print stdhead("Post reply") . $HTMLOUT . stdfoot();
 
     die;
 }
@@ -79,15 +79,15 @@ if ($action == "quotepost")
     if( $CURUSER['class'] < $check['minclassread'] OR $CURUSER['class'] < $check['minclasswrite'] )
       stderr('USER ERROR', 'You don\'t have correct permissions for this topic!');
     
-    stdhead("Post reply");
+    $HTMLOUT = '';
 
-    begin_main_frame();
+    $HTMLOUT .= begin_main_frame();
 
-    insert_compose_frame($topicid, false, true);
+    $HTMLOUT .= insert_compose_frame($topicid, false, true);
 
-    end_main_frame();
+    $HTMLOUT .= end_main_frame();
 
-    stdfoot();
+    print stdhead("Post reply") .  . stdfoot();
 
     die;
 }

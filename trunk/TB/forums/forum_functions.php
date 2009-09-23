@@ -31,14 +31,14 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $userid = $CURUSER["id"];
 
     //..rp..
-$dt = (time() - $TBDEV['readpost_expiry']);
+    $dt = (time() - $TBDEV['readpost_expiry']);
 
-$res = mysql_query(
-"SELECT t.id, t.lastpost FROM topics AS t ".
-"LEFT JOIN posts AS p ON p.id = t.lastpost ".
-"WHERE p.added > $dt"
-) or sqlerr(__FILE__, __LINE__);
-//..rp..
+    $res = @mysql_query(
+                      "SELECT t.id, t.lastpost FROM topics AS t ".
+                      "LEFT JOIN posts AS p ON p.id = t.lastpost ".
+                      "WHERE p.added > $dt"
+                      ) or sqlerr(__FILE__, __LINE__);
+                      //..rp..
 
     while ($arr = mysql_fetch_assoc($res))
     {
@@ -46,17 +46,17 @@ $res = mysql_query(
 
       $postid = $arr["lastpost"];
 
-      $r = mysql_query("SELECT id,lastpostread FROM readposts WHERE userid=$userid and topicid=$topicid") or sqlerr(__FILE__, __LINE__);
+      $r = @mysql_query("SELECT id,lastpostread FROM readposts WHERE userid=$userid and topicid=$topicid") or sqlerr(__FILE__, __LINE__);
 
       if (mysql_num_rows($r) == 0)
-        mysql_query("INSERT INTO readposts (userid, topicid, lastpostread) VALUES($userid, $topicid, $postid)") or sqlerr(__FILE__, __LINE__);
+        @mysql_query("INSERT INTO readposts (userid, topicid, lastpostread) VALUES($userid, $topicid, $postid)") or sqlerr(__FILE__, __LINE__);
 
       else
       {
         $a = mysql_fetch_assoc($r);
 
         if ($a["lastpostread"] < $postid)
-          mysql_query("UPDATE readposts SET lastpostread=$postid WHERE id=" . $a["id"]) or sqlerr(__FILE__, __LINE__);
+          @mysql_query("UPDATE readposts SET lastpostread=$postid WHERE id=" . $a["id"]) or sqlerr(__FILE__, __LINE__);
       }
     }
   }
@@ -65,7 +65,7 @@ $res = mysql_query(
 
   function get_forum_access_levels($forumid)
   {
-    $res = mysql_query("SELECT minclassread, minclasswrite, minclasscreate FROM forums WHERE id=$forumid") or sqlerr(__FILE__, __LINE__);
+    $res = @mysql_query("SELECT minclassread, minclasswrite, minclasscreate FROM forums WHERE id=$forumid") or sqlerr(__FILE__, __LINE__);
 
     if (mysql_num_rows($res) != 1)
       return false;
@@ -79,7 +79,7 @@ $res = mysql_query(
 
   function get_topic_forum($topicid)
   {
-    $res = mysql_query("SELECT forumid FROM topics WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
+    $res = @mysql_query("SELECT forumid FROM topics WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
     if (mysql_num_rows($res) != 1)
       return false;
@@ -93,18 +93,18 @@ $res = mysql_query(
 
   function update_topic_last_post($topicid)
   {
-    $res = mysql_query("SELECT id FROM posts WHERE topicid=$topicid ORDER BY id DESC LIMIT 1") or sqlerr(__FILE__, __LINE__);
+    $res = @mysql_query("SELECT id FROM posts WHERE topicid=$topicid ORDER BY id DESC LIMIT 1") or sqlerr(__FILE__, __LINE__);
 
     $arr = mysql_fetch_row($res) or die("No post found");
 
     $postid = $arr[0];
 
-    mysql_query("UPDATE topics SET lastpost=$postid WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
+    @mysql_query("UPDATE topics SET lastpost=$postid WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
   }
 
   function get_forum_last_post($forumid)
   {
-    $res = mysql_query("SELECT lastpost FROM topics WHERE forumid=$forumid ORDER BY lastpost DESC LIMIT 1") or sqlerr(__FILE__, __LINE__);
+    $res = @mysql_query("SELECT lastpost FROM topics WHERE forumid=$forumid ORDER BY lastpost DESC LIMIT 1") or sqlerr(__FILE__, __LINE__);
 
     $arr = mysql_fetch_row($res);
 
@@ -121,27 +121,29 @@ $res = mysql_query(
 
   function insert_quick_jump_menu($currentforum = 0)
   {
-    print("<div style='text-align:center;'><form method='get' action='forums.php?' name='jump'>\n");
+    $htmlout = "<div style='text-align:center;'><form method='get' action='forums.php?' name='jump'>\n";
 
-    print("<input type='hidden' name='action' value='viewforum' />\n");
+    $htmlout .= "<input type='hidden' name='action' value='viewforum' />\n";
 
-    print("Quick jump: ");
+    $htmlout .= "Quick jump: ";
 
-    print("<select name='forumid' onchange=\"if(this.options[this.selectedIndex].value != -1){ forms['jump'].submit() }\">\n");
+    $htmlout .= "<select name='forumid' onchange=\"if(this.options[this.selectedIndex].value != -1){ forms['jump'].submit() }\">\n";
 
-    $res = mysql_query("SELECT * FROM forums ORDER BY name") or sqlerr(__FILE__, __LINE__);
+    $res = @mysql_query("SELECT * FROM forums ORDER BY name") or sqlerr(__FILE__, __LINE__);
 
     while ($arr = mysql_fetch_assoc($res))
     {
       if (get_user_class() >= $arr["minclassread"])
-        print("<option value='{$arr["id"]}' ". ($currentforum == $arr["id"] ? " selected='selected'>" : ">") . $arr["name"] . "</option>\n");
+        $htmlout .= "<option value='{$arr["id"]}' ". ($currentforum == $arr["id"] ? " selected='selected'>" : ">") . $arr["name"] . "</option>\n";
     }
 
-    print("</select>\n");
+    $htmlout .= "</select>\n";
 
-    print("<input type='submit' value='Go!' />\n");
+    $htmlout .= "<input type='submit' value='Go!' />\n";
 
-    print("</form>\n</div>");
+    $htmlout .= "</form>\n</div>";
+    
+    return $htmlout;
   }
 
   //-------- Inserts a compose frame
@@ -150,7 +152,8 @@ $res = mysql_query(
   {
     global $maxsubjectlength, $CURUSER, $forum_pic_url;
 
-
+    $htmlout = '';
+    
     if ($newtopic)
     {
       $res = mysql_query("SELECT name FROM forums WHERE id=$id") or sqlerr(__FILE__, __LINE__);
@@ -159,7 +162,7 @@ $res = mysql_query(
 
       $forumname = $arr["name"];
 
-      print("<p style='text-align:center;'>New topic in <a href='forums.php?action=viewforum&amp;forumid=$id'>$forumname</a> forum</p>\n");
+      $htmlout .= "<p style='text-align:center;'>New topic in <a href='forums.php?action=viewforum&amp;forumid=$id'>$forumname</a> forum</p>\n";
     }
     else
     {
@@ -169,25 +172,25 @@ $res = mysql_query(
 
       $subject = htmlentities($arr["subject"], ENT_QUOTES);
 
-      print("<p style='text-align:center;'>Reply to topic: <a href='forums.php?action=viewtopic&amp;topicid=$id'>$subject</a></p>");
+      $htmlout .= "<p style='text-align:center;'>Reply to topic: <a href='forums.php?action=viewtopic&amp;topicid=$id'>$subject</a></p>";
     }
 
-    begin_frame("Compose", true);
+    $htmlout .= begin_frame("Compose", true);
 
-    print("<form method='post' action='forums.php?action=post'>\n");
+    $htmlout .= "<form method='post' action='forums.php?action=post'>\n";
 
     if ($newtopic)
-      print("<input type='hidden' name='forumid' value='$id' />\n");
+      $htmlout .= "<input type='hidden' name='forumid' value='$id' />\n";
 
     else
-      print("<input type='hidden' name='topicid' value='$id' />\n");
+      $htmlout .= "<input type='hidden' name='topicid' value='$id' />\n";
 
-    begin_table();
+    $htmlout .= begin_table();
 
     if ($newtopic)
-      print("<tr><td class='rowhead'>Subject</td>" .
+      $htmlout .= "<tr><td class='rowhead'>Subject</td>" .
         "<td align='left' style='padding: 0px'><input type='text' size='100' maxlength='$maxsubjectlength' name='subject' " .
-        "style='border: 0px; height: 19px' /></td></tr>\n");
+        "style='border: 0px; height: 19px' /></td></tr>\n";
 
     if ($quote)
     {
@@ -203,20 +206,20 @@ $res = mysql_query(
 	   $arr = mysql_fetch_assoc($res);
     }
 
-    print("<tr><td class='rowhead'>Body</td><td align='left' style='padding: 0px'>" .
+    $htmlout .= "<tr><td class='rowhead'>Body</td><td align='left' style='padding: 0px'>" .
     "<textarea name='body' cols='100' rows='20' style='border: 0px'>".
     ($quote?(("[quote=".htmlspecialchars($arr["username"])."]".htmlspecialchars($arr["body"])."[/quote]\n")):"").
-    "</textarea></td></tr>\n");
+    "</textarea></td></tr>\n";
 
-    print("<tr><td colspan='2' align='center'><input type='submit' class='btn' value='Submit' /></td></tr>\n");
+    $htmlout .= "<tr><td colspan='2' align='center'><input type='submit' class='btn' value='Submit' /></td></tr>\n";
 
-    end_table();
+    $htmlout .= end_table();
 
-    print("</form>\n");
+    $htmlout .= "</form>\n";
 
-		print("<p style='text-align:center;'><a href='tags.php' target='_blank'>Tags</a> | <a href='smilies.php' target='_blank'>Smilies</a></p>\n");
+		$htmlout .= "<p style='text-align:center;'><a href='tags.php' target='_blank'>Tags</a> | <a href='smilies.php' target='_blank'>Smilies</a></p>\n";
 
-    end_frame();
+    $htmlout .= end_frame();
 
     //------ Get 10 last posts if this is a reply
 
@@ -224,7 +227,7 @@ $res = mysql_query(
     {
       $postres = mysql_query("SELECT * FROM posts WHERE topicid=$id ORDER BY id DESC LIMIT 10") or sqlerr(__FILE__, __LINE__);
 
-      begin_frame("10 last posts, in reverse order");
+      $htmlout .= begin_frame("10 last posts, in reverse order");
 
       while ($post = mysql_fetch_assoc($postres))
       {
@@ -241,22 +244,24 @@ $res = mysql_query(
           else
             $avatar = "<img width='100' src='{$forum_pic_url}default_avatar.gif' alt='' />";
 
-        print("<p class='sub'>#" . $post["id"] . " by " . $user["username"] . " on " . get_date( $post['added'],''). "</p>");
+        $htmlout .= "<p class='sub'>#" . $post["id"] . " by " . $user["username"] . " on " . get_date( $post['added'],''). "</p>";
 
-        begin_table(true);
+        $htmlout .= begin_table(true);
 
-        print("<tr valign='top'><td width='150' align='center' style='padding: 0px'>" . ($avatar ? $avatar : "").
-          "</td><td class='comment'>" . format_comment($post["body"]) . "</td></tr>\n");
+        $htmlout .= "<tr valign='top'><td width='150' align='center' style='padding: 0px'>" . ($avatar ? $avatar : "").
+          "</td><td class='comment'>" . format_comment($post["body"]) . "</td></tr>\n";
 
-        end_table();
+        $htmlout .= end_table();
 
       }
 
-      end_frame();
+      $htmlout .= end_frame();
 
     }
 
-  insert_quick_jump_menu();
+    $htmlout .= insert_quick_jump_menu();
+  
+    return $htmlout;
 
   }
 ?>

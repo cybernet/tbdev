@@ -32,9 +32,9 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $page = 0+$_GET["page"];
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
-      die;
+      stderr('USER ERROR', 'Incorrect access');
 
-    mysql_query("UPDATE topics SET locked='yes' WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
+    @mysql_query("UPDATE topics SET locked='yes' WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
     header("Location: {$TBDEV['baseurl']}/forums.php?action=viewforum&forumid=$forumid&page=$page");
 
@@ -52,9 +52,9 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $page = 0+$_GET["page"];
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
-      die;
+      stderr('USER ERROR', 'Incorrect access');
 
-    mysql_query("UPDATE topics SET locked='no' WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
+    @mysql_query("UPDATE topics SET locked='no' WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
     header("Location: {$TBDEV['baseurl']}/forums.php?action=viewforum&forumid=$forumid&page=$page");
 
@@ -68,9 +68,10 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $topicid = (int)$_POST["topicid"];
 
     if (!$topicid || get_user_class() < UC_MODERATOR)
-      die;
+      stderr('USER ERROR', 'Incorrect access');
 
-	$locked = sqlesc($_POST["locked"]);
+    $locked = sqlesc($_POST["locked"]);
+    
     @mysql_query("UPDATE topics SET locked=$locked WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
     header("Location: {$TBDEV['baseurl']}/forums.php?action=viewtopic&topicid=$topicid");
@@ -85,9 +86,10 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $topicid = (int)$_POST["topicid"];
 
     if (!$topicid || get_user_class() < UC_MODERATOR)
-      die;
+      stderr('USER ERROR', 'Incorrect access');
 
-	$sticky = sqlesc($_POST["sticky"]);
+    $sticky = sqlesc($_POST["sticky"]);
+    
     @mysql_query("UPDATE topics SET sticky=$sticky WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
     header("Location: {$TBDEV['baseurl']}/forums.php?action=viewtopic&topicid=$topicid");
@@ -100,12 +102,12 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
   if ($action == 'renametopic')
   {
   	if (get_user_class() < UC_MODERATOR)
-  	  die;
+  	  stderr('USER ERROR', 'Incorrect access');
 
   	$topicid = (int)$_POST['topicid'];
 
   	if (!is_valid_id($topicid))
-  	  die;
+  	  stderr('USER ERROR', 'Incorrect access');
 
   	$subject = $_POST['subject'];
 
@@ -114,7 +116,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
   	$subject = sqlesc(trim(strip_tags($subject)));
 
-  	mysql_query("UPDATE topics SET subject=$subject WHERE id=$topicid") or sqlerr();
+  	@mysql_query("UPDATE topics SET subject=$subject WHERE id=$topicid") or sqlerr();
 
   	$returnto = $_POST['returnto'];
 
@@ -132,24 +134,31 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $forumid = isset($_POST["forumid"]) ? (int)$_POST["forumid"] : 0;
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
-      die;
+      stderr('USER ERROR', 'Incorrect access');
 
     $sure = isset($_POST["sure"]) ? $_POST["sure"] : 0;
 
     if (!$sure)
     {
-      stdhead("Delete Topic");
-      print("<table><tr><td align='right'>Sanity check: You are about to delete a topic.</td></tr>");
-      print("<tr><td>\n");
-	    print("<form method='post' action='forums.php?action=deletetopic'>\n");
-	    print("<input type='hidden' name='action' value='deletetopic' />\n");
-	    print("<input type='hidden' name='topicid' value='$topicid' />\n");
-	    print("<input type='hidden' name='forumid' value='$forumid' />\n");
-	    print("<input type='checkbox' name='sure' value='1' />I'm sure\n");
-	    print("<input type='submit' value='Okay' />\n");
-	    print("</form></td></tr>\n");
-	    print("</table>\n");
-      stdfoot();
+      
+      $HTMLOUT = "<table>
+      <tr>
+        <td align='right'>Sanity check: You are about to delete a topic.</td>
+      </tr>
+      <tr>
+        <td>
+          <form method='post' action='forums.php?action=deletetopic'>
+          <input type='hidden' name='action' value='deletetopic' />
+          <input type='hidden' name='topicid' value='$topicid' />
+          <input type='hidden' name='forumid' value='$forumid' />
+          <input type='checkbox' name='sure' value='1' />I'm sure
+          <input type='submit' value='Okay' />
+          </form>
+        </td>
+      </tr>
+	    </table>\n";
+	    
+      print stdhead("Delete Topic") . $HTMLOUT . stdfoot();
       exit();
     }
 
@@ -172,7 +181,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $topicid = (int)$_POST["topicid"];
 
     if (!is_valid_id($forumid) || !is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
-      die;
+      stderr('USER ERROR', 'Incorrect access');
 
     // Make sure topic and forum is valid
 
@@ -184,7 +193,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $arr = mysql_fetch_row($res);
 
     if (get_user_class() < $arr[0])
-      die;
+      stderr('USER ERROR', 'Incorrect access');
 
     $res = @mysql_query("SELECT subject,forumid FROM topics WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 

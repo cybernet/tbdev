@@ -19,7 +19,7 @@
 require "include/bittorrent.php";
 
 dbconn(false);
-stdhead("Downloaded Files");
+print stdhead("Downloaded Files");
 ?>
 <table class='main' width='750' border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'>
 <h2>A Handy Guide to Using the Files You've Downloaded</h2>
@@ -227,5 +227,5 @@ This file was originally written by hussdiesel at filesoup, then edited by Rhomb
 </td></tr></table>
 <br />
 <?php
-stdfoot();
+print stdfoot();
 ?>

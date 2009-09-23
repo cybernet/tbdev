@@ -23,19 +23,16 @@ dbconn(false);
 
 loggedinorreturn();
 
-function puke($text = "w00t")
-{
-stderr("w00t", $text);
-}
 
-if ($CURUSER['class'] < UC_MODERATOR) die();
+
+if ($CURUSER['class'] < UC_MODERATOR) stderr('USER ERROR', 'Please try again');
 
 // Correct call to script
 if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     {
     // Set user id
     if (isset($_POST['userid'])) $userid = $_POST['userid'];
-    else die();
+    else stderr('USER ERROR', 'Please try again');
 
     // and verify...
     if (!is_valid_id($userid)) stderr("Error", "Bad user ID.");
@@ -53,7 +50,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
 
     if ((isset($_POST['class'])) && (($class = $_POST['class']) != $user['class']))
     {
-    if (($CURUSER['class'] < UC_SYSOP) && ($user['class'] >= $CURUSER['class'])) die();
+    if (($CURUSER['class'] < UC_SYSOP) && ($user['class'] >= $CURUSER['class'])) stderr('USER ERROR', 'Please try again');
 
     // Notify user
     $what = ($class > $user['class'] ? "promoted" : "demoted");
@@ -222,7 +219,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
     }
     else
-    die(); // Error
+    stderr('USER ERROR', 'Please try again'); // Error
 
     $updateset[] = "uploadpos = " . sqlesc($uploadpos);
     } */
@@ -247,7 +244,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
     }
     else
-    die(); // Error
+    stderr('USER ERROR', 'Please try again'); // Error
 
     $updateset[] = "downloadpos = " . sqlesc($downloadpos);
     } */
@@ -255,9 +252,51 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     // Avatar Changed
     if ((isset($_POST['avatar'])) && (($avatar = $_POST['avatar']) != ($curavatar = $user['avatar'])))
     {
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Avatar changed from ".htmlspecialchars($curavatar)." to ".htmlspecialchars($avatar)." by " . $CURUSER['username'] . ".\n" . $modcomment;
+      
+      $avatar = trim( urldecode( $avatar ) );
+  
+      if ( preg_match( "/^http:\/\/$/i", $avatar ) 
+        or preg_match( "/[?&;]/", $avatar ) 
+        or preg_match("#javascript:#is", $avatar ) 
+        or !preg_match("#^https?://(?:[^<>*\"]+|[a-z0-9/\._\-!]+)$#iU", $avatar ) 
+      )
+      {
+        $avatar='';
+      }
+      
+      if( !empty($avatar) ) 
+      {
+        $img_size = @GetImageSize( $avatar );
 
-    $updateset[] = "avatar = ".sqlesc($avatar);
+        if($img_size == FALSE || !in_array($img_size['mime'], $TBDEV['allowed_ext']))
+          stderr('USER ERROR', 'Not an image or unsupported image!');
+
+        if($img_size[0] < 5 || $img_size[1] < 5)
+          stderr('USER ERROR', 'Image is too small');
+      
+        if ( ( $img_size[0] > $TBDEV['av_img_width'] ) OR ( $img_size[1] > $TBDEV['av_img_height'] ) )
+        { 
+            $image = resize_image( array(
+                             'max_width'  => $TBDEV['av_img_width'],
+                             'max_height' => $TBDEV['av_img_height'],
+                             'cur_width'  => $img_size[0],
+                             'cur_height' => $img_size[1]
+                        )      );
+                        
+          }
+          else 
+          {
+            $image['img_width'] = $img_size[0];
+            $image['img_height'] = $img_size[1];
+          }
+      
+        $updateset[] = "av_w = " . $image['img_width'];
+        $updateset[] = "av_h = " . $image['img_height'];
+      }
+      
+      $modcomment = get_date( time(), 'DATE', 1 ) . " - Avatar changed from ".htmlspecialchars($curavatar)." to ".htmlspecialchars($avatar)." by " . $CURUSER['username'] . ".\n" . $modcomment;
+
+      $updateset[] = "avatar = ".sqlesc($avatar);
     }
 
     /* Uncomment if you have the First Line Support mod installed...
@@ -274,7 +313,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     $modcomment = gmdate("Y-m-d") . " - Demoted from FLS by " . $CURUSER['username'] . ".\n" . $modcomment;
     }
     else
-    die();
+    stderr('USER ERROR', 'Please try again');
 
     $supportfor = $_POST['supportfor'];
 
@@ -290,9 +329,9 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     $returnto = $_POST["returnto"];
     header("Location: {$TBDEV['baseurl']}/$returnto");
 
-    die();
+    stderr('USER ERROR', 'Please try again');
     }
 
-puke();
+stderr('USER ERROR', 'No idea what to do');
 
 ?>

@@ -105,8 +105,6 @@ function std_view() {
   
   $forums_res = mysql_query("SELECT * FROM forums ORDER BY sort, name") or sqlerr(__FILE__, __LINE__);
 
-  stdhead("Forums");
-
   $htmlout = "<h1>Forums</h1>\n";
   
   $htmlout .= "<div style='width:80%'><p style='text-align:right;'><span class='btn'><a href='forums.php?action=search'>Search</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>View unread</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>Catch up</a></span></p></div>";
@@ -205,10 +203,9 @@ function std_view() {
   $htmlout .= "</table>\n<br />\n";
 
   $htmlout .= "<div style='width:80%'><p style='text-align:right;'><span class='btn'><a href='forums.php?action=search'>Search</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>View unread</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>Catch up</a></span></p></div>";
-  
-  echo $htmlout;
 
-  stdfoot();
+
+  print stdhead("Forums") . $htmlout . stdfoot();
   exit();
 }
 ?>

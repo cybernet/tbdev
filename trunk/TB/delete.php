@@ -20,20 +20,13 @@ require_once "include/bittorrent.php";
 require_once "include/user_functions.php";
 
 
-function bark($msg) {
-  stdhead();
-  stdmsg("Delete failed!", $msg);
-  stdfoot();
-  exit;
-}
-
 if (!mkglobal("id"))
-	bark("missing form data");
+	stderr("Delete failed!", "missing form data");
 
 $id = 0 + $id;
 if (!is_valid_id($id))
-	die();
-
+	stderr("Delete failed!", "missing form data");
+	
 dbconn();
 
 loggedinorreturn();
@@ -49,10 +42,10 @@ function deletetorrent($id) {
 $res = mysql_query("SELECT name,owner,seeders FROM torrents WHERE id = $id");
 $row = mysql_fetch_assoc($res);
 if (!$row)
-	die();
+	stderr("Delete failed!", "Torrent does not exist");
 
 if ($CURUSER["id"] != $row["owner"] && get_user_class() < UC_MODERATOR)
-	bark("You're not the owner! How did that happen?\n");
+	stderr("Delete failed!", "You're not the owner! How did that happen?\n");
 
 $rt = 0 + $_POST["reasontype"];
 
@@ -71,32 +64,32 @@ elseif ($rt == 3)
 elseif ($rt == 4)
 {
 	if (!$reason[2])
-		bark("Please describe the violated rule.");
-  $reasonstr = $SITENAME." rules broken: " . trim($reason[2]);
+		stderr("Delete failed!", "Please describe the violated rule.");
+  $reasonstr = $TBDEV['site_name']." rules broken: " . trim($reason[2]);
 }
 else
 {
 	if (!$reason[3])
-		bark("Please enter the reason for deleting this torrent.");
+		stderr("Delete failed!", "Please enter the reason for deleting this torrent.");
   $reasonstr = trim($reason[3]);
 }
 
-deletetorrent($id);
+    deletetorrent($id);
 
-write_log("Torrent $id ($row[name]) was deleted by $CURUSER[username] ($reasonstr)\n");
+    write_log("Torrent $id ({$row['name']}) was deleted by {$CURUSER['username']} ($reasonstr)\n");
 
-stdhead("Torrent deleted!");
 
-if (isset($_POST["returnto"]))
-	$ret = "<a href=\"" . htmlspecialchars($_POST["returnto"]) . "\">Go back to whence you came</a>";
-else
-	$ret = "<a href=\"./\">Back to index</a>";
 
-?>
-<h2>Torrent deleted!</h2>
-<p><?php echo $ret ?></p>
-<?php
+    if (isset($_POST["returnto"]))
+      $ret = "<a href='" . htmlspecialchars($_POST["returnto"]) . "'>Go back to whence you came</a>";
+    else
+      $ret = "<a href='{$TBDEV['baseurl']}'>Back to index</a>";
 
-stdfoot();
+    $HTMLOUT = '';
+    $HTMLOUT .= "<h2>Torrent deleted!</h2>
+    <p><$ret</p>";
+
+
+    print stdhead("Torrent deleted!") . $HTMLOUT . stdfoot();
 
 ?>

@@ -25,7 +25,8 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
   //-------- Action: View forum
 
-
+    $HTMLOUT = '';
+    
     $forumid = (int)$_GET["forumid"];
 
     if (!is_valid_id($forumid))
@@ -37,7 +38,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     //------ Get forum name
 
-    $res = mysql_query("SELECT name, minclassread FROM forums WHERE id=$forumid") or sqlerr(__FILE__, __LINE__);
+    $res = @mysql_query("SELECT name, minclassread FROM forums WHERE id=$forumid") or sqlerr(__FILE__, __LINE__);
 
     $arr = mysql_fetch_assoc($res) or die;
 
@@ -52,9 +53,11 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 /////////////////// Get topic count & Do Pager thang! ////////////////////////////
 
     $perpage = $CURUSER["topicsperpage"];
-	if (!$perpage) $perpage = 20;
+    
+    if (!$perpage) 
+      $perpage = 20;
 
-    $res = mysql_query("SELECT COUNT(*) FROM topics WHERE forumid=$forumid") or sqlerr(__FILE__, __LINE__);
+    $res = @mysql_query("SELECT COUNT(*) FROM topics WHERE forumid=$forumid") or sqlerr(__FILE__, __LINE__);
 
     $arr = mysql_fetch_row($res);
 
@@ -129,24 +132,24 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     //------ Get topics data
 
-    $topicsres = mysql_query("SELECT * FROM topics WHERE forumid=$forumid ORDER BY sticky, lastpost DESC LIMIT $offset,$perpage") or sqlerr(__FILE__, __LINE__);
+    $topicsres = @mysql_query("SELECT * FROM topics WHERE forumid=$forumid ORDER BY sticky, lastpost DESC LIMIT $offset,$perpage") or sqlerr(__FILE__, __LINE__);
 
-    stdhead("Forum :: Forum View");
+    
 
     $numtopics = mysql_num_rows($topicsres);
 
-    $htmlout = "<h1>$forumname</h1>\n";
+    $HTMLOUT .= "<h1>$forumname</h1>\n";
 
     if ($numtopics > 0)
     {
-      $htmlout .= $menu;
+      $HTMLOUT .=  $menu;
 
-      $htmlout .= "<table border='1' cellspacing='0' cellpadding='5' width='80%'>";
+      $HTMLOUT .=  "<table border='1' cellspacing='0' cellpadding='5' width='80%'>";
 
-      $htmlout .= "<tr><td class='colhead' style='align:left;'>Topic</td><td class='colhead'>Replies</td><td class='colhead'>Views</td>\n" .
+      $HTMLOUT .=  "<tr><td class='colhead' style='align:left;'>Topic</td><td class='colhead'>Replies</td><td class='colhead'>Views</td>\n" .
         "<td class='colhead' style='align:left;'>Author</td><td class='colhead' style='align:left;'>Last&nbsp;post</td>\n";
 
-      $htmlout .= "</tr>\n";
+      $HTMLOUT .=  "</tr>\n";
 
       while ($topicarr = mysql_fetch_assoc($topicsres))
       {
@@ -248,57 +251,55 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         $subject = ($sticky ? "Sticky: " : "") . "<a href='forums.php?action=viewtopic&amp;topicid=$topicid'><b>" .
         htmlentities($topicarr["subject"], ENT_QUOTES) . "</b></a>$topicpages";
 
-        $htmlout .= "<tr><td style='align:left;'><table border='0' cellspacing='0' cellpadding='0'><tr>" .
+        $HTMLOUT .=  "<tr><td style='align:left;'><table border='0' cellspacing='0' cellpadding='0'><tr>" .
         "<td class='embedded' style='padding-right: 5px'><img src='{$forum_pic_url}{$topicpic}.gif' alt='' title='' />" .
         "</td><td class='embedded' style='align:left;'>\n" .
         "$subject</td></tr></table></td><td style='align:right;'>$replies</td>\n" .
         "<td style='align:right;'>$views</td><td style='align:left;'>$lpauthor</td>\n" .
         "<td style='align:left;'>$lpadded<br />by&nbsp;$lpusername</td>\n";
 
-        $htmlout .= "</tr>\n";
+        $HTMLOUT .=  "</tr>\n";
       } // while
 
-      $htmlout .= "</table>\n";
+      $HTMLOUT .=  "</table>\n";
 
-      $htmlout .= $menu;
+      $HTMLOUT .=  $menu;
 
     } // if
     else
-      print("<p style='text-align:center;'>No topics found</p>\n");
+      $HTMLOUT .= "<p style='text-align:center;'>No topics found</p>\n";
 
-    $htmlout .= "<table class='main' border='0' cellspacing='0' cellpadding='0'><tr valign='middle'>\n";
+    $HTMLOUT .=  "<table class='main' border='0' cellspacing='0' cellpadding='0'><tr valign='middle'>\n";
 
-    $htmlout .= "<td class='embedded'><img src=\"{$forum_pic_url}unlockednew.gif\" style='margin-right: 5px' alt='' title='' /></td><td class='embedded'>New posts</td>\n";
+    $HTMLOUT .=  "<td class='embedded'><img src=\"{$forum_pic_url}unlockednew.gif\" style='margin-right: 5px' alt='' title='' /></td><td class='embedded'>New posts</td>\n";
 
-    $htmlout .= "<td class='embedded'><img src=\"{$forum_pic_url}locked.gif\" style='margin-left: 10px; margin-right: 5px' alt='' title='' />" .
+    $HTMLOUT .=  "<td class='embedded'><img src=\"{$forum_pic_url}locked.gif\" style='margin-left: 10px; margin-right: 5px' alt='' title='' />" .
     "</td><td class='embedded'>Locked topic</td>\n";
 
-    $htmlout .= "</tr></table>\n";
+    $HTMLOUT .=  "</tr></table>\n";
 
     $arr = get_forum_access_levels($forumid) or die;
 
     $maypost = get_user_class() >= $arr["write"] && get_user_class() >= $arr["create"];
 
     if (!$maypost)
-      $htmlout .= "<p><i>You are not permitted to start new topics in this forum.</i></p>\n";
+      $HTMLOUT .=  "<p><i>You are not permitted to start new topics in this forum.</i></p>\n";
 
-    $htmlout .= "<table border='0' class='main' cellspacing='0' cellpadding='0'><tr>\n";
+    $HTMLOUT .=  "<table border='0' class='main' cellspacing='0' cellpadding='0'><tr>\n";
 
-    $htmlout .= "<td class='embedded'><form method='get' action='forums.php?'><input type='hidden' " .
+    $HTMLOUT .=  "<td class='embedded'><form method='get' action='forums.php?'><input type='hidden' " .
     "name='action' value='viewunread' /><input type='submit' value='View unread' class='btn' /></form></td>\n";
 
     if ($maypost)
-      $htmlout .= "<td class='embedded'><form method='get' action='forums.php?'><input type='hidden' " .
+      $HTMLOUT .=  "<td class='embedded'><form method='get' action='forums.php?'><input type='hidden' " .
       "name='action' value='newtopic' /><input type='hidden' name='forumid' " .
       "value='$forumid' /><input type='submit' value='New topic' class='btn' style='margin-left: 10px' /></form></td>\n";
 
-    $htmlout .= "</tr></table>\n";
-    
-    echo $htmlout;
+    $HTMLOUT .=  "</tr></table>\n";
 
-    insert_quick_jump_menu($forumid);
+    $HTMLOUT .= insert_quick_jump_menu($forumid);
 
-    stdfoot();
+    print stdhead("Forum :: Forum View") . $HTMLOUT . stdfoot();
 
     die;
 

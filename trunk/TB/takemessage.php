@@ -26,7 +26,8 @@ require_once "include/user_functions.php";
 
   loggedinorreturn();
   
-  function ratios($up, $down) {
+  function ratios($up, $down) 
+  {
   if ($down > 0)
     {
       $ratio = number_format($up / $down, 3);
@@ -41,6 +42,7 @@ require_once "include/user_functions.php";
     }
     return;
   }
+  
   $n_pms = isset($_POST["n_pms"]) ? $_POST["n_pms"] : false;
   if ($n_pms)
   {  			                                                      //////  MM  ///
@@ -199,10 +201,10 @@ EOD;
 
 	 
 	} 
-	stdhead();
+	//stdhead();
 	$l = (isset($l)?$l:'');
-	  stdmsg("Succeeded", (($n_pms > 1) ? "$n messages out of $n_pms were" : "Message was").
+	  stderr("Succeeded", (($n_pms > 1) ? "$n messages out of $n_pms were" : "Message was").
 	    " successfully sent!" . ($l ? " $l profile comment" . (($l>1) ? "s were" : " was") . " updated!" : ""));
-	stdfoot();
+	//stdfoot();
 	exit;
 ?>
