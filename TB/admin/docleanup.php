@@ -26,16 +26,12 @@ if ( ! defined( 'IN_TBDEV_ADMIN' ) )
 
 require_once "include/user_functions.php";
 
-if( get_user_class() != UC_SYSOP )
-	stderr('MOD ERROR', 'Permission denied!');
-	
-//docleanup();
-register_shutdown_function("autoclean");
+    if( get_user_class() != UC_SYSOP )
+      stderr('MOD ERROR', 'Permission denied!');
+      
+    //docleanup();
+    register_shutdown_function("autoclean");
 
-stdhead("Cleanup");
-
-print("Done");
-
-stdfoot();
+    stderr("Cleanup", "Done");
 
 ?>

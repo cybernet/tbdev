@@ -29,45 +29,51 @@ dbconn();
     }
     elseif ($type == "sysop") 
     {
-      stdhead("Sysop Account activation");
-      print("<h1>Sysop Account successfully activated!</h1>\n");
+      $HTMLOUT = stdhead("Sysop Account activation");
+      $HTMLOUT .= "<h1>Sysop Account successfully activated!</h1>\n";
       
       if (isset($CURUSER))
       {
-        print("<p>Your account has been activated! You have been automatically logged in. You can now continue to the <a href=\"index.php\"><b>main page</b></a> and start using your account.</p>\n");
+        $HTMLOUT .= "<p>Your account has been activated! You have been automatically logged in. You can now continue to the <a href='index.php'><b>main page</b></a> and start using your account.</p>\n";
       }
       else
       {
-        print("<p>Your account has been activated! However, it appears that you could not be logged in automatically. A possible reason is that you disabled cookies in your browser. You have to enable cookies to use your account. Please do that and then <a href=\"login.php\">log in</a> and try again.</p>\n");
+        $HTMLOUT .= "<p>Your account has been activated! However, it appears that you could not be logged in automatically. A possible reason is that you disabled cookies in your browser. You have to enable cookies to use your account. Please do that and then <a href='login.php'>log in</a> and try again.</p>\n";
       }
-      stdfoot();
+      $HTMLOUT .= stdfoot();
+      
+      print $HTMLOUT;
     }
     elseif ($type == "confirmed") 
     {
-      stdhead("Already confirmed");
-      print("<h1>Already confirmed</h1>\n");
-      print("<p>This user account has already been confirmed. You can proceed to <a href=\"login.php\">log in</a> with it.</p>\n");
-      stdfoot();
+      $HTMLOUT .= stdhead("Already confirmed");
+      $HTMLOUT .= "<h1>Already confirmed</h1>\n";
+      $HTMLOUT .= "<p>This user account has already been confirmed. You can proceed to <a href='login.php'>log in</a> with it.</p>\n";
+      $HTMLOUT .= stdfoot();
+      print $HTMLOUT;
     }
     elseif ($type == "confirm") 
     {
       if (isset($CURUSER)) 
       {
-        stdhead("Signup confirmation");
-        print("<h1>Account successfully confirmed!</h1>\n");
-        print("<p>Your account has been activated! You have been automatically logged in. You can now continue to the <a href=\"{$TBDEV['baseurl']}/index.php\"><b>main page</b></a> and start using your account.</p>\n");
-        print("<p>Before you start using {$TBDEV['site_name']} we urge you to read the <a href=\"rules.php\"><b>RULES</b></a> and the <a href=\"faq.php\"><b>FAQ</b></a>.</p>\n");
-        stdfoot();
+        $HTMLOUT .= stdhead("Signup confirmation");
+        $HTMLOUT .= "<h1>Account successfully confirmed!</h1>\n";
+        $HTMLOUT .= "<p>Your account has been activated! You have been automatically logged in. You can now continue to the <a href='{$TBDEV['baseurl']}/index.php'><b>main page</b></a> and start using your account.</p>\n";
+        $HTMLOUT .= "<p>Before you start using {$TBDEV['site_name']} we urge you to read the <a href='rules.php'><b>RULES</b></a> and the <a href='faq.php'><b>FAQ</b></a>.</p>\n";
+        $HTMLOUT .= stdfoot();
+        print $HTMLOUT;
       }
       else 
       {
-        stdhead("Signup confirmation");
-        print("<h1>Account successfully confirmed!</h1>\n");
-        print("<p>Your account has been activated! However, it appears that you could not be logged in automatically. A possible reason is that you disabled cookies in your browser. You have to enable cookies to use your account. Please do that and then <a href=\"login.php\">log in</a> and try again.</p>\n");
-        stdfoot();
+        $HTMLOUT .= stdhead("Signup confirmation");
+        $HTMLOUT .= "<h1>Account successfully confirmed!</h1>\n";
+        $HTMLOUT .= "<p>Your account has been activated! However, it appears that you could not be logged in automatically. A possible reason is that you disabled cookies in your browser. You have to enable cookies to use your account. Please do that and then <a href='login.php'>log in</a> and try again.</p>\n";
+        $HTMLOUT .= stdfoot();
+        print $HTMLOUT;
       }
     }
-  else
-	stderr('USER ERROR', 'No action to take!');
-
+    else
+    {
+    stderr('USER ERROR', 'No action to take!');
+    }
 ?>

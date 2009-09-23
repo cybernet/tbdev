@@ -24,139 +24,146 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
 
 
-//-------- Action: Edit post
+    //-------- Action: Edit post
 
-  if ($action == "editpost")
-  {
-    $postid = 0+$_GET["postid"];
-
-    if (!is_valid_id($postid))
-      die;
-
-    $res = mysql_query("SELECT * FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
-
-		if (mysql_num_rows($res) != 1)
-			stderr("Error", "No post with ID.");
-
-		$arr = mysql_fetch_assoc($res);
-
-    $res2 = mysql_query("SELECT locked FROM topics WHERE id = " . $arr["topicid"]) or sqlerr(__FILE__, __LINE__);
-		$arr2 = mysql_fetch_assoc($res2);
-
- 		if (mysql_num_rows($res) != 1)
-			stderr("Error", "No topic associated with post ID.");
-
-		$locked = ($arr2["locked"] == 'yes');
-
-    if (($CURUSER["id"] != $arr["userid"] || $locked) && get_user_class() < UC_MODERATOR)
-      stderr("Error", "Denied!");
-
-    if ($_SERVER['REQUEST_METHOD'] == 'POST')
+    if ($action == "editpost")
     {
-    	$body = $_POST['body'];
+      $postid = 0+$_GET["postid"];
 
-    	if ($body == "")
-    	  stderr("Error", "Body cannot be empty!");
+      if (!is_valid_id($postid))
+        stderr('USER ERROR', 'Incorrect access');
 
-      $body = sqlesc($body);
+      $res = @mysql_query("SELECT * FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
 
-      $editedat = time();
+      if (mysql_num_rows($res) != 1)
+        stderr("Error", "No post with ID.");
 
-      mysql_query("UPDATE posts SET body=$body, editedat=$editedat, editedby=$CURUSER[id] WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
+      $arr = mysql_fetch_assoc($res);
 
-		$returnto = $_POST["returnto"];
+      $res2 = @mysql_query("SELECT locked FROM topics WHERE id = " . $arr["topicid"]) or sqlerr(__FILE__, __LINE__);
+      $arr2 = mysql_fetch_assoc($res2);
 
-			if ($returnto != "")
-			{
-				$returnto .= "&page=p$postid#$postid";
-				header("Location: $returnto");
-			}
-			else
-				stderr("Success", "Post was edited successfully.");
+      if (mysql_num_rows($res) != 1)
+        stderr("Error", "No topic associated with post ID.");
+
+      $locked = ($arr2["locked"] == 'yes');
+
+      if (($CURUSER["id"] != $arr["userid"] || $locked) && get_user_class() < UC_MODERATOR)
+        stderr("Error", "Denied!");
+
+      if ($_SERVER['REQUEST_METHOD'] == 'POST')
+      {
+        $body = $_POST['body'];
+
+        if ($body == "")
+          stderr("Error", "Body cannot be empty!");
+
+        $body = sqlesc($body);
+
+        $editedat = time();
+
+        @mysql_query("UPDATE posts SET body=$body, editedat=$editedat, editedby=$CURUSER[id] WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
+
+        $returnto = $_POST["returnto"];
+
+        if ($returnto != "")
+        {
+          $returnto .= "&page=p$postid#$postid";
+          header("Location: $returnto");
+        }
+        else
+          stderr("Success", "Post was edited successfully.");
+      }
+
+      $HTMLOUT = '';
+
+      $HTMLOUT .= "<h1>Edit Post</h1>
+
+      <form method='post' action='forums.php?action=editpost&amp;postid=$postid'>
+      <input type='hidden' name='returnto' value='" . htmlspecialchars($_SERVER["HTTP_REFERER"]) . "' />
+
+      <table border='1' cellspacing='0' cellpadding='5'>
+        <tr>
+          <td style='padding: 0px'>
+            <textarea name='body' cols='100' rows='20' style='border: 0px'>" . htmlspecialchars($arr["body"]) . "</textarea>
+          </td>
+        </tr>
+        <tr>
+          <td align='center'>
+            <input type='submit' value='Okay' class='btn' />
+          </td>
+        </tr>
+      </table>
+      </form>\n";
+
+      print stdhead('Editing post') . $HTMLOUT . stdfoot();
+
+      die;
     }
 
-    stdhead();
+    //-------- Action: Delete post
 
-    print("<h1>Edit Post</h1>\n");
-
-    print("<form method=post action=?action=editpost&postid=$postid>\n");
-    print("<input type=hidden name=returnto value=\"" . htmlspecialchars($_SERVER["HTTP_REFERER"]) . "\">\n");
-
-    print("<table border=1 cellspacing=0 cellpadding=5>\n");
-
-    print("<tr><td style='padding: 0px'><textarea name=body cols=100 rows=20 style='border: 0px'>" . htmlspecialchars($arr["body"]) . "</textarea></td></tr>\n");
-
-    print("<tr><td align=center><input type=submit value='Okay' class=btn></td></tr>\n");
-
-    print("</table>\n");
-
-    print("</form>\n");
-
-    stdfoot();
-
-  	die;
-  }
-
-  //-------- Action: Delete post
-
-  if ($action == "deletepost")
-  {
-    $postid = isset($_GET["postid"]) ? (int)$_GET["postid"] : 0;
-
-    $sure = isset($_GET["sure"]) ? $_GET["sure"] : 0;
-
-    if (get_user_class() < UC_MODERATOR || !is_valid_id($postid))
-      die;
-
-    //------- Get topic id
-
-    $res = mysql_query("SELECT topicid FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
-
-    $arr = mysql_fetch_row($res) or stderr("Error", "Post not found");
-
-    $topicid = $arr[0];
-
-    //------- We can not delete the post if it is the only one of the topic
-
-    $res = mysql_query("SELECT COUNT(*) FROM posts WHERE topicid=$topicid") or sqlerr(__FILE__, __LINE__);
-
-    $arr = mysql_fetch_row($res);
-
-    if ($arr[0] < 2)
-      stderr("Error", "Can't delete post; it is the only post of the topic. You should\n" .
-      "<a href='forums.php?action=deletetopic&amp;topicid=$topicid&amp;sure=1'>delete the topic</a> instead.\n");
-
-
-    //------- Get the id of the last post before the one we're deleting
-
-    $res = mysql_query("SELECT id FROM posts WHERE topicid=$topicid AND id < $postid ORDER BY id DESC LIMIT 1") or sqlerr(__FILE__, __LINE__);
-		if (mysql_num_rows($res) == 0)
-			$redirtopost = "";
-		else
-		{
-			$arr = mysql_fetch_row($res);
-			$redirtopost = "&amp;page=p{$arr[0]}#{$arr[0]}";
-		}
-
-    //------- Make sure we know what we do :-)
-
-    if (!$sure)
+    if ($action == "deletepost")
     {
-      stderr("Delete post", "Sanity check: You are about to delete a post. Click\n" .
-      "<a href='forums.php?action=deletepost&amp;postid=$postid&amp;sure=1'>here</a> if you are sure.");
+      $postid = isset($_GET["postid"]) ? (int)$_GET["postid"] : 0;
+
+      $sure = isset($_GET["sure"]) ? $_GET["sure"] : 0;
+
+      if (get_user_class() < UC_MODERATOR || !is_valid_id($postid))
+        stderr('USER ERROR', 'Incorrect access');
+
+      //------- Get topic id
+
+      $res = @mysql_query("SELECT topicid FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
+
+      $arr = mysql_fetch_row($res) or stderr("Error", "Post not found");
+
+      $topicid = $arr[0];
+
+      //------- We can not delete the post if it is the only one of the topic
+
+      $res = @mysql_query("SELECT COUNT(*) FROM posts WHERE topicid=$topicid") or sqlerr(__FILE__, __LINE__);
+
+      $arr = mysql_fetch_row($res);
+
+      if ($arr[0] < 2)
+        stderr("Error", "Can't delete post; it is the only post of the topic. You should\n" .
+        "<a href='forums.php?action=deletetopic&amp;topicid=$topicid&amp;sure=1'>delete the topic</a> instead.\n");
+
+
+      //------- Get the id of the last post before the one we're deleting
+
+      $res = @mysql_query("SELECT id FROM posts WHERE topicid=$topicid AND id < $postid ORDER BY id DESC LIMIT 1") or sqlerr(__FILE__, __LINE__);
+      
+      if (mysql_num_rows($res) == 0)
+      {
+        $redirtopost = "";
+      }
+      else
+      {
+        $arr = mysql_fetch_row($res);
+        $redirtopost = "&amp;page=p{$arr[0]}#{$arr[0]}";
+      }
+
+      //------- Make sure we know what we do :-)
+
+      if (!$sure)
+      {
+        stderr("Delete post", "Sanity check: You are about to delete a post. Click\n" .
+        "<a href='forums.php?action=deletepost&amp;postid=$postid&amp;sure=1'>here</a> if you are sure.");
+      }
+
+      //------- Delete post
+
+      @mysql_query("DELETE FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
+
+      //------- Update topic
+
+      update_topic_last_post($topicid);
+
+      header("Location: {$TBDEV['baseurl']}/forums.php?action=viewtopic&topicid=$topicid$redirtopost");
+
+      die;
     }
-
-    //------- Delete post
-
-    @mysql_query("DELETE FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
-
-    //------- Update topic
-
-    update_topic_last_post($topicid);
-
-    header("Location: {$TBDEV['baseurl']}/forums.php?action=viewtopic&topicid=$topicid$redirtopost");
-
-    die;
-  }
 
 ?>

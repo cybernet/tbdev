@@ -31,15 +31,17 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
 	
 
-    stdhead("New topic");
+    $HTMLOUT = stdhead("New topic");
 
-    begin_main_frame();
+    $HTMLOUT .= begin_main_frame();
 
-    insert_compose_frame($forumid);
+    $HTMLOUT .= insert_compose_frame($forumid);
 
-    end_main_frame();
+    $HTMLOUT .= end_main_frame();
 
-    stdfoot();
+    $HTMLOUT .= stdfoot();
+    
+    print $HTMLOUT;
 
     die;
 

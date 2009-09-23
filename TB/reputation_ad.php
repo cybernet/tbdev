@@ -642,9 +642,9 @@ function html_out( $html="", $title="" )
 			stderr( "Error", "Nothing to output" );
 		}
 
-		stdhead( $title );
-		print $html;
-		stdfoot();
+		
+		print stdhead( $title ) . $html . stdfoot();
+		
 		exit();
 		
 	}

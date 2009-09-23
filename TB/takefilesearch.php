@@ -28,25 +28,25 @@ dbconn(false);
 loggedinorreturn();
 
 
-if(isset($_POST["search"]) && !empty($_POST['search'])) {
-	
-	$cleansearchstr = sqlesc(searchfield($_POST['search']));
-	print $cleansearchstr;
-	}
-	else
-	stderr("Opps", "Nuffin 'ere!");
+    if(isset($_POST["search"]) && !empty($_POST['search'])) {
+      
+      $cleansearchstr = sqlesc(searchfield($_POST['search']));
+      print $cleansearchstr;
+      }
+      else
+      stderr("Opps", "Nuffin 'ere!");
 
 
-$query = mysql_query("SELECT id, filename, MATCH (filename)
-						AGAINST (".$cleansearchstr.") AS score
-						FROM files WHERE MATCH (filename)
-						AGAINST (".$cleansearchstr." IN BOOLEAN MODE)");
+    $query = mysql_query("SELECT id, filename, MATCH (filename)
+                AGAINST (".$cleansearchstr.") AS score
+                FROM files WHERE MATCH (filename)
+                AGAINST (".$cleansearchstr." IN BOOLEAN MODE)");
 
-if(mysql_num_rows($query) == 0)
-	stderr("Error", "Nothing found");
-	
-	while($row = mysql_fetch_assoc($query)) {
-	
-		print '<pre>'.$row['id']."-".htmlspecialchars($row['filename'])."-".$row['score'].'</pre>';
-	}
+    if(mysql_num_rows($query) == 0)
+      stderr("Error", "Nothing found");
+      
+      while($row = mysql_fetch_assoc($query)) {
+      
+        print '<pre>'.$row['id']."-".htmlspecialchars($row['filename'])."-".$row['score'].'</pre>';
+      }
 ?>

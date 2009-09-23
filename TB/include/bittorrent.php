@@ -115,7 +115,7 @@ function userlogin() {
       foreach($bans as $k) {
         if($nip >= $k['first'] && $nip <= $k['last']) {
         header("HTTP/1.0 403 Forbidden");
-        print("<html><body><h1>403 Forbidden</h1>Unauthorized IP address.</body></html>\n");
+        print "<html><body><h1>403 Forbidden</h1>Unauthorized IP address.</body></html>\n";
         exit();
         }
       }
@@ -269,8 +269,8 @@ function parsedescr($d, $html) {
 function stdhead($title = "", $msgalert = true) {
     global $CURUSER, $TBDEV;
 
-  if (!$TBDEV['site_online'])
-    die("Site is down for maintenance, please check back again later... thanks<br>");
+    if (!$TBDEV['site_online'])
+      die("Site is down for maintenance, please check back again later... thanks<br />");
 
     //header("Content-Type: text/html; charset=iso-8859-1");
     //header("Pragma: No-cache");
@@ -279,119 +279,123 @@ function stdhead($title = "", $msgalert = true) {
     else
         $title = $TBDEV['site_name'].(isset($_GET['tbv'])?" (".TBVERSION.")":''). " :: " . htmlspecialchars($title);
         
-  if ($CURUSER)
-  {
+    if ($CURUSER)
+    {
     /*
     $ss_a = @mysql_fetch_array(@sql_query("select uri from stylesheets where id=" . $CURUSER["stylesheet"]));
 
     if ($ss_a) $ss_uri = $ss_a["uri"];
     */
-	$TBDEV['stylesheet'] = isset($CURUSER['stylesheet']) ? "{$CURUSER['stylesheet']}.css" : $TBDEV['stylesheet'];
-  }
+      $TBDEV['stylesheet'] = isset($CURUSER['stylesheet']) ? "{$CURUSER['stylesheet']}.css" : $TBDEV['stylesheet'];
+    }
   
-  if ($msgalert && $CURUSER)
-  {
-    $res = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " && unread='yes'") or sqlerr(__FILE__,__LINE__);
-    $arr = mysql_fetch_row($res);
-    $unread = $arr[0];
-  }
-?>
-		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    if ($msgalert && $CURUSER)
+    {
+      $res = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " && unread='yes'") or sqlerr(__FILE__,__LINE__);
+      $arr = mysql_fetch_row($res);
+      $unread = $arr[0];
+    }
+
+    $htmlout = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
+		\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
 		
-		<html xmlns="http://www.w3.org/1999/xhtml">
+		<html xmlns='http://www.w3.org/1999/xhtml'>
 		<head>
 
-			<meta name="generator" content="TBDev.net" />
-			<meta http-equiv="Content-Language" content="en-us" />
-			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-			<meta name="MSSmartTagsPreventParsing" content="TRUE" />
+			<meta name='generator' content='TBDev.net' />
+			<meta http-equiv='Content-Language' content='en-us' />
+			<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+			<meta name='MSSmartTagsPreventParsing' content='TRUE' />
 			
-			<title><?php echo  $title ?></title>
-			<link rel="stylesheet" href="<?php echo $TBDEV['stylesheet'] ?>" type="text/css" />
+			<title>{$title}</title>
+			<link rel='stylesheet' href='{$TBDEV['stylesheet']}' type='text/css' />
 		</head>
-<body>
+    
+    <body>
 
-<table width='100%' cellspacing='0' cellpadding='0' style='background: transparent'>
-<tr>
+      <table width='100%' cellspacing='0' cellpadding='0' style='background: transparent'>
+      <tr>
 
-<td class='clear'>
-<div id="logostrip">
-<img src="<?php echo $TBDEV['pic_base_url']?>logo.jpg" alt='' />
+      <td class='clear'>
+      <div id='logostrip'>
+      <img src='{$TBDEV['pic_base_url']}logo.jpg' alt='' />
 
-<a href='donate.php'><img src="./pic/x-click-but04.gif" border="0" alt="Make a donation" style='margin-top: 5px' /></a>
-</div>
-</td>
+      <a href='donate.php'><img src='{$TBDEV['pic_base_url']}x-click-but04.gif' border='0' alt='Make a donation' style='margin-top: 5px' /></a>
+      </div>
+      </td>
 
-</tr></table>
+      </tr></table>
 
-<table class='mainouter' width="100%" border="1" cellspacing="0" cellpadding="10">
-<!-- STATUSBAR -->
-<?php
-print StatusBar();
-?>
-<!-- MENU -->
+      <table class='mainouter' width='100%' border='1' cellspacing='0' cellpadding='10'>
+<!-- STATUSBAR -->";
+
+    $htmlout .= StatusBar();
+
+    $htmlout .= "<!-- MENU -->
+      <tr><td class='outer'>
+      <div id='submenu'>";
+
+    if ($CURUSER) 
+    { 
+      $htmlout .= "<div class='tb-top-left-link'>
+      <a href='index.php'>Home</a>
+      <a href='browse.php'>Browse</a>
+      <a href='search.php'>Search</a>
+      <a href='upload.php'>Upload</a>
+      <a href='chat.php'>Chat</a>
+      <a href='forums.php'>Forums</a>
+      <!--<a href='misc/dox.php'>DOX</a>-->
+      <a href='topten.php'>Top 10</a>
+      <a href='rules.php'>Rules</a>
+      <a href='faq.php'>FAQ</a>
+      <a href='links.php'>Links</a>
+      <a href='staff.php'>Staff</a>
+      </div>
+      <div class='tb-top-right-link'>";
+
+      if( $CURUSER['class'] >= UC_MODERATOR )
+      {
+        $htmlout .= "<a href='admin.php'>Admin</a>";
+      }
+
+    $htmlout .= "<a href='my.php'>Profile</a>
+      <a href='logout.php'>Logout</a>
+      </div>";
+    } 
+    else
+    {
+      $htmlout .= "<div class='tb-top-left-link'>
+      <a href='login.php'>Login</a>
+      <a href='signup.php'>Signup</a>
+      <a href='recover.php'>Recover Account</a>
+      </div>";
+    }
+
+    $htmlout .= "</div>
+    </td>
+    </tr>
+    <tr><td align='center' class='outer' style='padding-top: 20px; padding-bottom: 20px'>";
 
 
-<tr><td class='outer'>
-<div id="submenu">
+    if (isset($unread) && !empty($unread))
+    {
+      $htmlout .= "<p><table border='0' cellspacing='0' cellpadding='10' bgcolor='red'>
+                  <tr><td style='padding: 10px; background: red'>\n
+                  <b><a href='messages.php'><font color='white'>You have $unread new message" . ($unread > 1 ? "s" : "") . "!</font></a></b>
+                  </td></tr></table></p>\n";
+    }
 
-<?php if ($CURUSER) { ?>
-<div class="tb-top-left-link">
-<a href='index.php'>Home</a>
-<a href='browse.php'>Browse</a>
-<a href='search.php'>Search</a>
-<a href='upload.php'>Upload</a>
-<a href='chat.php'>Chat</a>
-<a href='forums.php'>Forums</a>
-<!--<a href='misc/dox.php'>DOX</a>-->
-<a href='topten.php'>Top 10</a>
-<a href='rules.php'>Rules</a>
-<a href='faq.php'>FAQ</a>
-<a href='links.php'>Links</a>
-<a href='staff.php'>Staff</a>
-</div>
-<div class="tb-top-right-link">
-<?php
-if( $CURUSER['class'] >= UC_MODERATOR )
-{
-  echo "<a href='admin.php'>Admin</a>";
-}
-?>
-<a href='my.php'>Profile</a>
-<a href='logout.php'>Logout</a>
-</div>
-<?php } else { ?>
-<div class="tb-top-left-link">
-<a href='login.php'>Login</a>
-<a href='signup.php'>Signup</a>
-<a href='recover.php'>Recover Account</a>
-</div>
-<?php } ?>
-
-</div>
-</td>
-</tr>
-<tr><td align='center' class='outer' style="padding-top: 20px; padding-bottom: 20px">
-<?php
-
-if (isset($unread) && !empty($unread))
-{
-  print("<p><table border='0' cellspacing='0' cellpadding='10' bgcolor='red'><tr><td style='padding: 10px; background: red'>\n");
-  print("<b><a href='messages.php'><font color='white'>You have $unread new message" . ($unread > 1 ? "s" : "") . "!</font></a></b>");
-  print("</td></tr></table></p>\n");
-}
-
+    return $htmlout;
+    
 } // stdhead
 
 function stdfoot() {
   global $TBDEV;
   
-  print "<p align='center'>
-<a href='http://www.tbdev.net'><img src='{$TBDEV['pic_base_url']}tbdev_btn_red.png' border='0' alt='Powered By TBDev &copy;2009' title='Powered By TBDev &copy;2009' /></a></p>";
-
-  print "</td></tr></table>\n";
-  print "</body></html>\n";
+    return "<p align='center'>
+    <a href='http://www.tbdev.net'><img src='{$TBDEV['pic_base_url']}tbdev_btn_red.png' border='0' alt='Powered By TBDev &copy;2009' title='Powered By TBDev &copy;2009' /></a></p>
+    </td></tr></table>\n
+    </body></html>\n";
 }
 
 function genbark($x,$y) {
@@ -534,20 +538,27 @@ function get_row_count($table, $suffix = "")
 
 function stdmsg($heading, $text)
 {
-  print("<table class='main' width='750' border='0' cellpadding='0' cellspacing='0'><tr><td class='embedded'>\n");
-  if ($heading)
-    print("<h2>$heading</h2>\n");
-  print("<table width='100%' border='1' cellspacing='0' cellpadding='10'><tr><td class='text'>\n");
-  print($text . "</td></tr></table></td></tr></table>\n");
+    $htmlout = "<table class='main' width='750' border='0' cellpadding='0' cellspacing='0'>
+    <tr><td class='embedded'>\n";
+    
+    if ($heading)
+      $htmlout .= "<h2>$heading</h2>\n";
+    
+    $htmlout .= "<table width='100%' border='1' cellspacing='0' cellpadding='10'><tr><td class='text'>\n";
+    $htmlout .= "{$text}</td></tr></table></td></tr></table>\n";
+  
+    return $htmlout;
 }
 
 
 function stderr($heading, $text)
 {
-  stdhead();
-  stdmsg($heading, $text);
-  stdfoot();
-  die;
+    $htmlout = stdhead();
+    $htmlout .= stdmsg($heading, $text);
+    $htmlout .= stdfoot();
+    
+    print $htmlout;
+    exit();
 }
 	
 // Basic MySQL error handler

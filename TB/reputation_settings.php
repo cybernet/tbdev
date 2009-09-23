@@ -111,7 +111,7 @@ function get_cache_array()
 
 
 
-$HTML_OUT = '<div>
+$HTMLOUT = '<div>
 				<table width="100%" border="0" cellpadding="5" cellspacing="0">
 				   <tr>
 					<td style="font-size: 12px; vertical-align: middle; font-weight: bold; color: rgb(0, 0, 0);" align="center">Reputation System Settings</td></tr>
@@ -246,13 +246,13 @@ $HTML_OUT = '<div>
 </div>';
 
 
-$HTML_OUT = preg_replace_callback( "|<#(.*?)#>|", "template_out", $HTML_OUT);
+$HTMLOUT = preg_replace_callback( "|<#(.*?)#>|", "template_out", $HTMLOUT);
 
-stdhead("Reputation Settings");
 
-echo $HTML_OUT;
 
-stdfoot();
+echo stdhead("Reputation Settings") . $HTMLOUT . stdfoot();
+
+
 
 
 
