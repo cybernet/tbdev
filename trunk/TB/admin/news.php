@@ -201,7 +201,7 @@ require_once "include/html_functions.php";
             
         $HTMLOUT .= begin_table(true);
         $HTMLOUT .= "<tr>
-          <td class='embedded'>". get_date($added, '')."&nbsp;&nbsp;by&nbsp$by
+          <td class='embedded'>{$added}&nbsp;&nbsp;by&nbsp$by
             <div style='float:right;'>[<a href='admin.php?action=news&amp;mode=edit&amp;newsid=$newsid'><b>Edit</b></a>] - [<a href='admin.php?action=news&amp;mode=delete&amp;newsid=$newsid'><b>Delete</b></a>]
             </div>
           </td>
