@@ -37,7 +37,7 @@ function is_set_not_empty($param) {
     return FALSE;
 }
 
-stdhead("Administrative User Search");
+print stdhead("Administrative User Search");
 
 
 echo "<h1>Administrative User Search</h1>\n";
@@ -932,7 +932,7 @@ if (count($_POST) > 0 );//&& isset($_POST['n']))
 }
 if(isset($pagemenu))
 print("<p>$pagemenu<br />$browsemenu</p>");
-stdfoot();
+print stdfoot();
 die;
 
 ?>
