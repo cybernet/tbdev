@@ -87,7 +87,7 @@ if ($action == "quotepost")
 
     $HTMLOUT .= end_main_frame();
 
-    print stdhead("Post reply") .  . stdfoot();
+    print stdhead("Post reply") . $HTMLOUT . stdfoot();
 
     die;
 }
