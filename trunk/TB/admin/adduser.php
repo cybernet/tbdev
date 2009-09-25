@@ -67,7 +67,7 @@ require_once "include/user_functions.php";
     <tr><td class='rowhead'>Password</td><td><input type='password' name='password' size='40' /></td></tr>
     <tr><td class='rowhead'>Re-type password</td><td><input type='password' name='password2' size='40' /></td></tr>
     <tr><td class='rowhead'>E-mail</td><td><input type='text' name='email' size='40' /></td></tr>
-    <tr><td colspan='2' align='center'><input type='submit' value="Okay" class='btn' /></td></tr>
+    <tr><td colspan='2' align='center'><input type='submit' value='Okay' class='btn' /></td></tr>
     </table>
     </form>";
     

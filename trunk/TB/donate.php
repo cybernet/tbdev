@@ -18,11 +18,12 @@
 */
 require_once "include/bittorrent.php";
 require_once "include/html_functions.php";
+require_once "include/user_functions.php";
 
 dbconn();
     
     
-
+    $HTMLOUT = '';
 
     $HTMLOUT .= "<b>Click the PayPal button below if you wish to make a donation!</b>
 
@@ -41,7 +42,7 @@ dbconn();
     $HTMLOUT .= "<table border='0' cellspacing='0' cellpadding='0'>
     <tr valign='top'>
       <td class='embedded'>
-        <img src="pic/flag/uk.gif" style='margin-right: 10px' alt='' />
+        <img src='pic/flag/uk.gif' style='margin-right: 10px' alt='' />
       </td>
       <td class='embedded'>
         <p>If you make use of this software, please consider donating to TBDev.net. We don't ask for much, just a nominal payment to show your support.</p>
@@ -53,7 +54,7 @@ dbconn();
     $HTMLOUT .= end_frame(); 
     $HTMLOUT .= begin_frame("Other ways to donate");
     
-    $HTMLOUT .= "No other ways at the moment..."
+    $HTMLOUT .= "No other ways at the moment...";
     $HTMLOUT .= end_frame(); 
     $HTMLOUT .= end_main_frame();
 

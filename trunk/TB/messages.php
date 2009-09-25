@@ -331,7 +331,7 @@ if (!$action)
       $HTMLOUT .= "<h1>{$subject}</h1>
       <table width='737' border='0' cellpadding='4' cellspacing='0'>
       <tr>
-      <td width='50%' class='colhead'><?php echo $from?></td>
+      <td width='50%' class='colhead'>{$from}</td>
       <td width='50%' class='colhead'>Date</td>
       </tr>
       <tr>
@@ -356,7 +356,7 @@ if (!$action)
       
       $HTMLOUT .= "</select> <input type='submit' name='move' value='Move' class='btn' />
       </form></div>
-      <span style='float:right;vertical-align:inherit'><a href='messages.php'><span class='btn'>Return To Inbox</span></a>&nbsp;<a href='messages.php?action=deletemessage&amp;id=<?php echo $pm_id?>'><span class='btn'>Delete</span></a>&nbsp;{$reply}&nbsp;<a href='messages.php?action=forward&amp;id={$pm_id}'><span class='btn'>Forward PM</span></a></span></td>
+      <span style='float:right;vertical-align:inherit'><a href='messages.php'><span class='btn'>Return To Inbox</span></a>&nbsp;<a href='messages.php?action=deletemessage&amp;id=$pm_id'><span class='btn'>Delete</span></a>&nbsp;{$reply}&nbsp;<a href='messages.php?action=forward&amp;id={$pm_id}'><span class='btn'>Forward PM</span></a></span></td>
       </tr>
       </table>";
       

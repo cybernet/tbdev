@@ -64,7 +64,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : ''; //if not goto default!
 
 function showForums() {
 
-    
+    $HTMLOUT = '';
     $HTMLOUT .= "<span class='btn'><a href='forummanage.php?action=add'>Add New</a></span><br /><br />";
     $HTMLOUT .= begin_main_frame();
     $HTMLOUT .= "<table width='700' border='0' align='center' cellpadding='2' cellspacing='0'>";
@@ -75,7 +75,7 @@ function showForums() {
       while($row = mysql_fetch_assoc($result)){
 
       $HTMLOUT .= "<tr><td><a href='forums.php?action=viewforum&amp;forumid={$row["id"]}'><b>".htmlentities($row["name"], ENT_QUOTES)."</b></a><br />".htmlentities($row["description"], ENT_QUOTES)."</td>";
-      $HTMLOUT .= "<td>{$row["topiccount"]}</td><td>{$row["postcount"]}</td><td>minimal " . get_user_class_name($row["minclassread"]) . "</td><td>minimal " . get_user_class_name($row["minclasswrite"]) . "</td><td>minimal " . get_user_class_name($row["minclasscreate"]) . "</td><td align='center' style='white-space: nowrap;'><b><a href='forummanage.php?action=edit&amp;id={$row["id"]}>EDIT</a>&nbsp;|&nbsp;<a href='forummanage.php?action=delete&amp;id={$row["id"]}'><font color='red'>DELETE</font></a></b></td></tr>"; 
+      $HTMLOUT .= "<td>{$row["topiccount"]}</td><td>{$row["postcount"]}</td><td>minimal " . get_user_class_name($row["minclassread"]) . "</td><td>minimal " . get_user_class_name($row["minclasswrite"]) . "</td><td>minimal " . get_user_class_name($row["minclasscreate"]) . "</td><td align='center' style='white-space: nowrap;'><b><a href='forummanage.php?action=edit&amp;id={$row["id"]}'>EDIT</a>&nbsp;|&nbsp;<a href='forummanage.php?action=delete&amp;id={$row["id"]}'><font color='red'>DELETE</font></a></b></td></tr>"; 
           
     } 
     } 
