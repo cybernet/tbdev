@@ -50,7 +50,7 @@ loggedinorreturn();
     <input type='hidden' name='id' value='$id' />";
     
     if (isset($_GET["returnto"]))
-      $HTMLOUT  .= "<input type='hidden' name='returnto' value='" . htmlspecialchars($_GET["returnto"]) . "' />\n");
+      $HTMLOUT  .= "<input type='hidden' name='returnto' value='" . htmlspecialchars($_GET["returnto"]) . "' />\n";
     $HTMLOUT  .=  "<table border='1' cellspacing='0' cellpadding='10'>\n";
     
     $HTMLOUT  .= tr("Torrent name", "<input type='text' name='name' value='" . htmlspecialchars($row["name"]) . "' size='80' />", 1);
@@ -122,7 +122,7 @@ loggedinorreturn();
     </tr>
     </table>
     </form>";
-}
+
 
 //////////////////////////// HTML OUTPIT ////////////////////////////////
     print stdhead("Edit torrent '{$row["name"]}'") . $HTMLOUT . stdfoot();

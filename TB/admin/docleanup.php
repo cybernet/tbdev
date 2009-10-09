@@ -30,7 +30,7 @@ require_once "include/user_functions.php";
       stderr('MOD ERROR', 'Permission denied!');
       
     //docleanup();
-    register_shutdown_function("autoclean");
+    register_shutdown_function("docleanup");
 
     stderr("Cleanup", "Done");
 

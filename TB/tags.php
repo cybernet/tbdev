@@ -40,7 +40,7 @@ function insert_tag($name, $description, $syntax, $example, $remarks)
       $htmlout .= "<tr><td>Remarks:</td><td>$remarks</td></tr>\n";
     $htmlout .= "</table>\n";
     
-    retune $htmlout;
+    retun $htmlout;
 }
 
     $HTMLOUT = '';
@@ -128,7 +128,7 @@ function insert_tag($name, $description, $syntax, $example, $remarks)
       "Hyperlink (alt. 2)",
       "Inserts a hyperlink.",
       "[url=<i>URL</i>]<i>Link text</i>[/url]",
-      "[url=".$TBDEV['baseurl']."/]".$SITENAME."[/url]",
+      "[url={$TBDEV['baseurl']}/]{{$TBDEV['site_name']}}[/url]",
       "You do not have to use this tag unless you want to set the link text; all URLs are automatically hyperlinked."
     );
 
