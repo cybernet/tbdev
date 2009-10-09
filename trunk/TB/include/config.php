@@ -111,6 +111,9 @@ $TBDEV['site_email'] = "coldfusion@localhost";
 
 $TBDEV['site_name'] = "TBDEV.NET";
 
+$TBDEV['language'] = 'en';
+$TBDEV['msg_alert'] = 0; // saves a query when off
+
 $TBDEV['autoclean_interval'] = 900;
 $TBDEV['sql_error_log'] = ROOT_PATH.'/logs/sql_err_'.date("M_D_Y").'.log';
 $TBDEV['pic_base_url'] = "./pic/";

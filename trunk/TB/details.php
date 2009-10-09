@@ -230,7 +230,7 @@ if (!empty($xrow))
 		$HTMLOUT .= "<h1>Comments for <a href='details.php?id=$id'>" . htmlentities( $row["name"], ENT_QUOTES ) . "</a></h1>\n";
 
 
-    $HTMLOUT .= "<p><a name=\"startcomments\"></a></p>\n");
+    $HTMLOUT .= "<p><a name='startcomments'></a></p>\n";
 
     $commentbar = "<p align='center'><a class='index' href='comment.php?action=add&amp;tid=$id'>Add a comment</a></p>\n";
 

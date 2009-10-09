@@ -222,7 +222,7 @@ loggedinorreturn();
       while ($arr = mysql_fetch_assoc($res))
         $cats[$arr["id"]] = $arr["name"];
       $s = "<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>\n<rss version=\"0.91\">\n<channel>\n" .
-        "<title>$SITENAME</title>\n<description>TBDev is the best!</description>\n<link>{$TBDEV['baseurl']}/</link>\n";
+        "<title>{$TBDEV['site_name']}</title>\n<description>TBDev is the best!</description>\n<link>{$TBDEV['baseurl']}/</link>\n";
       @fwrite($fd1, $s);
       @fwrite($fd2, $s);
       $r = mysql_query("SELECT id,name,descr,filename,category FROM torrents ORDER BY added DESC LIMIT 15") or sqlerr(__FILE__, __LINE__);
@@ -274,7 +274,7 @@ You can use the URL below to download the torrent (you may have to login).
 {$TBDEV['baseurl']}/details.php?id=$id&hit=1
 
 -- 
-$SITENAME
+{$TBDEV['site_name']}
 EOD;
 
     $to = "";

@@ -20,7 +20,7 @@ require "include/bittorrent.php";
 dbconn();
 loggedinorreturn();
 
-$maxfilesize = 256 * 1024;
+$TBDEV['bb_upload_size'] = 256 * 1024;
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 	$file = $_POST["file"];
 	if (!isset($file) || $file["size"] < 1)
 		stderr("Upload failed", "Nothing received!");
-	if ($file["size"] > $maxfilesize)
+	if ($file["size"] > $TBDEV['bb_upload_size'])
 		stderr("Upload failed", "Sorry, that file is too large for the bit-bucket.");
 	$filename = $file["name"];
 	if (strpos($filename, "..") !== false || strpos($filename, "/") !== false)
@@ -58,8 +58,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
 
     $HTMLOUT = "<h1>Bit-bucket upload</h1>
-    <form method='post' action="bitbucket-upload" enctype="multipart/form-data">
-    <p><b>Maximum file size: ".number_format($maxfilesize)." bytes.</b></p>
+    <form method='post' action='bitbucket-upload.php' enctype='multipart/form-data'>
+    <p><b>Maximum file size: ".number_format($TBDEV['bb_upload_size'])." bytes.</b></p>
     <table border='1' cellspacing='0' cellpadding='5'>
     <tr><td class='rowhead'>Upload file</td><td><input type='file' name='file' size='60' /></td></tr>
     <tr><td colspan='2' align='center'><input type='submit' value='Upload' class='btn' /></td></tr>
