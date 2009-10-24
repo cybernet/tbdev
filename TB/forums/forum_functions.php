@@ -16,9 +16,10 @@
 |   $URL$
 +------------------------------------------------
 */
+
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_functions_access']}";
 	exit();
 }
 
@@ -121,11 +122,13 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
   function insert_quick_jump_menu($currentforum = 0)
   {
-    $htmlout = "<div style='text-align:center;'><form method='get' action='forums.php?' name='jump'>\n";
+  	global $lang;
+  	
+  	$htmlout = "<div style='text-align:center;'><form method='get' action='forums.php?' name='jump'>\n";
 
     $htmlout .= "<input type='hidden' name='action' value='viewforum' />\n";
 
-    $htmlout .= "Quick jump: ";
+    $htmlout .= "{$lang['forum_functions_jump']}";
 
     $htmlout .= "<select name='forumid' onchange=\"if(this.options[this.selectedIndex].value != -1){ forms['jump'].submit() }\">\n";
 
@@ -150,7 +153,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
   function insert_compose_frame($id, $newtopic = true, $quote = false)
   {
-    global $maxsubjectlength, $CURUSER, $forum_pic_url;
+    global $maxsubjectlength, $CURUSER, $lang, $forum_pic_url;
 
     $htmlout = '';
     
@@ -158,21 +161,21 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     {
       $res = mysql_query("SELECT name FROM forums WHERE id=$id") or sqlerr(__FILE__, __LINE__);
 
-      $arr = mysql_fetch_assoc($res) or die("Bad forum id");
+      $arr = mysql_fetch_assoc($res) or die("{$lang['forum_functions_badid']}");
 
       $forumname = $arr["name"];
 
-      $htmlout .= "<p style='text-align:center;'>New topic in <a href='forums.php?action=viewforum&amp;forumid=$id'>$forumname</a> forum</p>\n";
+      $htmlout .= "<p style='text-align:center;'>{$lang['forum_functions_newtopic']}<a href='forums.php?action=viewforum&amp;forumid=$id'>$forumname</a>{$lang['forum_functions_forum']}</p>\n";
     }
     else
     {
       $res = mysql_query("SELECT * FROM topics WHERE id=$id") or sqlerr(__FILE__, __LINE__);
 
-      $arr = mysql_fetch_assoc($res) or stderr("Forum error", "Topic not found.");
+      $arr = mysql_fetch_assoc($res) or stderr("{$lang['forum_functions_error']}", "{$lang['forum_functions_topic']}");
 
       $subject = htmlentities($arr["subject"], ENT_QUOTES);
 
-      $htmlout .= "<p style='text-align:center;'>Reply to topic: <a href='forums.php?action=viewtopic&amp;topicid=$id'>$subject</a></p>";
+      $htmlout .= "<p style='text-align:center;'>{$lang['forum_functions_reply']}<a href='forums.php?action=viewtopic&amp;topicid=$id'>$subject</a></p>";
     }
 
     $htmlout .= begin_frame("Compose", true);
@@ -188,7 +191,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $htmlout .= begin_table();
 
     if ($newtopic)
-      $htmlout .= "<tr><td class='rowhead'>Subject</td>" .
+      $htmlout .= "<tr><td class='rowhead'>{$lang['forum_functions_subject']}</td>" .
         "<td align='left' style='padding: 0px'><input type='text' size='100' maxlength='$maxsubjectlength' name='subject' " .
         "style='border: 0px; height: 19px' /></td></tr>\n";
 
@@ -201,23 +204,23 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 	   $res = mysql_query("SELECT posts.*, users.username FROM posts LEFT JOIN users ON posts.userid = users.id WHERE posts.id=$postid") or sqlerr(__FILE__, __LINE__);
 
 	   if (mysql_num_rows($res) != 1)
-	     stderr("Error", "No post with ID.");
+	     stderr("{$lang['forum_functions_error']}", "{$lang['forum_functions_nopost']}");
 
 	   $arr = mysql_fetch_assoc($res);
     }
 
-    $htmlout .= "<tr><td class='rowhead'>Body</td><td align='left' style='padding: 0px'>" .
+    $htmlout .= "<tr><td class='rowhead'>{$lang['forum_functions_body']}</td><td align='left' style='padding: 0px'>" .
     "<textarea name='body' cols='100' rows='20' style='border: 0px'>".
     ($quote?(("[quote=".htmlspecialchars($arr["username"])."]".htmlspecialchars($arr["body"])."[/quote]\n")):"").
     "</textarea></td></tr>\n";
 
-    $htmlout .= "<tr><td colspan='2' align='center'><input type='submit' class='btn' value='Submit' /></td></tr>\n";
+    $htmlout .= "<tr><td colspan='2' align='center'><input type='submit' class='btn' value='{$lang['forum_functions_submit']}' /></td></tr>\n";
 
     $htmlout .= end_table();
 
     $htmlout .= "</form>\n";
 
-		$htmlout .= "<p style='text-align:center;'><a href='tags.php' target='_blank'>Tags</a> | <a href='smilies.php' target='_blank'>Smilies</a></p>\n";
+		$htmlout .= "<p style='text-align:center;'><a href='tags.php' target='_blank'>{$lang['forum_functions_tags']}</a> | <a href='smilies.php' target='_blank'>{$lang['forum_functions_smilies']}</a></p>\n";
 
     $htmlout .= end_frame();
 
@@ -227,7 +230,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     {
       $postres = mysql_query("SELECT * FROM posts WHERE topicid=$id ORDER BY id DESC LIMIT 10") or sqlerr(__FILE__, __LINE__);
 
-      $htmlout .= begin_frame("10 last posts, in reverse order");
+      $htmlout .= begin_frame("{$lang['forum_functions_last10']}");
 
       while ($post = mysql_fetch_assoc($postres))
       {

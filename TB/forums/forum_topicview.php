@@ -18,19 +18,19 @@
 */
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_topic_view_access']}";
 	exit();
 }
 
 
-
+    //$lang = array_merge( $lang, load_language('forums') );
 
     $topicid = (int)$_GET["topicid"];
 
     $page = isset($_GET["page"]) ? (int)$_GET["page"] : false;
 
     if (!is_valid_id($topicid))
-      stderr('USER ERROR', 'Incorrect access');
+      stderr("{$lang['forum_topic_view_user_error']}", "{$lang['forum_topic_view_incorrect']}");
 
     $userid = $CURUSER["id"];
 
@@ -38,7 +38,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     $res = mysql_query("SELECT * FROM topics WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
-    $arr = mysql_fetch_assoc($res) or stderr("Forum error", "Topic not found");
+    $arr = mysql_fetch_assoc($res) or stderr("{$lang['forum_topic_view_forum_error']}", "{$lang['forum_topic_view_notfound']}");
 
     $locked = ($arr["locked"] == 'yes');
     $subject = htmlentities($arr["subject"], ENT_QUOTES);
@@ -53,12 +53,12 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     $res = @mysql_query("SELECT * FROM forums WHERE id=$forumid") or sqlerr(__FILE__, __LINE__);
 
-    $arr = mysql_fetch_assoc($res) or die("Forum = NULL");
+    $arr = mysql_fetch_assoc($res) or die("{$lang['forum_topic_view_null']}");
 
     $forum = $arr["name"];
 
     if ($CURUSER["class"] < $arr["minclassread"])
-      stderr("Error", "You are not permitted to view this topic.");
+      stderr("{$lang['forum_topic_view_error']}", "{$lang['forum_topic_view_not_permitted']}");
 
     //------ Get post count
 
@@ -112,20 +112,20 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     }
 
     if ($page == 1)
-      $pagemenu .= "<br /><font class='gray'><b>&lt;&lt; Prev</b></font>";
+      $pagemenu .= "<br /><font class='gray'><b>{$lang['forum_topic_view_prev']}</b></font>";
 
     else
       $pagemenu .= "<br /><a href='forums.php?action=viewtopic&amp;topicid=$topicid&amp;page=" . ($page - 1) .
-        "'><b>&lt;&lt; Prev</b></a>";
+        "'><b>{$lang['forum_topic_view_prev']}</b></a>";
 
     $pagemenu .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     if ($page == $pages)
-      $pagemenu .= "<font class='gray'><b>Next &gt;&gt;</b></font></p>\n";
+      $pagemenu .= "<font class='gray'><b>{$lang['forum_topic_view_next']}</b></font></p>\n";
 
     else
       $pagemenu .= "<a href='forums.php?action=viewtopic&amp;topicid=$topicid&amp;page=" . ($page + 1) .
-        "'><b>Next &gt;&gt;</b></a></p>\n";
+        "'><b>{$lang['forum_topic_view_next']}</b></a></p>\n";
 
     //------ Get posts
 
@@ -188,7 +188,7 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
 
         if ($postername == "")
         {
-          $by = "unknown[$posterid]";
+          $by = sprintf($lang['forum_topic_view_unknown'], $posterid);
 
           //$avatar = "";
         }
@@ -205,8 +205,8 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
             $title = get_user_class_name($arr["class"]);
 
           $by = "<a href='userdetails.php?id=$posterid'><b>$postername</b></a>" 
-          . ($arr["donor"] == "yes" ? "<img src='{$TBDEV['pic_base_url']}star.gif' alt='Donor' />" : "") 
-          . ($arr["enabled"] == "no" ? "<img src='{$TBDEV['pic_base_url']}disabled.gif' alt='This account is disabled' style='margin-left: 2px' />" : ($arr["warned"] == "yes" ? "<a href='rules.php#warning' class='altlink'><img src='{$pic_base_url}warned.gif' alt='Warned' border='0' /></a>" : "")) . " ($title)";
+          . ($arr["donor"] == "yes" ? "<img src='{$TBDEV['pic_base_url']}star.gif' alt='{$lang['forum_topic_view_donor']}' />" : "") 
+          . ($arr["enabled"] == "no" ? "<img src='{$TBDEV['pic_base_url']}disabled.gif' alt='{$lang['forum_topic_view_disabled']}' style='margin-left: 2px' />" : ($arr["warned"] == "yes" ? "<a href='rules.php#warning' class='altlink'><img src='{$pic_base_url}warned.gif' alt='{$lang['forum_topic_view_warned']}' border='0' /></a>" : "")) . " ($title)";
         }
 
         if ($CURUSER["avatars"] == "yes")
@@ -233,15 +233,15 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
         $HTMLOUT .= "<table border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded' width='99%'>#$postid by $by at $added";
 
         if (!$locked || get_user_class() >= UC_MODERATOR)
-          $HTMLOUT .= " - [<a href='forums.php?action=quotepost&amp;topicid=$topicid&amp;postid=$postid'><b>Quote</b></a>]";
+          $HTMLOUT .= " - [<a href='forums.php?action=quotepost&amp;topicid=$topicid&amp;postid=$postid'><b>{$lang['forum_topic_view_quote']}</b></a>]";
 
         if (($CURUSER["id"] == $posterid && !$locked) || get_user_class() >= UC_MODERATOR)
-          $HTMLOUT .= " - [<a href='forums.php?action=editpost&amp;postid=$postid'><b>Edit</b></a>]";
+          $HTMLOUT .= " - [<a href='forums.php?action=editpost&amp;postid=$postid'><b>{$lang['forum_topic_view_edit']}</b></a>]";
 
         if (get_user_class() >= UC_MODERATOR)
-          $HTMLOUT .= " - [<a href='forums.php?action=deletepost&amp;postid=$postid'><b>Delete</b></a>]";
+          $HTMLOUT .= " - [<a href='forums.php?action=deletepost&amp;postid=$postid'><b>{$lang['forum_topic_view_delete']}</b></a>]";
 
-        $HTMLOUT .= "</td><td class='embedded' width='1%'><a href='#top'><img src='{$forum_pic_url}top.gif' border='0' alt='Top' /></a></td></tr>";
+        $HTMLOUT .= "</td><td class='embedded' width='1%'><a href='#top'><img src='{$forum_pic_url}top.gif' border='0' alt='{$lang['forum_topic_view_top']}' /></a></td></tr>";
 
         $HTMLOUT .= "</table>\n";
 
@@ -255,7 +255,7 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
           if (mysql_num_rows($res2) == 1)
           {
             $arr2 = mysql_fetch_assoc($res2);
-            $body .= "<p><font size='1' class='small'>Last edited by <a href='userdetails.php?id={$arr['editedby']}'><b>{$arr2['username']}</b></a> on ".get_date( $arr['editedat'],'')."</font></p>\n";
+            $body .= "<p><font size='1' class='small'>{$lang['forum_topic_view_edit_by']}<a href='userdetails.php?id={$arr['editedby']}'><b>{$arr2['username']}</b></a> on ".get_date( $arr['editedat'],'')."</font></p>\n";
           }
         }
 
@@ -291,7 +291,7 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
       $HTMLOUT .= $pagemenu;
 
       if ($locked && get_user_class() < UC_MODERATOR)
-        $HTMLOUT .= "<p>This topic is locked; no new posts are allowed.</p>\n";
+        $HTMLOUT .= "<p>{$lang['forum_topic_view_locked']}</p>\n";
 
       else
       {
@@ -299,7 +299,7 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
 
         if (get_user_class() < $arr["write"])
         {
-          $HTMLOUT .= "<p><i>You are not permitted to post in this forum.</i></p>\n";
+          $HTMLOUT .= "<p><i>{$lang['forum_topic_view_permission']}</i></p>\n";
         }
         else
         {
@@ -314,7 +314,7 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
         <td class='embedded'>
         <form method='post' action='forums.php?action=viewunread'>
         <input type='hidden' name='action' value='viewunread' />
-        <input type='submit' value='View Unread' class='btn' />
+        <input type='submit' value='{$lang['forum_topic_view_unread']}' class='btn' />
         </form>
       </td>\n";
 
@@ -341,34 +341,34 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
         
         $HTMLOUT .= "<table border='1' cellspacing='0' cellpadding='0'>
           <tr>
-            <td align='right'>Sticky:</td>
+            <td align='right'>{$lang['forum_topic_view_sticky']}</td>
             <td>
               <form method='post' action='forums.php?action=setsticky'>
               <input type='hidden' name='topicid' value='$topicid' />
               <input type='hidden' name='returnto' value='{$req_uri}' />
-              <input type='radio' name='sticky' value='yes' " . ($sticky ? " checked='checked'" : "") . " /> Yes <input type='radio' name='sticky' value='no' " . (!$sticky ? " checked='checked'" : "") . " /> No
-              <input type='submit' value='Set' />
+              <input type='radio' name='sticky' value='yes' " . ($sticky ? " checked='checked'" : "") . " /> {$lang['forum_topic_view_yes']} <input type='radio' name='sticky' value='no' " . (!$sticky ? " checked='checked'" : "") . " /> {$lang['forum_topic_view_no']}
+              <input type='submit' value='{$lang['forum_topic_view_set']}' />
               </form>
             </td>
           </tr>
           <tr>
-            <td align='right'>Locked:</td>
+            <td align='right'>{$lang['forum_topic_view_set_locked']}</td>
             <td >
               <form method='post' action='forums.php?action=setlocked'>
               <input type='hidden' name='topicid' value='$topicid' />
               <input type='hidden' name='returnto' value='{$req_uri}' />
-              <input type='radio' name='locked' value='yes' " . ($locked ? " checked='checked'" : "") . " /> Yes <input type='radio' name='locked' value='no' " . (!$locked ? " checked='checked'" : "") . " /> No
-              <input type='submit' value='Set' /></form>
+              <input type='radio' name='locked' value='yes' " . ($locked ? " checked='checked'" : "") . " /> {$lang['forum_topic_view_yes']} <input type='radio' name='locked' value='no' " . (!$locked ? " checked='checked'" : "") . " /> {$lang['forum_topic_view_no']}
+              <input type='submit' value='{$lang['forum_topic_view_set']}' /></form>
             </td>
           </tr>
           <tr>
-            <td align='right'>Rename topic:</td>
+            <td align='right'>{$lang['forum_topic_view_rename']}</td>
             <td >
               <form method='post' action='forums.php?action=renametopic'>
               <input type='hidden' name='topicid' value='$topicid' />
               <input type='hidden' name='returnto' value='{$req_uri}' />
               <input type='text' name='subject' size='60' maxlength='$maxsubjectlength' value='" . htmlspecialchars($subject) . "' />
-              <input type='submit' value='Okay' />
+              <input type='submit' value='{$lang['forum_topic_view_okay']}' />
               </form>
             </td>
           </tr>
@@ -384,19 +384,19 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
             $HTMLOUT .= "<option value='{$arr["id"]}'>{$arr["name"]}</option>\n";
 
         $HTMLOUT .= "</select> 
-              <input type='submit' value='Okay' />
+              <input type='submit' value='{$lang['forum_topic_view_okay']}' />
               </form>
             </td>
           </tr>
           <tr>
-            <td align='right'>Delete topic:</td>
+            <td align='right'>{$lang['forum_topic_view_delete_topic']}</td>
             <td>
               <form method='post' action='forums.php?action=deletetopic'>
               <input type='hidden' name='action' value='deletetopic' />
               <input type='hidden' name='topicid' value='$topicid' />
               <input type='hidden' name='forumid' value='$forumid' />
               <input type='checkbox' name='sure' value='1' />I'm sure
-              <input type='submit' value='Okay' />
+              <input type='submit' value='{$lang['forum_topic_view_okay']}' />
               </form>
             </td>
           </tr>
@@ -407,7 +407,7 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
 
       $HTMLOUT .= insert_quick_jump_menu($forumid);
 
-      print stdhead("View topic") . $HTMLOUT . stdfoot();
+      print stdhead("{$lang['forum_topic_view_view_topic']}") . $HTMLOUT . stdfoot();
 
       die;
 ?>

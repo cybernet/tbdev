@@ -16,12 +16,12 @@
 |   $URL$
 +------------------------------------------------
 */
+
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_new_topic_access']}";
 	exit();
 }
-
 
 
     $forumid = (int)$_GET["forumid"];
@@ -29,9 +29,8 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     if (!is_valid_id($forumid))
       header("Location: {$TBDEV['baseurl']}/forums.php");
 
-	
 
-    $HTMLOUT = stdhead("New topic");
+    $HTMLOUT = stdhead("{$lang['forum_new_topic_newtopic']}");
 
     $HTMLOUT .= begin_main_frame();
 

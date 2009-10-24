@@ -18,10 +18,11 @@
 */
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_view_access']}";
 	exit();
 }
 
+  //$lang = array_merge( $lang, load_language('forums') );
 
   //-------- Action: View forum
 
@@ -112,18 +113,18 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $menu .= "<br />\n";
 
     if ($page == 1)
-      $menu .= "<font class='gray'>&lt;&lt; Prev</font>";
+      $menu .= "<font class='gray'>{$lang['forum_view_prev']}</font>";
 
     else
-      $menu .= "<a href='forums.php?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page - 1) . "'>&lt;&lt; Prev</a>";
+      $menu .= "<a href='forums.php?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page - 1) . "'>{$lang['forum_view_prev']}</a>";
 
     $menu .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     if ($last == $num)
-      $menu .= "<font class='gray'>Next &gt;&gt;</font>";
+      $menu .= "<font class='gray'>{$lang['forum_view_next']}</font>";
 
     else
-      $menu .= "<a href='forums.php?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page + 1) . "'>Next &gt;&gt;</a>";
+      $menu .= "<a href='forums.php?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page + 1) . "'>{$lang['forum_view_next']}</a>";
 
     $menu .= "</b></p>\n";
 
@@ -146,8 +147,8 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
       $HTMLOUT .=  "<table border='1' cellspacing='0' cellpadding='5' width='80%'>";
 
-      $HTMLOUT .=  "<tr><td class='colhead' style='align:left;'>Topic</td><td class='colhead'>Replies</td><td class='colhead'>Views</td>\n" .
-        "<td class='colhead' style='align:left;'>Author</td><td class='colhead' style='align:left;'>Last&nbsp;post</td>\n";
+      $HTMLOUT .=  "<tr><td class='colhead' style='align:left;'>{$lang['forum_view_topic']}</td><td class='colhead'>{$lang['forum_view_replies']}</td><td class='colhead'>{$lang['forum_view_views']}</td>\n" .
+        "<td class='colhead' style='align:left;'>{$lang['forum_view_author']}</td><td class='colhead' style='align:left;'>{$lang['forum_view_lastpost']}</td>\n";
 
       $HTMLOUT .=  "</tr>\n";
 
@@ -219,7 +220,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
           $lpusername = "<a href='userdetails.php?id=$lpuserid'><b>{$arr['username']}</b></a>";
         }
         else
-          $lpusername = "unknown[$topic_userid]";
+          $lpusername = sprintf($lang['forum_view_unknown'], $topic_userid);
 
         //------ Get author
 
@@ -232,7 +233,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
           $lpauthor = "<a href='userdetails.php?id=$topic_userid'><b>{$arr['username']}</b></a>";
         }
         else
-          $lpauthor = "unknown[$topic_userid]";
+          $lpauthor = sprintf($lang['forum_view_unknown'], $topic_userid);
 
         //---- Print row
 
@@ -248,7 +249,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
         $topicpic = ($locked ? ($new ? "lockednew" : "locked") : ($new ? "unlockednew" : "unlocked"));
 
-        $subject = ($sticky ? "Sticky: " : "") . "<a href='forums.php?action=viewtopic&amp;topicid=$topicid'><b>" .
+        $subject = ($sticky ? "{$lang['forum_view_sticky']}" : "") . "<a href='forums.php?action=viewtopic&amp;topicid=$topicid'><b>" .
         htmlentities($topicarr["subject"], ENT_QUOTES) . "</b></a>$topicpages";
 
         $HTMLOUT .=  "<tr><td style='align:left;'><table border='0' cellspacing='0' cellpadding='0'><tr>" .
@@ -267,14 +268,14 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     } // if
     else
-      $HTMLOUT .= "<p style='text-align:center;'>No topics found</p>\n";
+      $HTMLOUT .= "<p style='text-align:center;'>{$lang['forum_view_no-topics']}</p>\n";
 
     $HTMLOUT .=  "<table class='main' border='0' cellspacing='0' cellpadding='0'><tr valign='middle'>\n";
 
-    $HTMLOUT .=  "<td class='embedded'><img src=\"{$forum_pic_url}unlockednew.gif\" style='margin-right: 5px' alt='' title='' /></td><td class='embedded'>New posts</td>\n";
+    $HTMLOUT .=  "<td class='embedded'><img src=\"{$forum_pic_url}unlockednew.gif\" style='margin-right: 5px' alt='' title='' /></td><td class='embedded'>{$lang['forum_view_new_posts']}</td>\n";
 
     $HTMLOUT .=  "<td class='embedded'><img src=\"{$forum_pic_url}locked.gif\" style='margin-left: 10px; margin-right: 5px' alt='' title='' />" .
-    "</td><td class='embedded'>Locked topic</td>\n";
+    "</td><td class='embedded'>{$lang['forum_view_locked_topic']}</td>\n";
 
     $HTMLOUT .=  "</tr></table>\n";
 
@@ -283,23 +284,23 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $maypost = get_user_class() >= $arr["write"] && get_user_class() >= $arr["create"];
 
     if (!$maypost)
-      $HTMLOUT .=  "<p><i>You are not permitted to start new topics in this forum.</i></p>\n";
+      $HTMLOUT .=  "<p><i>{$lang['forum_view_permitted']}</i></p>\n";
 
     $HTMLOUT .=  "<table border='0' class='main' cellspacing='0' cellpadding='0'><tr>\n";
 
     $HTMLOUT .=  "<td class='embedded'><form method='get' action='forums.php?'><input type='hidden' " .
-    "name='action' value='viewunread' /><input type='submit' value='View unread' class='btn' /></form></td>\n";
+    "name='action' value='viewunread' /><input type='submit' value='{$lang['forum_view_unread']}' class='btn' /></form></td>\n";
 
     if ($maypost)
       $HTMLOUT .=  "<td class='embedded'><form method='get' action='forums.php?'><input type='hidden' " .
       "name='action' value='newtopic' /><input type='hidden' name='forumid' " .
-      "value='$forumid' /><input type='submit' value='New topic' class='btn' style='margin-left: 10px' /></form></td>\n";
+      "value='$forumid' /><input type='submit' value='{$lang['forum_view_new_topic']}' class='btn' style='margin-left: 10px' /></form></td>\n";
 
     $HTMLOUT .=  "</tr></table>\n";
 
     $HTMLOUT .= insert_quick_jump_menu($forumid);
 
-    print stdhead("Forum :: Forum View") . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['forum_view_forum_title']}") . $HTMLOUT . stdfoot();
 
     die;
 
