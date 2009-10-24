@@ -28,6 +28,8 @@ require_once "include/user_functions.php";
 require_once "include/bbcode_functions.php";
 require_once "include/html_functions.php";
 
+    $lang = array_merge( $lang, load_language('ad_news') );
+    
     $input = array_merge( $_GET, $_POST);
 
     $mode = isset($input['mode']) ? $input['mode'] : '';
@@ -42,16 +44,15 @@ require_once "include/html_functions.php";
       $newsid = isset($input['newsid']) ? (int)$input["newsid"] : 0;
       
       if (!is_valid_id($newsid))
-        stderr("Error","Invalid news item ID - Code 1.");
+        stderr($lang['news_error'],sprintf($lang['news_gen_error'],1));
 
-      $returnto = htmlentities($input["returnto"]);
+      $returnto = isset($input['returno']) ? htmlentities($input["returnto"]) : '';
 
       $sure = isset($input["sure"]) ? (int)$input['sure'] : 0;
       
       if (!$sure)
       {
-        stderr("Delete news item","Do you really want to delete a news item? Click\n" .
-          "<a href='admin.php?action=news&amp;mode=delete&amp;newsid=$newsid&amp;returnto=news&amp;sure=1'>here</a> if you are sure.");
+        stderr($lang['news_delete_notice'],sprintf($lang['news_delete_text'],$newsid));
       }
       
       @mysql_query("DELETE FROM news WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
@@ -59,7 +60,7 @@ require_once "include/html_functions.php";
       if ($returnto != "")
         header("Location: {$TBDEV['baseurl']}/admin.php?action=news");
       else
-        $warning = "News item was deleted successfully.";
+        $warning = $lang['news_delete_ok'];
     }
 
 
@@ -70,7 +71,7 @@ require_once "include/html_functions.php";
       $body = isset($input["body"]) ? (string)$input["body"] : 0;
       
       if ( !$body OR strlen($body) < 4 )
-        stderr("Error","The news item cannot be empty!");
+        stderr($lang['news_error'],$lang['news_add_body']);
 
       $added = isset($input["added"]) ? $input['added'] : 0;
       
@@ -81,9 +82,9 @@ require_once "include/html_functions.php";
         $CURUSER['id'] . ", $added, " . sqlesc($body) . ")") or sqlerr(__FILE__, __LINE__);
         
       if (mysql_affected_rows() == 1)
-        $warning = "News item was added successfully.";
+        $warning = $lang['news_add_ok'];
       else
-        stderr("Error","Something weird just happened.");
+        stderr($lang['news_error'],$lang['news_add_err']);
     }
 
     
@@ -94,12 +95,12 @@ require_once "include/html_functions.php";
       $newsid = isset($input["newsid"]) ? (int)$input["newsid"] : 0;
 
       if (!is_valid_id($newsid))
-        stderr("Error","Invalid news item ID - Code 2.");
+        stderr($lang['news_error'], sprintf($lang['news_gen_error'],2));
 
       $res = @mysql_query("SELECT * FROM news WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
 
       if (mysql_num_rows($res) != 1)
-        stderr("Error", "No news item with ID.");
+        stderr($lang['news_error'], $lang['news_edit_nonewsid']);
 
       $arr = mysql_fetch_assoc($res);
 
@@ -108,7 +109,7 @@ require_once "include/html_functions.php";
         $body = isset($_POST['body']) ? $_POST['body'] : '';
 
         if ($body == "" OR strlen($_POST['body']) < 4)
-          stderr("Error", "Body cannot be empty!");
+          stderr($lang['news_error'], $lang['news_add_body']);
 
         $body = sqlesc($body);
 
@@ -121,12 +122,12 @@ require_once "include/html_functions.php";
         if ($returnto != "")
           header("Location: {$TBDEV['baseurl']}/admin.php?action=news");
         else
-          $warning = "News item was edited successfully.";
+          $warning = $lang['news_edit_ok'];;
       }
       else
       {
         //$returnto = isset($_POST['returnto']) ? htmlentities($_POST['returnto']) : $TBDEV['baseurl'].'/news.php';
-        $HTMLOUT .= "<h1>Edit News Item</h1>
+        $HTMLOUT .= "<h1>{$lang['news_edit_title']}</h1>
         
         <form method='post' action='admin.php?action=news'>
         
@@ -144,7 +145,7 @@ require_once "include/html_functions.php";
         
         </form>\n";
         
-        print  stdhead('Edit News Item') . $HTMLOUT . stdfoot();
+        print  stdhead($lang['news_edit_title']) . $HTMLOUT . stdfoot();
         exit();
       }
     }
@@ -152,7 +153,7 @@ require_once "include/html_functions.php";
     
     
     //   Other Actions and followup    ////////////////////////////////////////////
-    $HTMLOUT .= "<h1>Submit News Item</h1>\n";
+    $HTMLOUT .= "<h1>{$lang['news_submit_title']}</h1>\n";
     
     if (!empty($warning))
       $HTMLOUT .= "<p><font size='-3'>($warning)</font></p>";
@@ -202,7 +203,7 @@ require_once "include/html_functions.php";
         $HTMLOUT .= begin_table(true);
         $HTMLOUT .= "<tr>
           <td class='embedded'>{$added}&nbsp;&nbsp;by&nbsp$by
-            <div style='float:right;'>[<a href='admin.php?action=news&amp;mode=edit&amp;newsid=$newsid'><b>Edit</b></a>] - [<a href='admin.php?action=news&amp;mode=delete&amp;newsid=$newsid'><b>Delete</b></a>]
+            <div style='float:right;'>[<a href='admin.php?action=news&amp;mode=edit&amp;newsid=$newsid'><b>{$lang['news_act_edit']}</b></a>] - [<a href='admin.php?action=news&amp;mode=delete&amp;newsid=$newsid'><b>{$lang['news_act_delete']}</b></a>]
             </div>
           </td>
         </tr>
@@ -217,8 +218,8 @@ require_once "include/html_functions.php";
       $HTMLOUT .= end_main_frame();
     }
     else
-      stdmsg("Sorry", "No news available!");
+      stdmsg($lang['news_sorry'], $lang['news_nonews']);
       
-    print stdhead("Site news") . $HTMLOUT . stdfoot();
+    print stdhead($lang['news_window_title']) . $HTMLOUT . stdfoot();
     die;
 ?>
