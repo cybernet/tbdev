@@ -27,6 +27,8 @@ require "include/user_functions.php";
 require "include/html_functions.php";
 
 
+    $lang = array_merge( $lang, load_language('ad_stats') );
+    
     $HTMLOUT = '';
 
     $HTMLOUT .= begin_main_frame();
@@ -60,18 +62,18 @@ require "include/html_functions.php";
     $res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
 
     if (mysql_num_rows($res) == 0)
-      stdmsg("Sorry...", "No uploaders.");
+      stdmsg($lang['stats_error'], $lang['stats_error1']);
     else
     {
-      $HTMLOUT .= begin_frame("Uploader Activity", True);
+      $HTMLOUT .= begin_frame($lang['stats_title1'], True);
       $HTMLOUT .= begin_table();
       
       $HTMLOUT .= "<tr>
-      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=uploader&amp;catorder=$catorder' class='colheadlink'>Uploader</a></td>
-      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=lastul&amp;catorder=$catorder' class='colheadlink'>Last Upload</a></td>
-      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=torrents&amp;catorder=$catorder' class='colheadlink'>Torrents</a></td>
+      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=uploader&amp;catorder=$catorder' class='colheadlink'>{$lang['stats_uploader']}</a></td>
+      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=lastul&amp;catorder=$catorder' class='colheadlink'>{$lang['stats_last']}</a></td>
+      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=torrents&amp;catorder=$catorder' class='colheadlink'>{$lang['stats_torrent']}</a></td>
       <td class='colhead'>Perc.</td>
-      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=peers&amp;catorder=$catorder' class='colheadlink'>Peers</a></td>
+      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=peers&amp;catorder=$catorder' class='colheadlink'>{$lang['stats_peers']}</a></td>
       <td class='colhead'>Perc.</td>
       </tr>\n";
       
@@ -90,7 +92,7 @@ require "include/html_functions.php";
     }
 
     if ($n_tor == 0)
-      stdmsg("Sorry...", "No categories defined!");
+      stdmsg($lang['stats_error'], $lang['stats_error2']);
     else
     {
       if ($catorder == "lastul")
@@ -106,14 +108,14 @@ require "include/html_functions.php";
       FROM categories as c LEFT JOIN torrents as t ON t.category = c.id LEFT JOIN peers as p
       ON t.id = p.torrent GROUP BY c.id ORDER BY $orderby") or sqlerr(__FILE__, __LINE__);
 
-      $HTMLOUT .= begin_frame("Category Activity", True);
+      $HTMLOUT .= begin_frame($lang['stats_title2'], True);
       $HTMLOUT .= begin_table();
       $HTMLOUT .= "<tr>
-      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=$uporder&amp;catorder=category' class='colheadlink'>Category</a></td>
-      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=$uporder&amp;catorder=lastul' class='colheadlink'>Last Upload</a></td>
-      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=$uporder&amp;catorder=torrents' class='colheadlink'>Torrents</a></td>
+      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=$uporder&amp;catorder=category' class='colheadlink'>{$lang['stats_category']}</a></td>
+      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=$uporder&amp;catorder=lastul' class='colheadlink'>{$lang['stats_last']}</a></td>
+      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=$uporder&amp;catorder=torrents' class='colheadlink'>{$lang['stats_torrent']}</a></td>
       <td class='colhead'>Perc.</td>
-      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=$uporder&amp;catorder=peers' class='colheadlink'>Peers</a></td>
+      <td class='colhead'><a href='admin.php?action=stats&amp;uporder=$uporder&amp;catorder=peers' class='colheadlink'>{$lang['stats_peers']}</a></td>
       <td class='colhead'>Perc.</td>
       </tr>\n";
       
@@ -133,6 +135,6 @@ require "include/html_functions.php";
 
     $HTMLOUT .= end_main_frame();
     
-    print stdhead("Stats") . $HTMLOUT . stdfoot();
+    print stdhead($lang['stats_window_title']) . $HTMLOUT . stdfoot();
     die;
 ?>
