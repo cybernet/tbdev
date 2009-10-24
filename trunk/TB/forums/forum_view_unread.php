@@ -18,7 +18,7 @@
 */
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_view_unread_access']}.";
 	exit();
 }
 
@@ -39,7 +39,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     $HTMLOUT = '';
 
-    $HTMLOUT .= "<h1>Topics with unread posts</h1>\n";
+    $HTMLOUT .= "{$lang['forum_view_unread_unread_topics']}";
 
     $n = 0;
 
@@ -79,8 +79,8 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         $HTMLOUT .= "<table border='1' cellspacing='0' cellpadding='5'>\n";
 
         $HTMLOUT .= "<tr>
-          <td class='colhead' align='left'>Topic</td>
-          <td class='colhead' align='left'>Forum</td>
+          <td class='colhead' align='left'>{$lang['forum_view_unread_topic']}</td>
+          <td class='colhead' align='left'>{$lang['forum_view_unread_forum']}</td>
         </tr>\n";
       }
 
@@ -104,14 +104,14 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       $HTMLOUT .= "</table>\n";
 
       if ($n > $maxresults)
-        $HTMLOUT .= "<p>More than $maxresults items found, displaying first $maxresults.</p>\n";
+        $HTMLOUT .= sprintf($lang['forum_view_unread_results'], $maxresults);
 
-      $HTMLOUT .= "<p><a href='forums.php?catchup'><b>Catch up</b></a></p>\n";
+      $HTMLOUT .= "<p><a href='forums.php?catchup'><b>{$lang['forum_view_unread_catchup']}</b></a></p>\n";
     }
     else
-      $HTMLOUT .= "<b>Nothing found</b>";
+      $HTMLOUT .= "{$lang['forum_view_unread_not_found']}";
 
-    print stdhead('Unread Posts') . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['forum_view_unread_posts']}") . $HTMLOUT . stdfoot();
 
     die;
  ?>

@@ -18,7 +18,7 @@
 */
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_user_options_access']}";
 	exit();
 }
 
@@ -31,12 +31,12 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       $postid = 0+$_GET["postid"];
 
       if (!is_valid_id($postid))
-        stderr('USER ERROR', 'Incorrect access');
+        stderr("{$lang['forum_user_options_user_error']}", "{$lang['forum_user_options_incorrect']}");
 
       $res = @mysql_query("SELECT * FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
 
       if (mysql_num_rows($res) != 1)
-        stderr("Error", "No post with ID.");
+        stderr("{$lang['forum_user_options_error']}", "{$lang['forum_user_options_no_post']}");
 
       $arr = mysql_fetch_assoc($res);
 
@@ -44,19 +44,19 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       $arr2 = mysql_fetch_assoc($res2);
 
       if (mysql_num_rows($res) != 1)
-        stderr("Error", "No topic associated with post ID.");
+        stderr("{$lang['forum_user_options_error']}", "{$lang['forum_user_options_associated_topic']}");
 
       $locked = ($arr2["locked"] == 'yes');
 
       if (($CURUSER["id"] != $arr["userid"] || $locked) && get_user_class() < UC_MODERATOR)
-        stderr("Error", "Denied!");
+        stderr("{$lang['forum_user_options_error']}", "{$lang['forum_user_options_denied']}");
 
       if ($_SERVER['REQUEST_METHOD'] == 'POST')
       {
         $body = $_POST['body'];
 
         if ($body == "")
-          stderr("Error", "Body cannot be empty!");
+          stderr("{$lang['forum_user_options_error']}", "{$lang['forum_user_options_body']}");
 
         $body = sqlesc($body);
 
@@ -72,12 +72,12 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
           header("Location: $returnto");
         }
         else
-          stderr("Success", "Post was edited successfully.");
+          stderr("{$lang['forum_user_options_success']}", "{$lang['forum_user_options_edit_success']}");
       }
 
       $HTMLOUT = '';
 
-      $HTMLOUT .= "<h1>Edit Post</h1>
+      $HTMLOUT .= "<h1>{$lang['forum_user_options_edit_post_header']}</h1>
 
       <form method='post' action='forums.php?action=editpost&amp;postid=$postid'>
       <input type='hidden' name='returnto' value='" . htmlspecialchars($_SERVER["HTTP_REFERER"]) . "' />
@@ -90,7 +90,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         </tr>
         <tr>
           <td align='center'>
-            <input type='submit' value='Okay' class='btn' />
+            <input type='submit' value='{$lang['forum_user_options_okay']}' class='btn' />
           </td>
         </tr>
       </table>
@@ -110,13 +110,13 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       $sure = isset($_GET["sure"]) ? $_GET["sure"] : 0;
 
       if (get_user_class() < UC_MODERATOR || !is_valid_id($postid))
-        stderr('USER ERROR', 'Incorrect access');
+        stderr("{$lang['forum_user_options_user_error']}", "{$lang['forum_user_options_access']}");
 
       //------- Get topic id
 
       $res = @mysql_query("SELECT topicid FROM posts WHERE id=$postid") or sqlerr(__FILE__, __LINE__);
 
-      $arr = mysql_fetch_row($res) or stderr("Error", "Post not found");
+      $arr = mysql_fetch_row($res) or stderr("{$lang['forum_user_options_error']}", "{$lang['forum_user_options_not_found']}");
 
       $topicid = $arr[0];
 
@@ -127,8 +127,8 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       $arr = mysql_fetch_row($res);
 
       if ($arr[0] < 2)
-        stderr("Error", "Can't delete post; it is the only post of the topic. You should\n" .
-        "<a href='forums.php?action=deletetopic&amp;topicid=$topicid&amp;sure=1'>delete the topic</a> instead.\n");
+        stderr("{$lang['forum_user_options_error']}", "{$lang['forum_user_options_no_delete']}" .
+        "<a href='forums.php?action=deletetopic&amp;topicid=$topicid&amp;sure=1'>{$lang['forum_user_options_delete_topic']}");
 
 
       //------- Get the id of the last post before the one we're deleting
@@ -149,8 +149,8 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
       if (!$sure)
       {
-        stderr("Delete post", "Sanity check: You are about to delete a post. Click\n" .
-        "<a href='forums.php?action=deletepost&amp;postid=$postid&amp;sure=1'>here</a> if you are sure.");
+        stderr("{$lang['forum_user_options_delete_post']}", "{$lang['forum_user_options_sanity_check']}" .
+        "<a href='forums.php?action=deletepost&amp;postid=$postid&amp;sure=1'>{$lang['forum_user_options_here']}</a> {$lang['forum_user_options_sure']}");
       }
 
       //------- Delete post

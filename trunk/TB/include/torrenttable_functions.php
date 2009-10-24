@@ -25,7 +25,7 @@ function linkcolor($num) {
 }
 
 function torrenttable($res, $variant = "index") {
-    global $TBDEV, $CURUSER;
+    global $TBDEV, $CURUSER, $lang;
 
     $wait = 0;
     $htmlout = '';
@@ -43,39 +43,39 @@ function torrenttable($res, $variant = "index") {
 
     $htmlout .= "<table border='1' cellspacing='0' cellpadding='5'>
     <tr>
-    <td class='colhead' align='center'>Type</td>
-    <td class='colhead' align='left'>Name</td>
-    <!--<td class='heading' align='left'>DL</td>-->";
+    <td class='colhead' align='center'>{$lang["torrenttable_type"]}</td>
+    <td class='colhead' align='left'>{$lang["torrenttable_name"]}</td>
+    <!--<td class='heading' align='left'>{$lang["torrenttable_dl"]}</td>-->";
 
 	if ($wait)
 	{
-		$htmlout .= "<td class='colhead' align='center'>Wait</td>\n";
+		$htmlout .= "<td class='colhead' align='center'>{$lang["torrenttable_wait"]}</td>\n";
 	}
 
 	if ($variant == "mytorrents")
   {
-  	$htmlout .= "<td class='colhead' align='center'>Edit</td>\n";
-    $htmlout .= "<td class='colhead' align='center'>Visible</td>\n";
+  	$htmlout .= "<td class='colhead' align='center'>{$lang["torrenttable_edit"]}</td>\n";
+    $htmlout .= "<td class='colhead' align='center'>{$lang["torrenttable_visible"]}</td>\n";
 	}
 
 
-    $htmlout .= "<td class='colhead' align='right'>Files</td>
-    <td class='colhead' align='right'>Comm.</td>
-    <!--<td class='colhead' align='center'>Rating</td>-->
-    <td class='colhead' align='center'>Added</td>
-    <td class='colhead' align='center'>TTL</td>
-    <td class='colhead' align='center'>Size</td>
+    $htmlout .= "<td class='colhead' align='right'>{$lang["torrenttable_files"]}</td>
+    <td class='colhead' align='right'>{$lang["torrenttable_comments"]}</td>
+    <!--<td class='colhead' align='center'>{$lang["torrenttable_rating"]}</td>-->
+    <td class='colhead' align='center'>{$lang["torrenttable_added"]}</td>
+    <td class='colhead' align='center'>{$lang["torrenttable_ttl"]}</td>
+    <td class='colhead' align='center'>{$lang["torrenttable_size"]}</td>
     <!--
-    <td class='colhead' align='right'>Views</td>
-    <td class='colhead' align='right'>Hits</td>
+    <td class='colhead' align='right'>{$lang["torrenttable_views"]}</td>
+    <td class='colhead' align='right'>{$lang["torrenttable_hits"]}</td>
     -->
-    <td class='colhead' align='center'>Snatched</td>
-    <td class='colhead' align='right'>Seeders</td>
-    <td class='colhead' align='right'>Leechers</td>";
+    <td class='colhead' align='center'>{$lang["torrenttable_snatched"]}</td>
+    <td class='colhead' align='right'>{$lang["torrenttable_seeders"]}</td>
+    <td class='colhead' align='right'>{$lang["torrenttable_leechers"]}</td>";
 
 
     if ($variant == 'index')
-        $htmlout .= "<td class='colhead' align='center'>Upped&nbsp;by</td>\n";
+        $htmlout .= "<td class='colhead' align='center'>{$lang["torrenttable_uppedby"]}</td>\n";
 
     $htmlout .= "</tr>\n";
 
@@ -118,30 +118,30 @@ function torrenttable($res, $variant = "index") {
 	        if ($elapsed < $wait)
 	        {
 	          $color = dechex(floor(127*($wait - $elapsed)/48 + 128)*65536);
-	          $htmlout .= "<td align='center'><span style='white-space: nowrap;'><a href='faq.php#dl8'><font color='$color'>" . number_format($wait - $elapsed) . " h</font></a></span></td>\n";
+	          $htmlout .= "<td align='center'><span style='white-space: nowrap;'><a href='faq.php#dl8'><font color='$color'>" . number_format($wait - $elapsed) . " ".$lang["torrenttable_wait_h"]."</font></a></span></td>\n";
 	        }
 	        else
-	          $htmlout .= "<td align='center'><span style='white-space: nowrap;'>None</span></td>\n";
+	          $htmlout .= "<td align='center'><span style='white-space: nowrap;'>{$lang["torrenttable_wait_none"]}</span></td>\n";
         }
 
 /*
         if ($row["nfoav"] && get_user_class() >= UC_POWER_USER)
-          print("<a href='viewnfo.php?id=$row[id]''><img src='{$TBDEV['pic_base_url']}viewnfo.gif" border='0' alt='View NFO' /></a>\n");
+          print("<a href='viewnfo.php?id=$row[id]''><img src='{$TBDEV['pic_base_url']}viewnfo.gif" border='0' alt='".$lang["torrenttable_view_nfo_alt"]."' /></a>\n");
         if ($variant == "index")
-            print("<a href='download.php/$id/" . rawurlencode($row["filename"]) . "'><img src='{$TBDEV['pic_base_url']}download.gif' border='0' alt='Download' /></a>\n");
+            print("<a href='download.php/$id/" . rawurlencode($row["filename"]) . "'><img src='{$TBDEV['pic_base_url']}download.gif' border='0' alt='".$lang["torrenttable_download_alt"]."' /></a>\n");
 
         else */ 
         if ($variant == "mytorrents")
-            $htmlout .= "</td><td align='center'><a href='edit.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]) . "&amp;id={$row['id']}'>edit</a>\n";
+            $htmlout .= "</td><td align='center'><a href='edit.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]) . "&amp;id={$row['id']}'>".$lang["torrenttable_edit"]."</a>\n";
         $htmlout .= "</td>\n";
         
         if ($variant == "mytorrents") 
         {
             $htmlout .= "<td align='right'>";
             if ($row["visible"] == "no")
-                $htmlout .= "<b>no</b>";
+                $htmlout .= "<b>".$lang["torrenttable_not_visible"]."</b>";
             else
-                $htmlout .= "yes";
+                $htmlout .= "".$lang["torrenttable_visible"]."";
             $htmlout .= "</td>\n";
         }
 
@@ -195,17 +195,22 @@ function torrenttable($res, $variant = "index") {
         
 		$ttl = (28*24) - floor((time() - $row["added"]) / 3600);
 		
-		if ($ttl == 1) $ttl .= "<br />hour"; else $ttl .= "<br />hours";
+		if ($ttl == 1) 
+                   $ttl .= "<br />".$lang["torrenttable_hour_singular"].""; 
+                else 
+                   $ttl .= "<br />".$lang["torrenttable_hour_plural"]."";
     
     $htmlout .= "<td align='center'>$ttl</td>\n
     <td align='center'>" . str_replace(" ", "<br />", mksize($row["size"])) . "</td>\n";
 //        print("<td align='right'>" . $row["views"] . "</td>\n");
 //        print("<td align='right'>" . $row["hits"] . "</td>\n");
-        $_s = "";
+
         
         if ($row["times_completed"] != 1)
-          $_s = "s";
-        $htmlout .= "<td align='center'>" . number_format($row["times_completed"]) . "<br />time$_s</td>\n";
+          $_s = "".$lang["torrenttable_time_plural"]."";
+        else
+          $_s = "".$lang["torrenttable_time_singular"]."";
+        $htmlout .= "<td align='center'>" . number_format($row["times_completed"]) . "<br />$_s</td>\n";
 
         if ($row["seeders"]) 
         {
@@ -237,7 +242,7 @@ function torrenttable($res, $variant = "index") {
             $htmlout .= "<td align='right'>0</td>\n";
 
         if ($variant == "index")
-            $htmlout .= "<td align='center'>" . (isset($row["username"]) ? ("<a href='userdetails.php?id=" . $row["owner"] . "'><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>(unknown)</i>") . "</td>\n";
+            $htmlout .= "<td align='center'>" . (isset($row["username"]) ? ("<a href='userdetails.php?id=" . $row["owner"] . "'><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>(".$lang["torrenttable_unknown_uploader"].")</i>") . "</td>\n";
 
        $htmlout .= "</tr>\n";
     }
@@ -249,7 +254,7 @@ function torrenttable($res, $variant = "index") {
 
 function commenttable($rows)
 {
-	global $CURUSER, $TBDEV;
+	global $CURUSER, $TBDEV, $lang;
 	
 	$htmlout .= begin_main_frame();
 	$htmlout .= begin_frame();
@@ -259,7 +264,7 @@ function commenttable($rows)
 	
 	foreach ($rows as $row)
 	{
-		$htmlout .= "<p class=sub>#{$row["id"]} by ";
+		$htmlout .= "<p class=sub>#{$row["id"]} {$lang["commenttable_by"]} ";
     if (isset($row["username"]))
 		{
 			$title = $row["title"];
@@ -268,23 +273,23 @@ function commenttable($rows)
 			else
 				$title = htmlspecialchars($title);
         $htmlout .= "<a name='comm{$row["id"]}' href='userdetails.php?id={$row["user"]}'><b>" .
-        	htmlspecialchars($row["username"]) . "</b></a>" . ($row["donor"] == "yes" ? "<img src='{$TBDEV['pic_base_url']}star.gif' alt='Donor' />" : "") . ($row["warned"] == "yes" ? "<img src=".
-    			"'{$TBDEV['pic_base_url']}warned.gif' alt='Warned' />" : "") . " ($title)\n";
+        	htmlspecialchars($row["username"]) . "</b></a>" . ($row["donor"] == "yes" ? "<img src='{$TBDEV['pic_base_url']}star.gif' alt='".$lang["commenttable_donor_alt"]."' />" : "") . ($row["warned"] == "yes" ? "<img src=".
+    			"'{$TBDEV['pic_base_url']}warned.gif' alt='".$lang["commenttable_warned_alt"]."' />" : "") . " ($title)\n";
 		}
 		else
-   		$htmlout .= "<a name='comm{$row["id"]}'><i>(orphaned)</i></a>\n";
+   		$htmlout .= "<a name='comm{$row["id"]}'><i>(".$lang["commenttable_orphaned"].")</i></a>\n";
 
 		$htmlout .= get_date( $row['added'],'');
-		$htmlout .= ($row["user"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR ? "- [<a href='comment.php?action=edit&amp;cid={$row['id']}'>Edit</a>]" : "") .
-			(get_user_class() >= UC_MODERATOR ? "- [<a href='comment.php?action=delete&amp;cid={$row['id']}'>Delete</a>]" : "") .
-			($row["editedby"] && get_user_class() >= UC_MODERATOR ? "- [<a href='comment.php?action=vieworiginal&amp;cid={$row['id']}'>View original</a>]" : "") . "</p>\n";
+		$htmlout .= ($row["user"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR ? "- [<a href='comment.php?action=edit&amp;cid={$row['id']}'>".$lang["commenttable_edit"]."</a>]" : "") .
+			(get_user_class() >= UC_MODERATOR ? "- [<a href='comment.php?action=delete&amp;cid={$row['id']}'>".$lang["commenttable_delete"]."</a>]" : "") .
+			($row["editedby"] && get_user_class() >= UC_MODERATOR ? "- [<a href='comment.php?action=vieworiginal&amp;cid={$row['id']}'>".$lang["commenttable_view_original"]."</a>]" : "") . "</p>\n";
 		$avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($row["avatar"]) : "");
 		
 		if (!$avatar)
 			$avatar = "{$TBDEV['pic_base_url']}default_avatar.gif";
 		$text = format_comment($row["text"]);
     if ($row["editedby"])
-    	$text .= "<p><font size='1' class='small'>Last edited by <a href='userdetails.php?id={$row['editedby']}'><b>{$row['username']}</b></a> at ".get_date($row['editedat'],'DATE')."</font></p>\n";
+    	$text .= "<p><font size='1' class='small'>".$lang["commenttable_last_edited_by"]." <a href='userdetails.php?id={$row['editedby']}'><b>{$row['username']}</b></a> ".$lang["commenttable_last_edited_at"]." ".get_date($row['editedat'],'DATE')."</font></p>\n";
 		$htmlout .= begin_table(true);
 		$htmlout .= "<tr valign='top'>\n";
 		$htmlout .= "<td align='center' width='150' style='padding: 0px'><img width='{$row[av_w]}' height='{$row[av_h]}' src='{$avatar}' alt='' /></td>\n";

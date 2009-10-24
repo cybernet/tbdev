@@ -18,14 +18,14 @@
 */
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_search_access']}";
 	exit();
 }
 
 
     $HTMLOUT = '';
     
-    $HTMLOUT .= "<h1>Forum Search (<font color='red'>BETA</font>)</h1>\n";
+    $HTMLOUT .= "{$lang['forum_search_search']}";
     
     $keywords = isset($_GET["keywords"]) ? trim($_GET["keywords"]) : '';
     
@@ -39,7 +39,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       
       $HTMLOUT = '';
       
-      $HTMLOUT .= "<p><b>Searched for &quot;" . htmlspecialchars($keywords) . "&quot;</b></p>\n";
+      $HTMLOUT .= sprintf($lang['forum_search_searched'], htmlspecialchars($keywords) );
       
       $res = mysql_query("SELECT COUNT(*) FROM posts WHERE MATCH (body) AGAINST ($ekeywords)") or sqlerr(__FILE__, __LINE__);
       
@@ -49,7 +49,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       
       if ($hits == 0)
       {
-        $HTMLOUT .= "<p><b>Sorry, nothing found!</b></p>";
+        $HTMLOUT .= "{$lang['forum_search_not-found']}";
       }
       else
       {
@@ -71,16 +71,16 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         }
         
         if ($page == 1)
-          $pagemenu2 = "<font class='gray'><b>&lt;&lt; Prev</b></font>\n";
+          $pagemenu2 = "<font class='gray'>{$lang['forum_search_prev']}</font>\n";
         else
-          $pagemenu2 = "<a href='forums.php?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=" . ($page - 1) . "'><b>&lt;&lt; Prev</b></a>\n";
+          $pagemenu2 = "<a href='forums.php?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=" . ($page - 1) . "'>{$lang['forum_search_prev']}</a>\n";
           
         $pagemenu2 .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;\n";
         
         if ($page == $pages)
-          $pagemenu2 .= "<font class='gray'><b>Next &gt;&gt;</b></font>\n";
+          $pagemenu2 .= "<font class='gray'><b>{$lang['forum_search_next']}</b></font>\n";
         else
-          $pagemenu2 .= "<a href='forums.php?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=" . ($page + 1) . "'><b>Next &gt;&gt;</b></a>\n";
+          $pagemenu2 .= "<a href='forums.php?action=search&amp;keywords=" . htmlspecialchars($keywords) . "&amp;page=" . ($page + 1) . "'>{$lang['forum_search_next']}</a>\n";
           
         $offset = ($page * $perpage) - $perpage;
         
@@ -91,10 +91,10 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         $HTMLOUT .= "<p>$pagemenu1<br />$pagemenu2</p>
         <table border='1' cellspacing='0' cellpadding='5'>
           <tr>
-            <td class='colhead'>Post</td>
-            <td class='colhead' align='left'>Topic</td>
-            <td class='colhead' align='left'>Forum</td>
-            <td class='colhead' align='left'>Posted by</td>
+            <td class='colhead'>{$lang['forum_search_post']}</td>
+            <td class='colhead' align='left'>{$lang['forum_search_topic']}</td>
+            <td class='colhead' align='left'>{$lang['forum_search_forum']}</td>
+            <td class='colhead' align='left'>{$lang['forum_search_posted']}</td>
           </tr>\n";
           
         for ($i = 0; $i < $num; ++$i)
@@ -117,7 +117,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
             continue;
           }
           
-          $res2 = mysql_query("SELECT username FROM users WHERE id=$post[userid]") or
+          $res2 = mysql_query("SELECT username FROM users WHERE id={$post['userid']}") or
             sqlerr(__FILE__, __LINE__);
             
           $user = mysql_fetch_assoc($res2);
@@ -136,26 +136,26 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         }
         $HTMLOUT .= "</table>
         <p>$pagemenu2<br />$pagemenu1</p>
-        <p>Found $hits post" . ($hits != 1 ? "s" : "") . ".</p>
-        <p><b>Search again</b></p>\n";
+        <p>".sprintf($lang['forum_search_found'], $hits) . ($hits != 1 ? "s" : "") . ".</p>
+        <p><b>{$lang['forum_search_again']}</b></p>\n";
       }
     }
     $HTMLOUT .= "<form method='get' action='forums.php?'>
     <input type='hidden' name='action' value='search' />
     <table border='1' cellspacing='0' cellpadding='5'>
       <tr>
-        <td class='rowhead'>Key words</td>
+        <td class='rowhead'>{$lang['forum_search_words']}</td>
         <td align='left'>
         <input type='text' size='55' name='keywords' value='" . htmlspecialchars($keywords) .
-"' /><br /><font class='small' size='-1'>Enter one or more words to search for.<br />Very common words and words with less than 3 characters are ignored.</font></td>
+"' /><br /><font class='small' size='-1'>{$lang['forum_search_3chars']}</font></td>
       </tr>
       <tr>
-        <td align='center' colspan='2'><input type='submit' value='Search' class='btn' /></td>
+        <td align='center' colspan='2'><input type='submit' value='{$lang['forum_search_search_btn']}' class='btn' /></td>
       </tr>
     </table>
     </form>\n";
     
-    print stdhead("Forum Search") . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['forum_search_forum_search']}") . $HTMLOUT . stdfoot();
     die;
 	
 ?>

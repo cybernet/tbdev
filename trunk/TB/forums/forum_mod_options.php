@@ -18,7 +18,7 @@
 */
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_mod_options_access']}";
 	exit();
 }
 
@@ -32,7 +32,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $page = 0+$_GET["page"];
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
-      stderr('USER ERROR', 'Incorrect access');
+      stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
     @mysql_query("UPDATE topics SET locked='yes' WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
@@ -52,7 +52,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $page = 0+$_GET["page"];
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
-      stderr('USER ERROR', 'Incorrect access');
+      stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
     @mysql_query("UPDATE topics SET locked='no' WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
@@ -68,7 +68,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $topicid = (int)$_POST["topicid"];
 
     if (!$topicid || get_user_class() < UC_MODERATOR)
-      stderr('USER ERROR', 'Incorrect access');
+      stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
     $locked = sqlesc($_POST["locked"]);
     
@@ -86,7 +86,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $topicid = (int)$_POST["topicid"];
 
     if (!$topicid || get_user_class() < UC_MODERATOR)
-      stderr('USER ERROR', 'Incorrect access');
+      stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
     $sticky = sqlesc($_POST["sticky"]);
     
@@ -102,17 +102,17 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
   if ($action == 'renametopic')
   {
   	if (get_user_class() < UC_MODERATOR)
-  	  stderr('USER ERROR', 'Incorrect access');
+  	  stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
   	$topicid = (int)$_POST['topicid'];
 
   	if (!is_valid_id($topicid))
-  	  stderr('USER ERROR', 'Incorrect access');
+  	  stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
   	$subject = $_POST['subject'];
 
   	if ($subject == '')
-  	  stderr('Error', 'You must enter a new title!');
+  	  stderr("{$lang['forum_mod_options_error']}","{$lang['forum_mod_options_new_title']}");
 
   	$subject = sqlesc(trim(strip_tags($subject)));
 
@@ -134,7 +134,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $forumid = isset($_POST["forumid"]) ? (int)$_POST["forumid"] : 0;
 
     if (!is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
-      stderr('USER ERROR', 'Incorrect access');
+      stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
     $sure = isset($_POST["sure"]) ? $_POST["sure"] : 0;
 
@@ -143,7 +143,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       
       $HTMLOUT = "<table>
       <tr>
-        <td align='right'>Sanity check: You are about to delete a topic.</td>
+        <td align='right'>{$lang['forum_mod_options_sanity']}</td>
       </tr>
       <tr>
         <td>
@@ -151,14 +151,14 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
           <input type='hidden' name='action' value='deletetopic' />
           <input type='hidden' name='topicid' value='$topicid' />
           <input type='hidden' name='forumid' value='$forumid' />
-          <input type='checkbox' name='sure' value='1' />I'm sure
-          <input type='submit' value='Okay' />
+          <input type='checkbox' name='sure' value='1' />{$lang['forum_mod_options_sure']}
+          <input type='submit' value={$lang['forum_mod_options_ok']} />
           </form>
         </td>
       </tr>
 	    </table>\n";
 	    
-      print stdhead("Delete Topic") . $HTMLOUT . stdfoot();
+      print stdhead("{$lang['forum_mod_options_delete']}") . $HTMLOUT . stdfoot();
       exit();
     }
 
@@ -181,24 +181,24 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $topicid = (int)$_POST["topicid"];
 
     if (!is_valid_id($forumid) || !is_valid_id($topicid) || get_user_class() < UC_MODERATOR)
-      stderr('USER ERROR', 'Incorrect access');
+      stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
     // Make sure topic and forum is valid
 
     $res = @mysql_query("SELECT minclasswrite FROM forums WHERE id=$forumid") or sqlerr(__FILE__, __LINE__);
 
     if (mysql_num_rows($res) != 1)
-      stderr("Error", "Forum not found.");
+      stderr("{$lang['forum_mod_options_error']}", "{$lang['forum_mod_options_notfound']}");
 
     $arr = mysql_fetch_row($res);
 
     if (get_user_class() < $arr[0])
-      stderr('USER ERROR', 'Incorrect access');
+      stderr("{$lang['forum_mod_options_user_error']}", "{$lang['forum_mod_options_incorrect']}");
 
     $res = @mysql_query("SELECT subject,forumid FROM topics WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
 
     if (mysql_num_rows($res) != 1)
-      stderr("Error", "Topic not found.");
+      stderr("{$lang['forum_mod_options_error']}", "{$lang['forum_mod_options_topic_notfound']}");
 
     $arr = mysql_fetch_assoc($res);
 

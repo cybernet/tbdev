@@ -18,7 +18,7 @@
 */
 if ( ! defined( 'IN_TBDEV_FORUM' ) )
 {
-	print "<h1>Incorrect access</h1>You cannot access this file directly.";
+	print "{$lang['forum_reply_access']}";
 	exit();
 }
 
@@ -37,12 +37,12 @@ if ($action == "reply")
                         WHERE t.id = $topicid");
 
     if( mysql_num_rows($q) != 1 )
-      stderr('USER ERROR', 'You didn\'t specify a topic!');
+      stderr("{$lang['forum_reply_user_error']}", "{$lang['forum_reply_select_topic']}");
     
     $check = @mysql_fetch_assoc($q);
     
     if( $CURUSER['class'] < $check['minclassread'] OR $CURUSER['class'] < $check['minclasswrite'] )
-      stderr('USER ERROR', 'You don\'t have correct permissions for this topic!');
+      stderr("{$lang['forum_reply_user_error']}", "{$lang['forum_reply_permission']}");
     
     $HTMLOUT = '';
 
@@ -52,7 +52,7 @@ if ($action == "reply")
 
     $HTMLOUT .= end_main_frame();
 
-    print stdhead("Post reply") . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['forum_reply_reply']}") . $HTMLOUT . stdfoot();
 
     die;
 }
@@ -72,12 +72,12 @@ if ($action == "quotepost")
                         WHERE t.id = $topicid");
 
     if( mysql_num_rows($q) != 1 )
-      stderr('USER ERROR', 'You didn\'t specify a topic!');
+      stderr("{$lang['forum_reply_user_error']}", "{$lang['forum_reply_select_topic']}");
     
     $check = @mysql_fetch_assoc($q);
     
     if( $CURUSER['class'] < $check['minclassread'] OR $CURUSER['class'] < $check['minclasswrite'] )
-      stderr('USER ERROR', 'You don\'t have correct permissions for this topic!');
+      stderr("{$lang['forum_reply_user_error']}", "{$lang['forum_reply_permission']}");
     
     $HTMLOUT = '';
 
@@ -87,7 +87,7 @@ if ($action == "quotepost")
 
     $HTMLOUT .= end_main_frame();
 
-    print stdhead("Post reply") . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['forum_reply_reply']}") . $HTMLOUT . stdfoot();
 
     die;
 }
