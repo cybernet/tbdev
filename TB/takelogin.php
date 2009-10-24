@@ -16,9 +16,9 @@
 |   $URL$
 +------------------------------------------------
 */
-require_once("include/bittorrent.php");
+require_once 'include/bittorrent.php';
 
-    if (!mkglobal("username:password:captcha"))
+    if (!mkglobal('username:password:captcha'))
       die();
       
     session_start();
@@ -28,10 +28,13 @@ require_once("include/bittorrent.php");
     }
 
     dbconn();
-
-    function bark($text = "Username or password incorrect")
+    
+    $lang = load_language('takelogin');
+    
+    function bark($text = 'Username or password incorrect')
     {
-      stderr("Login failed!", $text);
+      global $lang;
+      stderr($lang['tlogin_failed'], $text);
     }
 
     $res = mysql_query("SELECT id, passhash, secret, enabled FROM users WHERE username = " . sqlesc($username) . " AND status = 'confirmed'");
@@ -40,17 +43,19 @@ require_once("include/bittorrent.php");
     if (!$row)
       bark();
 
-    if ($row["passhash"] != md5($row["secret"] . $password . $row["secret"]))
+    if ($row['passhash'] != md5($row['secret'] . $password . $row['secret']))
       bark();
 
-    if ($row["enabled"] == "no")
-      bark("This account has been disabled.");
+    if ($row['enabled'] == 'no')
+      bark($lang['tlogin_disabled']);
 
-    logincookie($row["id"], $row["passhash"]);
+    logincookie($row['id'], $row['passhash']);
 
-    if (!empty($_POST["returnto"]))
-      header("Location: $_POST[returnto]");
+$returnto = str_replace('&amp;', '&', htmlspecialchars($_POST['returnto']));
+//$returnto = $_POST['returnto'];
+    if (!empty($returnto))
+      header("Location: ".$returnto);
     else
-      header("Location: my.php");
+      header('Location: my.php');
 
 ?>

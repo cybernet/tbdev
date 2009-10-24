@@ -36,7 +36,7 @@ loggedinorreturn();
 
 		$subres = mysql_query("SELECT * FROM files WHERE torrent = $id ORDER BY id");
 		
-		$HTMLOUT .= "<tr><td class='colhead'>Path</td><td class='colhead' align='right'>Size</td></tr>\n";
+		$HTMLOUT .= "<tr><td class='colhead'>{$lang["filelist_path"]}</td><td class='colhead' align='right'>{$lang["filelist_size"]}</td></tr>\n";
 		$counter = 0;
 			while ($subrow = mysql_fetch_assoc($subres)) {
 				
@@ -51,5 +51,5 @@ loggedinorreturn();
 				$HTMLOUT .= "</table>\n";
 
 
-    print stdhead("Filelist") . $HTMLOUT . stdfoot();
+    print stdhead($lang["filelist_header"]) . $HTMLOUT . stdfoot();
 ?>

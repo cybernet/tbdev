@@ -25,7 +25,10 @@ dbconn(true);
 
 loggedinorreturn();
 
-$HTMLOUT = '';
+    $lang = array_merge( load_language('global'), load_language('index') );
+    //$lang = ;
+    
+    $HTMLOUT = '';
 /*
 $a = @mysql_fetch_assoc(@mysql_query("SELECT id,username FROM users WHERE status='confirmed' ORDER BY id DESC LIMIT 1")) or die(mysql_error());
 if ($CURUSER)
@@ -55,13 +58,13 @@ else
 
 
     //stdhead();
-    //echo "<font class='small''>Welcome to our newest member, <b>$latestuser</b>!</font>\n";
+    //$HTMLOUT .= "<div class='roundedCorners'><font class='small''>Welcome to our newest member, <b>$latestuser</b>!</font></div>\n";
 
     $HTMLOUT .= "<table width='737' class='main' border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'>
-    <h2>Recent news";
+    <h2>{$lang['news_title']}";
     
     if (get_user_class() >= UC_ADMINISTRATOR)
-      $HTMLOUT .= " - <font class='small'>[<a class='altlink' href='admin.php?action=news'><b>News page</b></a>]</font>";
+      $HTMLOUT .= " - <font class='small'>[<a class='altlink' href='admin.php?action=news'><b>{$lang['news_link']}</b></a>]</font>";
       
     $HTMLOUT .= "</h2>\n";
     
@@ -80,8 +83,8 @@ else
         $HTMLOUT .= "<li>" . get_date( $array['added'],'DATE') . "<br />" . format_comment($array['body']);
         if (get_user_class() >= UC_ADMINISTRATOR)
         {
-          $HTMLOUT .= " <br /><font size=\"-2\">[<a class='altlink' href='admin.php?action=news&amp;mode=edit&amp;newsid={$array['id']}&amp;returnto=index.php'><b>E</b></a>]</font>";
-          $HTMLOUT .= " <font size=\"-2\">[<a class='altlink' href='admin.php?action=news&amp;mode=delete&amp;newsid={$array['id']}&amp;returnto=index.php'><b>D</b></a>]</font>";
+          $HTMLOUT .= " <br /><font size=\"-2\">[<a class='altlink' href='admin.php?action=news&amp;mode=edit&amp;newsid={$array['id']}&amp;returnto=index.php'><b>{$lang['news_edit']}</b></a>]</font>";
+          $HTMLOUT .= " <font size=\"-2\">[<a class='altlink' href='admin.php?action=news&amp;mode=delete&amp;newsid={$array['id']}&amp;returnto=index.php'><b>{$lang['news_delete']}</b></a>]</font>";
         }
         $HTMLOUT .= "</li>";
       }
@@ -91,25 +94,25 @@ else
 
 
 
-    $HTMLOUT .= "<h2>Stats</h2>
+    $HTMLOUT .= "<h2>{$lang['stats_title']}</h2>
     <table width='100%' border='1' cellspacing='0' cellpadding='10'>
     <tr>
     <td align='center'>
       <table class='main' border='1' cellspacing='0' cellpadding='5'>
       <tr>
-      <td class='rowhead'>Registered users</td><td align='right'>{$registered}</td>
+      <td class='rowhead'>{$lang['stats_regusers']}</td><td align='right'>{$registered}</td>
       </tr>
-      <!-- <tr><td class='rowhead'>Unconfirmed users</td><td align=right>{unverified}</td></tr> -->
+      <!-- <tr><td class='rowhead'>{$lang['stats_unverified']}</td><td align=right>{unverified}</td></tr> -->
       <tr>
-      <td class='rowhead'>Torrents</td><td align='right'>{$torrents}</td>
+      <td class='rowhead'>{$lang['stats_torrents']}</td><td align='right'>{$torrents}</td>
       </tr>";
       
     if (isset($peers)) 
     { 
-      $HTMLOUT .= "<tr><td class='rowhead'>Peers</td><td align='right'>{$peers}</td></tr>
-      <tr><td class='rowhead'>Seeders</td><td align='right'>{$seeders}</td></tr>
-      <tr><td class='rowhead'>Leechers</td><td align='right'>{$leechers}</td></tr>
-      <tr><td class='rowhead'>Seeder/leecher ratio (%)</td><td align='right'>{$ratio}</td></tr>";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['stats_peers']}</td><td align='right'>{$peers}</td></tr>
+      <tr><td class='rowhead'>{$lang['stats_seed']}</td><td align='right'>{$seeders}</td></tr>
+      <tr><td class='rowhead'>{$lang['stats_leech']}</td><td align='right'>{$leechers}</td></tr>
+      <tr><td class='rowhead'>{$lang['stats_sl_ratio']}</td><td align='right'>{$ratio}</td></tr>";
     } 
     
       $HTMLOUT .= "</table>
@@ -130,15 +133,12 @@ print("<img height='1'5 width=$width src=\"{$TBDEV['pic_base_url']}{$pic}\" alt=
 </td></tr></table>
 */
 
-    $HTMLOUT .= "<p><font class='small'>Disclaimer: None of the files shown here are actually hosted on this server. The links are provided solely by this site's users.
-The administrator of this site (www.tbdev.net) cannot be held responsible for what its users post, or any other actions of its users.
-You may not use this site to distribute or download any material when you do not have the legal rights to do so.
-It is your own responsibility to adhere to these terms.</font></p>
+    $HTMLOUT .= sprintf("<p><font class='small'>{$lang['foot_disclaimer']}</font></p>", $TBDEV['site_name']);
     
-    </td></tr>
+    $HTMLOUT .= "</td></tr>
     </table>";
 
 ///////////////////////////// FINAL OUTPUT //////////////////////
 
-    print stdhead('Home') . $HTMLOUT .stdfoot();
+    print stdhead('Home') . $HTMLOUT . stdfoot();
 ?>

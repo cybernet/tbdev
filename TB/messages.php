@@ -23,6 +23,8 @@ require_once "include/user_functions.php";
 // Connect to DB & check login
 dbconn();
 loggedinorreturn();
+
+    $lang = array_merge( load_language('global'), load_language('messages') );
 // Define constants
 define('PM_DELETED',0); // Message was deleted
 define('PM_INBOX',1); // Message located in Inbox for reciever
@@ -51,7 +53,7 @@ if (!$action)
 
     sqlerr(__FILE__,__LINE__);
     if (mysql_num_rows($res) == 0)
-      stderr("Error","Invalid Mailbox");
+      stderr("{$lang['messages_error']}","{$lang['messages_invalid_box']}");
 
     $mailbox_name = mysql_fetch_array($res);
     $mailbox_name = htmlspecialchars($mailbox_name[0]);
@@ -59,9 +61,9 @@ if (!$action)
     else
     {
     if ($mailbox == PM_INBOX)
-      $mailbox_name = "Inbox";
+      $mailbox_name = "{$lang['messages_inbox']}";
     else
-      $mailbox_name = "Sentbox";
+      $mailbox_name = "{$lang['messages_sentbox']}";
     }
     //$pmcount = mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM messages WHERE receiver = ".$CURUSER['id']));
     $pmcount = mysql_fetch_row(mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=".$CURUSER['id']." AND location >= '1' || sender=".$CURUSER['id']." AND saved = 'yes' ")) or sqlerr(__FILE__,__LINE__);
@@ -103,7 +105,7 @@ if (!$action)
     <table style='width: 250px;' cellspacing='1'>
 
               <tbody><tr>
-                <td colspan='3'>Your folders are {$pm_perc}% full</td>
+                <td colspan='3'>".sprintf($lang['messages_percent_full'], $pm_perc)."</td>
               </tr>
               <tr>
                 <td colspan='3' nowrap='nowrap' valign='middle'>
@@ -127,20 +129,20 @@ if (!$action)
     <input type='hidden' name='action' value='moveordel' />
     <table border='0' cellpadding='4' cellspacing='0' width='737'>
     <tr>
-    <td width='1%' class='colhead'>Status</td>
+    <td width='1%' class='colhead'>{$lang['messages_status']}</td>
     <td class='colhead'>Subject </td>";
 
     if ($mailbox != PM_SENTBOX)
     {
-      $HTMLOUT .= "<td width='35%' class='colhead'>Sender</td>";
+      $HTMLOUT .= "<td width='35%' class='colhead'>{$lang['messages_sender']}</td>";
     }
     else
     {
-      $HTMLOUT .= "<td width='35%' class='colhead'>Receiver</td>";
+      $HTMLOUT .= "<td width='35%' class='colhead'>{$lang['messages_receiver']}</td>";
     }
 
-    $HTMLOUT .= "<td width='1%' class='colhead'>Date</td>
-    <td width='1%' class='colhead'><input name='CheckAll' id='CheckAll' class='checkbox' value='1' onclick='checkAll(mutliact)' type='checkbox' title='Check All' />
+    $HTMLOUT .= "<td width='1%' class='colhead'>{$lang['messages_date']}</td>
+    <td width='1%' class='colhead'><input name='CheckAll' id='CheckAll' class='checkbox' value='1' onclick='checkAll(mutliact)' type='checkbox' title='{$lang['messages_checkall']}' />
     </td>
     </tr>";
 
@@ -155,7 +157,7 @@ if (!$action)
 
     if (mysql_num_rows($res) == 0)
     {
-      $HTMLOUT .= "<tr><td colspan='5' align='center'>No Messages.</td></tr>\n";
+      $HTMLOUT .= "<tr><td colspan='5' align='center'>{$lang['messages_no_messages']}</td></tr>\n";
     }
     else
     {
@@ -176,11 +178,11 @@ if (!$action)
 
           if ($friend) 
           {
-            $username .= "&nbsp;<a href='friends.php?action=delete&amp;type=friend&amp;targetid=$id'>[remove from friends]</a>";
+            $username .= "&nbsp;<a href='friends.php?action=delete&amp;type=friend&amp;targetid=$id'>{$lang['messages_remove_friends']}</a>";
           } 
           else 
           {
-            $username .= "&nbsp;<a href='friends.php?action=add&amp;type=friend&amp;targetid=$id'>[add to friends]</a>";
+            $username .= "&nbsp;<a href='friends.php?action=add&amp;type=friend&amp;targetid=$id'>{$lang['messages_add_friends']}</a>";
           }
         }
         elseif ($row['sender'] == $CURUSER['id'])
@@ -204,16 +206,16 @@ if (!$action)
 
         if (strlen($subject) <= 0)
         {
-          $subject = "No Subject";
+          $subject = "{$lang['messages_no_subject']}";
         }
 
         if ($row['unread'] == 'yes'/* && $mailbox != PM_SENTBOX*/)
         {
-          $HTMLOUT .= "<tr>\n<td align='center'><img src=\"pic/unreadpm.gif\" title='Unread Message' alt=\"Unread\" /></td>\n";
+          $HTMLOUT .= "<tr>\n<td align='center'><img src=\"pic/unreadpm.gif\" title='{$lang['messages_unread']}' alt=\"{$lang['messages_unread_title']}\" /></td>\n";
         }
         else
         {
-          $HTMLOUT .= "<tr>\n<td align='center'><img src='pic/readpm.gif' title='Read Message' alt='Read' /></td>\n";
+          $HTMLOUT .= "<tr>\n<td align='center'><img src='pic/readpm.gif' title='{$lang['messages_read']}e' alt='{$lang['messages_read_title']}' /></td>\n";
         }
         
         $HTMLOUT .= "<td align='left'>
@@ -226,9 +228,9 @@ if (!$action)
 
     $HTMLOUT .= "<tr class='colhead'>
     <td colspan='5' align='right' class='colhead'>
-    <input type='submit' name='move' value='Move to' class='btn' /> 
+    <input type='submit' name='move' value='{$lang['messages_move']}' class='btn' /> 
     <select name='box'>
-        <option value='1'>Inbox</option>";
+        <option value='1'>{$lang['messages_inbox']}</option>";
 
             $res = mysql_query('select * FROM pmboxes WHERE userid=' . sqlesc($CURUSER['id']) . ' ORDER BY boxnumber') or sqlerr(__FILE__,__LINE__);
             while ($row = mysql_fetch_assoc($res))
@@ -241,16 +243,16 @@ if (!$action)
           print("<p align='right'><input type='button' value=\"Check All\" onclick=\"this.value=check(form)\"><input type='submit' value=\"Delete selected\" /></p>");
     print("</form>");
          */
-            $HTMLOUT .= "</select> or <input type='submit' name='delete' value='Delete' class='btn' />
+            $HTMLOUT .= "</select> or <input type='submit' name='delete' value='{$lang['messages_delete']}' class='btn' />
           </td>
         </tr>
        </table>
       </form>
       <table border='0' cellpadding='4' cellspacing='0' width='737'><tr><td colspan='5'>
-    <div align='left'><img src='pic/unreadpm.gif' title='Unread Meassages' alt='Unread' /> Unread Messages.<br />
-    <img src='pic/readpm.gif' title='Read Messages' alt='Read' /> Read Messages.</div>
+    <div align='left'><img src='pic/unreadpm.gif' title='{$lang['messages_unread_msg']}' alt='{$lang['messages_unread_title']}' /> {$lang['messages_unread_msg']}<br />
+    <img src='pic/readpm.gif' title='{$lang['messages_read_msg']}' alt='{$lang['messages_read_title']}' /> {$lang['messages_read_msg']}</div>
     <div align='right'>
-    <a href='messages.php'>Return To Inbox</a>
+    <a href='messages.php'>{$lang['messages_return']}</a>
     </div></td></tr></table>";
     
     /////////////////// HTML OUTPUT ///////////////////////////////////////
@@ -262,14 +264,14 @@ if (!$action)
       $pm_id = (int) $_GET['id'];
       if (!$pm_id)
       {
-        stderr("Error","You do not have permission to view this message.");
+        stderr("{$lang['messages_error']}","{$lang['messages_access']}");
       }
 
       // Get the message
       $res = mysql_query("select * FROM messages WHERE id=" . sqlesc($pm_id)." AND (receiver=". sqlesc($CURUSER['id']) . " OR (sender=" . sqlesc($CURUSER['id']) . " AND saved='yes')) LIMIT 1") or sqlerr(__FILE__,__LINE__);
       if (!$res)
       {
-        stderr("Error","You do not have permission to view this message.");
+        stderr("{$lang['messages_error']}","{$lang['messages_access']}");
       }
 
       // Prepare for displaying message
@@ -286,10 +288,10 @@ if (!$action)
       }
       else
       {
-        $from = "From";
+        $from = "{$lang['messages_from']}";
         if ($message['sender'] == 0)
         {
-          $sender = "System";
+          $sender = "{$lang['messages_system']}";
           $reply = "";
         }
         else
@@ -297,7 +299,7 @@ if (!$action)
           $res2 = mysql_query("select username FROM users WHERE id=" . sqlesc($message['sender'])) or sqlerr(__FILE__,__LINE__);
           $sender = mysql_fetch_array($res2);
           $sender = "<a href='userdetails.php?id={$message['sender']}'>{$sender[0]}</a>";
-          $reply = "<a href='sendmessage.php?receiver={$message['sender']}&amp;replyto={$pm_id}'><span class='btn'>Reply</span></a>";
+          $reply = "<a href='sendmessage.php?receiver={$message['sender']}&amp;replyto={$pm_id}'><span class='btn'>{$lang['messages_reply']}</span></a>";
         }
       }
       
@@ -306,7 +308,7 @@ if (!$action)
       
       if ($CURUSER['class'] >= UC_MODERATOR && $message['sender'] == $CURUSER['id'])
       {
-        $unread = ($message['unread'] == 'yes' ? "<span style='color: #FF0000;'><b>(New)</b></a>" : "");
+        $unread = ($message['unread'] == 'yes' ? "<span style='color: #FF0000;'><b>{$lang['messages_new']}</b></a>" : "");
       }
       else
       {
@@ -317,7 +319,7 @@ if (!$action)
       
       if (strlen($subject) <= 0)
       {
-        $subject = "No Subject";
+        $subject = "{$lang['messages_no_subject']}";
       }
 
       if ($message['unread'] === 'yes')
@@ -332,7 +334,7 @@ if (!$action)
       <table width='737' border='0' cellpadding='4' cellspacing='0'>
       <tr>
       <td width='50%' class='colhead'>{$from}</td>
-      <td width='50%' class='colhead'>Date</td>
+      <td width='50%' class='colhead'>{$lang['messages_date']}</td>
       </tr>
       <tr>
       <td>{$sender}</td>
@@ -346,7 +348,7 @@ if (!$action)
       <form action='messages.php' method='post'>
       <input type='hidden' name='action' value='moveordel' />
       <input type='hidden' name='id' value='{$pm_id}' />
-      Move to: <select name='box'><option value='1'>Inbox</option>";
+      Move to: <select name='box'><option value='1'>{$lang['messages_inbox']}</option>";
       
       $res = mysql_query('select * FROM pmboxes WHERE userid=' . sqlesc($CURUSER['id']) . ' ORDER BY boxnumber') or sqlerr(__FILE__,__LINE__);
       while ($row = mysql_fetch_assoc($res))
@@ -354,9 +356,9 @@ if (!$action)
         $HTMLOUT .= "<option value='{$row['boxnumber']}'>" . htmlspecialchars($row['name']) . "</option>\n";
       }
       
-      $HTMLOUT .= "</select> <input type='submit' name='move' value='Move' class='btn' />
+      $HTMLOUT .= "</select> <input type='submit' name='move' value='{$lang['messages_move']}' class='btn' />
       </form></div>
-      <span style='float:right;vertical-align:inherit'><a href='messages.php'><span class='btn'>Return To Inbox</span></a>&nbsp;<a href='messages.php?action=deletemessage&amp;id=$pm_id'><span class='btn'>Delete</span></a>&nbsp;{$reply}&nbsp;<a href='messages.php?action=forward&amp;id={$pm_id}'><span class='btn'>Forward PM</span></a></span></td>
+      <span style='float:right;vertical-align:inherit'><a href='messages.php'><span class='btn'>{$lang['messages_return']}</span></a>&nbsp;<a href='messages.php?action=deletemessage&amp;id=$pm_id'><span class='btn'>{$lang['messages_delete']}</span></a>&nbsp;{$reply}&nbsp;<a href='messages.php?action=forward&amp;id={$pm_id}'><span class='btn'>{$lang['messages_forward']}</span></a></span></td>
       </tr>
       </table>";
       
@@ -387,7 +389,7 @@ if (!$action)
       // Check if messages were moved
       if (@mysql_affected_rows() == 0)
       {
-        stderr("Error","Messages couldn't be moved! ");
+        stderr("{$lang['messages_error']}","{$lang['messages_not_moved']}");
       }
 
       header("Location: messages.php?action=viewmailbox&box=" . $pm_box);
@@ -447,7 +449,7 @@ if (!$action)
         // Check if messages were moved
         if (@mysql_affected_rows() == 0)
         {
-          stderr("Error","Messages couldn't be deleted! ");
+          stderr("{$lang['messages_error']}","{$lang['messages_not_deleted']}");
         }
         else
         {
@@ -455,7 +457,7 @@ if (!$action)
           exit();
         }
       }
-      stderr("Error","No action");
+      stderr("{$lang['messages_error']}","{$lang['messages_no_action']}");
     }
     
     if ($action == "forward")
@@ -470,18 +472,18 @@ if (!$action)
       
       if (!$res)
       {
-        stderr("Error","You do not have permission to forward this message.");
+        stderr("{$lang['messages_error']}","{$lang['messages_access_forward']}");
       }
       
       if (mysql_num_rows($res) == 0)
       {
-        stderr("Error","You do not have permission to forward this message.");
+        stderr("{$lang['messages_error']}","{$lang['messages_access_forward']}");
       }
       
       $message = mysql_fetch_assoc($res);
 
       // Prepare variables
-      $subject = "Fwd: " . htmlspecialchars($message['subject']);
+      $subject = "{$lang['messages_fwd']}" . htmlspecialchars($message['subject']);
       $from = $message['sender'];
       $orig = $message['receiver'];
 
@@ -492,8 +494,8 @@ if (!$action)
       
       if ($from == 0)
       {
-        $from_name = "System";
-        $from2['username'] = "System";
+        $from_name = "{$lang['messages_system']}";
+        $from2['username'] = "{$lang['messages_system']}";
       }
       else
       {
@@ -501,7 +503,7 @@ if (!$action)
         $from_name = "<a href='userdetails.php?id=$from'>{$from2['username']}</a>";
       }
 
-      $body = "-------- Original Message from {$from2['username']}: --------<br />" . format_comment($message['msg']);
+      $body = sprintf($lang['messages_original'], $from2['username']) . format_comment($message['msg']);
 
       $HTMLOUT = '';
       
@@ -511,28 +513,28 @@ if (!$action)
       <input type='hidden' name='id' value='$pm_id' />
       <table border='0' cellpadding='4' cellspacing='0'  width='737'>
       <tr>
-      <td class='colhead'>To:</td>
-      <td align='left'><input type='text' name='to' value='Enter Username' size='83' /></td>
+      <td class='colhead'>{$lang['messages_to']}</td>
+      <td align='left'><input type='text' name='to' value='{$lang['messages_username']}' size='83' /></td>
       </tr>
       <tr>
-      <td class='colhead'>Orignal<br />Receiver:</td>
+      <td class='colhead'>Orignal<br />{$lang['messages_receiver']}</td>
       <td align='left'>$orig_name</td>
       </tr>
       <tr>
-      <td class='colhead'>From:</td>
+      <td class='colhead'>{$lang['messages_from']}</td>
       <td align='left'>$from_name</td>
       </tr>
       <tr>
-      <td class='colhead'>Subject:</td>
+      <td class='colhead'>{$lang['messages_subject']}</td>
       <td align='left'><input type='text' name='subject' value='$subject' size='83' /></td>
       </tr>
       <tr>
-      <td class='colhead'>Message:</td>
+      <td class='colhead'>{$lang['messages_message']}</td>
       <td align='left'><textarea name='msg' cols='80' rows='8'></textarea><br />$body</td>
       </tr>
       <tr>
-      <td colspan='2' align='left'>Save Message <input type='checkbox' name='save' value='1' ".($CURUSER['savepms'] == 'yes' ? " checked='checked'":'')." />&nbsp;
-      <input type='submit' value='Forward' class='btn' /></td>
+      <td colspan='2' align='left'>{$lang['messages_save']} <input type='checkbox' name='save' value='1' ".($CURUSER['savepms'] == 'yes' ? " checked='checked'":'')." />&nbsp;
+      <input type='submit' value='{$lang['messages_forward_btn']}' class='btn' /></td>
       </tr>
       </table>
       </form>";
@@ -550,12 +552,12 @@ if (!$action)
         
         if (!$res)
         {
-          stderr("Error","You do not have permission to forward this message.");
+          stderr("{$lang['messages_error']}","{$lang['messages_access_forward']}");
         }
         
         if (mysql_num_rows($res) == 0)
         {
-          stderr("Error","You do not have permission to forward this message.");
+          stderr("{$lang['messages_error']}","{$lang['messages_access_forward']}");
         }
         
         $message = mysql_fetch_assoc($res);
@@ -567,12 +569,12 @@ if (!$action)
         $res = mysql_query("select id FROM users WHERE LOWER(username)=LOWER(" . sqlesc($username) . ") LIMIT 1");
         if (!$res)
         {
-          stderr("Error","Sorry, there is no user with that username.");
+          stderr("{$lang['messages_error']}","{$lang['messages_no_user']}");
         }
         
         if (mysql_num_rows($res) == 0)
         {
-          stderr("Error","Sorry, there is no user with that username.");
+          stderr("{$lang['messages_error']}","{$lang['messages_no_user']}");
         }
         
         $to = mysql_fetch_array($res);
@@ -581,7 +583,7 @@ if (!$action)
         // Get Orignal sender's username
         if ($message['sender'] == 0)
         {
-          $from = "System";
+          $from = "{$lang['messages_system']}";
         }
         else
         {
@@ -591,7 +593,7 @@ if (!$action)
         }
 
         $body = (isset($_POST['msg'])?(string)$_POST['msg']:'');
-        $body .= "\n-------- Original Message from {$from}: --------\n{$message['msg']}";
+        $body .= sprintf($lang['messages_original1'], $from, $message['msg']);
 
         $save = (isset($_POST['save'])?(int)$_POST['save']:'');
 
@@ -611,24 +613,24 @@ if (!$action)
           {
             $res2 = mysql_query("select * FROM blocks WHERE userid=$to AND blockid=" . $CURUSER["id"]) or sqlerr(__FILE__, __LINE__);
             if (mysql_num_rows($res2) == 1)
-            stderr("Refused", "This user has blocked PMs from you.");
+            stderr("{$lang['messages_refused']}", "{$lang['messages_blocked']}");
           }
           elseif ($from["acceptpms"] == "friends")
           {
             $res2 = mysql_query("select * FROM friends WHERE userid=$to AND friendid=" . $CURUSER["id"]) or sqlerr(__FILE__, __LINE__);
             if (mysql_num_rows($res2) != 1)
-            stderr("Refused", "This user only accepts PMs from users in his friends list.");
+            stderr("{$lang['messages_refused']}", "{$lang['messages_only_friends']}");
           }
           elseif ($from["acceptpms"] == "no")
           {
-            stderr("Refused", "This user does not accept PMs.");
+            stderr("{$lang['messages_refused']}", "{$lang['messages_decline']}");
           }
         }
 
         @mysql_query("INSERT INTO messages (poster, sender, receiver, added, subject, msg, location, saved) VALUES({$CURUSER["id"]}, {$CURUSER["id"]}, $to, " . time() . ", " . sqlesc($subject) . "," .
         sqlesc($body) . ", " . sqlesc(PM_INBOX) . ", " . sqlesc($save) . ")") or sqlerr(__FILE__, __LINE__);
 
-        stderr("Success", "PM forwarded");
+        stderr("{$lang['messages_success']}", "{$lang['messages_pm_forwarded']}");
       }
     }
     
@@ -640,13 +642,13 @@ if (!$action)
       
       $HTMLOUT = '';
       
-      $HTMLOUT .= "<h1>Editing Mailboxes</h1>
+      $HTMLOUT .= "<h1>{$lang['messages_edit_mb']}</h1>
       <table width='737' border='0' cellpadding='4' cellspacing='0'>
       <tr>
-      <td class='colhead' align='left'>Add Mailboxes</td>
+      <td class='colhead' align='left'>{$lang['messages_add_mb']}</td>
       </tr>
       <tr>
-      <td align='left'>You may add extra mailboxes. You do not have to use all the input boxes.<br />
+      <td align='left'>{$lang['messages_extra']}<br />
       <form action='messages.php' method='get'>
       <input type='hidden' name='action' value='editmailboxes2' />
       <input type='hidden' name='action2' value='add' />
@@ -654,27 +656,26 @@ if (!$action)
       <input type='text' name='new1' size='40' maxlength='14' /><br />
       <input type='text' name='new2' size='40' maxlength='14' /><br />
       <input type='text' name='new3' size='40' maxlength='14' /><br />
-      <input type='submit' value='Add' class='btn' />
+      <input type='submit' value='{$lang['messages_add']}' class='btn' />
       </form></td>
       </tr>
       <tr>
-      <td class='colhead' align='left'>Edit Mailboxes</td>
+      <td class='colhead' align='left'>{$lang['messages_mb_edit']}</td>
       </tr>
       <tr>
-      <td align='left'>You may edit the names, or delete the name to delete this virtual directory.<br />Please note, that all messages
-      in this directory will be lost if you delete this directory. 
+      <td align='left'>{$lang['messages_vir_dir']} 
       <form action='messages.php' method='get'>
       <input type='hidden' name='action' value='editmailboxes2' />
       <input type='hidden' name='action2' value='edit' />";
 
       if (!$res)
       {
-        $HTMLOUT .= "<span align='center'><b>There are no mailboxes to edit.<b></span>";
+        $HTMLOUT .= "<span align='center'><b>{$lang['messages_no_edit']}<b></span>";
       }
       
       if (mysql_num_rows($res) == 0)
       {
-        $HTMLOUT .= "<span align='center'><b>There are no mailboxes to edit.</b></span>";
+        $HTMLOUT .= "<span align='center'><b>{$lang['messages_no_edit']}</b></span>";
       }
       else
       {
@@ -685,14 +686,14 @@ if (!$action)
           $HTMLOUT .= "<input type='text' name='edit$id' value='$name' size='40' maxlength='14' /><br />\n";
         }
       
-        $HTMLOUT .= "<input type='submit' value='Edit' class='btn' />";
+        $HTMLOUT .= "<input type='submit' value='{$lang['messages_edit']}' class='btn' />";
       }
       
       $HTMLOUT .= "</form></td>
       </tr>
       </table>";
       
-      print stdhead("Editing Mailboxes", false) . $HTMLOUT . stdfoot();
+      print stdhead("{$lang['messages_edit_mb']}s", false) . $HTMLOUT . stdfoot();
     }
     
     
@@ -750,12 +751,12 @@ if (!$action)
         
         if (!$res)
         {
-          stderr("Error","No Mailboxes to edit");
+          stderr("{$lang['messages_error']}","{$lang['messages_no_mb_edit']}");
         }
         
         if (mysql_num_rows($res) == 0)
         {
-          stderr("Error","No Mailboxes to edit");
+          stderr("{$lang['messages_error']}","{$lang['messages_no_mb_edit']}");
         }
         else
         {
@@ -801,12 +802,12 @@ if (!$action)
       
       if (!$res)
       {
-        stderr("Error","No message with this ID.");
+        stderr("{$lang['messages_error']}","{$lang['messages_no_id']}");
       }
       
       if (mysql_num_rows($res) == 0)
       {
-        stderr("Error","No message with this ID.");
+        stderr("{$lang['messages_error']}","{$lang['messages_no_id']}");
       }
       
       $message = mysql_fetch_assoc($res);
@@ -830,12 +831,12 @@ if (!$action)
       
       if (!$res2)
       {
-        stderr("Error","Could not delete message.");
+        stderr("{$lang['messages_error']}","{$lang['messages_no_delete']}");
       }
       
       if (mysql_affected_rows() == 0)
       {
-        stderr("Error","Could not delete message.");
+        stderr("{$lang['messages_error']}","{$lang['messages_no_delete']}");
       }
       else
       {
@@ -847,16 +848,16 @@ if (!$action)
 //----- FUNCTIONS ------
 function insertJumpTo($selected = 0)
     {
-      global $CURUSER;
+      global $CURUSER, $lang;
       
       $htmlout = '';
       
       $res = mysql_query("select * FROM pmboxes WHERE userid=" . sqlesc($CURUSER['id']) ." ORDER BY boxnumber");
       
       $htmlout .= "<form action='messages.php' method='get'>
-      <input type='hidden' name='action' value='viewmailbox' />Jump to: <select name='box'>
-      <option value='1'" .($selected == PM_INBOX ? " selected='selected'" : "").">Inbox</option>
-      <option value='-1'" .($selected == PM_SENTBOX ? " selected='selected'" : "").">Sentbox</option>";
+      <input type='hidden' name='action' value='viewmailbox' />{$lang['messages_jump']} <select name='box'>
+      <option value='1'" .($selected == PM_INBOX ? " selected='selected'" : "").">{$lang['messages_inbox']}</option>
+      <option value='-1'" .($selected == PM_SENTBOX ? " selected='selected'" : "").">{$lang['messages_sentbox']}</option>";
       
       while ($row = mysql_fetch_assoc($res))
       {
@@ -869,7 +870,7 @@ function insertJumpTo($selected = 0)
           $htmlout .= "<option value='{$row['boxnumber']}'>{$row['name']}</option>\n";
         }
       }
-      $htmlout .= "</select> <input type='submit' value='Go' class='btn' /></form>";
+      $htmlout .= "</select> <input type='submit' value='{$lang['messages_go']}' class='btn' /></form>";
       
       return $htmlout;
 }

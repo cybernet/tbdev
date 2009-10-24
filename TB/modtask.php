@@ -23,19 +23,19 @@ dbconn(false);
 
 loggedinorreturn();
 
+$lang = load_language('modtask');
 
-
-if ($CURUSER['class'] < UC_MODERATOR) stderr('USER ERROR', 'Please try again');
+if ($CURUSER['class'] < UC_MODERATOR) stderr("{$lang['modtask_user_error']}", "{$lang['modtask_try_again']}");
 
 // Correct call to script
 if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     {
     // Set user id
     if (isset($_POST['userid'])) $userid = $_POST['userid'];
-    else stderr('USER ERROR', 'Please try again');
+    else stderr("{$lang['modtask_user_error']}", "{$lang['modtask_try_again']}");
 
     // and verify...
-    if (!is_valid_id($userid)) stderr("Error", "Bad user ID.");
+    if (!is_valid_id($userid)) stderr("{$lang['modtask_error']}", "{$lang['modtask_bad_id']}");
 
     // Fetch current user data...
     $res = mysql_query("SELECT * FROM users WHERE id=".sqlesc($userid)) or sqlerr(__FILE__, __LINE__);
@@ -50,11 +50,11 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
 
     if ((isset($_POST['class'])) && (($class = $_POST['class']) != $user['class']))
     {
-    if (($CURUSER['class'] < UC_SYSOP) && ($user['class'] >= $CURUSER['class'])) stderr('USER ERROR', 'Please try again');
+    if (($CURUSER['class'] < UC_SYSOP) && ($user['class'] >= $CURUSER['class'])) stderr("{$lang['modtask_user_error']}", "{$lang['modtask_try_again']}");
 
     // Notify user
-    $what = ($class > $user['class'] ? "promoted" : "demoted");
-    $msg = sqlesc("You have been $what to '" . get_user_class_name($class) . "' by ".$CURUSER['username']);
+    $what = ($class > $user['class'] ? "{$lang['modtask_promoted']}" : "{$lang['modtask_demoted']}");
+    $msg = sqlesc("{$lang['modtask_have_been']} '" . get_user_class_name($class) . "' {$lang['modtask_by']} ".$CURUSER['username']);
     $added = time();
     mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES(0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
 
@@ -70,8 +70,8 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     $updateset[] = "warneduntil = 0";
     if ($warned == 'no')
     {
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Warning removed by " . $CURUSER['username'] . ".\n". $modcomment;
-    $msg = sqlesc("Your warning has been removed by " . $CURUSER['username'] . ".");
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_warned']}" . $CURUSER['username'] . ".\n". $modcomment;
+    $msg = sqlesc("{$lang['modtask_warned_removed']}" . $CURUSER['username'] . ".");
     $added = time();
     mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
     }
@@ -85,16 +85,16 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
 
     if ($warnlength == 255)
     {
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Warned by " . $CURUSER['username'] . ".\nReason: $warnpm\n" . $modcomment;
-    $msg = sqlesc("You have received a warning from ".$CURUSER['username'].($warnpm ? "\n\nReason: $warnpm" : ""));
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_warned_by']}" . $CURUSER['username'] . ".\n{$lang['modtask_reason']} $warnpm\n" . $modcomment;
+    $msg = sqlesc("{$lang['modtask_warning_received']}".$CURUSER['username'].($warnpm ? "\n\n{$lang['modtask_reason']} $warnpm" : ""));
     $updateset[] = "warneduntil = 0";
     }
     else
     {
     $warneduntil = (time() + $warnlength * 604800);
-    $dur = $warnlength . " week" . ($warnlength > 1 ? "s" : "");
-    $msg = sqlesc("You have received a $dur warning from ".$CURUSER['username'].($warnpm ? "\n\nReason: $warnpm" : ""));
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Warned for $dur by " . $CURUSER['username'] . ".\nReason: $warnpm\n" . $modcomment;
+    $dur = $warnlength . "{$lang['modtask_week']}" . ($warnlength > 1 ? "s" : "");
+    $msg = sqlesc("{$lang['modtask_warning_duration']}".$CURUSER['username'].($warnpm ? "\n\nReason: $warnpm" : ""));
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_warned_for']}" . $CURUSER['username'] . ".\n{$lang['modtask_reason']} $warnpm\n" . $modcomment;
     $updateset[] = "warneduntil = ".$warneduntil;
     }
     $added = time();
@@ -109,8 +109,8 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     $updateset[] = "warneduntil = 0";
     if ($donor == 'no')
     {
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Donor status removed by ".$CURUSER['username'].".\n". $modcomment;
-    $msg = sqlesc("Your donator status has expired.");
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_donor_removed']}".$CURUSER['username'].".\n". $modcomment;
+    $msg = sqlesc("{$lang['modtask_donor_expired']}");
     $added = time();
     mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
     }
@@ -121,16 +121,16 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     {
     if ($donorlength == 255)
     {
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Donor status set by " . $CURUSER['username'] . ".\n" . $modcomment;
-    $msg = sqlesc("You have received donor status from ".$CURUSER['username']);
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_donor_set']}" . $CURUSER['username'] . ".\n" . $modcomment;
+    $msg = sqlesc("{$lang['modtask_received_donor']}".$CURUSER['username']);
     $updateset[] = "donoruntil = 0";
     }
     else
     {
     $donoruntil = (time() + $donorlength * 604800);
-    $dur = $donorlength . " week" . ($donorlength > 1 ? "s" : "");
-    $msg = sqlesc("You have received donator status for $dur from " . $CURUSER['username']);
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Donator status set for $dur by " . $CURUSER['username']."\n".$modcomment;
+    $dur = $donorlength . "{$lang['modtask_week']}" . ($donorlength > 1 ? "s" : "");
+    $msg = sqlesc("{$lang['modtask_donor_duration']}" . $CURUSER['username']);
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_donor_for']}" . $CURUSER['username']."\n".$modcomment;
     $updateset[] = "donoruntil = ".$donoruntil;
     }
     $added = time();
@@ -142,9 +142,9 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     if ((isset($_POST['enabled'])) && (($enabled = $_POST['enabled']) != $user['enabled']))
     {
     if ($enabled == 'yes')
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Enabled by " . $CURUSER['username'] . ".\n" . $modcomment;
+    $modcomment = get_date( time(), 'DATE', 1 ) . " {$lang['modtask_enabled']}" . $CURUSER['username'] . ".\n" . $modcomment;
     else
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Disabled by " . $CURUSER['username'] . ".\n" . $modcomment;
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_disabled']}" . $CURUSER['username'] . ".\n" . $modcomment;
 
     $updateset[] = "enabled = " . sqlesc($enabled);
     }
@@ -172,7 +172,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     // Change Custom Title
     if ((isset($_POST['title'])) && (($title = $_POST['title']) != ($curtitle = $user['title'])))
     {
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Custom Title changed to '".$title."' from '".$curtitle."' by " . $CURUSER['username'] . ".\n" . $modcomment;
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_custom_title']}'".$title."' from '".$curtitle."'{$lang['modtask_by']}" . $CURUSER['username'] . ".\n" . $modcomment;
 
     $updateset[] = "title = " . sqlesc($title);
     }
@@ -185,7 +185,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     if ((isset($_POST['resetpasskey'])) && ($_POST['resetpasskey']))
     {
     $newpasskey = md5($user['username'].time().$user['passhash']);
-    $modcomment = get_date( time(), 'DATE', 1 ) . " - Passkey ".sqlesc($user['passkey'])." Reset to ".sqlesc($newpasskey)." by " . $CURUSER['username'] . ".\n" . $modcomment;
+    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_passkey']}".sqlesc($user['passkey'])."{$lang['modtask_reset']}".sqlesc($newpasskey)."{$lang['modtask_by']}" . $CURUSER['username'] . ".\n" . $modcomment;
 
     $updateset[] = "passkey=".sqlesc($newpasskey);
     }
@@ -219,7 +219,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
     }
     else
-    stderr('USER ERROR', 'Please try again'); // Error
+    stderr("{$lang['modtask_user_error']}", "{$lang['modtask_try_again']}"); // Error
 
     $updateset[] = "uploadpos = " . sqlesc($uploadpos);
     } */
@@ -244,7 +244,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES (0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
     }
     else
-    stderr('USER ERROR', 'Please try again'); // Error
+    stderr("{$lang['modtask_user_error']}", "{$lang['modtask_try_again']}"); // Error
 
     $updateset[] = "downloadpos = " . sqlesc($downloadpos);
     } */
@@ -269,10 +269,10 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
         $img_size = @GetImageSize( $avatar );
 
         if($img_size == FALSE || !in_array($img_size['mime'], $TBDEV['allowed_ext']))
-          stderr('USER ERROR', 'Not an image or unsupported image!');
+          stderr("{$lang['modtask_user_error']}", "{$lang['modtask_not_image']}");
 
         if($img_size[0] < 5 || $img_size[1] < 5)
-          stderr('USER ERROR', 'Image is too small');
+          stderr("{$lang['modtask_user_error']}", "{$lang['modtask_image_small']}");
       
         if ( ( $img_size[0] > $TBDEV['av_img_width'] ) OR ( $img_size[1] > $TBDEV['av_img_height'] ) )
         { 
@@ -294,7 +294,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
         $updateset[] = "av_h = " . $image['img_height'];
       }
       
-      $modcomment = get_date( time(), 'DATE', 1 ) . " - Avatar changed from ".htmlspecialchars($curavatar)." to ".htmlspecialchars($avatar)." by " . $CURUSER['username'] . ".\n" . $modcomment;
+      $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_avatar_change']}".htmlspecialchars($curavatar)."{$lang['modtask_to']}".htmlspecialchars($avatar)."{$lang['modtask_by']}" . $CURUSER['username'] . ".\n" . $modcomment;
 
       $updateset[] = "avatar = ".sqlesc($avatar);
     }
@@ -313,7 +313,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     $modcomment = gmdate("Y-m-d") . " - Demoted from FLS by " . $CURUSER['username'] . ".\n" . $modcomment;
     }
     else
-    stderr('USER ERROR', 'Please try again');
+    stderr("{$lang['modtask_user_error']}", "{$lang['modtask_try_again']}");
 
     $supportfor = $_POST['supportfor'];
 
@@ -329,9 +329,9 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     $returnto = $_POST["returnto"];
     header("Location: {$TBDEV['baseurl']}/$returnto");
 
-    stderr('USER ERROR', 'Please try again');
+    stderr("{$lang['modtask_user_error']}", "{$lang['modtask_try_again']}");
     }
 
-stderr('USER ERROR', 'No idea what to do');
+stderr("{$lang['modtask_user_error']}", "{$lang['modtask_no_idea']}");
 
 ?>

@@ -23,11 +23,14 @@
   require_once "include/html_functions.php";
   //require_once "include/bbcode_functions.php";
   require_once "forums/forum_functions.php";
+  
 
   dbconn(false);
 
   loggedinorreturn();
-
+  
+  $lang = array_merge( load_language('global'), load_language('forums') );
+  
   $action = isset($_GET["action"]) ? $_GET["action"] : '';
   $forum_pic_url = $TBDEV['pic_base_url'] . 'forumicons/';
     //-------- Global variables
@@ -101,19 +104,21 @@
 
 function std_view() {
 
-  global $TBDEV, $CURUSER, $forum_pic_url;
+  global $TBDEV, $CURUSER, $lang, $forum_pic_url;
+  
+  //$lang = array_merge( $lang, load_language('forums') );
   
   $forums_res = mysql_query("SELECT * FROM forums ORDER BY sort, name") or sqlerr(__FILE__, __LINE__);
 
-  $htmlout = "<h1>Forums</h1>\n";
+  $htmlout = "<h1>{$lang['forums_title']}</h1>\n";
   
-  $htmlout .= "<div style='width:80%'><p style='text-align:right;'><span class='btn'><a href='forums.php?action=search'>Search</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>View unread</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>Catch up</a></span></p></div>";
+  $htmlout .= "<div style='width:80%'><p style='text-align:right;'><span class='btn'><a href='forums.php?action=search'>{$lang['forums_search']}</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>{$lang['forums_view_unread']}</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>{$lang['forums_catchup']}</a></span></p></div>";
   
   $htmlout .="<table border='1' cellspacing='0' cellpadding='5' width='80%'>\n";
 
-  $htmlout .= "<tr><td class='colhead' style='text-align:left;'>Forum</td><td class='colhead' style='text-align:right;'>Topics</td>" .
-  "<td class='colhead' style='text-align:right;'>Posts</td>" .
-  "<td class='colhead' style='text-align:left;'>Last post</td></tr>\n";
+  $htmlout .= "<tr><td class='colhead' style='text-align:left;'>{$lang['forums_forum_heading']}</td><td class='colhead' style='text-align:right;'>{$lang['forums_topic_heading']}</td>" .
+  "<td class='colhead' style='text-align:right;'>{$lang['forums_posts_heading']}</td>" .
+  "<td class='colhead' style='text-align:left;'>{$lang['forums_lastpost_heading']}</td></tr>\n";
 
   while ($forums_arr = mysql_fetch_assoc($forums_res))
   {
@@ -142,7 +147,7 @@ function std_view() {
 
     if (mysql_num_rows($post_res) == 1)
     {
-      $post_arr = mysql_fetch_assoc($post_res) or die("Bad forum last_post");
+      $post_arr = mysql_fetch_assoc($post_res) or die("{$lang['forums_bad_post']}");
 
       $lastposterid = $post_arr["userid"];
 
@@ -202,10 +207,10 @@ function std_view() {
 
   $htmlout .= "</table>\n<br />\n";
 
-  $htmlout .= "<div style='width:80%'><p style='text-align:right;'><span class='btn'><a href='forums.php?action=search'>Search</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>View unread</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>Catch up</a></span></p></div>";
+  $htmlout .= "<div style='width:80%'><p style='text-align:right;'><span class='btn'><a href='forums.php?action=search'>{$lang['forums_search']}</a></span>&nbsp;<span class='btn'><a href='forums.php?action=viewunread'>{$lang['forums_view_unread']}</a></span>&nbsp;<span class='btn'><a href='forums.php?action=catchup'>{$lang['forums_catchup']}</a></span></p></div>";
 
 
-  print stdhead("Forums") . $htmlout . stdfoot();
+  print stdhead("{$lang['forums_title']}") . $htmlout . stdfoot();
   exit();
 }
 ?>

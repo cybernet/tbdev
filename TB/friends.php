@@ -22,6 +22,8 @@ require_once "include/user_functions.php";
 dbconn(false);
 loggedinorreturn();
 
+    $lang = array_merge( load_language('global'), load_language('friends') );
+    
     $userid = isset($_GET['id']) ? (int)$_GET['id'] : $CURUSER['id'];
     $action = isset($_GET['action']) ? $_GET['action'] : '';
 
@@ -29,10 +31,10 @@ loggedinorreturn();
     //	$userid = $CURUSER['id'];
 
     if (!is_valid_id($userid))
-      stderr("Error", "Invalid ID.");
+      stderr($lang['friends_error'], $lang['friends_invalid_id']);
 
     if ($userid != $CURUSER["id"])
-      stderr("Error", "Access denied.");
+    stderr($lang['friends_error'], $lang['friends_no_access']);
 
 
     // action: add -------------------------------------------------------------
@@ -43,7 +45,7 @@ loggedinorreturn();
       $type = $_GET['type'];
 
       if (!is_valid_id($targetid))
-        stderr("Error", "Invalid ID.");
+        stderr($lang['friends_error'], $lang['friends_invalid_id']);
 
       if ($type == 'friend')
       {
@@ -56,11 +58,12 @@ loggedinorreturn();
         $field_is = 'blockid';
       }
       else
-        stderr("Error", "Unknown type.");
+       stderr($lang['friends_error'], $lang['friends_unknown']);
 
       $r = mysql_query("SELECT id FROM $table_is WHERE userid=$userid AND $field_is=$targetid") or sqlerr(__FILE__, __LINE__);
       if (mysql_num_rows($r) == 1)
-        stderr("Error", "User ID is already in your ".htmlentities($table_is)." list.");
+       stderr($lang['friends_error'], sprintf($lang['friends_already'], htmlentities($table_is)));
+       
 
       mysql_query("INSERT INTO $table_is VALUES (0,$userid, $targetid)") or sqlerr(__FILE__, __LINE__);
       header("Location: {$TBDEV['baseurl']}/friends.php?id=$userid#$frag");
@@ -73,31 +76,30 @@ loggedinorreturn();
     {
       $targetid = (int)$_GET['targetid'];
       $sure = isset($_GET['sure']) ? htmlentities($_GET['sure']) : false;
-      $type = isset($_GET['type']) ? ($_GET['type'] == 'friend' ? 'friend' : 'block') : stderr('Error', 'LoL');
+      $type = isset($_GET['type']) ? ($_GET['type'] == 'friend' ? 'friend' : 'block') : stderr($lang['friends_error'], 'LoL');
 
       if (!is_valid_id($targetid))
-        stderr("Error", "Invalid ID.");
+      stderr($lang['friends_error'], $lang['friends_invalid_id']);
 
       if (!$sure)
-        stderr("Delete $type","Do you really want to delete a $type? Click\n" .
-          "<a href='?id=$userid&amp;action=delete&amp;type=$type&amp;targetid=$targetid&amp;sure=1'>here</a> if you are sure.");
+        stderr("{$lang['friends_delete']} $type","{$lang['friends_sure']}", $type, $userid, $type, $targetid);
 
       if ($type == 'friend')
       {
         mysql_query("DELETE FROM friends WHERE userid=$userid AND friendid=$targetid") or sqlerr(__FILE__, __LINE__);
         if (mysql_affected_rows() == 0)
-          stderr("Error", "No friend found with ID");
+         stderr($lang['friends_error'], $lang['friends_no_friend']);
         $frag = "friends";
       }
       elseif ($type == 'block')
       {
         mysql_query("DELETE FROM blocks WHERE userid=$userid AND blockid=$targetid") or sqlerr(__FILE__, __LINE__);
         if (mysql_affected_rows() == 0)
-          stderr("Error", "No block found with ID");
+        stderr($lang['friends_error'], $lang['friends_no_block']);
         $frag = "blocks";
       }
       else
-        stderr("Error", "Unknown type.");
+      stderr($lang['friends_error'], $lang['friends_unknown']);
 
       header("Location: {$TBDEV['baseurl']}/friends.php?id=$userid#$frag");
       die;
@@ -106,12 +108,13 @@ loggedinorreturn();
     // main body  -----------------------------------------------------------------
 
     $res = mysql_query("SELECT * FROM users WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
-    $user = mysql_fetch_assoc($res) or stderr("Error", "No user with ID.");
+    $user = mysql_fetch_assoc($res) or stderr($lang['friends_error'], $lang['friends_no_user']);
+    //stderr("Error", "No user with ID.");
     
     $HTMLOUT = '';
     
-    $donor = ($user["donor"] == "yes") ? "<img src='{$TBDEV['pic_base_url']}starbig.gif' alt='Donor' style='margin-left: 4pt' />" : '';
-    $warned = ($user["warned"] == "yes") ? "<img src='{$TBDEV['pic_base_url']}warnedbig.gif' alt='Warned' style='margin-left: 4pt' />" : '';
+    $donor = ($user["donor"] == "yes") ? "<img src='{$TBDEV['pic_base_url']}starbig.gif' alt='{$lang['friends_donor']}' style='margin-left: 4pt' />" : '';
+    $warned = ($user["warned"] == "yes") ? "<img src='{$TBDEV['pic_base_url']}warnedbig.gif' alt='{$lang['friends_warned']}' style='margin-left: 4pt' />" : '';
 
 
     
@@ -124,7 +127,7 @@ loggedinorreturn();
     
     if( !$count)
     {
-      $friends = "<em>Your friends list is empty.</em>";
+      $friends = "<em>{$lang['friends_friends_empty']}.</em>";
     }
     else
     {
@@ -136,11 +139,11 @@ loggedinorreturn();
           $title = get_user_class_name($friend["class"]);
         
         $userlink = "<a href='userdetails.php?id={$friend['id']}'><b>".htmlentities($friend['name'], ENT_QUOTES)."</b></a>";
-        $userlink .= get_user_icons($friend) . " ($title)<br />last seen on " . get_date( $friend['last_access'],'');
+        $userlink .= get_user_icons($friend) . " ($title)<br />{$lang['friends_last_seen']} " . get_date( $friend['last_access'],'');
         
-        $delete = "<span class='btn'><a href='friends.php?id=$userid&amp;action=delete&amp;type=friend&amp;targetid={$friend['id']}'>Remove</a></span>";
+        $delete = "<span class='btn'><a href='friends.php?id=$userid&amp;action=delete&amp;type=friend&amp;targetid={$friend['id']}'>{$lang['friends_remove']}</a></span>";
           
-        $pm = "&nbsp;<span class='btn'><a href='sendmessage.php?receiver={$friend['id']}'>Send PM</a></span>";
+        $pm = "&nbsp;<span class='btn'><a href='sendmessage.php?receiver={$friend['id']}'>{$lang['friends_pm']}</a></span>";
           
         $avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($friend["avatar"]) : "");
         if (!$avatar)
@@ -170,7 +173,7 @@ loggedinorreturn();
     
     if(mysql_num_rows($res) == 0)
     {
-      $blocks = "<em>Your blocked users list is empty.</em>";
+      $blocks = "{$lang['friends_blocks_empty']}<em>.</em>";
     }
     else
     {
@@ -179,7 +182,7 @@ loggedinorreturn();
       while ($block = mysql_fetch_assoc($res))
       {
         $blocks .= "<div style='border: 1px solid black;padding:5px;'>";
-        $blocks .= "<span class='btn' style='float:right;'><a href='friends.php?id=$userid&amp;action=delete&amp;type=block&amp;targetid={$block['id']}'>Delete</a></span><br />";
+        $blocks .= "<span class='btn' style='float:right;'><a href='friends.php?id=$userid&amp;action=delete&amp;type=block&amp;targetid={$block['id']}'>{$lang['friends_delete']}</a></span><br />";
         $blocks .= "<p><a href='userdetails.php?id={$block['id']}'><b>" . htmlentities($block['name'], ENT_QUOTES) . "</b></a>";
         $blocks .= get_user_icons($block) . "</p></div><br />";
         
@@ -189,12 +192,12 @@ loggedinorreturn();
 //////////////////// ENEMIES BLOCK END ////////////////////////////  
   
     $HTMLOUT .= "<table class='main' border='0' cellspacing='0' cellpadding='0'>".
-    "<tr><td class='embedded'><h1 style='margin:0px'> Personal lists for ".htmlentities($user['username'], ENT_QUOTES)."</h1>$donor$warned</td></tr></table>";
+    "<tr><td class='embedded'><h1 style='margin:0px'> {$lang['friends_personal']} ".htmlentities($user['username'], ENT_QUOTES)."</h1>$donor$warned</td></tr></table>";
 
     $HTMLOUT .= "<table class='main' width='750' border='0' cellspacing='0' cellpadding='0'>
     <tr>
-      <td class='colhead'><h2 align='left' style='width:50%;'><a name='friends'>Friends list</a></h2></td>
-      <td class='colhead'><h2 align='left' style='width:50%;vertical-align:top;'><a name='blocks'>Blocked list</a></h2></td>
+      <td class='colhead'><h2 align='left' style='width:50%;'><a name='friends'>{$lang['friends_friends_list']}</a></h2></td>
+      <td class='colhead'><h2 align='left' style='width:50%;vertical-align:top;'><a name='blocks'>{$lang['friends_blocks_list']}</a></h2></td>
     </tr>
     <tr>
       <td style='padding:10px;background-color:#ECE9D8;width:50%;'>$friends</td>
@@ -202,7 +205,7 @@ loggedinorreturn();
     </tr>
     </table>";
     
-    $HTMLOUT .= " <p><a href='users.php'><b>Find User/Browse User List</b></a></p>";
+    $HTMLOUT .= " <p><a href='users.php'><b>{$lang['friends_user_list']}</b></a></p>";
     
-    print stdhead("Personal lists for {$user['username']}") . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['friends_stdhead']} {$user['username']}") . $HTMLOUT . stdfoot();
 ?>
