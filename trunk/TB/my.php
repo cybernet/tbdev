@@ -24,6 +24,8 @@ require_once ROOT_PATH."/cache/timezones.php";
 dbconn(false);
 
 loggedinorreturn();
+
+    $lang = array_merge( load_language('global'), load_language('my') );
 /*
 $res = mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND location IN ('in', 'both')") or print(mysql_error());
 $arr = mysql_fetch_row($res);
@@ -41,13 +43,13 @@ $outmessages = $arr[0];
     
     if (isset($_GET["edited"])) 
     {
-      $HTMLOUT .= "<h1>Profile updated!</h1>\n";
+      $HTMLOUT .= "<h1>{$lang['my_updated']}!</h1>\n";
       if (isset($_GET["mailsent"]))
-        $HTMLOUT .= "<h2>Confirmation email has been sent!</h2>\n";
+        $HTMLOUT .= "<h2>{$lang['my_mail_sent']}!</h2>\n";
     }
     elseif (isset($_GET["emailch"]))
     {
-      $HTMLOUT .= "<h1>Email address changed!</h1>\n";
+      $HTMLOUT .= "<h1>{$lang['my_emailch']}!</h1>\n";
     }
     //else
       //print("<h1>Welcome, <a href=userdetails.php?id=$CURUSER[id]>$CURUSER[username]</a>!</h1>\n");
@@ -81,17 +83,17 @@ $outmessages = $arr[0];
 
     <table border='1' cellspacing='0' cellpadding='10' align='center'>
     <!--<tr>
-    <td align='center' width='33%'><a href='logout.php'><b>Logout</b></a></td>
-    <td align='center' width='33%'><a href='mytorrents.php'><b>My torrents</b></a></td>
-    <td align='center' width='33%'><a href='friends.php'><b>My users lists</b></a></td>
+    <td align='center' width='33%'><a href='logout.php'><b>{$lang['my_logout']}</b></a></td>
+    <td align='center' width='33%'><a href='mytorrents.php'><b>{$lang['my_torrents']}</b></a></td>
+    <td align='center' width='33%'><a href='friends.php'><b>{$lang['my_users_lists']}</b></a></td>
     </tr>-->
     <tr>
       <td valign='top'>
       $user_header<br />
       $avatar<br />
-      <a href='mytorrents.php'>View/Edit your Torrents</a><br />
-      <a href='friends.php'>View/Edit your Friends</a><br />
-      <a href='users.php'>Search Members</a>
+      <a href='mytorrents.php'>{$lang['my_edit_torrents']}</a><br />
+      <a href='friends.php'>{$lang['my_edit_friends']}</a><br />
+      <a href='users.php'>{$lang['my_search']}</a>
       </td>
     <td>
       <form method='post' action='takeprofedit.php'>
@@ -133,7 +135,7 @@ $outmessages = $arr[0];
       $stylesheets .= "<option value='$ss_id'$ss>$ss_name</option>\n";
     }
 
-    $countries = "<option value='0'>---- None selected ----</option>\n";
+    $countries = "<option value='0'>---- {$lang['my_none']} ----</option>\n";
     $ct_r = mysql_query("SELECT id,name FROM countries ORDER BY name") or sqlerr(__FILE__,__LINE__);
     
     while ($ct_a = mysql_fetch_assoc($ct_r))
@@ -152,7 +154,7 @@ $outmessages = $arr[0];
         // HTML jump box.
         //-----------------------------------------
         
-        foreach( $lang as $off => $words )
+        foreach( $TZ as $off => $words )
         {
           if ( preg_match("/^time_(-?[\d\.]+)$/", $off, $match))
           {
@@ -189,16 +191,16 @@ $outmessages = $arr[0];
         }
         
         
-    $HTMLOUT .= tr("Accept PMs",
-    "<input type='radio' name='acceptpms'" . ($CURUSER["acceptpms"] == "yes" ? " checked='checked'" : "") . " value='yes' />All (except blocks)
-    <input type='radio' name='acceptpms'" .  ($CURUSER["acceptpms"] == "friends" ? " checked='checked'" : "") . " value='friends' />Friends only
-    <input type='radio' name='acceptpms'" .  ($CURUSER["acceptpms"] == "no" ? " checked='checked'" : "") . " value='no' />Staff only"
+    $HTMLOUT .= tr($lang['my_accept_pm'],
+    "<input type='radio' name='acceptpms'" . ($CURUSER["acceptpms"] == "yes" ? " checked='checked'" : "") . " value='yes' />{$lang['my_except_blocks']}
+    <input type='radio' name='acceptpms'" .  ($CURUSER["acceptpms"] == "friends" ? " checked='checked'" : "") . " value='friends' />{$lang['my_only_friends']}
+    <input type='radio' name='acceptpms'" .  ($CURUSER["acceptpms"] == "no" ? " checked='checked'" : "") . " value='no' />{$lang['my_only_staff']}"
     ,1);
 
 
 
-    $HTMLOUT .= tr("Delete PMs", "<input type='checkbox' name='deletepms'" . ($CURUSER["deletepms"] == "yes" ? " checked='checked'" : "") . " /> (Default value for \"Delete PM on reply\")",1);
-    $HTMLOUT .= tr("Save PMs", "<input type='checkbox' name='savepms'" . ($CURUSER["savepms"] == "yes" ? " checked='checked'" : "") . " /> (Default value for \"Save PM to Sentbox\")",1);
+    $HTMLOUT .= tr($lang['my_delete_pms'], "<input type='checkbox' name='deletepms'" . ($CURUSER["deletepms"] == "yes" ? " checked='checked'" : "") . " /> {$lang['my_default_delete']}",1);
+    $HTMLOUT .= tr($lang['my_save_pms'], "<input type='checkbox' name='savepms'" . ($CURUSER["savepms"] == "yes" ? " checked='checked'" : "") . " /> {$lang['my_default_save']}",1);
     
     $categories = '';
     
@@ -217,30 +219,30 @@ $outmessages = $arr[0];
       $categories .= "</tr></table>\n";
     }
 
-    $HTMLOUT .= tr("Email notification", "<input type='checkbox' name='pmnotif'" . (strpos($CURUSER['notifs'], "[pm]") !== false ? " checked='checked'" : "") . " value='yes' /> Notify me when I have received a PM<br />\n" .
-       "<input type='checkbox' name='emailnotif'" . (strpos($CURUSER['notifs'], "[email]") !== false ? " checked='checked'" : "") . " value='yes' /> Notify me when a torrent is uploaded in one of <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; my default browsing categories.\n"
+    $HTMLOUT .= tr($lang['my_email_notif'], "<input type='checkbox' name='pmnotif'" . (strpos($CURUSER['notifs'], "[pm]") !== false ? " checked='checked'" : "") . " value='yes' /> {$lang['my_notify_pm']}<br />\n" .
+       "<input type='checkbox' name='emailnotif'" . (strpos($CURUSER['notifs'], "[email]") !== false ? " checked='checked'" : "") . " value='yes' /> {$lang['my_notify_torrent']}\n"
        , 1);
-    $HTMLOUT .= tr("Browse default<br />categories",$categories,1);
-    $HTMLOUT .= tr("Stylesheet", "<select name='stylesheet'>\n$stylesheets\n</select>",1);
-    $HTMLOUT .= tr("Country", "<select name='country'>\n$countries\n</select>",1);
+    $HTMLOUT .= tr($lang['my_browse'],$categories,1);
+    $HTMLOUT .= tr($lang['my_stylesheet'], "<select name='stylesheet'>\n$stylesheets\n</select>",1);
+    $HTMLOUT .= tr($lang['my_country'], "<select name='country'>\n$countries\n</select>",1);
 
     // Timezone stuff //
-    $HTMLOUT .= tr("Timezone", $time_select ,1);
-    $HTMLOUT .= tr("Daylight Saving", "<input type='checkbox' name='checkdst' id='tz-checkdst' onclick='daylight_show()' value='1' $dst_correction />&nbsp;Auto correct DST?<br />
-    <div id='tz-checkmanual' style='display: none;'><input type='checkbox' name='manualdst' value='1' $dst_check />&nbsp;Is daylight saving time in effect?</div>",1);
+    $HTMLOUT .= tr($lang['my_tz'], $time_select ,1);
+    $HTMLOUT .= tr($lang['my_checkdst'], "<input type='checkbox' name='checkdst' id='tz-checkdst' onclick='daylight_show()' value='1' $dst_correction />&nbsp;{$lang['my_auto_dst']}<br />
+    <div id='tz-checkmanual' style='display: none;'><input type='checkbox' name='manualdst' value='1' $dst_check />&nbsp;{$lang['my_is_dst']}</div>",1);
     // Timezone stuff end //
 
-    $HTMLOUT .= tr("Avatar URL", "<input name='avatar' size='50' value='" . htmlspecialchars($CURUSER["avatar"]) .
-      "' /><br />\nWidth should be 150 pixels (will be resized if necessary)\n<br />If you need a host for the picture, try the <a href='bitbucket-upload.php'>bitbucket</a>.",1);
-    $HTMLOUT .= tr("Torrents per page", "<input type='text' size='10' name='torrentsperpage' value='$CURUSER[torrentsperpage]' /> (0=use default setting)",1);
-    $HTMLOUT .= tr("Topics per page", "<input type='text' size='10' name='topicsperpage' value='$CURUSER[topicsperpage]' /> (0=use default setting)",1);
-    $HTMLOUT .= tr("Posts per page", "<input type='text' size='10' name='postsperpage' value='$CURUSER[postsperpage]' /> (0=use default setting)",1);
-    $HTMLOUT .= tr("View avatars", "<input type='checkbox' name='avatars'" . ($CURUSER["avatars"] == "yes" ? " checked='checked'" : "") . " /> (Low bandwidth users might want to turn this off)",1);
-    $HTMLOUT .= tr("Info", "<textarea name='info' cols='50' rows='4'>" . htmlentities($CURUSER["info"], ENT_QUOTES) . "</textarea><br />Displayed on your public page. May contain <a href='tags.php' target='_new'>BB codes</a>.", 1);
-    $HTMLOUT .= tr("Email address", "<input type='text' name='email' size='50' value='" . htmlspecialchars($CURUSER["email"]) . "' /><br />Please enter your password if changing your email address!<br /><input type='password' name='chmailpass' size='50' />", 1);
-    $HTMLOUT .= "<tr><td colspan='2' align='left'><b>Note:</b> In order to change your email address, you will receive another<br />confirmation email to your new address.</td></tr>\n";
-    $HTMLOUT .= tr("Change password", "<input type='password' name='chpassword' size='50' />", 1);
-    $HTMLOUT .= tr("Type password again", "<input type='password' name='passagain' size='50' />", 1);
+    $HTMLOUT .= tr($lang['my_avatar'], "<input name='avatar' size='50' value='" . htmlspecialchars($CURUSER["avatar"]) .
+      "' /><br />\n{$lang['my_avatar_info']}",1);
+    $HTMLOUT .= tr($lang['my_tor_perpage'], "<input type='text' size='10' name='torrentsperpage' value='$CURUSER[torrentsperpage]' /> {$lang['my_default']}",1);
+    $HTMLOUT .= tr($lang['my_top_perpage'], "<input type='text' size='10' name='topicsperpage' value='$CURUSER[topicsperpage]' /> {$lang['my_default']}",1);
+    $HTMLOUT .= tr($lang['my_post_perpage'], "<input type='text' size='10' name='postsperpage' value='$CURUSER[postsperpage]' /> {$lang['my_default']}",1);
+    $HTMLOUT .= tr($lang['my_view_avatars'], "<input type='checkbox' name='avatars'" . ($CURUSER["avatars"] == "yes" ? " checked='checked'" : "") . " /> {$lang['my_low_bw']}",1);
+    $HTMLOUT .= tr($lang['my_info'], "<textarea name='info' cols='50' rows='4'>" . htmlentities($CURUSER["info"], ENT_QUOTES) . "</textarea><br />{$lang['my_tags']}", 1);
+    $HTMLOUT .= tr($lang['my_email'], "<input type='text' name='email' size='50' value='" . htmlspecialchars($CURUSER["email"]) . "' /><br />{$lang['my_email_pass']}<br /><input type='password' name='chmailpass' size='50' />", 1);
+    $HTMLOUT .= "<tr><td colspan='2' align='left'>{$lang['my_note']}</td></tr>\n";
+    $HTMLOUT .= tr($lang['my_chpass'], "<input type='password' name='chpassword' size='50' />", 1);
+    $HTMLOUT .= tr($lang['my_pass_again'], "<input type='password' name='passagain' size='50' />", 1);
 
     function priv($name, $descr) {
       global $CURUSER;
@@ -253,8 +255,8 @@ $outmessages = $arr[0];
 
 
     $HTMLOUT .= "<tr><td colspan='2' align='center'>
-      <input type='submit' value='Submit changes!' class='btn' /> 
-      <input type='reset' value='Revert changes!' class='btn' />
+      <input type='submit' value='{$lang['my_submit']}' class='btn' /> 
+      <input type='reset' value='{$lang['my_revert']}' class='btn' />
       </td></tr>
       </table>
       </form>
@@ -282,6 +284,6 @@ $outmessages = $arr[0];
     //print("<p><a href='users.php'><b>Find User/Browse User List</b></a></p>");
     
     
-    print stdhead(htmlentities($CURUSER["username"], ENT_QUOTES) . "'s private page", false) . $HTMLOUT . stdfoot();
+    print stdhead(htmlentities($CURUSER["username"], ENT_QUOTES) . "{$lang['my_stdhead']}", false) . $HTMLOUT . stdfoot();
 
 ?>

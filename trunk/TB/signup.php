@@ -40,7 +40,7 @@ ini_set('session.use_trans_sid', '0');
         
         $time_select = "<select name='user_timezone'>";
         
-        foreach( $lang as $off => $words )
+        foreach( $TZ as $off => $words )
         {
           if ( preg_match("/^time_(-?[\d\.]+)$/", $off, $match))
           {

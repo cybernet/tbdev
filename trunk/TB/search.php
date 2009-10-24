@@ -22,18 +22,19 @@ require_once "include/user_functions.php";
 dbconn();
 loggedinorreturn();
 
-
+    $lang = array_merge( load_language('global'), load_language('search') );
+    
     $HTMLOUT = '';
     
     $HTMLOUT .= "<table width='750' class='main' border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'>
 
     <form method='get' action='browse.php'>
     <p align='center'>
-    Search:
+    {$lang['search_search']}
     <input type='text' name='search' size='40' value='' />
-    in
+    {$lang['search_in']}
     <select name='cat'>
-    <option value='0'>(all types)</option>";
+    <option value='0'>{$lang['search_all_types']}</option>";
 
 
 
@@ -50,14 +51,14 @@ loggedinorreturn();
     $deadchkbox = "<input type='checkbox' name='incldead' value='1'";
     if (isset($_GET["incldead"]))
         $deadchkbox .= " checked='checked'";
-    $deadchkbox .= " /> including dead torrents\n";
+    $deadchkbox .= " /> {$lang['search_inc_dead']}";
 
 
     $HTMLOUT .= $catdropdown;
     
     $HTMLOUT .= "</select>
     $deadchkbox
-    <input type='submit' value='Search!' class='btn' />
+    <input type='submit' value='{$lang['search_search_btn']}' class='btn' />
     </p>
     </form>
     </td></tr></table>
@@ -67,12 +68,12 @@ loggedinorreturn();
     <p align='center'>
     Search:
     <input type='text' name='search' size='40' value='' />
-    <input type='submit' value='Search!' class='btn' />
+    <input type='submit' value='{$lang['search_search_btn']}' class='btn' />
     </p>
     </form>
     </td></tr></table>";
 
 
-    print stdhead("Search") . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['search_search']}") . $HTMLOUT . stdfoot();
 
 ?>

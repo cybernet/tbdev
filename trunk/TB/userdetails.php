@@ -25,20 +25,22 @@ dbconn(false);
 
 loggedinorreturn();
 
+$lang = array_merge( load_language('global'), load_language('userdetails') );
+
 function bark($msg)
 {
-  stderr("Error", $msg);
+  stderr("{$lang['userdetails_error']}", $msg);
 }
 
 function maketable($res)
     {
-      global $TBDEV;
+      global $TBDEV, $lang;
       
       $htmlout = '';
       
       $htmlout .= "<table class='main' border='1' cellspacing='0' cellpadding='5'>" .
-        "<tr><td class='colhead' align='center'>Type</td><td class='colhead'>Name</td><td class='colhead' align='center'>TTL</td><td class='colhead' align='center'>Size</td><td class='colhead' align='right'>Se.</td><td class='colhead' align='right'>Le.</td><td class='colhead' align='center'>Upl.</td>\n" .
-        "<td class='colhead' align='center'>Downl.</td><td class='colhead' align='center'>Ratio</td></tr>\n";
+        "<tr><td class='colhead' align='center'>{$lang['userdetails_type']}</td><td class='colhead'>{$lang['userdetails_name']}</td><td class='colhead' align='center'>{$lang['userdetails_ttl']}</td><td class='colhead' align='center'>{$lang['userdetails_size']}</td><td class='colhead' align='right'>{$lang['userdetails_se']}</td><td class='colhead' align='right'>{$lang['userdetails_le']}</td><td class='colhead' align='center'>{$lang['userdetails_upl']}</td>\n" .
+        "<td class='colhead' align='center'>{$lang['userdetails_downl']}</td><td class='colhead' align='center'>{$lang['userdetails_ratio']}</td></tr>\n";
       foreach ($res as $arr)
       {
         if ($arr["downloaded"] > 0)
@@ -48,14 +50,14 @@ function maketable($res)
         }
         else
           if ($arr["uploaded"] > 0)
-            $ratio = "Inf.";
+            $ratio = "{$lang['userdetails_inf']}";
           else
             $ratio = "---";
       $catimage = "{$TBDEV['pic_base_url']}caticons/{$arr['image']}";
       $catname = htmlspecialchars($arr["catname"]);
       $catimage = "<img src=\"".htmlspecialchars($catimage) ."\" title=\"$catname\" alt=\"$catname\" width='42' height='42' />";
       $ttl = (28*24) - floor((time() - $arr["added"]) / 3600);
-      if ($ttl == 1) $ttl .= "<br />hour"; else $ttl .= "<br />hours";
+      if ($ttl == 1) $ttl .= "<br />{$lang['userdetails_hour']}"; else $ttl .= "<br />{$lang['userdetails_hours']}";
       $size = str_replace(" ", "<br />", mksize($arr["size"]));
       $uploaded = str_replace(" ", "<br />", mksize($arr["uploaded"]));
       $downloaded = str_replace(" ", "<br />", mksize($arr["downloaded"]));
@@ -73,18 +75,18 @@ function maketable($res)
     $id = 0 + $_GET["id"];
 
     if (!is_valid_id($id))
-      bark("Bad ID.");
+      bark("{$lang['userdetails_bad_id']}");
     
     
     
     $r = @mysql_query("SELECT * FROM users WHERE id=$id") or sqlerr();
-    $user = mysql_fetch_assoc($r) or bark("No user with ID.");
+    $user = mysql_fetch_assoc($r) or bark("{$lang['userdetails_no_user']}");
     if ($user["status"] == "pending") die;
     $r = mysql_query("SELECT t.id, t.name, t.seeders, t.leechers, c.name AS cname, c.image FROM torrents t LEFT JOIN categories c ON t.category = c.id WHERE t.owner = $id ORDER BY t.name") or sqlerr(__FILE__,__LINE__);
     if (mysql_num_rows($r) > 0)
     {
       $torrents = "<table class='main' border='1' cellspacing='0' cellpadding='5'>\n" .
-        "<tr><td class='colhead'>Type</td><td class='colhead'>Name</td><td class='colhead'>Seeders</td><td class='colhead'>Leechers</td></tr>\n";
+        "<tr><td class='colhead'>{$lang['userdetails_type']}</td><td class='colhead'>{$lang['userdetails_name']}</td><td class='colhead'>{$lang['userdetails_seeders']}</td><td class='colhead'>{$lang['userdetails_leechers']}</td></tr>\n";
       while ($a = mysql_fetch_assoc($r))
       {
         //$r2 = mysql_query("SELECT name, image FROM categories WHERE id=$a[category]") or sqlerr(__FILE__, __LINE__);
@@ -104,12 +106,12 @@ function maketable($res)
 
 
     if ($user['added'] == 0)
-      $joindate = 'N/A';
+      $joindate = "{$lang['userdetails_na']}";
     else
       $joindate = get_date( $user['added'],'');
     $lastseen = $user["last_access"];
     if ($lastseen == 0)
-      $lastseen = "never";
+      $lastseen = "{$lang['userdetails_never']}";
     else
     {
       $lastseen = get_date( $user['last_access'],'',0,1);
@@ -154,7 +156,7 @@ function maketable($res)
     "<tr><td class='embedded'><h1 style='margin:0px'>{$user['username']}" . get_user_icons($user, true) . "</h1></td>$country</tr></table><p></p>\n";
 
     if (!$enabled)
-      $HTMLOUT .= "<p><b>This account has been disabled</b></p>\n";
+      $HTMLOUT .= "<p><b>{$lang['userdetails_disabled']}</b></p>\n";
     elseif ($CURUSER["id"] <> $user["id"])
     {
       $r = mysql_query("SELECT id FROM friends WHERE userid=$CURUSER[id] AND friendid=$id") or sqlerr(__FILE__, __LINE__);
@@ -163,32 +165,32 @@ function maketable($res)
       $block = mysql_num_rows($r);
 
       if ($friend)
-        $HTMLOUT .= "<p>(<a href='friends.php?action=delete&amp;type=friend&amp;targetid=$id'>remove from friends</a>)</p>\n";
+        $HTMLOUT .= "<p>(<a href='friends.php?action=delete&amp;type=friend&amp;targetid=$id'>{$lang['userdetails_removed_friends']}</a>)</p>\n";
       elseif($block)
-        $HTMLOUT .= "<p>(<a href='friends.php?action=delete&amp;type=block&amp;targetid=$id'>remove from blocks</a>)</p>\n";
+        $HTMLOUT .= "<p>(<a href='friends.php?action=delete&amp;type=block&amp;targetid=$id'>{$lang['userdetails_remove_blocks']}</a>)</p>\n";
       else
       {
-        $HTMLOUT .= "<p>(<a href='friends.php?action=add&amp;type=friend&amp;targetid=$id'>add to friends</a>)";
-        $HTMLOUT .= " - (<a href='friends.php?action=add&amp;type=block&amp;targetid=$id'>add to blocks</a>)</p>\n";
+        $HTMLOUT .= "<p>(<a href='friends.php?action=add&amp;type=friend&amp;targetid=$id'>{$lang['userdetails_add_friends']}</a>)";
+        $HTMLOUT .= " - (<a href='friends.php?action=add&amp;type=block&amp;targetid=$id'>{$lang['userdetails_add_blocks']}</a>)</p>\n";
       }
     }
 
     $HTMLOUT .= begin_main_frame();
 
     $HTMLOUT .= "<table width='100%' border='1' cellspacing='0' cellpadding='5'>
-    <tr><td class='rowhead' width='1%'>Join&nbsp;date</td><td align='left' width='99%'>{$joindate}</td></tr>
-    <tr><td class='rowhead'>Last&nbsp;seen</td><td align='left'>{$lastseen}</td></tr>";
+    <tr><td class='rowhead' width='1%'>{$lang['userdetails_joined']}</td><td align='left' width='99%'>{$joindate}</td></tr>
+    <tr><td class='rowhead'>{$lang['userdetails_seen']}</td><td align='left'>{$lastseen}</td></tr>";
 
     if ($CURUSER['class'] >= UC_MODERATOR)
-      $HTMLOUT .= "<tr><td class='rowhead'>Email</td><td align='left'><a href='{$TBDEV['baseurl']}/email-gateway.php?id={$user['id']}'>{$user['email']}</a></td></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_email']}</td><td align='left'><a href='{$TBDEV['baseurl']}/email-gateway.php?id={$user['id']}'>{$user['email']}</a></td></tr>\n";
     if (isset($addr))
-      $HTMLOUT .= "<tr><td class='rowhead'>Address</td><td align='left'>$addr</td></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_address']}</td><td align='left'>$addr</td></tr>\n";
 
     //  if ($user["id"] == $CURUSER["id"] || $CURUSER['class'] >= UC_MODERATOR)
     //	{
 
-    $HTMLOUT .= "<tr><td class='rowhead'>Uploaded</td><td align='left'>".mksize($user["uploaded"])."</td></tr>
-    <tr><td class='rowhead'>Downloaded</td><td align='left'>".mksize($user["downloaded"])."</td></tr>";
+    $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_uploaded']}</td><td align='left'>".mksize($user["uploaded"])."</td></tr>
+    <tr><td class='rowhead'>{$lang['userdetails_downloaded']}</td><td align='left'>".mksize($user["downloaded"])."</td></tr>";
 
     if ($user["downloaded"] > 0)
     {
@@ -214,14 +216,14 @@ function maketable($res)
     //if ($user['donated'] > 0 && ($CURUSER['class'] >= UC_MODERATOR || $CURUSER["id"] == $user["id"]))
     //  print("<tr><td class='rowhead'>Donated</td><td align='left'>$user[donated]</td></tr>\n");
     if ($user["avatar"])
-    $HTMLOUT .= "<tr><td class='rowhead'>Avatar</td><td align='left'><img src='" . htmlspecialchars($user["avatar"]) . "' alt='' /></td></tr>\n";
-    $HTMLOUT .= "<tr><td class='rowhead'>Class</td><td align='left'>" . get_user_class_name($user["class"]) . "</td></tr>\n";
-    $HTMLOUT .= "<tr><td class='rowhead'>Torrent&nbsp;comments</td>";
+    $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_avatar']}</td><td align='left'><img src='" . htmlspecialchars($user["avatar"]) . "' alt='' /></td></tr>\n";
+    $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_class']}</td><td align='left'>" . get_user_class_name($user["class"]) . "</td></tr>\n";
+    $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_comments']}</td>";
     if ($torrentcomments && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || $CURUSER['class'] >= UC_MODERATOR))
       $HTMLOUT .= "<td align='left'><a href='userhistory.php?action=viewcomments&amp;id=$id'>$torrentcomments</a></td></tr>\n";
     else
       $HTMLOUT .= "<td align='left'>$torrentcomments</td></tr>\n";
-    $HTMLOUT .= "<tr><td class='rowhead'>Forum&nbsp;posts</td>";
+    $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_posts']}</td>";
 
     if ($forumposts && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || $CURUSER['class'] >= UC_MODERATOR))
       $HTMLOUT .= "<td align='left'><a href='userhistory.php?action=viewposts&amp;id=$id'>$forumposts</a></td></tr>\n";
@@ -229,13 +231,13 @@ function maketable($res)
       $HTMLOUT .= "<td align='left'>$forumposts</td></tr>\n";
 
     if (isset($torrents))
-      $HTMLOUT .= "<tr valign='top'><td class='rowhead'>Uploaded&nbsp;torrents</td><td align='left'>$torrents</td></tr>\n";
+      $HTMLOUT .= "<tr valign='top'><td class='rowhead'>{$lang['userdetails_uploaded_t']}</td><td align='left'>$torrents</td></tr>\n";
       
     if (isset($seeding))
-      $HTMLOUT .= "<tr valign=top><td class=rowhead>Currently&nbsp;seeding</td><td align=left>".maketable($seeding)."</td></tr>\n";
+      $HTMLOUT .= "<tr valign=top><td class=rowhead>{$lang['userdetails_cur_seed']}</td><td align=left>".maketable($seeding)."</td></tr>\n";
       
     if (isset($leeching))
-       $HTMLOUT .= "<tr valign=top><td class=rowhead>Currently&nbsp;leeching</td><td align=left>".maketable($leeching)."</td></tr>\n";
+       $HTMLOUT .= "<tr valign=top><td class=rowhead>{$lang['userdetails_cur_leech']}</td><td align=left>".maketable($leeching)."</td></tr>\n";
        
     if ($user["info"])
      $HTMLOUT .= "<tr valign='top'><td align='left' colspan='2' class='text' bgcolor='#F4F4F0'>" . format_comment($user["info"]) . "</td></tr>\n";
@@ -258,7 +260,7 @@ function maketable($res)
       <td colspan='2' align='center'>
       <form method='get' action='sendmessage.php'>
         <input type='hidden' name='receiver' value='{$user["id"]}' />
-        <input type='submit' value='Send message' class='btn' />
+        <input type='submit' value='{$lang['userdetails_msg_btn']}' class='btn' />
       </form>
       </td></tr>";
 
@@ -266,21 +268,21 @@ function maketable($res)
 
     if ($CURUSER['class'] >= UC_MODERATOR && $user["class"] < $CURUSER['class'])
     {
-      $HTMLOUT .= begin_frame("Edit User", true);
+      $HTMLOUT .= begin_frame("{$lang['userdetails_edit_user']}", true);
       $HTMLOUT .= "<form method='post' action='modtask.php'>\n";
       $HTMLOUT .= "<input type='hidden' name='action' value='edituser' />\n";
       $HTMLOUT .= "<input type='hidden' name='userid' value='$id' />\n";
       $HTMLOUT .= "<input type='hidden' name='returnto' value='userdetails.php?id=$id' />\n";
       $HTMLOUT .= "<table class='main' border='1' cellspacing='0' cellpadding='5'>\n";
-      $HTMLOUT .= "<tr><td class='rowhead'>Title</td><td colspan='2' align='left'><input type='text' size='60' name='title' value=\"" . htmlspecialchars($user['title']) . "\"></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_title']}</td><td colspan='2' align='left'><input type='text' size='60' name='title' value=\"" . htmlspecialchars($user['title']) . "\"></tr>\n";
       $avatar = htmlspecialchars($user["avatar"]);
-      $HTMLOUT .= "<tr><td class='rowhead'>Avatar&nbsp;URL</td><td colspan='2' align='left'><input type='text' size='60' name='avatar' value=\"$avatar\" /></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_avatar_url']}</td><td colspan='2' align='left'><input type='text' size='60' name='avatar' value=\"$avatar\" /></tr>\n";
       // we do not want mods to be able to change user classes or amount donated...
       if ($CURUSER["class"] < UC_ADMINISTRATOR)
         $HTMLOUT .= "<input type='hidden' name='donor' value='$user[donor]' />\n";
       else
       {
-        $HTMLOUT .= "<tr><td class='rowhead'>Donor</td><td colspan='2' align='left'><input type='radio' name='donor' value='yes'" .($user["donor"] == "yes" ? " checked='checked'" : "").">Yes <input type='radio' name='donor' value='no'" .($user["donor"] == "no" ? " checked='checked'" : "").">No</td></tr>\n";
+        $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_donor']}</td><td colspan='2' align='left'><input type='radio' name='donor' value='yes'" .($user["donor"] == "yes" ? " checked='checked'" : "").">{$lang['userdetails_yes']} <input type='radio' name='donor' value='no'" .($user["donor"] == "no" ? " checked='checked'" : "").">{$lang['userdetails_no']}</td></tr>\n";
       }
 
       if ($CURUSER['class'] == UC_MODERATOR && $user["class"] > UC_VIP)
@@ -298,42 +300,42 @@ function maketable($res)
       }
 
       $modcomment = htmlspecialchars($user["modcomment"]);
-      $HTMLOUT .= "<tr><td class='rowhead'>Comment</td><td colspan='2' align='left'><textarea cols='60' rows='6' name='modcomment'>$modcomment</textarea></td></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_comment']}</td><td colspan='2' align='left'><textarea cols='60' rows='6' name='modcomment'>$modcomment</textarea></td></tr>\n";
       $warned = $user["warned"] == "yes";
 
-      $HTMLOUT .= "<tr><td class='rowhead'" . (!$warned ? " rowspan='2'": "") . ">Warned</td>
+      $HTMLOUT .= "<tr><td class='rowhead'" . (!$warned ? " rowspan='2'": "") . ">{$lang['userdetails_warned']}</td>
       <td align='left' width='20%'>" .
       ( $warned
-      ? "<input name=warned value='yes' type='radio' checked='checked' />Yes<input name='warned' value='no' type='radio' />No"
-      : "No" ) ."</td>";
+      ? "<input name=warned value='yes' type='radio' checked='checked' />{$lang['userdetails_yes']}<input name='warned' value='no' type='radio' />{$lang['userdetails_no']}"
+      : "{$lang['userdetails_no']}" ) ."</td>";
 
       if ($warned)
       {
         $warneduntil = $user['warneduntil'];
         if ($warneduntil == 0)
-          $HTMLOUT .= "<td align='center'>(arbitrary duration)</td></tr>\n";
+          $HTMLOUT .= "<td align='center'>{$lang['userdetails_dur']}</td></tr>\n";
         else
         {
-          $HTMLOUT .= "<td align='center'>Until ".get_date($warneduntil, 'DATE');
-          $HTMLOUT .= " (" . mkprettytime($warneduntil - time())  . " to go)</td></tr>\n";
+          $HTMLOUT .= "<td align='center'>{$lang['userdetails_until']} ".get_date($warneduntil, 'DATE');
+          $HTMLOUT .= " (" . mkprettytime($warneduntil - time())  . " {$lang['userdetails_togo']})</td></tr>\n";
         }
       }
       else
       {
-        $HTMLOUT .= "<td>Warn for <select name='warnlength'>\n";
-        $HTMLOUT .= "<option value='0'>------</option>\n";
-        $HTMLOUT .= "<option value='1'>1 week</option>\n";
-        $HTMLOUT .= "<option value='2'>2 weeks</option>\n";
-        $HTMLOUT .= "<option value='4'>4 weeks</option>\n";
-        $HTMLOUT .= "<option value='8'>8 weeks</option>\n";
-        $HTMLOUT .= "<option value='255'>Unlimited</option>\n";
-        $HTMLOUT .= "</select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;PM comment:</td></tr>\n";
+        $HTMLOUT .= "<td>{$lang['userdetails_warn_for']} <select name='warnlength'>\n";
+        $HTMLOUT .= "<option value='0'>{$lang['userdetails_warn0']}</option>\n";
+        $HTMLOUT .= "<option value='1'>{$lang['userdetails_warn1']}</option>\n";
+        $HTMLOUT .= "<option value='2'>{$lang['userdetails_warn2']}</option>\n";
+        $HTMLOUT .= "<option value='4'>{$lang['userdetails_warn4']}</option>\n";
+        $HTMLOUT .= "<option value='8'>{$lang['userdetails_warn8']}</option>\n";
+        $HTMLOUT .= "<option value='255'>{$lang['userdetails_warninf']}</option>\n";
+        $HTMLOUT .= "</select>{$lang['userdetails_pm_comm']}</td></tr>\n";
         $HTMLOUT .= "<tr><td colspan='2' align='left'><input type='text' size='60' name='warnpm' /></td></tr>";
       }
-      $HTMLOUT .= "<tr><td class='rowhead'>Enabled</td><td colspan='2' align='left'><input name='enabled' value='yes' type='radio'" . ($enabled ? " checked='checked'" : "") . " />Yes <input name=enabled value='no' type='radio'" . (!$enabled ? " checked='checked'" : "") . " />No</td></tr>\n";
-      $HTMLOUT .= "<tr><td class='rowhead'>Reset passkey</td><td colspan=2><input type='checkbox' name='resetpasskey' value='1' /><font class='small'>Any active torrents must be downloaded again to continue leeching/seeding.</font></td></tr>";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_enabled']}</td><td colspan='2' align='left'><input name='enabled' value='yes' type='radio'" . ($enabled ? " checked='checked'" : "") . " />{$lang['userdetails_yes']} <input name=enabled value='no' type='radio'" . (!$enabled ? " checked='checked'" : "") . " />{$lang['userdetails_no']}</td></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_reset']}</td><td colspan=2><input type='checkbox' name='resetpasskey' value='1' /><font class='small'>{$lang['userdetails_pass_msg']}</font></td></tr>";
       $HTMLOUT .= "</td></tr>";
-      $HTMLOUT .= "<tr><td colspan='3' align='center'><input type='submit' class='btn' value='Okay' /></td></tr>\n";
+      $HTMLOUT .= "<tr><td colspan='3' align='center'><input type='submit' class='btn' value='{$lang['userdetails_okay']}' /></td></tr>\n";
       $HTMLOUT .= "</table>\n";
       $HTMLOUT .= "</form>\n";
       $HTMLOUT .= end_frame();
@@ -341,6 +343,6 @@ function maketable($res)
     $HTMLOUT .= end_main_frame();
     
     
-    print stdhead("Details for " . $user["username"]) . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['userdetails_details']} " . $user["username"]) . $HTMLOUT . stdfoot();
 
 ?>

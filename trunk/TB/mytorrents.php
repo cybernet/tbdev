@@ -26,6 +26,8 @@ dbconn(false);
 
 loggedinorreturn();
 
+    $lang = array_merge( load_language('global'), load_language('mytorrents') );
+    
     $HTMLOUT = '';
 
     $where = "WHERE owner = " . $CURUSER["id"] . " AND banned != 'yes'";
@@ -36,8 +38,8 @@ loggedinorreturn();
     if (!$count) 
     {
 
-      $HTMLOUT .= "<h1>No torrents</h1>";
-      $HTMLOUT .= "<p>You haven't uploaded any torrents yet, so there's nothing in this page.</p>";
+      $HTMLOUT .= "{$lang['mytorrents_no_torrents']}";
+      $HTMLOUT .= "{$lang['mytorrents_no_uploads']}";
 
     }
     else 

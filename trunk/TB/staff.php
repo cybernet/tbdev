@@ -25,6 +25,8 @@ dbconn();
 
 loggedinorreturn();
     
+    $lang = array_merge( load_language('global'), load_language('staff') );
+    
     $HTMLOUT = '';
     
     $query = mysql_query("SELECT users.id, username, email, last_access, class, title, country, status, countries.flagpic, countries.name FROM users LEFT  JOIN countries ON countries.id = users.country WHERE class >=4 AND status='confirmed' ORDER BY username") or sqlerr();
@@ -54,7 +56,7 @@ loggedinorreturn();
     */
     function DoStaff($staff, $staffclass, $cols = 2) 
     {
-      global $TBDEV;
+      global $TBDEV, $lang;
       
       $dt = time() - 180;
       $htmlout = '';
@@ -63,7 +65,7 @@ loggedinorreturn();
       {
         $htmlout .= "<br /><table width='75%' border='1' cellpadding='3'>";
         $htmlout .= "<tr><td class='colhead'><h2>{$staffclass}</h2></td></tr>";
-        $htmlout .= "<tr><td>None defined yet!</td></tr></table>";
+        $htmlout .= "<tr><td>{$lang['text_none']}</td></tr></table>";
         return;
       }
       $counter = count($staff);
@@ -87,9 +89,9 @@ loggedinorreturn();
           "   <img style='vertical-align: middle;' src='{$TBDEV['pic_base_url']}staff".
           ($staff[$r]['last_access']>$dt?"/online.gif":"/offline.gif" )."' border='0' alt='' />".
           "<a href='sendmessage.php?receiver={$staff[$r]['id']}'>".
-          "   <img style='vertical-align: middle;' src='{$TBDEV['pic_base_url']}staff/users.png' border='0' title=\"Personal Message\" alt='' /></a>".
+          "   <img style='vertical-align: middle;' src='{$TBDEV['pic_base_url']}staff/users.png' border='0' title=\"{$lang['alt_pm']}\" alt='' /></a>".
           "<a href='email-gateway.php?id={$staff[$r]['id']}'>".
-          "   <img style='vertical-align: middle;' src='{$TBDEV['pic_base_url']}staff/mail.png' border='0' alt='{$staff[$r]['username']}' title=\"Send Mail\" /></a>".
+          "   <img style='vertical-align: middle;' src='{$TBDEV['pic_base_url']}staff/mail.png' border='0' alt='{$staff[$r]['username']}' title=\"{$lang['alt_sm']}\" /></a>".
           "   <img style='vertical-align: middle;' src='{$TBDEV['pic_base_url']}flag/{$staff[$r]['flagpic']}' border='0' alt='{$staff[$r]['name']}' /></td>";
           $r++;
               }
@@ -113,14 +115,14 @@ loggedinorreturn();
       return $htmlout;
     }
 
-    $HTMLOUT .= "<h1>Staff Page</h1>";
+    $HTMLOUT .= "<h1>{$lang['text_staff']}</h1>";
 
-    $HTMLOUT .= DoStaff($sysops, "Sysops");
-    $HTMLOUT .= isset($admins) ? DoStaff($admins, "Administrators") : DoStaff($admins=false, "Administrators");
-    $HTMLOUT .= isset($mods) ? DoStaff($mods, "Moderators") : DoStaff($mods=false, "Moderators");
-    //$HTMLOUT .= isset($vips) ? DoStaff($vips, "VIP's") : DoStaff($vips=false, "VIP's");
+    $HTMLOUT .= DoStaff($sysops, "{$lang['header_sysops']}");
+    $HTMLOUT .= isset($admins) ? DoStaff($admins, "{$lang['header_admins']}") : DoStaff($admins=false, "{$lang['header_admins']}");
+    $HTMLOUT .= isset($mods) ? DoStaff($mods, "{$lang['header_mods']}") : DoStaff($mods=false, "{$lang['header_mods']}");
+    //$HTMLOUT .= isset($vips) ? DoStaff($vips, "{$lang['header_vips']}") : DoStaff($vips=false, "{$lang['header_vips']}");
 
 
-    print stdhead("Staff") . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['stdhead_staff']}") . $HTMLOUT . stdfoot();
 
 ?>

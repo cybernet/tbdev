@@ -22,37 +22,27 @@ require_once "include/user_functions.php";
 dbconn(false);
 loggedinorreturn();
 
+$lang = array_merge( load_language('global'), load_language('sendmessage') );
+
 // Standard Administrative PM Replies
-$pm_std_reply[1] = "Read the bloody [url={$TBDEV['baseurl']}/faq.php]FAQ[/url] and stop bothering me!";
-$pm_std_reply[2] = "Die! Die! Die!";
+$pm_std_reply[1] = "{$lang['sendmessage_std_reply1']}";
+$pm_std_reply[2] = "{$lang['sendmessage_std_reply2']}";
 
 // Standard Administrative PMs
-$pm_template['1'] = array("Ratio warning","Hi,\n
-You may have noticed, if you have visited the forum, that TB is disabling the accounts of all users with low share ratios.\n
-I am sorry to say that your ratio is a little too low to be acceptable.\n
-If you would like your account to remain open, you must ensure that your ratio increases dramatically in the next day or two, to get as close to 1.0 as possible.\n
-I am sure that you will appreciate the importance of sharing your downloads.
-You may PM any Moderator, if you believe that you are being treated unfairly.\n
-Thank you for your cooperation.");
-$pm_template['2'] = array("Avatar warning", "Hi,\n
-You may not be aware that there are new guidelines on avatar sizes in the [url={$TBDEV['baseurl']}/rules.php]rules[/url], in particular \"Resize
-your images to a width of 150 px and a size of [b]no more than 150 KB[/b].\"\n
-I'm sorry to say your avatar doesn't conform to them. Please change it as soon as possible.\n
-We understand this may be an inconvenience to some users but feel it is in the community's best interest.\n
-Thanks for the cooperation.");
+$pm_template['1'] = array("{$lang['sendmessage_template1']}");
+$pm_template['2'] = array("{$lang['sendmessage_template2']}");
 
 // Standard Administrative MMs
 $mm_template['1'] = $pm_template['1'];
-$mm_template['2'] = array("Downtime warning","We'll be down for a few hours");
-$mm_template['3'] = array("Change warning","The tracker has been updated. Read
-the forums for details.");
+$mm_template['2'] = array("{$lang['sendmessage_mm_template2']}");
+$mm_template['3'] = array("{$lang['sendmessage_mm_template3']}");
     
     $HTMLOUT = '';
     
     if ($_SERVER['REQUEST_METHOD'] == 'POST')
     {						          ////////  MM  //
       if ($CURUSER['class'] < UC_MODERATOR)
-        stderr("Error", "Permission denied");
+        stderr("{$lang['sendmessage_error']}", "{$lang['sendmessage_denied']}");
 
       $n_pms = htmlentities($_POST['n_pms']);
       $pmees = htmlentities($_POST['pmees']);
@@ -63,7 +53,7 @@ the forums for details.");
       
       $HTMLOUT .= "<table class='main' width='750' border='0' cellspacing='0' cellpadding='0'>
       <tr><td class='embedded'><div align='center'>
-      <h1>Mass Message to $n_pms user".($n_pms>1?"s":"")."!</h1>
+      <h1>{$lang['sendmessage_mass_msg_to']}".($n_pms>1?"s":"")."!</h1>
       <form method='post' action='takemessage.php'>";
       
       if ($_SERVER["HTTP_REFERER"]) 
@@ -73,24 +63,24 @@ the forums for details.");
       
       $HTMLOUT .= "<table border='1' cellspacing='0' cellpadding='5'>
       <tr>
-      <td colspan='2'><b>Subject:&nbsp;&nbsp;</b>
+      <td colspan='2'><b>{$lang['sendmessage_subject']}</b>
       <input name='subject' type='text' size='76' /></td>
       </tr>
       <tr><td colspan='2'><div align='center'>
       <textarea name='msg' cols='80' rows='15'>".(isset($body) ? htmlentities($body, ENT_QUOTES) : '')."</textarea>
       </div></td></tr>
-      <tr><td colspan='2'><div align='center'><b>Comment:&nbsp;&nbsp;</b>
+      <tr><td colspan='2'><div align='center'><b>{$lang['sendmessage_comment']}</b>
       <input name='comment' type='text' size='70' />
       </div></td></tr>
-      <tr><td><div align='center'><b>From:&nbsp;&nbsp;</b>
+      <tr><td><div align='center'><b>{$lang['sendmessage_from']}</b>
       {$CURUSER['username']}
       <input name='sender' type='radio' value='self' checked='checked' />
       &nbsp; System
       <input name='sender' type='radio' value='system' />
       </div></td>
-      <td><div align='center'><b>Take snapshot:</b>&nbsp;<input name='snap' type='checkbox' value='1' />
+      <td><div align='center'><b>{$lang['sendmessage_snapshot']}</b>&nbsp;<input name='snap' type='checkbox' value='1' />
       </div></td></tr>
-      <tr><td colspan='2' align='center'><input type='submit' value='Send it!' class='btn' />
+      <tr><td colspan='2' align='center'><input type='submit' value='{$lang['sendmessage_send_it']}' class='btn' />
       </td></tr></table>
       <input type='hidden' name='pmees' value='{$pmees}' />
       <input type='hidden' name='n_pms' value='{$n_pms}' />
@@ -98,7 +88,7 @@ the forums for details.");
       <form method='post' action='sendmessage.php'>
       <table border='1' cellspacing='0' cellpadding='5'>
       <tr><td>
-      <b>Templates:</b>
+      <b>{$lang['sendmessage_templates']}</b>
       <select name='auto'>";
       
 
@@ -109,7 +99,7 @@ the forums for details.");
      }
 
       $HTMLOUT .= "</select>
-      <input type='submit' value='Use' class='btn' />
+      <input type='submit' value='{$lang['sendmessage_use']}' class='btn' />
       </td></tr></table>
       <input type='hidden' name='pmees' value='{$pmees}' />
       <input type='hidden' name='n_pms' value='{$n_pms}' />
@@ -124,18 +114,18 @@ the forums for details.");
 
       $replyto = isset($_GET["replyto"]) ? (int)$_GET["replyto"] : 0;
       if ($replyto && !is_valid_id($replyto))
-        stderr('SYSTEM ERROR', 'It broke');
+        stderr("{$lang['sendmessage_system_error']}", "{$lang['sendmessage_it_broke']}");
 
       $auto = isset($_GET["auto"]) ? $_GET["auto"] : false;
       $std = isset($_GET["std"]) ? $_GET["std"] : false;
 
       if (($auto || $std ) && $CURUSER['class'] < UC_MODERATOR)
-        stderr('USER ERROR', "Permission denied.");
+        stderr("{$lang['sendmessage_user_error']}", "{$lang['sendmessage_denied']}");
 
       $res = mysql_query("SELECT * FROM users WHERE id=$receiver") or die(mysql_error());
       $user = mysql_fetch_assoc($res);
       if (!$user)
-        stderr('USER ERROR', "No user with that ID.");
+        stderr("{$lang['sendmessage_user_error']}", "{$lang['sendmessage_no_id']}");
 
       if ($auto)
         $body = $pm_std_reply[$auto];
@@ -151,8 +141,8 @@ the forums for details.");
           die;
         $res = mysql_query("SELECT username FROM users WHERE id={$msga['sender']}") or sqlerr();
         $usra = mysql_fetch_assoc($res);
-        $body .= "\n\n\n-------- {$usra['username']} wrote: --------\n{$msga['msg']}\n";
-        $subject = "Re: " . htmlspecialchars($msga['subject']);
+        $body .= "{$lang['sendmessage_user_wrote']}";
+        $subject = "{$lang['sendmessage_re']}" . htmlspecialchars($msga['subject']);
       }
 
 
@@ -168,7 +158,7 @@ the forums for details.");
       
       $HTMLOUT .= "<table border='1' cellspacing='0' cellpadding='5'>
       <tr>
-        <td colspan='2'><b>Subject:&nbsp;&nbsp;</b>
+        <td colspan='2'><b>{$lang['sendmessage_subject']}</b>
       <input name='subject' type='text' size='76' value='".(isset($subject) ? htmlentities($subject, ENT_QUOTES) : '')."' /></td>
       </tr>
       <tr>
@@ -177,12 +167,12 @@ the forums for details.");
       
       if ($replyto) 
       { 
-        $HTMLOUT .= "<td align='center'><input type='checkbox' name='delete' value='yes' ".($CURUSER['deletepms'] == 'yes' ? "checked='checked'":'')." />Delete message you are replying to
+        $HTMLOUT .= "<td align='center'><input type='checkbox' name='delete' value='yes' ".($CURUSER['deletepms'] == 'yes' ? "checked='checked'":'')." />{$lang['sendmessage_delete']}
         <input type='hidden' name='origmsg' value='$replyto' /></td>";
       }
       
-      $HTMLOUT .= "<td align='center'><input type='checkbox' name='save' value='yes' ".($CURUSER['savepms'] == 'yes' ? "checked='checked'":'')." />Save message to Sentbox</td></tr>
-      <tr><td".($replyto ? " colspan='2'":'')." align='center'><input type='submit' value='Send it!' class='btn' /></td></tr>
+      $HTMLOUT .= "<td align='center'><input type='checkbox' name='save' value='yes' ".($CURUSER['savepms'] == 'yes' ? "checked='checked'":'')." />{$lang['sendmessage_save_sent']}</td></tr>
+      <tr><td".($replyto ? " colspan='2'":'')." align='center'><input type='submit' value='{$lang['sendmessage_send_it']}' class='btn' /></td></tr>
       </table>
       <input type='hidden' name='receiver' value='$receiver' />
       </form>
@@ -195,7 +185,7 @@ the forums for details.");
         <form method='get' action='sendmessage.php'>
         <table border='1' cellspacing='0' cellpadding='5'>
         <tr><td>
-        <b>PM Templates:</b>
+        <b>{$lang['sendmessage_pm_templates']}</b>
         <select name='std'>";
         
         for ($i = 1; $i <= count($pm_template); $i++)
@@ -213,7 +203,7 @@ the forums for details.");
         
         $HTMLOUT .= "<input type='hidden' name='receiver' value='$receiver' />
         <input type='hidden' name='replyto' value='$replyto' />
-        <input type='submit' value='Use' class='btn' />
+        <input type='submit' value='{$lang['sendmessage_use']}' class='btn' />
         </td></tr></table></form>";
 
       }
@@ -224,5 +214,5 @@ the forums for details.");
     }
 
 
-    print stdhead("Send message", false) . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['sendmessage_send_mdg']}", false) . $HTMLOUT . stdfoot();
 ?>

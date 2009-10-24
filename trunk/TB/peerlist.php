@@ -25,36 +25,39 @@ dbconn(false);
 
 loggedinorreturn();
 
-    $id = (int)$_GET["id"];
+    $lang = array_merge( load_language('global'), load_language('peerlist') );
+    
+    $id = (int)$_GET['id'];
 
     if (!isset($id) || !is_valid_id($id))
-      stderr( 'USER ERROR', 'You fool, ID don\'t exist' );
+      stderr($lang['edit_user_error'], $lang['peerslist_invalid_id']);
 
     $HTMLOUT = '';
     
 function dltable($name, $arr, $torrent)
 {
 
-    global $CURUSER;
+    global $CURUSER, $lang;
 
     $htmlout = '';
 
     if (!count($arr))
-      return $htmlout = "<div align='left'><b>No $name data available</b></div>\n";
+      return $htmlout = "<div align='left'><b>{$lang['peerslist_no']} $name {$lang['peerslist_data_available']}</b></div>\n";
     $htmlout = "\n";
     $htmlout .= "<table width='100%' class='main' border='1' cellspacing='0' cellpadding='5'>\n";
     $htmlout .= "<tr><td colspan='11' class='colhead'>" . count($arr) . " $name</td></tr>" .
-        "<tr><td class='colhead'>User/IP</td>" .
-            "<td class='colhead' align='center'>Connectable</td>".
-            "<td class='colhead' align='right'>Uploaded</td>".
-            "<td class='colhead' align='right'>Rate</td>".
-            "<td class='colhead' align='right'>Downloaded</td>" .
-            "<td class='colhead' align='right'>Rate</td>" .
-            "<td class='colhead' align='right'>Ratio</td>" .
-            "<td class='colhead' align='right'>Complete</td>" .
-            "<td class='colhead' align='right'>Connected</td>" .
-            "<td class='colhead' align='right'>Idle</td>" .
-            "<td class='colhead' align='left'>Client</td></tr>\n";
+        "<tr><td class='colhead'>{$lang['peerslist_user_ip']}</td>" .
+            "<td class='colhead' align='center'>{$lang['peerslist_connectable']}</td>".
+            "<td class='colhead' align='right'>{$lang['peerslist_uploaded']}</td>".
+            "<td class='colhead' align='right'>{$lang['peerslist_rate']}</td>".
+            "<td class='colhead' align='right'>{$lang['peerslist_downloaded']}</td>" .
+            "<td class='colhead' align='right'>{$lang['peerslist_rate']}</td>" .
+            "<td class='colhead' align='right'>{$lang['peerslist_ratio']}</td>" .
+            "<td class='colhead' align='right'>{$lang['peerslist_complete']}</td>" .
+            "<td class='colhead' align='right'>{$lang['peerslist_connected']}</td>" .
+            "<td class='colhead' align='right'>{$lang['peerslist_idle']}</td>" .
+            "<td class='colhead' align='left'>{$lang['peerslist_client']}</td></tr>\n";
+         
     $now = time();
     //$moderator = (isset($CURUSER) && get_user_class() >= UC_MODERATOR);
     //$mod = get_user_class() >= UC_MODERATOR;
@@ -73,7 +76,7 @@ function dltable($name, $arr, $torrent)
                     $htmlout .= "<td>" . ($mod ? $e["ip"] : preg_replace('/\.\d+$/', ".xxx", $e["ip"])) . "</td>\n";
       $secs = max(1, ($now - $e["st"]) - ($now - $e["la"]));
       //$revived = $e["revived"] == "yes";
-          $htmlout .= "<td align='center'>" . ($e['connectable'] == "yes" ? "Yes" : "<font color='red'>No</font>") . "</td>\n";
+          $htmlout .= "<td align='center'>" . ($e['connectable'] == "yes" ? "{$lang['peerslist_yes']}" : "<font color='red'>{$lang['peerslist_no']}</font>") . "</td>\n";
       $htmlout .= "<td align='right'>" . mksize($e["uploaded"]) . "</td>\n";
       $htmlout .= "<td align='right'><span style=\"white-space: nowrap;\">" . mksize(($e["uploaded"] - $e["uploadoffset"]) / $secs) . "/s</span></td>\n";
       $htmlout .= "<td align='right'>" . mksize($e["downloaded"]) . "</td>\n";
@@ -88,7 +91,7 @@ function dltable($name, $arr, $torrent)
           }
                    else
                     if ($e["uploaded"])
-                      $htmlout .= "<td align='right'>Inf.</td>\n";
+                      $htmlout .= "<td align='right'>{$lang['peerslist_inf']}</td>\n";
                     else
                       $htmlout .= "<td align='right'>---</td>\n";
       $htmlout .= "<td align='right'>" . sprintf("%.2f%%", 100 * (1 - ($e["to_go"] / $torrent["size"]))) . "</td>\n";
@@ -105,7 +108,7 @@ function dltable($name, $arr, $torrent)
       or sqlerr();
 
     if(mysql_num_rows($res) == 0)
-      stderr('Error', 'Nothing to see here, move along!');
+      stderr("{$lang['peerslist_error']}", "{$lang['peerslist_nothing']}");
       
       $row = mysql_fetch_assoc($res);
       
@@ -119,7 +122,7 @@ function dltable($name, $arr, $torrent)
     WHERE p.torrent = $id") or sqlerr();
           
           if(mysql_num_rows($subres) == 0)
-            stderr('Warning', 'No downloader/uploader data available!');
+            stderr("{$lang['peerslist_warning']}", "{$lang['peerslist_no_data']}");
       
           while ($subrow = mysql_fetch_assoc($subres)) {
             if ($subrow["seeder"] == "yes")
@@ -154,8 +157,8 @@ function dltable($name, $arr, $torrent)
     
 
       $HTMLOUT .= "<h1>Peerlist for <a href='{$TBDEV['baseurl']}/details.php?id=$id'>".htmlentities($row['name'])."</a></h1>";
-      $HTMLOUT .= dltable("Seeder(s)<a name='seeders'></a>", $seeders, $row);
-      $HTMLOUT .= '<br />' . dltable("Leecher(s)<a name='leechers'></a>", $downloaders, $row);
+      $HTMLOUT .= dltable("{$lang['peerslist_seeders']}<a name='seeders'></a>", $seeders, $row);
+      $HTMLOUT .= '<br />' . dltable("{$lang['peerslist_leechers']}<a name='leechers'></a>", $downloaders, $row);
       
-      print stdhead('Details') . $HTMLOUT . stdfoot();
+      print stdhead("{$lang['peerslist_stdhead']}") . $HTMLOUT . stdfoot();
 ?>

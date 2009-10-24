@@ -21,29 +21,33 @@ require_once "include/user_functions.php";
 
 dbconn();
 
+loggedinorreturn();
+
+    $lang = array_merge( load_language('global'), load_language('email-gateway') );
+    
     $id = 0 + $_GET["id"];
     
     if ( !is_valid_id($id) )
-      stderr("Error", "Bad or missing ID.");
+      stderr("{$lang['email_error']}", "{$lang['email_bad_id']}");
 
     $res = mysql_query("SELECT username, class, email FROM users WHERE id=$id");
-    $arr = mysql_fetch_assoc($res) or stderr("Error", "No such user.");
+    $arr = mysql_fetch_assoc($res) or stderr("{$lang['email_error']}", "{$lang['email_no_user']}");
     $username = $arr["username"];
     
     if ($arr["class"] < UC_MODERATOR)
-      stderr("Error", "The gateway can only be used to e-mail staff members.");
+      stderr("{$lang['email_error']}", "{$lang['email_email_staff']}");
 
     if ($_SERVER["REQUEST_METHOD"] == "POST")
     {
       $to = $arr["email"];
 
       $from = substr(trim($_POST["from"]), 0, 80);
-      if ($from == "") $from = "Anonymous";
+      if ($from == "") $from = "{$lang['email_anon']}";
 
       $from_email = substr(trim($_POST["from_email"]), 0, 80);
       
       if ($from_email == "") $from_email = "{$TBDEV['site_email']}";
-      if (!strpos($from_email, "@")) stderr("Error", "The entered e-mail address does not seem to be valid.");
+      if (!strpos($from_email, "@")) stderr("{$lang['email_error']}", "{$lang['email_invalid']}");
 
       $from = "$from <$from_email>";
 
@@ -52,45 +56,45 @@ dbconn();
       $subject = "Fw: $subject";
 
       $message = trim($_POST["message"]);
-      if ($message == "") stderr("Error", "No message text!");
+      if ($message == "") stderr("{$lang['email_error']}", "{$lang['email_no_text']}");
 
       $message = "Message submitted from {$_SERVER['REMOTE_ADDR']} at " . gmdate("Y-m-d H:i:s") . " GMT.\n" .
-        "Note: By replying to this e-mail you will reveal your e-mail address.\n" .
+        "{$lang['email_note']}\n" .
         "---------------------------------------------------------------------\n\n" .
         $message . "\n\n" .
         "---------------------------------------------------------------------\n".
-        "{$TBDEV['site_name']} E-Mail Gateway\n";
+        "{$TBDEV['site_name']}{$lang['email_gateway']}\n";
 
-      $success = mail($to, $subject, $message, "From: {$TBDEV['site_email']}");
+      $success = mail($to, $subject, $message, "{$lang['email_from']}{$TBDEV['site_email']}");
 
       if ($success)
-        stderr("Success", "E-mail successfully queued for delivery.");
+        stderr("{$lang['email_success']}", "{$lang['email_queued']}");
       else
-        stderr("Error", "The mail could not be sent. Please try again later.");
+        stderr("{$lang['email_error']}", "{$lang['email_failed']}");
     }
 
     $HTMLOUT = '';
 
     $HTMLOUT .= "<table border='0' class='main' cellspacing='0' cellpadding='0'>
     <tr>
-      <td class='embedded'><img src="pic/email.gif" alt='' /></td>
-      <td class='embedded' style='padding-left: 10px'><font size='3'><b>Send e-mail to {$username}</b></font></td>
+      <td class='embedded'><img src='pic/email.gif' alt='' /></td>
+      <td class='embedded' style='padding-left: 10px'><font size='3'><b>{$lang['email_send']}{$username}</b></font></td>
     </tr>
     </table>
     <form method='post' action='email-gateway.php?id=$id'>
     <table border='1' cellspacing='0' cellpadding='5'>
-    <tr><td class='rowhead'>Your name</td><td><input type='text' name='from' size='80' /></td></tr>
-    <tr><td class='rowhead'>Your e-mail</td><td><input type='text' name='from_email' size='80' /></td></tr>
-    <tr><td class='rowhead'>Subject</td><td><input type='text' name='subject' size='80' /></td></tr>
-    <tr><td class='rowhead'>Message</td><td><textarea name='message' cols='80' rows='20'></textarea></td></tr>
-    <tr><td colspan='2' align='center'><input type='submit' value='Send' class='btn' /></td></tr>
+    <tr><td class='rowhead'>{$lang['email_your_name']}</td><td><input type='text' name='from' size='80' /></td></tr>
+    <tr><td class='rowhead'>{$lang['email_your_email']}</td><td><input type='text' name='from_email' size='80' /></td></tr>
+    <tr><td class='rowhead'>{$lang['email_subject']}</td><td><input type='text' name='subject' size='80' /></td></tr>
+    <tr><td class='rowhead'>{$lang['email_message']}</td><td><textarea name='message' cols='80' rows='20'></textarea></td></tr>
+    <tr><td colspan='2' align='center'><input type='submit' value='{$lang['email_send']}' class='btn' /></td></tr>
     </table>
     </form>
     <p>
-    <font class='small'><b>Note:</b> Your IP-address will be logged and visible to the recipient to prevent abuse.<br />
-    Make sure to supply a valid e-mail address if you expect a reply.</font>
+    <font class='small'><b>{$lang['email_note_ip']}</b>{$lang['email_ip']}<br />
+    {$lang['email_valid']}</font>
     </p>";
 
 ///////////////////////// HTML OUTPUT ////////////////////
-    print stdhead("E-mail gateway") . $HTMLOUT . stdfoot(); 
+    print stdhead("{$lang['email_gateway']}") . $HTMLOUT . stdfoot(); 
 ?>

@@ -16,10 +16,10 @@
 |   $URL$
 +------------------------------------------------
 */
-ob_start("ob_gzhandler");
+ob_start('ob_gzhandler');
 
-require_once("include/bittorrent.php");
-require_once "include/user_functions.php";
+require_once 'include/bittorrent.php';
+require_once 'include/user_functions.php';
 //require_once "include/torrenttable_functions.php";
 //require_once "include/pager_functions.php";
 
@@ -27,14 +27,15 @@ dbconn(false);
 
 loggedinorreturn();
 
-
-    if(isset($_POST["search"]) && !empty($_POST['search'])) {
+    $lang = load_language('takefilesearch');
+    
+    if(isset($_POST['search']) && !empty($_POST['search'])) {
       
       $cleansearchstr = sqlesc(searchfield($_POST['search']));
       print $cleansearchstr;
       }
       else
-      stderr("Opps", "Nuffin 'ere!");
+      stderr($lang['tfilesearch_oops'], $lang['tfilesearch_nuffin']);
 
 
     $query = mysql_query("SELECT id, filename, MATCH (filename)
@@ -43,7 +44,7 @@ loggedinorreturn();
                 AGAINST (".$cleansearchstr." IN BOOLEAN MODE)");
 
     if(mysql_num_rows($query) == 0)
-      stderr("Error", "Nothing found");
+      stderr($lang['tfilesearch_error'], $lang['tfilesearch_nothing']);
       
       while($row = mysql_fetch_assoc($query)) {
       
