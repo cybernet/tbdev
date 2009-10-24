@@ -561,3 +561,8 @@ font-family: verdana;
 	color: #000000;
 }
 
+.roundedCorners {
+	border: 1px solid #000;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+}

@@ -26,22 +26,24 @@ dbconn(false);
 
 loggedinorreturn();
 
+    $lang = array_merge( load_language('global'), load_language('comment') );
+    
     if ($action == "add")
     {
       if ($_SERVER["REQUEST_METHOD"] == "POST")
       {
         $torrentid = 0 + $_POST["tid"];
         if (!is_valid_id($torrentid))
-          stderr("Error", "Invalid ID.");
+          stderr("{$lang['comment_error']}", "{$lang['comment_invalid_id']}");
 
         $res = @mysql_query("SELECT name FROM torrents WHERE id = $torrentid") or sqlerr(__FILE__,__LINE__);
         $arr = mysql_fetch_array($res,MYSQL_NUM);
         if (!$arr)
-          stderr("Error", "No torrent with ID.");
+          stderr("{$lang['comment_error']}", "{$lang['comment_invalid_torrent']}");
 
         $text = trim($_POST["text"]);
         if (!$text)
-          stderr("Error", "Comment body cannot be empty!");
+          stderr("{$lang['comment_error']}", "{$lang['comment_body']}");
 
         @mysql_query("INSERT INTO comments (user, torrent, added, text, ori_text) VALUES (" .
             $CURUSER["id"] . ",$torrentid, " . time() . ", " . sqlesc($text) .
@@ -57,20 +59,20 @@ loggedinorreturn();
 
       $torrentid = 0 + $_GET["tid"];
       if (!is_valid_id($torrentid))
-        stderr("Error", "Invalid ID.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_invalid_id']}");
 
       $res = mysql_query("SELECT name FROM torrents WHERE id = $torrentid") or sqlerr(__FILE__,__LINE__);
       $arr = mysql_fetch_assoc($res);
       if (!$arr)
-        stderr("Error", "No torrent with ID.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_invalid_torrent']}");
       
       $HTMLOUT = '';
 
-      $HTMLOUT .= "<h1>Add a comment to \"" . htmlspecialchars($arr["name"]) . "\"</h1>
+      $HTMLOUT .= "<h1>{$lang['comment_add']}\"" . htmlspecialchars($arr["name"]) . "\"</h1>
       <p><form method='post' action='comment.php?action=add'>
       <input type='hidden' name='tid' value='{$torrentid}'/>
       <textarea name='text' rows='10' cols='60'></textarea></p>
-      <p><input type='submit' class='btn' value='Do it!' /></p></form>";
+      <p><input type='submit' class='btn' value='{$lang['comment_doit']}' /></p></form>";
 
       $res = mysql_query("SELECT comments.id, text, comments.added, comments.editedby, comments.editedat, username, users.id as user, users.title, users.avatar, users.class, users.donor, users.warned FROM comments LEFT JOIN users ON comments.user = users.id WHERE torrent = $torrentid ORDER BY comments.id DESC LIMIT 5");
 
@@ -82,26 +84,26 @@ loggedinorreturn();
               require_once "include/torrenttable_functions.php";
               require_once "include/html_functions.php";
               require_once "include/bbcode_functions.php";
-          $HTMLOUT .= "<h2>Most recent comments, in reverse order</h2>\n";
+          $HTMLOUT .= "<h2>{$lang['comment_recent']}</h2>\n";
           $HTMLOUT .= commenttable($allrows);
         }
 
-      print stdhead("Add a comment to \"" . $arr["name"] . "\"") . $HTMLOUT . stdfoot();
+      print stdhead("{$lang['comment_add']}\"" . $arr["name"] . "\"") . $HTMLOUT . stdfoot();
       die;
     }
     elseif ($action == "edit")
     {
       $commentid = 0 + $_GET["cid"];
       if (!is_valid_id($commentid))
-        stderr("Error", "Invalid ID.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_invalid_id']}");
 
       $res = mysql_query("SELECT c.*, t.name FROM comments AS c LEFT JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
       $arr = mysql_fetch_assoc($res);
       if (!$arr)
-        stderr("Error", "Invalid ID.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_invalid_id']}.");
 
       if ($arr["user"] != $CURUSER["id"] && get_user_class() < UC_MODERATOR)
-        stderr("Error", "Permission denied.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_denied']}");
 
       if ($_SERVER["REQUEST_METHOD"] == "POST")
       {
@@ -109,7 +111,7 @@ loggedinorreturn();
         $returnto = htmlspecialchars($_POST["returnto"]);
 
         if ($text == "")
-          stderr("Error", "Comment body cannot be empty!");
+          stderr("{$lang['comment_error']}", "{$lang['comment_body']}");
 
         $text = sqlesc($text);
 
@@ -126,35 +128,35 @@ loggedinorreturn();
 
       
       $HTMLOUT = '';
-      $HTMLOUT .= "<h1>Edit comment to \"" . htmlspecialchars($arr["name"]) . "\"</h1><p>
+      $HTMLOUT .= "<h1>{$lang['comment_edit']}\"" . htmlspecialchars($arr["name"]) . "\"</h1><p>
       <form method='post' action='comment.php?action=edit&amp;cid=$commentid'>
       <input type='hidden' name='returnto' value='{$_SERVER["HTTP_REFERER"]}' />
       <input type='hidden' name='cid' value='$commentid' />
       <textarea name='text' rows='10' cols='60'>" . htmlspecialchars($arr["text"]) . "</textarea></p>
-      <p><input type='submit' class='btn' value='Do it!' /></p></form>";
+      <p><input type='submit' class='btn' value='{$lang['comment_doit']}' /></p></form>";
 
-      print stdhead("Edit comment to \"" . $arr["name"] . "\"") . $HTMLOUT . stdfoot();
+      print stdhead("{$lang['comment_edit']}\"" . $arr["name"] . "\"") . $HTMLOUT . stdfoot();
       die;
     }
     elseif ($action == "delete")
     {
       if (get_user_class() < UC_MODERATOR)
-        stderr("Error", "Permission denied.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_denied']}");
 
       $commentid = 0 + $_GET["cid"];
 
       if (!is_valid_id($commentid))
-        stderr("Error", "Invalid ID.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_invalid_id']}");
 
       $sure = isset($_GET["sure"]) ? (int)$_GET["sure"] : false;
 
       if (!$sure)
       {
         $referer = $_SERVER["HTTP_REFERER"];
-        stderr("Delete comment", "You are about to delete a comment. Click\n" .
+        stderr("{$lang['comment_delete']}", "{$lang['comment_about_delete']}\n" .
           "<a href='comment.php?action=delete&amp;cid=$commentid&amp;sure=1" .
           ($referer ? "&amp;returnto=" . urlencode($referer) : "") .
-          "'>here</a> if you are sure.");
+          "'>here</a> {$lang['comment_delete_sure']}");
       }
 
 
@@ -178,21 +180,21 @@ loggedinorreturn();
     elseif ($action == "vieworiginal")
     {
       if (get_user_class() < UC_MODERATOR)
-        stderr("Error", "Permission denied.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_denied']}");
 
       $commentid = 0 + $_GET["cid"];
 
       if (!is_valid_id($commentid))
-        stderr("Error", "Invalid ID.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_invalid_id']}");
 
       $res = mysql_query("SELECT c.*, t.name FROM comments AS c LEFT JOIN torrents AS t ON c.torrent = t.id WHERE c.id=$commentid") or sqlerr(__FILE__,__LINE__);
       $arr = mysql_fetch_assoc($res);
       if (!$arr)
-        stderr("Error", "Invalid ID $commentid.");
+        stderr("{$lang['comment_error']}", "{$lang['comment_invalid_id']} $commentid.");
 
       
       $HTMLOUT = '';
-      $HTMLOUT .= "<h1>Original contents of comment #$commentid</h1><p>
+      $HTMLOUT .= "<h1>{$lang['comment_original_content']}#$commentid</h1><p>
       <table width='500' border='1' cellspacing='0' cellpadding='5'>
       <tr><td class='comment'>
       ".htmlspecialchars($arr["ori_text"])."
@@ -203,13 +205,13 @@ loggedinorreturn();
     //	$returnto = "details.php?id=$torrentid&amp;viewcomm=$commentid#$commentid";
 
       if ($returnto)
-        print("<p><font size='small'>(<a href='$returnto'>back</a>)</font></p>\n");
+        print("<p><font size='small'>(<a href='$returnto'>{$lang['comment_back']}</a>)</font></p>\n");
 
-      print stdhead("Original comment") . $HTMLOUT . stdfoot();
+      print stdhead("{$lang['comment_original']}") . $HTMLOUT . stdfoot();
       die;
     }
     else
-      stderr("Error", "Unknown action");
+      stderr("{$lang['comment_error']}", "{$lang['comment_unknown']}");
 
     die;
 ?>

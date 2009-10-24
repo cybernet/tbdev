@@ -22,17 +22,19 @@ require_once 'include/user_functions.php';
 dbconn();
 
 loggedinorreturn();
-
-$nick = ($CURUSER ? $CURUSER['username'] : ('Guest' . rand(1000, 9999)));
-$irc_url = 'apollo.wyldryde.org';
-$irc_channel = '#TBDEVNET';
-
-
-$HTMLOUT = '';
-
+    
+    $lang = array_merge( load_language('global'), load_language('chat') );
+    
+    $nick = ($CURUSER ? $CURUSER['username'] : ('Guest' . rand(1000, 9999)));
+    $irc_url = 'apollo.wyldryde.org';
+    $irc_channel = '#TBDEVNET';
 
 
-    $HTMLOUT .= "<p>The official IRC channel is <a href='irc://{$irc_url}'>{$irc_channel}</a> on the <a href='http://www.gigadactyl.com'>gigadactyl</a> network.</p>
+    $HTMLOUT = '';
+
+
+
+    $HTMLOUT .= "<p>{$lang['chat_channel']}<a href='irc://{$irc_url}'>{$irc_channel}</a>{$lang['chat_on']}<a href='http://www.gigadactyl.com'>gigadactyl</a> {$lang['chat_network']}</p>
     <div class='borderwrap' align='center'>
     <div class='maintitle'>{$TBDEV['site_name']}</div>
     <div class='row1' align='center'>
@@ -59,6 +61,6 @@ $HTMLOUT = '';
 
 ///////////////////// HTML OUTPUT ////////////////////////////
 
-    print stdhead('Chat'). $HTMLOUT .stdfoot();
+    print stdhead("{$lang['chat_chat']}"). $HTMLOUT .stdfoot();
 
 ?>

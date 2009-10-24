@@ -19,15 +19,17 @@
 require_once "include/bittorrent.php";
 require_once "include/user_functions.php";
 
+    $lang = array_merge( load_language('global'), load_language('confirm') );
+    
     $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
     $md5 = isset($_GET['secret']) ? $_GET['secret'] : '';
 
     if (!is_valid_id($id))
-      stderr('USER ERROR', 'Sorry, you have an invalid id');
+      stderr("{$lang['confirm_user_error']}", "{$lang['confirm_invalid_id']}");
     
     if (! preg_match( "/^(?:[\d\w]){32}$/", $md5 ) )
 		{
-			stderr('USER ERROR', 'Sorry, you have an invalid key');
+			stderr("{$lang['confirm_user_error']}", "{$lang['confirm_invalid_key']}");
 		}
 		
     dbconn();
@@ -37,7 +39,7 @@ require_once "include/user_functions.php";
     $row = @mysql_fetch_assoc($res);
 
     if (!$row)
-      stderr('USER ERROR', 'Sorry, you have an invalid id');
+      stderr("{$lang['confirm_user_error']}", "{$lang['confirm_invalid_id']}");
 
     if ($row['status'] != 'pending') 
     {
@@ -47,12 +49,12 @@ require_once "include/user_functions.php";
 
     $sec = hash_pad($row['editsecret']);
     if ($md5 != md5($sec))
-      stderr('USER ERROR', 'Sorry, Cannot confirm you');
+      stderr("{$lang['confirm_user_error']}", "{$lang['confirm_cannot_confirm']}");
 
     @mysql_query("UPDATE users SET status='confirmed', editsecret='' WHERE id=$id AND status='pending'");
 
     if (!mysql_affected_rows())
-      stderr('USER ERROR', 'Sorry, Cannot confirm you');
+      stderr("{$lang['confirm_user_error']}", "{$lang['confirm_cannot_confirm']}");
 
     logincookie($id, $row['passhash']);
 
