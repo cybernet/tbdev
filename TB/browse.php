@@ -27,6 +27,8 @@ dbconn(false);
 
 loggedinorreturn();
 
+    $lang = array_merge( load_language('global'), load_language('browse') );
+    
     $HTMLOUT = '';
     
     $cats = genrelist();
@@ -84,7 +86,7 @@ loggedinorreturn();
       elseif ($category)
       {
         if (!is_valid_id($category))
-          stderr("Error", "Invalid category ID.");
+          stderr("{$lang['browse_error']}", "{$lang['browse_invalid_cat']}");
         $wherecatina[] = $category;
         $addparam .= "cat=$category&amp;";
       }
@@ -199,7 +201,7 @@ loggedinorreturn();
     }
     
     if (isset($cleansearchstr))
-      $title = "Search results for \"$searchstr\"";
+      $title = "{$lang['browse_search']}\"$searchstr\"";
     else
       $title = '';
 
@@ -232,7 +234,7 @@ loggedinorreturn();
       $i++;
     }
 
-    $alllink = "<div align='left'>(<a href='browse.php?all=1'><b>Show all</b></a>)</div>";
+    $alllink = "<div align='left'>(<a href='browse.php?all=1'><b>{$lang['browse_show_all']}</b></a>)</div>";
 
     $ncats = count($cats);
     $nrows = ceil($ncats/$catsperrow);
@@ -258,9 +260,9 @@ loggedinorreturn();
       <tr>
         <td class='bottom' style='padding: 1px;padding-left: 10px'>
           <select name='incldead'>
-    <option value='0'>active</option>
-    <option value='1'".($selected == 1 ? " selected='selected'" : "").">including dead</option>
-    <option value='2'".($selected == 2 ? " selected='selected'" : "").">only dead</option>
+    <option value='0'>{$lang['browse_active']}</option>
+    <option value='1'".($selected == 1 ? " selected='selected'" : "").">{$lang['browse_inc_dead']}</option>
+    <option value='2'".($selected == 2 ? " selected='selected'" : "").">{$lang['browse_dead']}</option>
           </select>
         </td>";
         
@@ -274,7 +276,7 @@ loggedinorreturn();
       <tr>
         <td class='bottom' style='padding: 1px;padding-left: 10px'>
         <div align='center'>
-          <input type='submit' class='btn' value='Go!' />
+          <input type='submit' class='btn' value='{$lang['browse_go']}' />
         </div>
         </td>
       </tr>
@@ -288,7 +290,7 @@ loggedinorreturn();
 
     if (isset($cleansearchstr))
     {
-      $HTMLOUT .= "<h2>Search results for \"" . htmlentities($searchstr, ENT_QUOTES) . "\"</h2>\n";
+      $HTMLOUT .= "<h2>{$lang['browse_search']}\"" . htmlentities($searchstr, ENT_QUOTES) . "\"</h2>\n";
     }
     
     if ($count) 
@@ -303,13 +305,13 @@ loggedinorreturn();
     {
       if (isset($cleansearchstr)) 
       {
-        $HTMLOUT .= "<h2>Nothing found!</h2>\n";
-        $HTMLOUT .= "<p>Try again with a refined search string.</p>\n";
+        $HTMLOUT .= "<h2>{$lang['browse_not_found']}</h2>\n";
+        $HTMLOUT .= "<p>{$lang['browse_tryagain']}</p>\n";
       }
       else 
       {
-        $HTMLOUT .= "<h2>Nothing here!</h2>\n";
-        $HTMLOUT .= "<p>Sorry pal :(</p>\n";
+        $HTMLOUT .= "<h2>{$lang['browse_nothing']}</h2>\n";
+        $HTMLOUT .= "<p>{$lang['browse_sorry']}(</p>\n";
       }
     }
 

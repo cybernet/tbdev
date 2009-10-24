@@ -18,17 +18,19 @@
 */
 require_once "include/bittorrent.php";
 
+    $lang = array_merge( load_language('global'), load_language('confirmemail') );
+    
     if ( !isset($_GET['uid']) OR !isset($_GET['key']) OR !isset($_GET['email']) )
-      stderr('USER ERROR', 'Idiot, no data!');
+      stderr("{$lang['confirmmail_user_error']}", "{$lang['confirmmail_idiot']}");
 
     if (! preg_match( "/^(?:[\d\w]){32}$/", $_GET['key'] ) )
 		{
-			stderr( 'USER ERROR', 'No key set' );
+			stderr( "{$lang['confirmmail_user_error']}", "{$lang['confirmmail_no_key']}" );
 		}
 		
 		if (! preg_match( "/^(?:\d){1,}$/", $_GET['uid'] ) )
 		{
-			stderr( 'USER ERROR', 'No ID set' );
+			stderr( "{$lang['confirmmail_user-error']}", "{$lang['confirmmail_no_id']}" );
 		}
 
     $id = intval($_GET['uid']);
@@ -36,7 +38,7 @@ require_once "include/bittorrent.php";
     $email = urldecode($_GET['email']);
     
     if( !validemail($email) )
-      stderr('USER ERROR', 'Not a real email address!');
+      stderr("{$lang['confirmmail_user_error']}", "{$lang['confirmmail_false_email']}");
 
 dbconn();
 
@@ -45,20 +47,20 @@ dbconn();
     $row = mysql_fetch_assoc($res);
 
     if (!$row)
-      stderr('USER ERROR', 'Cannot complete');
+      stderr("{$lang['confirmmail_user_error']}", "{$lang['confirmmail_not_complete']}");
 
     $sec = hash_pad($row["editsecret"]);
     
     if (preg_match('/^ *$/s', $sec))
-      stderr('USER ERROR', 'Cannot complete');
+      stderr("{$lang['confirmmail_user_error']}", "{$lang['confirmmail_not_complete']}");
       
     if ($md5 != md5($sec . $email . $sec))
-      stderr('USER ERROR', 'Cannot complete');
+      stderr("{$lang['confirmmail_user_error']}", "{$lang['confirmmail_not_complete']}");
 
    @mysql_query("UPDATE users SET editsecret='', email=" . sqlesc($email) . " WHERE id=$id AND editsecret=" . sqlesc($row["editsecret"]));
 
     if (!mysql_affected_rows())
-      stderr('USER ERROR', 'Cannot complete');
+      stderr("{$lang['confirmmail_user_error']}", "{$lang['confirmmail_not_complete']}");
 
     header("Refresh: 0; url={$TBDEV['baseurl']}/my.php?emailch=1");
 
