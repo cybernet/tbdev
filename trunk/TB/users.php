@@ -23,6 +23,8 @@ dbconn();
 
 loggedinorreturn();
 
+    $lang = load_language('global');
+    
     $search = isset($_GET['search']) ? strip_tags(trim($_GET['search'])) : '';
     $class = isset($_GET['class']) ? $_GET['class'] : '-';
     $letter = '';

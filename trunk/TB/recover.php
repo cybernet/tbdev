@@ -26,6 +26,8 @@ session_start();
 
 dbconn();
 
+    $lang = load_language('global');
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST")
     {
       
