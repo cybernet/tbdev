@@ -23,6 +23,8 @@ dbconn( false );
 
 loggedinorreturn();
 
+	$lang = load_language('global');
+	
 	if ( get_user_class() < UC_ADMINISTRATOR )
 		header( "Location: {$TBDEV['baseurl']}/index.php" );
 

@@ -51,11 +51,11 @@ require_once 'include/bittorrent.php';
 
     logincookie($row['id'], $row['passhash']);
 
-$returnto = str_replace('&amp;', '&', htmlspecialchars($_POST['returnto']));
+//$returnto = str_replace('&amp;', '&', htmlspecialchars($_POST['returnto']));
 //$returnto = $_POST['returnto'];
-    if (!empty($returnto))
-      header("Location: ".$returnto);
-    else
-      header('Location: my.php');
+    //if (!empty($returnto))
+      //header("Location: ".$returnto);
+    //else
+      header("Location: {$TBDEV['baseurl']}/my.php");
 
 ?>

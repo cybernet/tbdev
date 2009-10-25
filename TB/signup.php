@@ -28,6 +28,8 @@ ini_set('session.use_trans_sid', '0');
     if (isset($_SESSION['captcha_time']))
     (time() - $_SESSION['captcha_time'] < 10) ? exit('NO SPAM! Wait 10 seconds and then refresh page') : NULL;
     
+    $lang = load_language('global');
+    
     $HTMLOUT = '';
     
     $res = mysql_query("SELECT COUNT(*) FROM users") or sqlerr(__FILE__, __LINE__);

@@ -24,6 +24,8 @@ ob_start("ob_gzhandler");
   
   dbconn(false);
   loggedinorreturn();
+  
+  $lang = load_language('global');
 
 /*
   function donortable($res, $frame_caption)

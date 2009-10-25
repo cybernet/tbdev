@@ -27,7 +27,7 @@ dbconn();
 
     if ( $type == "signup" && isset($_GET['email']) ) 
     {
-      stderr("{$lang['ok_success']}", "{$lang['ok_email']}");
+      stderr( "{$lang['ok_success']}", sprintf($lang['ok_email'], htmlentities($_GET['email'], ENT_QUOTES)) );
     }
     elseif ($type == "sysop") 
     {
@@ -60,8 +60,8 @@ dbconn();
       {
         $HTMLOUT .= stdhead("{$lang['ok_signup_confirm']}");
         $HTMLOUT .= "<h1>{$lang['ok_success_confirmed']}</h1>\n";
-        $HTMLOUT .= "{$lang['ok_account_active_login']}";
-        $HTMLOUT .= "{$lang['ok_read_rules']}";
+        $HTMLOUT .= "<p>".sprintf($lang['ok_account_active_login'], "<a href='{$TBDEV['baseurl']}/index.php'><b>{$lang['ok_account_active_login_link']}</b></a>")."</p>\n";
+        $HTMLOUT .= sprintf($lang['ok_read_rules'], $TBDEV['site_name']);
         $HTMLOUT .= stdfoot();
         print $HTMLOUT;
       }

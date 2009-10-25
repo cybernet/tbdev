@@ -28,7 +28,7 @@ require_once "include/user_functions.php";
 
 
 
-    $lang = array_merge( load_language('global'), load_language('ad_forummanage') );
+    $lang = array_merge( $lang, load_language('ad_forummanage') );
     
     if( (get_user_class() < UC_MODERATOR) || ($CURUSER['id'] !== '1')) //sysop id check
     stderr("{$lang['stderr_error']}", "{$lang['text_permission']}");
