@@ -88,10 +88,6 @@ require_once "include/user_functions.php";
 
 			<span class='btn'><a href='admin.php?action=categories'>{$lang['index_categories']}</a></span>
 			
-			<span class='btn'><a href='admin.php?action=newusers'>{$lang['index_newusers']}</a></span>
-			
-			<span class='btn'><a href='admin.php?action=resetpassword'>{$lang['index_resetpassword']}</a></span>
-			
 			</td></tr>
 			<!-- row 5 -->
 			<tr><td>
