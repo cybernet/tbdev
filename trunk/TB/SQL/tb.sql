@@ -488,6 +488,7 @@ CREATE TABLE `users` (
   `acceptpms` enum('yes','friends','no') character set utf8 collate utf8_unicode_ci NOT NULL default 'yes',
   `ip` varchar(15) character set utf8 collate utf8_unicode_ci NOT NULL default '',
   `class` tinyint(3) unsigned NOT NULL default '0',
+  `language` varchar(32) set utf8 collate utf8_unicode_ci NOT NULL default 'en',
   `avatar` varchar(100) character set utf8 collate utf8_unicode_ci NOT NULL default '',
   `av_w` smallint(3) unsigned NOT NULL default '0',
   `av_h` smallint(3) unsigned NOT NULL default '0',
