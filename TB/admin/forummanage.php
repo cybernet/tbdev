@@ -258,7 +258,7 @@ function editForum() {
 
       <tr align='center'>
         <td colspan='2'>
-        <input type='hidden' name='id' value='<?php echo $id;?>' />
+        <input type='hidden' name='id' value='{$row['id']}' />
         <input type='submit' name='Submit' value='{$lang['btn_editforum']}' class='btn' />
         </td>
       </tr>
@@ -312,9 +312,9 @@ function takeeditForum() {
     sqlesc($_POST['readclass']) . ", minclasswrite = " . 
     sqlesc($_POST['writeclass']) . ", minclasscreate = " . 
     sqlesc($_POST['createclass']) . " where id = ".
-    sqlesc($_POST['id'])."");
+    sqlesc($_POST['id']));
 
-    if(mysql_affected_rows() === 1)
+    if(mysql_affected_rows() == 1)
       stderr("{$lang['stderr_success']}", "{$lang['text_edited']}. <a href='admin.php?action=forummanage'>{$lang['text_return']}</a>");
     else
       stderr("{$lang['stderr_error']}", "{$lang['text_error']}. <a href='admin.php?action=forummanage'>{$lang['text_return']}</a>");

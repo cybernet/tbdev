@@ -26,9 +26,9 @@ session_start();
 
 dbconn();
 
-    $lang = load_language('global');
-    
-    if ($_SERVER["REQUEST_METHOD"] == "POST")
+   $lang = array_merge( load_language('global'), load_language('recover') );
+   
+   if ($_SERVER["REQUEST_METHOD"] == "POST")
     {
       
       if(empty($_POST['captcha']) || $_SESSION['captcha_id'] != strtoupper($_POST['captcha'])){
@@ -37,43 +37,25 @@ dbconn();
     }
     $email = trim($_POST["email"]);
     if (!validemail($email))
-      stderr("Error", "You must enter an email address");
+      stderr("{$lang['stderr_errorhead']}", "{$lang['stderr_invalidemail']}");
     $res = mysql_query("SELECT * FROM users WHERE email=" . sqlesc($email) . " LIMIT 1") or sqlerr();
-    $arr = mysql_fetch_assoc($res) or stderr("Error", "The email address was not found in the database.\n");
+    $arr = mysql_fetch_assoc($res) or stderr("{$lang['stderr_errorhead']}", "{$lang['stderr_notfound']}");
 
     $sec = mksecret();
 
     mysql_query("UPDATE users SET editsecret=" . sqlesc($sec) . " WHERE id=" . $arr["id"]) or sqlerr();
     if (!mysql_affected_rows())
-      stderr("Error", "Database error. Please contact an administrator about this.");
+      stderr("{$lang['stderr_errorhead']}", "{$lang['stderr_dberror']}");
 
     $hash = md5($sec . $email . $arr["passhash"] . $sec);
 
-    $body = <<<EOD
-Someone, hopefully you, requested that the password for the account
-associated with this email address ($email) be reset.
 
-The request originated from {$_SERVER["REMOTE_ADDR"]}.
-
-If you did not do this ignore this email. Please do not reply.
+$body = sprintf($lang['email_request'], $email, $_SERVER["REMOTE_ADDR"], $TBDEV['baseurl'], $arr["id"], $hash).$TBDEV['site_name'];
 
 
-Should you wish to confirm this request, please follow this link:
-
-{$TBDEV['baseurl']}/recover.php?id={$arr["id"]}&secret=$hash
-
-
-After you do this, your password will be reset and emailed back
-to you.
-
---
-{$TBDEV['site_name']}
-EOD;
-
-    @mail($arr["email"], "{$TBDEV['site_name']} password reset confirmation", $body, "From: {$TBDEV['site_email']}") or stderr("Error", "Unable to send mail. Please contact an administrator about this error.");
+    @mail($arr["email"], "{$TBDEV['site_name']} {$lang['email_subjreset']}", $body, "From: {$TBDEV['site_email']}") or stderr("{$lang['stderr_errorhead']}", "{$lang['stderr_nomail']}");
     
-    stderr("Success", "A confirmation email has been mailed.\n" .
-      " Please allow a few minutes for the mail to arrive.");
+    stderr($lang['stderr_successhead'], $lang['stderr_confmailsent']);
     }
     elseif($_GET)
     {
@@ -114,41 +96,28 @@ EOD;
     @mysql_query("UPDATE users SET secret=" . sqlesc($sec) . ", editsecret='', passhash=" . sqlesc($newpasshash) . " WHERE id=$id AND editsecret=" . sqlesc($arr["editsecret"]));
 
     if (!mysql_affected_rows())
-      stderr("Error", "Unable to update user data. Please contact an administrator about this error.");
+      stderr("{$lang['stderr_errorhead']}", "{$lang['stderr_noupdate']}");
 
-    $body = <<<EOD
-As per your request we have generated a new password for your account.
+    $body = sprintf($lang['email_newpass'], $arr["username"], $newpassword, $TBDEV['baseurl']).$TBDEV['site_name'];
 
-Here is the information we now have on file for this account:
-
-    User name: {$arr["username"]}
-    Password:  $newpassword
-
-You may login at {$TBDEV['baseurl']}/login.php
-
---
-{$TBDEV['site_name']}
-EOD;
   
-    @mail($email, "{$TBDEV['site_name']} account details", $body, "From: {$TBDEV['site_email']}")
-      or stderr("Error", "Unable to send mail. Please contact an administrator about this error.");
-    stderr("Success", "The new account details have been mailed to <b>$email</b>.\n" .
-      "Please allow a few minutes for the mail to arrive.");
+    @mail($email, "{$TBDEV['site_name']} {$lang['email_subject']}", $body, "From: {$TBDEV['site_email']}")
+      or stderr($lang['stderr_errorhead'], $lang['stderr_nomail']);
+    stderr($lang['stderr_successhead'], sprintf($lang['stderr_mailed'], $email));
     }
     else
     {
 
     if (isset($_SESSION['captcha_time']))
-    (time() - $_SESSION['captcha_time'] < 10) ? exit('NO SPAM! Wait 10 seconds and then refresh page') : NULL;
+    (time() - $_SESSION['captcha_time'] < 10) ? exit($lang['captcha_spam']) : NULL;
       
       
     $HTMLOUT = '';
     
     $HTMLOUT .= "<script type='text/javascript' src='captcha/captcha.js'></script>
       
-      <h1>Recover lost user name or password</h1>
-      <p>Use the form below to have your password reset and your account details mailed back to you.<br />
-      (You will have to reply to a confirmation email.)</p>
+      <h1>{$lang['recover_unamepass']}</h1>
+      <p>{$lang['recover_form']}</p>
       
       <form method='post' action='recover.php'>
       <table border='1' cellspacing='0' cellpadding='10'>
@@ -156,29 +125,29 @@ EOD;
         <td>&nbsp;</td>
         <td>
           <div id='captchaimage'>
-          <a href='recover.php' onclick=\"refreshimg(); return false;\" title='Click to refresh image'>
-          <img class='cimage' src='captcha/GD_Security_image.php?<?php echo time(); ?>' alt='Captcha image' />
+          <a href='recover.php' onclick=\"refreshimg(); return false;\" title='{$lang['captcha_refresh']}'>
+          <img class='cimage' src='captcha/GD_Security_image.php?<?php echo time(); ?>' alt='{$lang['Captcha image']}' />
           </a>
           </div>
          </td>
       </tr>
       <tr>
-          <td class='rowhead'>PIN:</td>
+          <td class='rowhead'>{$lang['captcha_pin']}</td>
           <td>
             <input type='text' maxlength='6' name='captcha' id='captcha' onblur='check(); return false;'/>
           </td>
       </tr>
 
       <tr>
-          <td class='rowhead'>Registered email</td>
+          <td class='rowhead'>{$lang['recover_regdemail']}</td>
           <td><input type='text' size='40' name='email' /></td></tr>
       <tr>
-          <td colspan='2' align='center'><input type='submit' value='Do it!' class='btn' /></td>
+          <td colspan='2' align='center'><input type='submit' value='{$lang['recover_btn']}' class='btn' /></td>
       </tr>
       </table>
       </form>";
 
-      print stdhead('Recover'). $HTMLOUT . stdfoot();
+      print stdhead($lang['head_recover']). $HTMLOUT . stdfoot();
     }
 
 ?>

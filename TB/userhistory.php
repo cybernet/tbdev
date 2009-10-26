@@ -24,14 +24,17 @@ require_once "include/html_functions.php";
 require_once "include/bbcode_functions.php";
 
 dbconn(false);
+
 loggedinorreturn();
 
+    $lang = array_merge( load_language('global'), load_language('userhistory') );
+    
     $userid = (int)$_GET["id"];
 
-    if (!is_valid_id($userid)) stderr("Error", "Invalid ID");
+    if (!is_valid_id($userid)) stderr($lang['stderr_errorhead'], $lang['stderr_invalidid']);
 
     if ($CURUSER['class']< UC_POWER_USER || ($CURUSER["id"] != $userid && $CURUSER['class'] < UC_MODERATOR))
-      stderr("Error", "Permission denied");
+      stderr($lang['stderr_errorhead'], $lang['stderr_perms']);
 
     $page = (isset($_GET['page'])?$_GET["page"]:''); // not used?
 
@@ -59,7 +62,7 @@ loggedinorreturn();
 
       $res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
 
-      $arr = mysql_fetch_row($res) or stderr("Error", "No posts found");
+      $arr = mysql_fetch_row($res) or stderr($lang['stderr_errorhead'], $lang['top_noposts']);
 
       $postcount = $arr[0];
 
@@ -78,7 +81,7 @@ loggedinorreturn();
         $subject = "<a href='userdetails.php?id=$userid'><b>$arr[username]</b></a>" . get_user_icons($arr, true);
       }
       else
-          $subject = "unknown[$userid]";
+          $subject = $lang['posts_unknown'].'['.$userid.']';
 
       //------ Get posts
 
@@ -90,11 +93,11 @@ loggedinorreturn();
 
       $res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
 
-      if (mysql_num_rows($res) == 0) stderr("Error", "No posts found");
+      if (mysql_num_rows($res) == 0) stderr($lang['stderr_errorhead'], $lang['top_noposts']);
 
       
 
-      $HTMLOUT .= "<h1>Post history for $subject</h1>\n";
+      $HTMLOUT .= "<h1>{$lang['top_posthfor']} $subject</h1>\n";
 
       if ($postcount > $perpage) 
         $HTMLOUT .= $pager['pagertop'];
@@ -130,13 +133,13 @@ loggedinorreturn();
 
           $HTMLOUT .= "<div class='sub'><table border='0' cellspacing='0' cellpadding='0'>
           <tr><td class='embedded'>
-          $added&nbsp;--&nbsp;<b>Forum:&nbsp;</b>
+          $added&nbsp;--&nbsp;<b>{$lang['posts_forum']}:&nbsp;</b>
           <a href='forums.php?action=viewforum&amp;forumid=$forumid'>$forumname</a>
-          &nbsp;--&nbsp;<b>Topic:&nbsp;</b>
+          &nbsp;--&nbsp;<b>{$lang['posts_topic']}:&nbsp;</b>
           <a href='forums.php?action=viewtopic&amp;topicid=$topicid'>$topicname</a>
-          &nbsp;--&nbsp;<b>Post:&nbsp;</b>
+          &nbsp;--&nbsp;<b>{$lang['posts_post']}:&nbsp;</b>
           #<a href='forums.php?action=viewtopic&amp;topicid=$topicid&amp;page=p$postid#$postid'>$postid</a>" .
-          ($newposts ? " &nbsp;<b>(<font color='red'>NEW!</font>)</b>" : "") .
+          ($newposts ? " &nbsp;<b>(<font color='red'>{$lang['posts_new']}</font>)</b>" : "") .
           "</td></tr></table></div>\n";
 
           $HTMLOUT .= begin_table(true);
@@ -149,7 +152,7 @@ loggedinorreturn();
               if (mysql_num_rows($subres) == 1)
               {
                   $subrow = mysql_fetch_assoc($subres);
-                  $body .= "<p><font size='1' class='small'>Last edited by <a href='userdetails.php?id=$arr[editedby]'><b>$subrow[username]</b></a> at $arr[editedat] GMT</font></p>\n";
+                  $body .= "<p><font size='1' class='small'>{$lang['posts_lasteditedby']} <a href='userdetails.php?id=$arr[editedby]'><b>$subrow[username]</b></a> {$lang['posts_at']} $arr[editedat] GMT</font></p>\n";
               }
           }
 
@@ -165,7 +168,7 @@ loggedinorreturn();
       if ($postcount > $perpage) 
         $HTMLOUT .= $pager['pagerbottom'];
 
-      print stdhead("Posts history") . $HTMLOUT . stdfoot();
+      print stdhead($lang['head_post']) . $HTMLOUT . stdfoot();
 
       die;
     }
@@ -187,7 +190,7 @@ loggedinorreturn();
 
       $res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
 
-      $arr = mysql_fetch_row($res) or stderr("Error", "No comments found");
+      $arr = mysql_fetch_row($res) or stderr($lang['stderr_errorhead'], $lang['top_nocomms']);
 
       $commentcount = $arr[0];
 
@@ -206,7 +209,7 @@ loggedinorreturn();
         $subject = "<a href='userdetails.php?id=$userid'><b>$arr[username]</b></a>" . get_user_icons($arr, true);
       }
       else
-        $subject = "unknown[$userid]";
+        $subject = $lang['posts_unknown'].'['.$userid.']';
 
       //------ Get comments
 
@@ -216,11 +219,11 @@ loggedinorreturn();
 
       $res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
 
-      if (mysql_num_rows($res) == 0) stderr("Error", "No comments found");
+      if (mysql_num_rows($res) == 0) stderr($lang['stderr_errorhead'], $lang['top_nocomms']);
 
       
 
-      $HTMLOUT .= "<h1>Comments history for $subject</h1>\n";
+      $HTMLOUT .= "<h1>{$lang['top_commhfor']} $subject</h1>\n";
 
       if ($commentcount > $perpage) 
         $HTMLOUT .= $pager['pagertop'];
@@ -255,9 +258,9 @@ loggedinorreturn();
         $added = get_date( $arr['added'],'') . " (" . get_date( $arr['added'],'',0,1) . ")";
 
         $HTMLOUT .= "<div class='sub'><table border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'>".
-        "$added&nbsp;---&nbsp;<b>Torrent:&nbsp;</b>".
-        ($torrent?("<a href='details.php?id=$torrentid&amp;tocomm=1'>$torrent</a>"):" [Deleted] ").
-        "&nbsp;---&nbsp;<b>Comment:&nbsp;</b>#<a href='details.php?id=$torrentid&amp;tocomm=1$page_url'>$commentid</a>
+        "$added&nbsp;---&nbsp;<b>{$lang['posts_torrent']}:&nbsp;</b>".
+        ($torrent?("<a href='details.php?id=$torrentid&amp;tocomm=1'>$torrent</a>"):" [{$lang['posts_del']}] ").
+        "&nbsp;---&nbsp;<b>{$lang['posts_comment']}:&nbsp;</b>#<a href='details.php?id=$torrentid&amp;tocomm=1$page_url'>$commentid</a>
         </td></tr></table></div>\n";
 
         $HTMLOUT .= begin_table(true);
@@ -276,7 +279,7 @@ loggedinorreturn();
       if ($commentcount > $perpage) 
         $HTMLOUT .= $pager['pagerbottom'];
 
-      print stdhead("Comments history") . $HTMLOUT . stdfoot();
+      print stdhead($lang['head_comm']) . $HTMLOUT . stdfoot();
 
       die;
     }
@@ -284,10 +287,10 @@ loggedinorreturn();
     //-------- Handle unknown action
 
     if ($action != "")
-      stderr("History Error", "Unknown action.");
+      stderr($lang['stderr_histerrhead'], $lang['stderr_unknownact']);
 
     //-------- Any other case
 
-    stderr("History Error", "Invalid or no query.");
+    stderr($lang['stderr_histerrhead'], $lang['stderr_invalidq']);
 
 ?>

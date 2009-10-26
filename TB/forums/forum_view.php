@@ -28,7 +28,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     $HTMLOUT = '';
     
-    $forumid = (int)$_GET["forumid"];
+    $forumid = isset($_GET["forumid"]) ? (int)$_GET["forumid"] : 0;
 
     if (!is_valid_id($forumid))
       header("Location: {$TBDEV['baseurl']}/forum.php");
@@ -41,12 +41,17 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     $res = @mysql_query("SELECT name, minclassread FROM forums WHERE id=$forumid") or sqlerr(__FILE__, __LINE__);
 
-    $arr = mysql_fetch_assoc($res) or die;
+    if( false == mysql_num_rows($res) )
+    {
+      header("Location: {$TBDEV['baseurl']}/forums.php");
+    }
+    
+    $arr = mysql_fetch_assoc($res);
 
     $forumname = $arr["name"];
 
     if (get_user_class() < $arr["minclassread"])
-      header("Location: {$TBDEV['baseurl']}/forum.php");
+      header("Location: {$TBDEV['baseurl']}/forums.php");
       //die("Not permitted");
 
     //------ Page links
@@ -268,7 +273,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
 
     } // if
     else
-      $HTMLOUT .= "<p style='text-align:center;'>{$lang['forum_view_no-topics']}</p>\n";
+      $HTMLOUT .= "<p style='text-align:center;'>{$lang['forum_view_no_topics']}</p>\n";
 
     $HTMLOUT .=  "<table class='main' border='0' cellspacing='0' cellpadding='0'><tr valign='middle'>\n";
 
