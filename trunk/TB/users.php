@@ -23,7 +23,7 @@ dbconn();
 
 loggedinorreturn();
 
-    $lang = load_language('global');
+    $lang = array_merge( load_language('global'), load_language('users') );
     
     $search = isset($_GET['search']) ? strip_tags(trim($_GET['search'])) : '';
     $class = isset($_GET['class']) ? $_GET['class'] : '-';
@@ -62,7 +62,7 @@ loggedinorreturn();
     $HTMLOUT  .= "<h1>Users</h1>\n";
 
     $HTMLOUT  .= "<form method='get' action='users.php?'>\n";
-    $HTMLOUT  .= "Search: <input type='text' size='30' name='search' />\n";
+    $HTMLOUT  .= "{$lang['form_search']} <input type='text' size='30' name='search' />\n";
     $HTMLOUT  .= "<select name='class'>\n";
     $HTMLOUT  .= "<option value='-'>(any class)</option>\n";
     for ($i = 0;;++$i)
@@ -73,7 +73,7 @@ loggedinorreturn();
         break;
     }
     $HTMLOUT  .= "</select>\n";
-    $HTMLOUT  .= "<input type='submit' value='Okay' class='btn' />\n";
+    $HTMLOUT  .= "<input type='submit' value='{$lang['form_btn']}' class='btn' />\n";
     $HTMLOUT  .= "</form>\n";
 
     $HTMLOUT  .= "<br />\n";
@@ -135,14 +135,14 @@ loggedinorreturn();
     if ($page == 1)
       $browsemenu .= "<span class='btn' style='background:orange;'>&lsaquo;</span>$pagemenu";
     else
-      $browsemenu .= "<a href='users.php?$q&amp;page=1' title='First(1)'><span class='btn'>&laquo;</span></a>&nbsp;<a href='users.php?$q&amp;page=" . ($page - 1) . "'><span class='btn'>&lsaquo;</span></a>$pagemenu";
+      $browsemenu .= "<a href='users.php?$q&amp;page=1' title='{$lang['users_first']}(1)'><span class='btn'>&laquo;</span></a>&nbsp;<a href='users.php?$q&amp;page=" . ($page - 1) . "'><span class='btn'>&lsaquo;</span></a>$pagemenu";
 
     //$browsemenu .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     if ($page == $pages)
       $browsemenu .= "<span class='btn' style='background:orange;'>&rsaquo;</span>";
     else
-      $browsemenu .= "<a href='users.php?$q&amp;page=" . ($page + 1) . "'><span class='btn'>&rsaquo;</span></a>&nbsp;<a href='users.php?$q&amp;page=" . $pages . "' title='Last($pages)'><span class='btn'>&raquo;</span></a>";
+      $browsemenu .= "<a href='users.php?$q&amp;page=" . ($page + 1) . "'><span class='btn'>&rsaquo;</span></a>&nbsp;<a href='users.php?$q&amp;page=" . $pages . "' title='{$lang['users_last']}($pages)'><span class='btn'>&raquo;</span></a>";
     }
 
     $HTMLOUT .= ($arr[0] > $perpage) ? "<p>$browsemenu<br /><br /></p>" : '<br /><br />';
@@ -154,7 +154,7 @@ loggedinorreturn();
     //$num = mysql_num_rows($res);
 
     $HTMLOUT  .= "<table border='1' cellspacing='0' cellpadding='5'>\n";
-    $HTMLOUT  .= "<tr><td class='colhead' align='left'>User name</td><td class='colhead'>Registered</td><td class='colhead'>Last access</td><td class='colhead' align='left'>Class</td><td class='colhead'>Country</td></tr>\n";
+    $HTMLOUT  .= "<tr><td class='colhead' align='left'>User name</td><td class='colhead'>{$lang['users_regd']}</td><td class='colhead'>{$lang['users_la']}</td><td class='colhead' align='left'>{$lang['users_class']}</td><td class='colhead'>{$lang['users_country']}</td></tr>\n";
     
     while($row = mysql_fetch_assoc($res))
     {
@@ -176,7 +176,7 @@ loggedinorreturn();
 
     $HTMLOUT  .= ($arr[0] > $perpage) ? "<br /><p>$browsemenu</p>" : '<br /><br />';
 
-    print stdhead("Users") . $HTMLOUT . stdfoot();
+    print stdhead($lang['head_users']) . $HTMLOUT . stdfoot();
     die;
 
 ?>

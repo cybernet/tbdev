@@ -23,19 +23,19 @@ dbconn();
 
 ini_set('session.use_trans_sid', '0');
 
+    $lang = array_merge( load_language('global'), load_language('signup') );
+    
     // Begin the session
     session_start();
     if (isset($_SESSION['captcha_time']))
-    (time() - $_SESSION['captcha_time'] < 10) ? exit('NO SPAM! Wait 10 seconds and then refresh page') : NULL;
-    
-    $lang = load_language('global');
+    (time() - $_SESSION['captcha_time'] < 10) ? exit($lang['captcha_spam']) : NULL;
     
     $HTMLOUT = '';
     
     $res = mysql_query("SELECT COUNT(*) FROM users") or sqlerr(__FILE__, __LINE__);
     $arr = mysql_fetch_row($res);
     if ($arr[0] >= $TBDEV['maxusers'])
-      stderr("Sorry", "The current user account limit (" . number_format($TBDEV['maxusers']) . ") has been reached. Inactive accounts are pruned all the time, please check back again later...");
+      stderr($lang['stderr_errorhead'], sprintf($lang['stderr_ulimit'], $TBDEV['maxusers']));
 
     // TIMEZONE STUFF
         $offset = (string)$TBDEV['time_offset'];
@@ -60,43 +60,42 @@ ini_set('session.use_trans_sid', '0');
 
     $HTMLOUT .= "<script type='text/javascript' src='captcha/captcha.js'></script>
 
-    <p>Note: You need cookies enabled to sign up or log in.</p>
+    <p>{$lang['signup_cookies']}</p>
 
     <form method='post' action='takesignup.php'>
     <table border='1' cellspacing='0' cellpadding='10'>
-    <tr><td align='right' class='heading'>Desired username:</td><td align='left'><input type='text' size='40' name='wantusername' /></td></tr>
-    <tr><td align='right' class='heading'>Pick a password:</td><td align='left'><input type='password' size='40' name='wantpassword' /></td></tr>
-    <tr><td align='right' class='heading'>Enter password again:</td><td align='left'><input type='password' size='40' name='passagain' /></td></tr>
-    <tr valign='top'><td align='right' class='heading'>Email address:</td><td align='left'><input type='text' size='40' name='email' />
-    <table width='250' border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'><font class='small'>The email address must be valid.
-    You will receive a confirmation email which you need to respond to. The email address won't be publicly shown anywhere.</font></td></tr>
+    <tr><td align='right' class='heading'>{$lang['signup_uname']}</td><td align='left'><input type='text' size='40' name='wantusername' /></td></tr>
+    <tr><td align='right' class='heading'>{$lang['signup_pass']}</td><td align='left'><input type='password' size='40' name='wantpassword' /></td></tr>
+    <tr><td align='right' class='heading'>{$lang['signup_passa']}</td><td align='left'><input type='password' size='40' name='passagain' /></td></tr>
+    <tr valign='top'><td align='right' class='heading'>{$lang['signup_email']}</td><td align='left'><input type='text' size='40' name='email' />
+    <table width='250' border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'><font class='small'>{$lang['signup_valemail']}</font></td></tr>
     </table>
     </td></tr>
-    <tr><td align='right' class='heading'>Timezone</td><td align='left'>{$time_select}</td></tr>
+    <tr><td align='right' class='heading'>{$lang['signup_timez']}</td><td align='left'>{$time_select}</td></tr>
       <tr>
         <td>&nbsp;</td>
         <td>
           <div id='captchaimage'>
-          <a href='signup.php' onclick=\"refreshimg(); return false;\" title='Click to refresh image'>
-          <img class='cimage' src='captcha/GD_Security_image.php?$thistime' alt='Captcha image' />
+          <a href='signup.php' onclick=\"refreshimg(); return false;\" title='{$lang['captcha_refresh']}'>
+          <img class='cimage' src='captcha/GD_Security_image.php?$thistime' alt='{$lang['Captcha image']}' />
           </a>
           </div>
          </td>
       </tr>
       <tr>
-          <td class='rowhead'>PIN:</td>
+          <td class='rowhead'>{$lang['captcha_pin']}</td>
           <td>
             <input type='text' maxlength='6' name='captcha' id='captcha' onblur='check(); return false;'/>
           </td>
       </tr>
-    <tr><td align='right' class='heading'></td><td align='left'><input type='checkbox' name='rulesverify' value='yes' /> I have read the site rules page.<br />
-    <input type='checkbox' name='faqverify' value='yes' /> I agree to read the FAQ before asking questions.<br />
-    <input type='checkbox' name='ageverify' value='yes' /> I am at least 13 years old.</td></tr>
-    <tr><td colspan='2' align='center'><input type='submit' value='Sign up! (PRESS ONLY ONCE)' style='height: 25px' /></td></tr>
+    <tr><td align='right' class='heading'></td><td align='left'><input type='checkbox' name='rulesverify' value='yes' /> {$lang['signup_rules']}<br />
+    <input type='checkbox' name='faqverify' value='yes' /> {$lang['signup_faq']}<br />
+    <input type='checkbox' name='ageverify' value='yes' /> {$lang['signup_age']}</td></tr>
+    <tr><td colspan='2' align='center'><input type='submit' value='{$lang['btn']}' style='height: 25px' /></td></tr>
     </table>
     </form>";
 
 
-    print stdhead("Signup") . $HTMLOUT . stdfoot();
+    print stdhead($lang['head_signup']) . $HTMLOUT . stdfoot();
 
 ?>

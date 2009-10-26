@@ -54,7 +54,7 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
 
     // Notify user
     $what = ($class > $user['class'] ? "{$lang['modtask_promoted']}" : "{$lang['modtask_demoted']}");
-    $msg = sqlesc("{$lang['modtask_have_been']} '" . get_user_class_name($class) . "' {$lang['modtask_by']} ".$CURUSER['username']);
+    $msg = sqlesc(sprintf($lang['modtask_have_been'], $what)." '" . get_user_class_name($class) . "' {$lang['modtask_by']} ".$CURUSER['username']);
     $added = time();
     mysql_query("INSERT INTO messages (sender, receiver, msg, added) VALUES(0, $userid, $msg, $added)") or sqlerr(__FILE__, __LINE__);
 
@@ -93,8 +93,8 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     {
     $warneduntil = (time() + $warnlength * 604800);
     $dur = $warnlength . "{$lang['modtask_week']}" . ($warnlength > 1 ? "s" : "");
-    $msg = sqlesc("{$lang['modtask_warning_duration']}".$CURUSER['username'].($warnpm ? "\n\nReason: $warnpm" : ""));
-    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_warned_for']}" . $CURUSER['username'] . ".\n{$lang['modtask_reason']} $warnpm\n" . $modcomment;
+    $msg = sqlesc(sprintf($lang['modtask_warning_duration'], $dur).$CURUSER['username'].($warnpm ? "\n\nReason: $warnpm" : ""));
+    $modcomment = get_date( time(), 'DATE', 1 ) . sprintf($lang['modtask_warned_for'], $dur) . $CURUSER['username'] . ".\n{$lang['modtask_reason']} $warnpm\n" . $modcomment;
     $updateset[] = "warneduntil = ".$warneduntil;
     }
     $added = time();
@@ -129,8 +129,8 @@ if ((isset($_POST['action'])) && ($_POST['action'] == "edituser"))
     {
     $donoruntil = (time() + $donorlength * 604800);
     $dur = $donorlength . "{$lang['modtask_week']}" . ($donorlength > 1 ? "s" : "");
-    $msg = sqlesc("{$lang['modtask_donor_duration']}" . $CURUSER['username']);
-    $modcomment = get_date( time(), 'DATE', 1 ) . "{$lang['modtask_donor_for']}" . $CURUSER['username']."\n".$modcomment;
+    $msg = sqlesc(sprintf($lang['modtask_donor_duration'], $dur) . $CURUSER['username']);
+    $modcomment = get_date( time(), 'DATE', 1 ) . sprintf($lang['modtask_donor_for'], $dur) . $CURUSER['username']."\n".$modcomment;
     $updateset[] = "donoruntil = ".$donoruntil;
     }
     $added = time();

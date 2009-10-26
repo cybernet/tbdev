@@ -362,6 +362,14 @@ input, select, textarea {
 	vertical-align: middle;
 }
 
+input:focus { 
+  background-color: #FFFF99; 
+}
+
+textarea:focus {
+  background-color: #FFFF99; 
+}
+
 select
 {
 	margin: 0px;
