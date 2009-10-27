@@ -128,7 +128,7 @@ if (!$row || ($row["banned"] == "yes" && !$moderator))
 		$HTMLOUT .= tr("{$lang['details_info_hash']}", preg_replace_callback('/./s', "hex_esc", hash_pad($row["info_hash"])));
 
 		if (!empty($row["descr"]))
-			$HTMLOUT .= "<tr><td style='vertical-align:top'>{$lang['details_description']}</td><td><div style='background-color:#d9e2ff;width:100%;height:150px;overflow: auto'>". str_replace(array("\n", "  "), array("<br>\n", "&nbsp; "), format_comment( $row["descr"] ))."</div></td></tr>";
+			$HTMLOUT .= "<tr><td style='vertical-align:top'>{$lang['details_description']}</td><td><div style='background-color:#d9e2ff;width:100%;height:150px;overflow: auto'>". str_replace(array("\n", "  "), array("<br />\n", "&nbsp; "), format_comment( $row["descr"] ))."</div></td></tr>";
 			
     if (get_user_class() >= UC_POWER_USER && $row["nfosz"] > 0)
       $HTMLOUT .= "<tr><td class='rowhead'>{$lang['details_nfo']}</td><td align='left'><a href='viewnfo.php?id=$row[id]'><b>{$lang['details_view_nfo']}</b></a> (" .mksize($row["nfosz"]) . ")</td></tr>\n";

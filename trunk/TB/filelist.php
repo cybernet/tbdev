@@ -24,6 +24,8 @@ dbconn(false);
 
 loggedinorreturn();
 
+    $lang = array_merge( load_language('global'), load_language('filelist') );
+    
     $id = isset($_GET["id"]) ? (int)$_GET["id"] : 0;
 
     if (!is_valid_id($id))

@@ -27,7 +27,7 @@ dbconn(false);
 
 loggedinorreturn();
 
-    $lang = array_merge( load_language('global'), load_language('browse') );
+    $lang = array_merge( load_language('global'), load_language('browse'), load_language('torrenttable_functions') );
     
     $HTMLOUT = '';
     

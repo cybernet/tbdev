@@ -97,7 +97,7 @@ function usertable($res, $frame_caption)
               $ratio = "<font color='$color'>$ratio</font>";
           }
           else
-            $ratio = $lang['commmon_infratio'];
+            $ratio = $lang['common_infratio'];
           $htmlout .= "<tr$highlight><td align='center'>$num</td><td align='left'$highlight><a href='userdetails.php?id=" .
               $a["userid"] . "'><b>" . $a["username"] . "</b></a>" .
               "</td><td align='right'$highlight>" . mksize($a["uploaded"]) .

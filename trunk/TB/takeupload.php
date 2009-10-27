@@ -23,6 +23,9 @@ require_once "include/user_functions.php";
 ini_set("upload_max_filesize",$TBDEV['max_torrent_size']);
 
 function bark($msg) {
+	
+	global $lang;
+	
 	genbark($msg, $lang['takeupload_failed']);
 }
 
@@ -30,7 +33,7 @@ dbconn();
 
 loggedinorreturn();
     
-    $lang = load_language('takeupload');
+    $lang = array_merge( load_language('global'), load_language('takeupload') );
     
     if ($CURUSER['class'] < UC_UPLOADER)
       die;
