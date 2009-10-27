@@ -20,8 +20,14 @@ require_once "include/bittorrent.php";
 require_once ROOT_PATH."/cache/timezones.php";
 
 dbconn();
-
-ini_set('session.use_trans_sid', '0');
+    
+    if( isset($CURUSER) )
+    {
+      header("Location: {$TBDEV['baseurl']}/index.php")
+      exit();
+    }
+    
+    ini_set('session.use_trans_sid', '0');
 
     $lang = array_merge( load_language('global'), load_language('signup') );
     
@@ -77,7 +83,7 @@ ini_set('session.use_trans_sid', '0');
         <td>
           <div id='captchaimage'>
           <a href='signup.php' onclick=\"refreshimg(); return false;\" title='{$lang['captcha_refresh']}'>
-          <img class='cimage' src='captcha/GD_Security_image.php?$thistime' alt='{$lang['Captcha image']}' />
+          <img class='cimage' src='captcha/GD_Security_image.php?$thistime' alt='{$lang['captcha_image_alt']}' />
           </a>
           </div>
          </td>
@@ -91,7 +97,7 @@ ini_set('session.use_trans_sid', '0');
     <tr><td align='right' class='heading'></td><td align='left'><input type='checkbox' name='rulesverify' value='yes' /> {$lang['signup_rules']}<br />
     <input type='checkbox' name='faqverify' value='yes' /> {$lang['signup_faq']}<br />
     <input type='checkbox' name='ageverify' value='yes' /> {$lang['signup_age']}</td></tr>
-    <tr><td colspan='2' align='center'><input type='submit' value='{$lang['btn']}' style='height: 25px' /></td></tr>
+    <tr><td colspan='2' align='center'><input type='submit' value='{$lang['signup_btn']}' style='height: 25px' /></td></tr>
     </table>
     </form>";
 

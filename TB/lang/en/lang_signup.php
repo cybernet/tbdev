@@ -10,7 +10,7 @@ $lang = array(
 #captcha
 'captcha_spam' => "NO SPAM! Wait 10 seconds and then refresh page",
 'captcha_refresh' => "Click to refresh image",
-'captcha_imagealt' => "Captcha image",
+'captcha_image_alt' => "Captcha image",
 'captcha_pin' => "PIN:",
 
 

@@ -27,6 +27,7 @@ $lang = array(
 
 #user function
 'user' => "User",
+'user_ul' => "Uploaded",
 'user_ulspeed' => "UL speed",
 'user_dl' => "Downloaded",
 'user_dlspeed' => "DL speed",
