@@ -36,10 +36,10 @@ loggedinorreturn();
     
     $HTMLOUT .= "<h1>{$lang['text_nfofor']}<a href='details.php?id=$id'>{$a['name']}</a></h1>\n";
     $HTMLOUT .= "<table border='1' cellspacing='0' cellpadding='5'><tr><td class='text'>\n";
-    $HTMLOUT .= "<pre><font face='MS Linedraw' size='2' style='font-size: 10pt; line-height: 10pt'>" . format_urls($nfo) . "</font></pre>\n";
+    $HTMLOUT .= "<pre>" . format_urls(htmlentities($nfo, ENT_QUOTES, 'UTF-8')) . "</pre>\n";
     $HTMLOUT .= "</td></tr></table>\n";
     $HTMLOUT .= "<p align='center'>{$lang['text_forbest']}" .
-      "<a href='ftp://$_SERVER['HTTP_HOST']/misc/linedraw.ttf'>{$lang['text_linedraw']}</a>{$lang['text_font']}</p>\n";
+      "<a href='ftp://{$_SERVER['HTTP_HOST']}/misc/linedraw.ttf'>{$lang['text_linedraw']}</a>{$lang['text_font']}</p>\n";
     
     print stdhead() . $HTMLOUT . stdfoot();
 ?>

@@ -17,28 +17,33 @@
 +------------------------------------------------
 */
 require_once 'include/bittorrent.php';
+require_once 'include/user_functions.php';
 
-function bark($msg) {
-	genbark($msg, $lang['takedit_failed']);
-}
-
-if (!mkglobal('id:name:descr:type'))
-	bark($lang['takedit_no_data']);
-
-$id = 0 + $id;
-if (!$id)
-	die();
 
 dbconn();
 
 loggedinorreturn();
+
+    $lang = array_merge( load_language('global'), load_language('takeedit') );
     
-    $lang = load_language('takeedit');
+function bark($msg) {
+	genbark($msg, $lang['takedit_failed']);
+}
+
+    if (!mkglobal('name:descr:type'))
+      bark($lang['takedit_no_data']);
+
+    $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+    if ( !is_valid_id($id) )
+      stderr($lang['takedit_failed'], $lang['takedit_no_data']);
+        
     
     $res = mysql_query("SELECT owner, filename, save_as FROM torrents WHERE id = $id");
+    
+    if ( false == mysql_num_rows($res) )
+      stderr($lang['takedit_failed'], $lang['takedit_no_data']);
+      
     $row = mysql_fetch_assoc($res);
-    if (!$row)
-      die();
 
     if ($CURUSER['id'] != $row['owner'] && $CURUSER['class'] < UC_MODERATOR)
       bark($lang['takedit_not_owner']);
@@ -84,13 +89,10 @@ loggedinorreturn();
     mysql_query("UPDATE torrents SET " . join(",", $updateset) . " WHERE id = $id");
 
     write_log($lang['takedit_log'], $id, $name, $CURUSER['username']);
-
-    $returl = "details.php?id=$id&edited=1";
     
-    $returnto = str_replace('&amp;', '&', htmlspecialchars($_POST['returnto']));
-    if (isset($returnto))
-      $returl .= "&returnto=" . urlencode($returnto);
-    header("Refresh: 0; url=$returl");
+    $returnto = "{$TBDEV['baseurl']}/details.php?id=$id&amp;edited=1";
+    
+    header("Location: $returnto");
 
 
 ?>
