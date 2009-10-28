@@ -23,7 +23,7 @@ dbconn();
     
     if( isset($CURUSER) )
     {
-      header("Location: {$TBDEV['baseurl']}/index.php")
+      header("Location: {$TBDEV['baseurl']}/index.php");
       exit();
     }
     
