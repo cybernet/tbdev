@@ -131,7 +131,7 @@ function _torrenttable($res, $frame_caption)
       <td class='colhead' align='right'>{$lang['torrent_seed']}</td>
       <td class='colhead' align='right'>{$lang['torrent_leech']}</td>
       <td class='colhead' align='right'>{$lang['torrent_total']}</td>
-      <td class='colhead' align='right'>{$lang['commmon_ratio']}</td>
+      <td class='colhead' align='right'>{$lang['common_ratio']}</td>
       </tr>";
 
           $num = 0;
@@ -144,7 +144,7 @@ function _torrenttable($res, $frame_caption)
               $ratio = "<font color='" . get_ratio_color($r) . "'>" . number_format($r, 2) . "</font>";
             }
             else
-              $ratio = $lang['commmon_infratio'];
+              $ratio = $lang['common_infratio'];
             $htmlout .= "<tr><td align='center'>$num</td><td align='left'><a href='details.php?id=" . $a["id"] . "&hit=1'><b>" .
               $a["name"] . "</b></a></td><td align='right'>" . number_format($a["times_completed"]) .
               "</td><td align='right'>" . mksize($a["data"]) . "</td><td align='right'>" . number_format($a["seeders"]) .

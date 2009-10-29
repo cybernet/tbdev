@@ -233,13 +233,13 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
         $HTMLOUT .= "<table border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded' width='99%'>#$postid by $by at $added";
 
         if (!$locked || get_user_class() >= UC_MODERATOR)
-          $HTMLOUT .= " - [<a href='forums.php?action=quotepost&amp;topicid=$topicid&amp;postid=$postid'><b>{$lang['forum_topic_view_quote']}</b></a>]";
+          $HTMLOUT .= " - [<a href='forums.php?action=quotepost&amp;topicid=$topicid&amp;postid=$postid&amp;forumid=$forumid'><b>{$lang['forum_topic_view_quote']}</b></a>]";
 
         if (($CURUSER["id"] == $posterid && !$locked) || get_user_class() >= UC_MODERATOR)
-          $HTMLOUT .= " - [<a href='forums.php?action=editpost&amp;postid=$postid'><b>{$lang['forum_topic_view_edit']}</b></a>]";
+          $HTMLOUT .= " - [<a href='forums.php?action=editpost&amp;postid=$postid&amp;forumid=$forumid'><b>{$lang['forum_topic_view_edit']}</b></a>]";
 
         if (get_user_class() >= UC_MODERATOR)
-          $HTMLOUT .= " - [<a href='forums.php?action=deletepost&amp;postid=$postid'><b>{$lang['forum_topic_view_delete']}</b></a>]";
+          $HTMLOUT .= " - [<a href='forums.php?action=deletepost&amp;postid=$postid&amp;forumid=$forumid'><b>{$lang['forum_topic_view_delete']}</b></a>]";
 
         $HTMLOUT .= "</td><td class='embedded' width='1%'><a href='#top'><img src='{$forum_pic_url}top.gif' border='0' alt='{$lang['forum_topic_view_top']}' /></a></td></tr>";
 

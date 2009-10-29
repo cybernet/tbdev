@@ -29,7 +29,7 @@ require_once 'include/bittorrent.php';
 
     dbconn();
     
-    $lang = load_language('takelogin');
+    $lang = array_merge( load_language('global'), load_language('takelogin') );
     
     function bark($text = 'Username or password incorrect')
     {
