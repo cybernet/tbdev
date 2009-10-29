@@ -106,10 +106,12 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     if ($action == "deletepost")
     {
       $postid = isset($_GET["postid"]) ? (int)$_GET["postid"] : 0;
+      
+      $forumid = isset($_GET["forumid"]) ? (int)$_GET["forumid"] : 0;
 
       $sure = isset($_GET["sure"]) ? $_GET["sure"] : 0;
 
-      if (get_user_class() < UC_MODERATOR || !is_valid_id($postid))
+      if ( get_user_class() < UC_MODERATOR || !is_valid_id($postid) || !is_valid_id($forumid) )
         stderr("{$lang['forum_user_options_user_error']}", "{$lang['forum_user_options_access']}");
 
       //------- Get topic id
@@ -127,9 +129,18 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       $arr = mysql_fetch_row($res);
 
       if ($arr[0] < 2)
+      {
+        $err = "<form method='post' action='forums.php?action=deletetopic'>
+              <input name='action' value='deletetopic' type='hidden'>
+              <input name='topicid' value='$topicid' type='hidden'>
+              <input name='forumid' value='$forumid' type='hidden'>
+              <input name='sure' value='1' type='checkbox'>I'm sure
+              <input value='Delete Topic' type='submit'>
+              </form>";
+              
         stderr("{$lang['forum_user_options_error']}", "{$lang['forum_user_options_no_delete']}" .
-        "<a href='forums.php?action=deletetopic&amp;topicid=$topicid&amp;sure=1'>{$lang['forum_user_options_delete_topic']}");
-
+        "{$lang['forum_user_options_delete_topic']}<br />$err");
+      }
 
       //------- Get the id of the last post before the one we're deleting
 
