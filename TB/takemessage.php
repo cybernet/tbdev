@@ -26,6 +26,8 @@ require_once "include/user_functions.php";
 
   loggedinorreturn();
   
+  $lang = array_merge( load_language('global'), load_language('takemessage') );
+  
   function ratios($up, $down) 
   {
   if ($down > 0)
@@ -36,7 +38,7 @@ require_once "include/user_functions.php";
     else
     {
       if ($up > 0)
-        return "Inf.";
+        return $lang['takemessage_inf'];
       else
         return "---";
     }
@@ -47,15 +49,15 @@ require_once "include/user_functions.php";
   if ($n_pms)
   {  			                                                      //////  MM  ///
     if ($CURUSER['class'] < UC_MODERATOR)
-	  stderr("Error", "Permission denied");
+	  stderr($lang['takemessage_error'], $lang['takemessage_denied']);
 
     $msg = trim($_POST["msg"]);
 		if (!$msg)
-	  	stderr("Error","Please enter something!");
+	  	stderr($lang['takemessage_error'],$lang['takemessage_something']);
     
     $subject = trim($_POST['subject']);
     
-    $sender_id = ($_POST['sender'] == 'system' ? 0 : $CURUSER['id']);
+    $sender_id = ($_POST['sender'] == $lang['takemessage_system'] ? 0 : $CURUSER['id']);
 
     //$from_is = explode(':', $_POST['pmees']);
     foreach( explode(':', $_POST['pmees']) as $k => $v ) {
@@ -92,11 +94,11 @@ require_once "include/user_functions.php";
 	        {
               
               $new .= ($new?"\n":"") .
-	            "MMed, " . gmdate("Y-m-d") . ", " .
-	            "UL: " . mksize($user['uploaded']) . ", " .
-	            "DL: " . mksize($user['downloaded']) . ", " .
-	            "r: " . ratios($user['uploaded'],$user['downloaded']) . " - " .
-	            ($_POST['sender'] == "system"?"System":$CURUSER['username']);
+	            "{$lang['takemessage_mmed']}, " . gmdate("Y-m-d") . ", " .
+	            "{$lang['takemessage_ul']}: " . mksize($user['uploaded']) . ", " .
+	            "{$lang['takemessage_dl']}: " . mksize($user['downloaded']) . ", " .
+	            "{$lang['takemessage_r']}: " . ratios($user['uploaded'],$user['downloaded']) . " - " .
+	            ($_POST['sender'] == $lang['takemessage_system'] ? $lang['takemessage_System']:$CURUSER['username']);
 	        }
 	      	$new .= $old?("\n".$old):$old;
 		      mysql_query("UPDATE users SET modcomment = " . sqlesc($new) . " WHERE id = " . $user['id'])
@@ -115,18 +117,18 @@ require_once "include/user_functions.php";
 		$returnto = isset($_POST["returnto"]) ? $_POST["returnto"] : '';
 
 	  if (!is_valid_id($receiver) || ($origmsg && !is_valid_id($origmsg)))
-	  	stderr("Error","Invalid ID");
+	  	stderr($lang['takemessage_error'], $lang['takemessage_id']);
 
 	  $msg = trim($_POST["msg"]);
 	  if (!$msg)
-	    stderr("Error","Please enter something!");
+	    stderr($lang['takemessage_error'], $lang['takemessage_something']);
 
 	  $save = ($save == 'yes') ? "yes" : "no";
 
 	  $res = mysql_query("SELECT acceptpms, email, notifs, last_access as la FROM users WHERE id=$receiver") or sqlerr(__FILE__, __LINE__);
 	  $user = mysql_fetch_assoc($res);
 	  if (!$user)
-	    stderr("Error", "No user with ID.");
+	    stderr($lang['takemessage_error'], $lang['takemessage_no_user']);
 
 	  //Make sure recipient wants this message
 		if ($CURUSER['class'] < UC_MODERATOR)
@@ -135,16 +137,16 @@ require_once "include/user_functions.php";
 	    {
 	      $res2 = mysql_query("SELECT * FROM blocks WHERE userid=$receiver AND blockid=" . $CURUSER["id"]) or sqlerr(__FILE__, __LINE__);
 	      if (mysql_num_rows($res2) == 1)
-	        stderr("Refused", "This user has blocked PMs from you.");
+	        stderr($lang['takemessage_refused'], $lang['takemessage_blocked']);
 	    }
 	    elseif ($user["acceptpms"] == "friends")
 	    {
 	      $res2 = mysql_query("SELECT * FROM friends WHERE userid=$receiver AND friendid=" . $CURUSER["id"]) or sqlerr(__FILE__, __LINE__);
 	      if (mysql_num_rows($res2) != 1)
-	        stderr("Refused", "This user only accepts PMs from users in his friends list.");
+	        stderr($lang['takemessage_refused'], $lang['takemessage_friends']);
 	    }
 	    elseif ($user["acceptpms"] == "no")
-	      stderr("Refused", "This user does not accept PMs.");
+	      stderr($lang['takemessage_refused'], $lang['takemessage_no_pms']);
 	  }
 
 	  $subject = trim($_POST['subject']);
@@ -166,8 +168,8 @@ You can use the URL below to view the message (you may have to login).
 --
 {$TBDEV['site_name']}
 EOD;
-	    @mail($user["email"], "You have received a PM from " . $username . "!",
-	    	$body, "From: {$TBDEV['site_email']}");
+	    @mail($user["email"], "{$lang['takemessage_received']} " . $username . "!",
+	    	$body, "{$lang['takemessage_from']} {$TBDEV['site_email']}");
 	    }
 	  }
 	  $delete = isset($_POST["delete"]) ? $_POST["delete"] : '';
@@ -182,7 +184,7 @@ EOD;
 	      {
 	        $arr = mysql_fetch_assoc($res);
 	        if ($arr["receiver"] != $CURUSER["id"])
-	          stderr("w00t","This shouldn't happen.");
+	          stderr($lang['takemessage_woot'], $lang['takemessage_happen']);
 	        if ($arr["saved"] == "no")
             mysql_query("DELETE FROM messages WHERE id=$origmsg") or sqlerr(__FILE__, __LINE__);
           elseif ($arr["saved"] == "yes")
@@ -190,7 +192,7 @@ EOD;
 	      }
       }
    	  if (!$returnto)
-   	  	$returnto = "messages.php";
+   	  	$returnto = "{$TBDEV['baseurl']}/messages.php";
 	  }
 
     if ($returnto)
@@ -203,8 +205,8 @@ EOD;
 	} 
 	//stdhead();
 	$l = (isset($l)?$l:'');
-	  stderr("Succeeded", (($n_pms > 1) ? "$n messages out of $n_pms were" : "Message was").
-	    " successfully sent!" . ($l ? " $l profile comment" . (($l>1) ? "s were" : " was") . " updated!" : ""));
+	  stderr($lang['takemessage_succeed'], (($n_pms > 1) ? "$n {$lang['takemessage_out_of']} $n_pms {$lang['takemessage_were']}" : "{$lang['takemessage_msg_was']}").
+	    " {$lang['takemessage_sent']}" . ($l ? " $l {$lang['takemessage_comment']}" . (($l>1) ? "{$lang['takemessage_s_were']}" : " {$lang['takemessage_was']}") . " {$lang['takemessage_updated']}" : ""));
 	//stdfoot();
 	exit;
 ?>

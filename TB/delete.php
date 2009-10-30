@@ -19,24 +19,26 @@
 require_once "include/bittorrent.php";
 require_once "include/user_functions.php";
 
-    $lang = array_merge( load_language('global'), load_language('delete') );
-
-if (!mkglobal("id"))
-	stderr("{$lang['delete_failed']}", "{$lang['delete_missing_data']}");
-
-$id = 0 + $id;
-if (!is_valid_id($id))
-	stderr("{$lang['delete_failed']}", "{$lang['delete_missing_data']}");
-	
 dbconn();
 
 loggedinorreturn();
+
+    $lang = array_merge( load_language('global'), load_language('delete') );
+
+    if (!mkglobal("id"))
+      stderr("{$lang['delete_failed']}", "{$lang['delete_missing_data']}");
+
+    $id = 0 + $id;
+    if (!is_valid_id($id))
+      stderr("{$lang['delete_failed']}", "{$lang['delete_missing_data']}");
+      
+
 
 function deletetorrent($id) {
     global $TBDEV;
     mysql_query("DELETE FROM torrents WHERE id = $id");
     foreach(explode(".","peers.files.comments.ratings") as $x)
-        mysql_query("DELETE FROM $x WHERE torrent = $id");
+        @mysql_query("DELETE FROM $x WHERE torrent = $id");
     unlink("{$TBDEV['torrent_dir']}/$id.torrent");
 }
 
@@ -77,14 +79,14 @@ else
 
     deletetorrent($id);
 
-    write_log("{$lang['delete_torrent']} $id ({$row['name']}){$lang['delete_deleted by']}{$CURUSER['username']} ($reasonstr)\n");
+    write_log("{$lang['delete_torrent']} $id ({$row['name']}){$lang['delete_deleted_by']}{$CURUSER['username']} ($reasonstr)\n");
 
 
 
     if (isset($_POST["returnto"]))
       $ret = "<a href='" . htmlspecialchars($_POST["returnto"]) . "'>{$lang['delete_go_back']}</a>";
     else
-      $ret = "<a href='{$TBDEV['baseurl']}'>{$lang['delete_back_index']}</a>";
+      $ret = "<a href='{$TBDEV['baseurl']}/index.php'>{$lang['delete_back_index']}</a>";
 
     $HTMLOUT = '';
     $HTMLOUT .= "<h2>{$lang['delete_deleted']}</h2>

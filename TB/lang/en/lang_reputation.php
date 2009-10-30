@@ -30,7 +30,7 @@ $lang = array (
 
 'rep_let_by' 			=> 'Let by', 
 'rep_comments' 			=> 'Reputation Comments', 
-'rep_i_aprove' 			=> 'I Approve', 
+'rep_i_approve' 			=> 'I Approve', 
 'rep_i_disapprove' 		=> 'I Disapprove', 
 'rep_your_comm_on_this_post'	=> 'Your comments on this post:', 
 

@@ -60,14 +60,14 @@ else
     //stdhead();
     //$HTMLOUT .= "<div class='roundedCorners'><font class='small''>Welcome to our newest member, <b>$latestuser</b>!</font></div>\n";
 
-    $HTMLOUT .= "<table width='737' class='main' border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'>
-    <h2>{$lang['news_title']}";
+    $adminbutton = '';
     
     if (get_user_class() >= UC_ADMINISTRATOR)
-      $HTMLOUT .= " - <font class='small'>[<a class='altlink' href='admin.php?action=news'><b>{$lang['news_link']}</b></a>]</font>";
+          $adminbutton = "&nbsp;<span style='float:right;'><a href='admin.php?action=news'>News page</a></span>\n";
+          
+    $HTMLOUT .= "<div style='text-align:left;width:80%;border:1px solid blue;padding:5px;'>
+    <div style='background:lightgrey;height:25px;'><span style='font-weight:bold;font-size:12pt;'>{$lang['news_title']}</span>{$adminbutton}</div><br />";
       
-    $HTMLOUT .= "</h2>\n";
-    
     $res = mysql_query("SELECT * FROM news WHERE added + ( 3600 *24 *45 ) >
 					".time()." ORDER BY added DESC LIMIT 10") or sqlerr(__FILE__, __LINE__);
 					
@@ -75,30 +75,33 @@ else
     {
       require_once "include/bbcode_functions.php";
 
-      $HTMLOUT .= "<table width='100%' border='1' cellspacing='0' cellpadding='10'>
-      <tr><td class='text'>\n<ul>";
+      $button = "";
       
       while($array = mysql_fetch_assoc($res))
       {
-        $HTMLOUT .= "<li>" . get_date( $array['added'],'DATE') . "<br />" . format_comment($array['body']);
         if (get_user_class() >= UC_ADMINISTRATOR)
         {
-          $HTMLOUT .= " <br /><font size=\"-2\">[<a class='altlink' href='admin.php?action=news&amp;mode=edit&amp;newsid={$array['id']}&amp;returnto=index.php'><b>{$lang['news_edit']}</b></a>]</font>";
-          $HTMLOUT .= " <font size=\"-2\">[<a class='altlink' href='admin.php?action=news&amp;mode=delete&amp;newsid={$array['id']}&amp;returnto=index.php'><b>{$lang['news_delete']}</b></a>]</font>";
+          $button = "<div style='float:right;'><a href='admin.php?action=news&amp;mode=edit&amp;newsid={$array['id']}'>{$lang['news_edit']}</a>&nbsp;<a href='admin.php?action=news&amp;mode=delete&amp;newsid={$array['id']}'>{$lang['news_delete']}</a></div>";
         }
-        $HTMLOUT .= "</li>";
+        
+        $HTMLOUT .= "<div style='background:lightgrey;height:20px;'><span style='font-weight:bold;font-size:10pt;'>{$array['headline']}</span></div>\n";
+        
+        $HTMLOUT .= "<span style='color:grey;font-weight:bold;text-decoration:underline;'>".get_date( $array['added'],'DATE') . "</span>{$button}\n";
+        
+        $HTMLOUT .= "<div style='margin-top:10px;padding:5px;'>".format_comment($array['body'])."</div><hr />\n";
+        
+      
       }
-      $HTMLOUT .= "</ul></td></tr></table>\n";
+     
     }
 
+    $HTMLOUT .= "</div><br />\n";
 
 
-
-    $HTMLOUT .= "<h2>{$lang['stats_title']}</h2>
-    <table width='100%' border='1' cellspacing='0' cellpadding='10'>
-    <tr>
-    <td align='center'>
-      <table class='main' border='1' cellspacing='0' cellpadding='5'>
+    $HTMLOUT .= "<div style='text-align:left;width:80%;border:1px solid blue;padding:5px;'>
+    <div style='background:lightgrey;height:25px;'><span style='font-weight:bold;font-size:12pt;'>{$lang['stats_title']}</span></div><br />
+    
+      <table align='center' class='main' border='1' cellspacing='0' cellpadding='5'>
       <tr>
       <td class='rowhead'>{$lang['stats_regusers']}</td><td align='right'>{$registered}</td>
       </tr>
@@ -116,8 +119,7 @@ else
     } 
     
       $HTMLOUT .= "</table>
-      </td></tr>
-      </table>";
+      </div>";
 
 /*
 <h2>Server load</h2>
@@ -135,8 +137,7 @@ print("<img height='1'5 width=$width src=\"{$TBDEV['pic_base_url']}{$pic}\" alt=
 
     $HTMLOUT .= sprintf("<p><font class='small'>{$lang['foot_disclaimer']}</font></p>", $TBDEV['site_name']);
     
-    $HTMLOUT .= "</td></tr>
-    </table>";
+    $HTMLOUT .= "";
 
 ///////////////////////////// FINAL OUTPUT //////////////////////
 

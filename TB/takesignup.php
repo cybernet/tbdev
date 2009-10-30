@@ -20,11 +20,13 @@ require_once("include/bittorrent.php");
 
 dbconn();
 
+    $lang = array_merge( load_language('global'), load_language('takesignup') );
+    
     $res = mysql_query("SELECT COUNT(*) FROM users") or sqlerr(__FILE__, __LINE__);
     $arr = mysql_fetch_row($res);
     
     if ($arr[0] >= $TBDEV['maxusers'])
-      stderr("Error", "Sorry, user limit reached. Please try again later.");
+      stderr($lang['takesignup_error'], $lang['takesignup_limit']);
 
 //if (!mkglobal("wantusername:wantpassword:passagain:email:captcha"))
 //	die();
@@ -32,7 +34,7 @@ dbconn();
     {
       if( !isset($_POST[ $x ]) )
       {
-        stderr('USER ERROR', 'Invalid form data!');
+        stderr($lang['takesignup_user_error'], $lang['takesignup_form_data']);
       }
       
       ${$x} = $_POST[ $x ];
@@ -49,6 +51,8 @@ dbconn();
 
 function validusername($username)
   {
+    global $lang;
+    
     if ($username == "")
       return false;
     
@@ -56,10 +60,10 @@ function validusername($username)
     
     if( ($namelength < 3) OR ($namelength > 32) )
     {
-      stderr( 'USER ERROR', 'Username too long or too short');
+      stderr($lang['takesignup_user_error'], $lang['takesignup_username_length']);
     }
     // The following characters are allowed in user names
-    $allowedchars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    $allowedchars = $lang['takesignup_allowed_chars'];
     
     for ($i = 0; $i < $namelength; ++$i)
     {
@@ -91,37 +95,37 @@ function isproxy()
 }
 */
     if (empty($wantusername) || empty($wantpassword) || empty($email))
-      stderr( 'USER ERROR', "Don't leave any fields blank.");
+      stderr($lang['takesignup_user_error'], $lang['takesignup_blank']);
     /*
     if (strlen($wantusername) > 12)
       bark("Sorry, username is too long (max is 12 chars)");
     */
     if ($wantpassword != $passagain)
-      stderr( 'USER ERROR', "The passwords didn't match! Must've typoed. Try again.");
+      stderr($lang['takesignup_user_error'], $lang['takesignup_nomatch']);
 
     if (strlen($wantpassword) < 6)
-      stderr( 'USER ERROR', "Sorry, password is too short (min is 6 chars)");
+      stderr($lang['takesignup_user_error'], $lang['takesignup_pass_short']);
 
     if (strlen($wantpassword) > 40)
-      stderr( 'USER ERROR', "Sorry, password is too long (max is 40 chars)");
+      stderr($lang['takesignup_user_error'], $lang['takesignup_pass_long']);
 
     if ($wantpassword == $wantusername)
-      stderr( 'USER ERROR', "Sorry, password cannot be same as user name.");
+      stderr($lang['takesignup_user_error'], $lang['takesignup_same']);
 
     if (!validemail($email))
-      stderr( 'USER ERROR', "That doesn't look like a valid email address.");
+      stderr($lang['takesignup_user_error'], $lang['takesignup_validemail']);
 
     if (!validusername($wantusername))
-      stderr( 'USER ERROR', "Invalid username.");
+      stderr($lang['takesignup_user_error'], $lang['takesignup_invalidname']);
 
     // make sure user agrees to everything...
     if ($_POST["rulesverify"] != "yes" || $_POST["faqverify"] != "yes" || $_POST["ageverify"] != "yes")
-      stderr("Signup failed", "Sorry, you're not qualified to become a member of this site.");
+      stderr($lang['takesignup_failed'], $lang['takesignup_qualify']);
 
     // check if email addy is already in use
     $a = (@mysql_fetch_row(@mysql_query("select count(*) from users where email='$email'"))) or die(mysql_error());
     if ($a[0] != 0)
-      stderr( 'USER ERROR', "The e-mail address is already in use.");
+      stderr($lang['takesignup_user_error'], $lang['takesignup_email_used']);
 
     // TIMEZONE STUFF
     if(isset($_POST["user_timezone"]) && preg_match('#^\-?\d{1,2}(?:\.\d{1,2})?$#', $_POST['user_timezone']))
@@ -145,8 +149,8 @@ function isproxy()
     if (!$ret) 
     {
       if (mysql_errno() == 1062)
-        stderr( 'USER ERROR', "Username already exists!");
-      stderr( 'USER ERROR', "Fatal Error!");
+        stderr($lang['takesignup_user_error'], $lang['takesignup_user_exists']);
+      stderr($lang['takesignup_user_error'], $lang['takesignup_fatal_error']);
     }
 
     $id = mysql_insert_id();
@@ -155,24 +159,12 @@ function isproxy()
 
     $psecret = md5($editsecret);
 
-    $body = <<<EOD
-You have requested a new user account on {$TBDEV['site_name']} and you have
-specified this address ($email) as user contact.
-
-If you did not do this, please ignore this email. The person who entered your
-email address had the IP address {$_SERVER["REMOTE_ADDR"]}. Please do not reply.
-
-To confirm your user registration, you have to follow this link:
-
-{$TBDEV['baseurl']}/confirm.php?id=$id&secret=$psecret
-
-After you do this, you will be able to use your new account. If you fail to
-do this, your account will be deleted within a few days. We urge you to read
-the RULES and FAQ before you start using {$TBDEV['site_name']}.
-EOD;
+    $body = str_replace(array('<#SITENAME#>', '<#USEREMAIL#>', '<#IP_ADDRESS#>', '<#REG_LINK#>'),
+                        array($TBDEV['site_name'], $email, $_SERVER['REMOTE_ADDR'], "{$TBDEV['baseurl']}/confirm.php?id=$id&secret=$psecret"),
+                        $lang['takesignup_email_body']);
 
     if($arr[0])
-      mail($email, "{$TBDEV['site_name']} user registration confirmation", $body, "From: {$TBDEV['site_email']}");
+      mail($email, "{$TBDEV['site_name']} {$lang['takesignup_confirm']}", $body, "{$lang['takesignup_from']} {$TBDEV['site_email']}");
     else 
       logincookie($id, $wantpasshash);
 
