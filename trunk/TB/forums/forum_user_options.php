@@ -161,7 +161,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       if (!$sure)
       {
         stderr("{$lang['forum_user_options_delete_post']}", "{$lang['forum_user_options_sanity_check']}" .
-        "<a href='forums.php?action=deletepost&amp;postid=$postid&amp;sure=1'>{$lang['forum_user_options_here']}</a> {$lang['forum_user_options_sure']}");
+        "<a href='forums.php?action=deletepost&amp;postid=$postid&amp;forumid=$forumid&amp;sure=1'>{$lang['forum_user_options_here']}</a> {$lang['forum_user_options_sure']}");
       }
 
       //------- Delete post

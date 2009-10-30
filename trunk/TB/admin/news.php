@@ -38,6 +38,35 @@ require_once "include/html_functions.php";
     
     $HTMLOUT = '';
     
+        // Update NEws dates to rejuvenate /////////////////////////////
+
+    if('update' == $mode)
+    {
+      if(isset($input['news_update']) && count($input['news_update']))
+      {
+        foreach($input['news_update'] as $v)
+        {
+          if(!is_valid_id($v)) stderr("Error", "No news ID");
+          $newsIDS[] = $v;
+        }
+      }
+      else
+      {
+        stderr("Error", "No data!");
+      }
+      
+      $news = join(',', $newsIDS);
+      
+      @mysql_query("UPDATE news set added = ".time()." WHERE id IN ($news)");
+      
+      if(-1 == mysql_affected_rows())
+        stderr("Error", "Update failed");
+      
+      header("Location: {$TBDEV['baseurl']}/admin.php?action=news");
+      
+    }
+	
+    
     //   Delete News Item    //////////////////////////////////////////////////////
     if ($mode == 'delete')
     {
@@ -72,14 +101,17 @@ require_once "include/html_functions.php";
       
       if ( !$body OR strlen($body) < 4 )
         stderr($lang['news_error'],$lang['news_add_body']);
-
-      $added = isset($input["added"]) ? $input['added'] : 0;
+      
+      $body = sqlesc($body);
+      
+      $added = isset($input['added']) ? $input['added'] : 0;
+      
+      $headline = (isset($input['headline']) AND !empty($input['headline'])) ? sqlesc($input['headline']) : sqlesc('TBDev.net News');
       
       if (!$added)
         $added = time();
 
-      @mysql_query("INSERT INTO news (userid, added, body) VALUES (".
-        $CURUSER['id'] . ", $added, " . sqlesc($body) . ")") or sqlerr(__FILE__, __LINE__);
+      @mysql_query("INSERT INTO news (userid, added, body, headline) VALUES ({$CURUSER['id']}, $added, $body, $headline)") or sqlerr(__FILE__, __LINE__);
         
       if (mysql_affected_rows() == 1)
         $warning = $lang['news_add_ok'];
@@ -111,16 +143,18 @@ require_once "include/html_functions.php";
         if ($body == "" OR strlen($_POST['body']) < 4)
           stderr($lang['news_error'], $lang['news_add_body']);
 
+        $headline = (isset($input['headline']) AND !empty($input['headline'])) ? sqlesc($input['headline']) : sqlesc('TBDev.net News');
+        
         $body = sqlesc($body);
 
         $editedat = time();
 
-        mysql_query("UPDATE news SET body=$body WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
+        @mysql_query("UPDATE news SET body=$body, headline=$headline WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
 
         $returnto = isset($_POST['returnto']) ? htmlentities($_POST['returnto']) : '';
 
         if ($returnto != "")
-          header("Location: {$TBDEV['baseurl']}/admin.php?action=news");
+          header("Location: {$TBDEV['baseurl']}/index.php");
         else
           $warning = $lang['news_edit_ok'];;
       }
@@ -135,11 +169,22 @@ require_once "include/html_functions.php";
         
         <input type='hidden' name='mode' value='edit' />
         
-        <table border='1' cellspacing='0' cellpadding='5'>
-        
-        <tr><td style='padding: 0px'><textarea name='body' cols='145' rows='5'>" . htmlentities($arr['body'], ENT_QUOTES) . "</textarea></td></tr>
-        
-        <tr><td align='center'><input type='submit' value='Okay' class='btn' /></td></tr>
+        <table width='700px'border='1' cellspacing='0' cellpadding='10px'>
+        <tr>
+          <td align='center'>
+            <input style='width:650px;' type='text' name='headline' size='50' value='".htmlentities($arr['headline'], ENT_QUOTES)."' />
+          </td>
+        </tr>
+        <tr>
+          <td align='center'>
+            <textarea style='width:650px;' name='body' cols='55' rows='10'>" . htmlentities($arr['body'], ENT_QUOTES) . "</textarea>
+          </td>
+        </tr>
+        <tr>
+          <td align='center'>
+            <input type='submit' value='Okay' class='btn' />
+          </td>
+        </tr>
         
         </table>
         
@@ -160,14 +205,20 @@ require_once "include/html_functions.php";
     
     $HTMLOUT .= "<form method='post' action='admin.php?action=news'>
     <input type='hidden' name='mode' value='add' />
-    <table border='1' cellspacing='0' cellpadding='5'>
+    <table width='750px' border='1' cellspacing='0' cellpadding='10px'>
       <tr>
-        <td style='padding: 10px'>
-          <textarea name='body' cols='141' rows='5' style='border: 0px'></textarea>
-          <br /><br />
-          <div align='center'>
+        <td align='center'>
+          <input  style='width:650px;' type='text' name='headline' size='50' value='' />
+        </td>
+      </tr>
+      <tr>
+        <td align='center'>
+          <textarea style='width:650px;' name='body' cols='55' rows='10'></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td align='center'>
           <input type='submit' value='Okay' class='btn' />
-          </div>
         </td>
       </tr>
     </table>
@@ -178,14 +229,16 @@ require_once "include/html_functions.php";
     if (mysql_num_rows($res) > 0)
     {
 
-
+      
       $HTMLOUT .= begin_main_frame();
-      $HTMLOUT .= begin_frame();
+      $HTMLOUT .= "<form method='post' action='admin.php?action=news'>
+      <input type='hidden' name='mode' value='update' />";
 
       while ($arr = mysql_fetch_assoc($res))
       {
         $newsid = $arr["id"];
         $body = format_comment($arr["body"]);
+        $headline = htmlentities($arr['headline'], ENT_QUOTES, 'UTF-8');
         $userid = $arr["userid"];
         $added = get_date( $arr['added'],'');
 
@@ -200,10 +253,15 @@ require_once "include/html_functions.php";
           $by = "<a href='userdetails.php?id=$userid'><b>$postername</b></a>" .
             ($arr2["donor"] == "yes" ? "<img src=\"{$TBDEV['pic_base_url']}star.gif\" alt='Donor' />" : "");
             
+        $HTMLOUT .= begin_frame();    
         $HTMLOUT .= begin_table(true);
-        $HTMLOUT .= "<tr>
-          <td class='embedded'>{$added}&nbsp;&nbsp;by&nbsp$by
-            <div style='float:right;'>[<a href='admin.php?action=news&amp;mode=edit&amp;newsid=$newsid'><b>{$lang['news_act_edit']}</b></a>] - [<a href='admin.php?action=news&amp;mode=delete&amp;newsid=$newsid'><b>{$lang['news_act_delete']}</b></a>]
+        $HTMLOUT .= "
+        <tr>
+          <td class='colhead'>$headline<span style='float:right;'><input type='checkbox' name='news_update[]' value='$newsid' /></span></td>
+        </tr>
+        <tr>
+          <td>{$added}&nbsp;&nbsp;by&nbsp$by
+            <div style='float:right;'><a href='admin.php?action=news&amp;mode=edit&amp;newsid=$newsid'><span class='btn'>{$lang['news_act_edit']}</span></a>&nbsp;<a href='admin.php?action=news&amp;mode=delete&amp;newsid=$newsid'><span class='btn'>{$lang['news_act_delete']}</span></a>
             </div>
           </td>
         </tr>
@@ -212,9 +270,11 @@ require_once "include/html_functions.php";
         </tr>\n";
         
         $HTMLOUT .= end_table();
+        $HTMLOUT .= end_frame();
         $HTMLOUT .= '<br />';
       }
-      $HTMLOUT .= end_frame();
+      
+       $HTMLOUT .= "<div align='right'><input name='submit' type='submit' value='Update' class='btn' /></div></form>";
       $HTMLOUT .= end_main_frame();
     }
     else
