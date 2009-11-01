@@ -32,6 +32,7 @@ $lang = array(
 'my_notify_torrent' => 'Notify me when a torrent is uploaded in one of <br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; my default browsing categories.',
 'my_browse' => 'Browse default<br />categories',
 'my_stylesheet' => 'Stylesheet',
+'my_language' => 'Language',
 'my_country' => 'Country',
 'my_tz' => 'Timezone',
 'my_checkdst' => 'Daylight Saving',
