@@ -135,14 +135,14 @@ loggedinorreturn();
     if ($page == 1)
       $browsemenu .= "<span class='btn' style='background:orange;'>&lsaquo;</span>$pagemenu";
     else
-      $browsemenu .= "<a href='users.php?$q&amp;page=1' title='{$lang['users_first']}(1)'><span class='btn'>&laquo;</span></a>&nbsp;<a href='users.php?$q&amp;page=" . ($page - 1) . "'><span class='btn'>&lsaquo;</span></a>$pagemenu";
+      $browsemenu .= "<a href='users.php?$q&amp;page=1' title='{$lang['pager_first']}(1)'><span class='btn'>&laquo;</span></a>&nbsp;<a href='users.php?$q&amp;page=" . ($page - 1) . "'><span class='btn'>&lsaquo;</span></a>$pagemenu";
 
     //$browsemenu .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
     if ($page == $pages)
       $browsemenu .= "<span class='btn' style='background:orange;'>&rsaquo;</span>";
     else
-      $browsemenu .= "<a href='users.php?$q&amp;page=" . ($page + 1) . "'><span class='btn'>&rsaquo;</span></a>&nbsp;<a href='users.php?$q&amp;page=" . $pages . "' title='{$lang['users_last']}($pages)'><span class='btn'>&raquo;</span></a>";
+      $browsemenu .= "<a href='users.php?$q&amp;page=" . ($page + 1) . "'><span class='btn'>&rsaquo;</span></a>&nbsp;<a href='users.php?$q&amp;page=" . $pages . "' title='{$lang['pager_last']}($pages)'><span class='btn'>&raquo;</span></a>";
     }
 
     $HTMLOUT .= ($arr[0] > $perpage) ? "<p>$browsemenu<br /><br /></p>" : '<br /><br />';

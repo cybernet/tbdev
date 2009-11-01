@@ -216,7 +216,7 @@ function maketable($res)
     //if ($user['donated'] > 0 && ($CURUSER['class'] >= UC_MODERATOR || $CURUSER["id"] == $user["id"]))
     //  print("<tr><td class='rowhead'>Donated</td><td align='left'>$user[donated]</td></tr>\n");
     if ($user["avatar"])
-    $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_avatar']}</td><td align='left'><img src='" . htmlspecialchars($user["avatar"]) . "' alt='' /></td></tr>\n";
+    $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_avatar']}</td><td align='left'><img src='" . htmlspecialchars($user["avatar"]) . "' width='{$row['av_w']}' height='{$row['av_h']}' alt='' /></td></tr>\n";
     $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_class']}</td><td align='left'>" . get_user_class_name($user["class"]) . "</td></tr>\n";
     $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_comments']}</td>";
     if ($torrentcomments && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || $CURUSER['class'] >= UC_MODERATOR))
@@ -247,7 +247,7 @@ function maketable($res)
         $showpmbutton = 1;
       elseif ($user["acceptpms"] == "yes")
       {
-        $r = mysql_query("SELECT id FROM blocks WHERE userid=$user[id] AND blockid=$CURUSER[id]") or sqlerr(__FILE__,__LINE__);
+        $r = mysql_query("SELECT id FROM blocks WHERE userid={$user['id']} AND blockid={$CURUSER['id']}") or sqlerr(__FILE__,__LINE__);
         $showpmbutton = (mysql_num_rows($r) == 1 ? 0 : 1);
       }
       elseif ($user["acceptpms"] == "friends")
@@ -274,15 +274,15 @@ function maketable($res)
       $HTMLOUT .= "<input type='hidden' name='userid' value='$id' />\n";
       $HTMLOUT .= "<input type='hidden' name='returnto' value='userdetails.php?id=$id' />\n";
       $HTMLOUT .= "<table class='main' border='1' cellspacing='0' cellpadding='5'>\n";
-      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_title']}</td><td colspan='2' align='left'><input type='text' size='60' name='title' value=\"" . htmlspecialchars($user['title']) . "\"></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_title']}</td><td colspan='2' align='left'><input type='text' size='60' name='title' value='" . htmlspecialchars($user['title']) . "' /></td></tr>\n";
       $avatar = htmlspecialchars($user["avatar"]);
-      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_avatar_url']}</td><td colspan='2' align='left'><input type='text' size='60' name='avatar' value=\"$avatar\" /></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_avatar_url']}</td><td colspan='2' align='left'><input type='text' size='60' name='avatar' value='$avatar' /></td></tr>\n";
       // we do not want mods to be able to change user classes or amount donated...
       if ($CURUSER["class"] < UC_ADMINISTRATOR)
         $HTMLOUT .= "<input type='hidden' name='donor' value='$user[donor]' />\n";
       else
       {
-        $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_donor']}</td><td colspan='2' align='left'><input type='radio' name='donor' value='yes'" .($user["donor"] == "yes" ? " checked='checked'" : "").">{$lang['userdetails_yes']} <input type='radio' name='donor' value='no'" .($user["donor"] == "no" ? " checked='checked'" : "").">{$lang['userdetails_no']}</td></tr>\n";
+        $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_donor']}</td><td colspan='2' align='left'><input type='radio' name='donor' value='yes'" .($user["donor"] == "yes" ? " checked='checked'" : "")." />{$lang['userdetails_yes']} <input type='radio' name='donor' value='no'" .($user["donor"] == "no" ? " checked='checked'" : "")." />{$lang['userdetails_no']}</td></tr>\n";
       }
 
       if ($CURUSER['class'] == UC_MODERATOR && $user["class"] > UC_VIP)
@@ -295,7 +295,7 @@ function maketable($res)
         else
           $maxclass = $CURUSER['class'] - 1;
         for ($i = 0; $i <= $maxclass; ++$i)
-          $HTMLOUT .= "<option value='$i'" . ($user["class"] == $i ? " selected='selected'" : "") . ">" . get_user_class_name($i) . "\n";
+          $HTMLOUT .= "<option value='$i'" . ($user["class"] == $i ? " selected='selected'" : "") . ">" . get_user_class_name($i) . "</option>\n";
         $HTMLOUT .= "</select></td></tr>\n";
       }
 
@@ -332,9 +332,9 @@ function maketable($res)
         $HTMLOUT .= "</select>{$lang['userdetails_pm_comm']}</td></tr>\n";
         $HTMLOUT .= "<tr><td colspan='2' align='left'><input type='text' size='60' name='warnpm' /></td></tr>";
       }
-      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_enabled']}</td><td colspan='2' align='left'><input name='enabled' value='yes' type='radio'" . ($enabled ? " checked='checked'" : "") . " />{$lang['userdetails_yes']} <input name=enabled value='no' type='radio'" . (!$enabled ? " checked='checked'" : "") . " />{$lang['userdetails_no']}</td></tr>\n";
-      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_reset']}</td><td colspan=2><input type='checkbox' name='resetpasskey' value='1' /><font class='small'>{$lang['userdetails_pass_msg']}</font></td></tr>";
-      $HTMLOUT .= "</td></tr>";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_enabled']}</td><td colspan='2' align='left'><input name='enabled' value='yes' type='radio'" . ($enabled ? " checked='checked'" : "") . " />{$lang['userdetails_yes']} <input name='enabled' value='no' type='radio'" . (!$enabled ? " checked='checked'" : "") . " />{$lang['userdetails_no']}</td></tr>\n";
+      $HTMLOUT .= "<tr><td class='rowhead'>{$lang['userdetails_reset']}</td><td colspan='2'><input type='checkbox' name='resetpasskey' value='1' /><font class='small'>{$lang['userdetails_pass_msg']}</font></td></tr>";
+      //$HTMLOUT .= "</td></tr>";
       $HTMLOUT .= "<tr><td colspan='3' align='center'><input type='submit' class='btn' value='{$lang['userdetails_okay']}' /></td></tr>\n";
       $HTMLOUT .= "</table>\n";
       $HTMLOUT .= "</form>\n";

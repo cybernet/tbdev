@@ -224,6 +224,7 @@ $outmessages = $arr[0];
        , 1);
     $HTMLOUT .= tr($lang['my_browse'],$categories,1);
     $HTMLOUT .= tr($lang['my_stylesheet'], "<select name='stylesheet'>\n$stylesheets\n</select>",1);
+    $HTMLOUT .= tr($lang['my_language'], "Engrish",1);
     $HTMLOUT .= tr($lang['my_country'], "<select name='country'>\n$countries\n</select>",1);
 
     // Timezone stuff //
