@@ -254,13 +254,16 @@ function torrenttable($res, $variant = "index") {
 
 function commenttable($rows)
 {
-	global $CURUSER, $TBDEV, $lang;
+	global $CURUSER, $TBDEV;
 	
-	$htmlout .= begin_main_frame();
-	$htmlout .= begin_frame();
+	
+	$lang = load_language( 'torrenttable_functions' );
 	
 	$htmlout = '';
 	$count = 0;
+	
+	$htmlout .= begin_main_frame();
+	$htmlout .= begin_frame();
 	
 	foreach ($rows as $row)
 	{
@@ -292,7 +295,7 @@ function commenttable($rows)
     	$text .= "<p><font size='1' class='small'>".$lang["commenttable_last_edited_by"]." <a href='userdetails.php?id={$row['editedby']}'><b>{$row['username']}</b></a> ".$lang["commenttable_last_edited_at"]." ".get_date($row['editedat'],'DATE')."</font></p>\n";
 		$htmlout .= begin_table(true);
 		$htmlout .= "<tr valign='top'>\n";
-		$htmlout .= "<td align='center' width='150' style='padding: 0px'><img width='{$row[av_w]}' height='{$row[av_h]}' src='{$avatar}' alt='' /></td>\n";
+		$htmlout .= "<td align='center' width='150' style='padding: 0px'><img width='{$row['av_w']}' height='{$row['av_h']}' src='{$avatar}' alt='' /></td>\n";
 		$htmlout .= "<td class='text'>$text</td>\n";
 		$htmlout .= "</tr>\n";
      $htmlout .= end_table();

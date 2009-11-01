@@ -246,9 +246,8 @@ if (!empty($xrow))
     {
 		$pager = pager(20, $count, "details.php?id=$id&amp;", array('lastpagedefault' => 1));
 
-		$subres = mysql_query("SELECT comments.id, text, user, comments.added, editedby, editedat, avatar, warned, ".
-                  "username, title, class, donor FROM comments LEFT JOIN users ON comments.user = users.id WHERE torrent = " .
-                  "$id ORDER BY comments.id ".$pager['limit']) or sqlerr(__FILE__, __LINE__);
+		$subres = mysql_query("SELECT comments.id, text, user, comments.added, editedby, editedat, avatar, av_w, av_h, warned, username, title, class, donor FROM comments LEFT JOIN users ON comments.user = users.id WHERE torrent = $id ORDER BY comments.id ".$pager['limit']) or sqlerr(__FILE__, __LINE__);
+		
 		$allrows = array();
 		while ($subrow = mysql_fetch_assoc($subres))
 			$allrows[] = $subrow;
