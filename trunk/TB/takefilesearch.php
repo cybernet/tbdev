@@ -27,7 +27,7 @@ dbconn(false);
 
 loggedinorreturn();
 
-    $lang = load_language('takefilesearch');
+    $lang = array_merge( load_language('global'), load_language('takefilesearch') );
     
     if(isset($_POST['search']) && !empty($_POST['search'])) {
       

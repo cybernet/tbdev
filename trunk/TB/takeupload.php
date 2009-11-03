@@ -20,14 +20,8 @@ require_once("include/benc.php");
 require_once("include/bittorrent.php");
 require_once "include/user_functions.php";
 
-ini_set("upload_max_filesize",$TBDEV['max_torrent_size']);
+@ini_set("upload_max_filesize",$TBDEV['max_torrent_size']);
 
-function bark($msg) {
-	
-	global $lang;
-	
-	genbark($msg, $lang['takeupload_failed']);
-}
 
 dbconn(); 
 
@@ -36,38 +30,38 @@ loggedinorreturn();
     $lang = array_merge( load_language('global'), load_language('takeupload') );
     
     if ($CURUSER['class'] < UC_UPLOADER)
-      die;
+      header( "Location: {$TBDEV['baseurl']}/upload.php" );
 
     foreach(explode(":","descr:type:name") as $v) {
       if (!isset($_POST[$v]))
-        bark($lang['takeupload_no_formdata']);
+        stderr($lang['takeupload_failed'], $lang['takeupload_no_formdata']);
     }
 
     if (!isset($_FILES["file"]))
-      bark($lang['takeupload_no_formdata']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_no_formdata']);
 
     $f = $_FILES["file"];
     $fname = unesc($f["name"]);
     if (empty($fname))
-      bark($lang['takeupload_no_filename']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_no_filename']);
       
     $nfo = sqlesc('');
     /////////////////////// NFO FILE ////////////////////////	
     if(isset($_FILES['nfo']) && !empty($_FILES['nfo']['name'])) {
     $nfofile = $_FILES['nfo'];
     if ($nfofile['name'] == '')
-      bark($lang['takeupload_no_nfo']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_no_nfo']);
 
     if ($nfofile['size'] == 0)
-      bark($lang['takeupload_0_byte']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_0_byte']);
 
     if ($nfofile['size'] > 65535)
-      bark($lang['takeupload_nfo_big']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_nfo_big']);
 
     $nfofilename = $nfofile['tmp_name'];
 
     if (@!is_uploaded_file($nfofilename))
-      bark($lang['takeupload_nfo_failed']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_nfo_failed']);
 
     $nfo = sqlesc(str_replace("\x0d\x0d\x0a", "\x0d\x0a", @file_get_contents($nfofilename)));
     }
@@ -75,34 +69,34 @@ loggedinorreturn();
 
     $descr = unesc($_POST["descr"]);
     if (!$descr)
-      bark($lang['takeupload_no_descr']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_no_descr']);
 
     $catid = (0 + $_POST["type"]);
     if (!is_valid_id($catid))
-      bark($lang['takeupload_no_cat']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_no_cat']);
       
     if (!validfilename($fname))
-      bark($lang['takeupload_invalid']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_invalid']);
     if (!preg_match('/^(.+)\.torrent$/si', $fname, $matches))
-      bark($lang['takeupload_not_torrent']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_not_torrent']);
     $shortfname = $torrent = $matches[1];
     if (!empty($_POST["name"]))
       $torrent = unesc($_POST["name"]);
 
     $tmpname = $f["tmp_name"];
     if (!is_uploaded_file($tmpname))
-      bark($lang['takeupload_eek']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_eek']);
     if (!filesize($tmpname))
-      bark($lang['takeupload_no_file']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_no_file']);
 
     $dict = bdec_file($tmpname, $TBDEV['max_torrent_size']);
     if (!isset($dict))
-      bark($lang['takeupload_not_benc']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_not_benc']);
 
 
     function dict_check($d, $s) {
       if ($d["type"] != "dictionary")
-        bark($lang['takeupload_not_dict']);
+        stderr($lang['takeupload_failed'], $lang['takeupload_not_dict']);
       $a = explode(":", $s);
       $dd = $d["value"];
       $ret = array();
@@ -114,10 +108,10 @@ loggedinorreturn();
           $t = $m[2];
         }
         if (!isset($dd[$k]))
-          bark($lang['takeupload_no_keys']);
+          stderr($lang['takeupload_failed'], $lang['takeupload_no_keys']);
         if (isset($t)) {
           if ($dd[$k]["type"] != $t)
-            bark($lang['takeupload_invalid_entry']);
+            stderr($lang['takeupload_failed'], $lang['takeupload_invalid_entry']);
           $ret[] = $dd[$k]["value"];
         }
         else
@@ -128,13 +122,13 @@ loggedinorreturn();
 
     function dict_get($d, $k, $t) {
       if ($d["type"] != "dictionary")
-        bark($lang['takeupload_not_dict']);
+        stderr($lang['takeupload_failed'], $lang['takeupload_not_dict']);
       $dd = $d["value"];
       if (!isset($dd[$k]))
         return;
       $v = $dd[$k];
       if ($v["type"] != $t)
-        bark($lang['takeupload_dict_type']);
+        stderr($lang['takeupload_failed'], $lang['takeupload_dict_type']);
       return $v["value"];
     }
 
@@ -147,10 +141,10 @@ loggedinorreturn();
     list($dname, $plen, $pieces) = dict_check($info, "name(string):piece length(integer):pieces(string)");
 
     if (!in_array($ann, $TBDEV['announce_urls'], 1))
-      bark(sprintf($lang['takeupload_url'], $TBDEV['announce_urls'][0]));
+      stderr($lang['takeupload_failed'], sprintf($lang['takeupload_url'], $TBDEV['announce_urls'][0]));
      
     if (strlen($pieces) % 20 != 0)
-      bark($lang['takeupload_pieces']);
+      stderr($lang['takeupload_failed'], $lang['takeupload_pieces']);
 
     $filelist = array();
     $totallen = dict_get($info, "length", "integer");
@@ -161,9 +155,9 @@ loggedinorreturn();
     else {
       $flist = dict_get($info, "files", "list");
       if (!isset($flist))
-        bark($lang['takeupload_both']);
+        stderr($lang['takeupload_failed'], $lang['takeupload_both']);
       if (!count($flist))
-        bark($lang['takeupload_no_files']);
+        stderr($lang['takeupload_failed'], $lang['takeupload_no_files']);
       $totallen = 0;
       foreach ($flist as $fn) {
         list($ll, $ff) = dict_check($fn, "length(integer):path(list)");
@@ -171,11 +165,11 @@ loggedinorreturn();
         $ffa = array();
         foreach ($ff as $ffe) {
           if ($ffe["type"] != "string")
-            bark($lang['takeupload_error']);
+            stderr($lang['takeupload_failed'], $lang['takeupload_error']);
           $ffa[] = $ffe["value"];
         }
         if (!count($ffa))
-          bark($lang['takeupload_error']);
+          stderr($lang['takeupload_failed'], $lang['takeupload_error']);
         $ffe = implode("/", $ffa);
         $filelist[] = array($ffe, $ll);
       }
@@ -196,8 +190,8 @@ loggedinorreturn();
         ", " . time() . ", " . time() . ", $nfo, $tmaker)");
     if (!$ret) {
       if (mysql_errno() == 1062)
-        bark($lang['takeupload_already']);
-      bark("mysql puked: ".mysql_error());
+        stderr($lang['takeupload_failed'], $lang['takeupload_already']);
+      stderr($lang['takeupload_failed'], "mysql puked: ".mysql_error());
     }
     $id = mysql_insert_id();
 
