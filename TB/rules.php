@@ -47,7 +47,7 @@ dbconn();
     $HTMLOUT .= "{$lang['rules_avatar_body']}";
     $HTMLOUT .= end_frame();
 
-    if ($CURUSER['class'] >= UC_UPLOADER) 
+    if (isset($CURUSER) AND $CURUSER['class'] >= UC_UPLOADER) 
     {
 
       $HTMLOUT .= begin_frame("{$lang['rules_uploading_header']}");
@@ -57,7 +57,7 @@ dbconn();
 
     }
     
-    if ($CURUSER['class'] >= UC_MODERATOR) 
+    if (isset($CURUSER) AND $CURUSER['class'] >= UC_MODERATOR) 
     {
 
      $HTMLOUT .= begin_frame("{$lang['rules_moderating_header']}");
