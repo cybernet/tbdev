@@ -126,7 +126,7 @@ $body = sprintf($lang['email_request'], $email, $_SERVER["REMOTE_ADDR"], $TBDEV[
         <td>
           <div id='captchaimage'>
           <a href='recover.php' onclick=\"refreshimg(); return false;\" title='{$lang['captcha_refresh']}'>
-          <img class='cimage' src='captcha/GD_Security_image.php?<?php echo time(); ?>' alt='{$lang['Captcha image']}' />
+          <img class='cimage' src='captcha/GD_Security_image.php?".time()."' alt='{$lang['captcha_imagealt']}' />
           </a>
           </div>
          </td>

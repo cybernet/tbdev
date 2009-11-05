@@ -26,11 +26,11 @@ dbconn();
     $HTMLOUT = '';
     
     $HTMLOUT .= begin_main_frame();
-    $HTMLOUT .= begin_frame($TBDEV['baseurl']." {$lang['frame_usragrmnt']}");
+    $HTMLOUT .= begin_frame($TBDEV['site_name']." {$lang['frame_usragrmnt']}");
 
     $HTMLOUT .= "<p></p> {$lang['text_usragrmnt']}"; 
 
     $HTMLOUT .= end_frame();
     $HTMLOUT .= end_main_frame();
-    print stdhead("{$lang['stdhead_usragrmnt']}"); . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['stdhead_usragrmnt']}") . $HTMLOUT . stdfoot();
 ?>

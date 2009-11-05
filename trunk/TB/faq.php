@@ -21,6 +21,8 @@ require_once 'include/user_functions.php';
 
 dbconn(false);
 
+loggedinorreturn();
+
     $lang = array_merge( load_language('global'), load_language('faq') );
     
     $HTMLOUT = "";
