@@ -25,17 +25,17 @@ loggedinorreturn();
 $lang = array_merge( load_language('global'), load_language('sendmessage') );
 
 // Standard Administrative PM Replies
-$pm_std_reply[1] = "{$lang['sendmessage_std_reply1']}";
+$pm_std_reply[1] = sprintf( $lang['sendmessage_std_reply1'], $TBDEV['baseurl'] );
 $pm_std_reply[2] = "{$lang['sendmessage_std_reply2']}";
 
 // Standard Administrative PMs
-$pm_template['1'] = array("{$lang['sendmessage_template1']}");
-$pm_template['2'] = array("{$lang['sendmessage_template2']}");
+$pm_template[1] = array( $lang['sendmessage_template1_sub'], sprintf($lang['sendmessage_template1_body'], $TBDEV['site_name']) );
+$pm_template[2] = array( $lang['sendmessage_template2_sub'], sprintf($lang['sendmessage_template2_body'], $TBDEV['baseurl']) );
 
 // Standard Administrative MMs
-$mm_template['1'] = $pm_template['1'];
-$mm_template['2'] = array("{$lang['sendmessage_mm_template2']}");
-$mm_template['3'] = array("{$lang['sendmessage_mm_template3']}");
+$mm_template[1] = array( $lang['sendmessage_mm_template1_sub'], sprintf($lang['sendmessage_mm_template1_body'], $TBDEV['site_name']) );
+$mm_template[2] = array( $lang['sendmessage_mm_template2_sub'], $lang['sendmessage_mm_template2_body'] );
+$mm_template[3] = array( $lang['sendmessage_mm_template3_sub'], $lang['sendmessage_mm_template3_body'] );
     
     $HTMLOUT = '';
     
@@ -46,14 +46,21 @@ $mm_template['3'] = array("{$lang['sendmessage_mm_template3']}");
 
       $n_pms = htmlentities($_POST['n_pms']);
       $pmees = htmlentities($_POST['pmees']);
+      $this_subject = '';
+      $this_body = '';
       $auto = isset($_POST['auto']) ? $_POST['auto'] : FALSE;
 
       if ($auto)
-        $body=$mm_template[$auto][1];
+      {
+        $this_subject = htmlentities($mm_template[$auto][0], ENT_QUOTES);
+        $this_body = htmlentities($mm_template[$auto][1], ENT_QUOTES);
+      }
+      
+      $mass_msg_pm_to = sprintf( $lang['sendmessage_mass_msg_to'], $n_pms, ($n_pms>1?"s":"") );
       
       $HTMLOUT .= "<table class='main' width='750' border='0' cellspacing='0' cellpadding='0'>
       <tr><td class='embedded'><div align='center'>
-      <h1>{$lang['sendmessage_mass_msg_to']}".($n_pms>1?"s":"")."!</h1>
+      <h1>{$mass_msg_pm_to}</h1>
       <form method='post' action='takemessage.php'>";
       
       if ($_SERVER["HTTP_REFERER"]) 
@@ -64,10 +71,10 @@ $mm_template['3'] = array("{$lang['sendmessage_mm_template3']}");
       $HTMLOUT .= "<table border='1' cellspacing='0' cellpadding='5'>
       <tr>
       <td colspan='2'><b>{$lang['sendmessage_subject']}</b>
-      <input name='subject' type='text' size='76' /></td>
+      <input name='subject' type='text' value='$this_subject' size='76' /></td>
       </tr>
       <tr><td colspan='2'><div align='center'>
-      <textarea name='msg' cols='80' rows='15'>".(isset($body) ? htmlentities($body, ENT_QUOTES) : '')."</textarea>
+      <textarea name='msg' cols='80' rows='15'>$this_body</textarea>
       </div></td></tr>
       <tr><td colspan='2'><div align='center'><b>{$lang['sendmessage_comment']}</b>
       <input name='comment' type='text' size='70' />
@@ -141,7 +148,7 @@ $mm_template['3'] = array("{$lang['sendmessage_mm_template3']}");
           die;
         $res = mysql_query("SELECT username FROM users WHERE id={$msga['sender']}") or sqlerr();
         $usra = mysql_fetch_assoc($res);
-        $body .= "{$lang['sendmessage_user_wrote']}";
+        $body .= sprintf( $lang['sendmessage_user_wrote'], $usra['username'], $msga['msg'] );
         $subject = "{$lang['sendmessage_re']}" . htmlspecialchars($msga['subject']);
       }
 
@@ -153,7 +160,7 @@ $mm_template['3'] = array("{$lang['sendmessage_mm_template3']}");
       
       if (isset($_GET["returnto"]) || isset($_SERVER["HTTP_REFERER"])) 
       {
-        $HTMLOUT .= "<input type='hidden' name='returnto' value='".($_GET["returnto"] ? $_GET["returnto"] : $_SERVER["HTTP_REFERER"])."' />";
+        $HTMLOUT .= "<input type='hidden' name='returnto' value='".(isset($_GET["returnto"]) ? $_GET["returnto"] : $_SERVER["HTTP_REFERER"])."' />";
       }
       
       $HTMLOUT .= "<table border='1' cellspacing='0' cellpadding='5'>
@@ -198,7 +205,7 @@ $mm_template['3'] = array("{$lang['sendmessage_mm_template3']}");
         
         if (isset($_SERVER["HTTP_REFERER"])) 
         { 
-          $HTMLOUT .= "<input type='hidden' name='returnto' value='".($_GET["returnto"] ? $_GET["returnto"]:$_SERVER["HTTP_REFERER"])."' />";
+          $HTMLOUT .= "<input type='hidden' name='returnto' value='".(isset($_GET["returnto"]) ? $_GET["returnto"]:$_SERVER["HTTP_REFERER"])."' />";
         }
         
         $HTMLOUT .= "<input type='hidden' name='receiver' value='$receiver' />
@@ -214,5 +221,5 @@ $mm_template['3'] = array("{$lang['sendmessage_mm_template3']}");
     }
 
 
-    print stdhead("{$lang['sendmessage_send_mdg']}", false) . $HTMLOUT . stdfoot();
+    print stdhead("{$lang['sendmessage_send_msg']}", false) . $HTMLOUT . stdfoot();
 ?>

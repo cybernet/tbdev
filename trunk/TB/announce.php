@@ -17,14 +17,14 @@
 +------------------------------------------------
 */
 ////////////////// GLOBAL VARIABLES ////////////////////////////	
-$TBDEV['baseurl'] = 'http://localhost/TB/';
+$TBDEV['baseurl'] = 'http://localhost/TB_ALPHA/';
 $TBDEV['announce_interval'] = 60 * 30;
 define ('UC_VIP', 2);
 // DB setup
 $TBDEV['mysql_host'] = "localhost";
 $TBDEV['mysql_user'] = "root";
 $TBDEV['mysql_pass'] = "blank";
-$TBDEV['mysql_db']   = "mytbdev";
+$TBDEV['mysql_db']   = "tb";
 ////////////////// GLOBAL VARIABLES ////////////////////////////
 
 // DO NOT EDIT BELOW UNLESS YOU KNOW WHAT YOU'RE DOING!!
