@@ -267,7 +267,7 @@ function commenttable($rows)
 	
 	foreach ($rows as $row)
 	{
-		$htmlout .= "<p class=sub>#{$row["id"]} {$lang["commenttable_by"]} ";
+		$htmlout .= "<p class='sub'>#{$row["id"]} {$lang["commenttable_by"]} ";
     if (isset($row["username"]))
 		{
 			$title = $row["title"];
