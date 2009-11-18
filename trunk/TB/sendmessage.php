@@ -58,9 +58,7 @@ $mm_template[3] = array( $lang['sendmessage_mm_template3_sub'], $lang['sendmessa
       
       $mass_msg_pm_to = sprintf( $lang['sendmessage_mass_msg_to'], $n_pms, ($n_pms>1?"s":"") );
       
-      $HTMLOUT .= "<table class='main' width='750' border='0' cellspacing='0' cellpadding='0'>
-      <tr><td class='embedded'><div align='center'>
-      <h1>{$mass_msg_pm_to}</h1>
+      $HTMLOUT .= "<h1>{$mass_msg_pm_to}</h1>
       <form method='post' action='takemessage.php'>";
       
       if ($_SERVER["HTTP_REFERER"]) 
@@ -70,28 +68,37 @@ $mm_template[3] = array( $lang['sendmessage_mm_template3_sub'], $lang['sendmessa
       
       $HTMLOUT .= "<table border='1' cellspacing='0' cellpadding='5'>
       <tr>
-      <td colspan='2'><b>{$lang['sendmessage_subject']}</b>
-      <input name='subject' type='text' value='$this_subject' size='76' /></td>
+        <td align='right'><b>{$lang['sendmessage_subject']}</b></td>
+        <td><input style='width: 650px;' name='subject' type='text' value='$this_subject' size='50' /></td>
       </tr>
-      <tr><td colspan='2'><div align='center'>
-      <textarea name='msg' cols='80' rows='15'>$this_body</textarea>
-      </div></td></tr>
-      <tr><td colspan='2'><div align='center'><b>{$lang['sendmessage_comment']}</b>
-      <input name='comment' type='text' size='70' />
-      </div></td></tr>
-      <tr><td><div align='center'><b>{$lang['sendmessage_from']}</b>
+      <tr>
+        <td align='right'><b>{$lang['sendmessage_subject']}</b></td>
+        <td><textarea style='width: 650px;' name='msg' cols='55' rows='15'>$this_body</textarea></td>
+      </tr>
+      <tr>
+        <td align='right'><b>{$lang['sendmessage_comment']}</b></td>
+        <td><input style='width: 650px;' name='comment' type='text' size='70' /></td>
+      </tr>
+      <tr>
+        <td colspan='2'><div align='center'><b>{$lang['sendmessage_from']}</b>
       {$CURUSER['username']}
-      <input name='sender' type='radio' value='self' checked='checked' />
-      &nbsp; System
-      <input name='sender' type='radio' value='system' />
-      </div></td>
-      <td><div align='center'><b>{$lang['sendmessage_snapshot']}</b>&nbsp;<input name='snap' type='checkbox' value='1' />
-      </div></td></tr>
-      <tr><td colspan='2' align='center'><input type='submit' value='{$lang['sendmessage_send_it']}' class='btn' />
-      </td></tr></table>
+        <input name='sender' type='radio' value='self' checked='checked' />&nbsp; System
+        <input name='sender' type='radio' value='system' />
+        </div>
+        <div align='center'><b>{$lang['sendmessage_snapshot']}</b>&nbsp;
+        <input name='snap' type='checkbox' value='1' />
+        </div></td>
+      </tr>
+      <tr>
+        <td colspan='2' align='center'><input type='submit' value='{$lang['sendmessage_send_it']}' class='btn' />
+        </td>
+      </tr>
+      </table>
       <input type='hidden' name='pmees' value='{$pmees}' />
       <input type='hidden' name='n_pms' value='{$n_pms}' />
       </form><br /><br />
+      
+      
       <form method='post' action='sendmessage.php'>
       <table border='1' cellspacing='0' cellpadding='5'>
       <tr><td>
@@ -107,10 +114,9 @@ $mm_template[3] = array( $lang['sendmessage_mm_template3_sub'], $lang['sendmessa
 
       $HTMLOUT .= "</select>
       <input type='submit' value='{$lang['sendmessage_use']}' class='btn' />
-      </td></tr></table>
       <input type='hidden' name='pmees' value='{$pmees}' />
       <input type='hidden' name='n_pms' value='{$n_pms}' />
-      </form></div></td></tr></table>";
+      </td></tr></table></form>";
 
     } 
     else 
