@@ -9,7 +9,7 @@ $lang = array(
 'friends_unknown' => "Unknown type.",
 'friends_already' => "User ID is already in your %s list.",
 'friends_delete' => "Delete",
-'friends_sure' => "Do you really want to delete a %s? Click<a href='?id=%d&amp;action=delete&amp;type=%d&amp;targetid=%d&amp;sure=1'>here</a> if you are sure.",
+'friends_sure' => "Do you really want to delete a %s? Click <a href='?id=%d&amp;action=delete&amp;type=%s&amp;targetid=%d&amp;sure=1'>here</a> if you are sure.",
 'friends_no_friend' => "No friend found with ID",
 
 

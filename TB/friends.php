@@ -82,7 +82,7 @@ loggedinorreturn();
       stderr($lang['friends_error'], $lang['friends_invalid_id']);
 
       if (!$sure)
-        stderr("{$lang['friends_delete']} $type","{$lang['friends_sure']}", $type, $userid, $type, $targetid);
+        stderr("{$lang['friends_delete']} $type", sprintf($lang['friends_sure'], $type, $userid, $type, $targetid) );
 
       if ($type == 'friend')
       {
