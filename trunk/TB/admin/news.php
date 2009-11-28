@@ -172,7 +172,7 @@ require_once "include/html_functions.php";
         <table width='700px'border='1' cellspacing='0' cellpadding='10px'>
         <tr>
           <td align='center'>
-            <input style='width:650px;' type='text' name='headline' size='50' value='".htmlentities($arr['headline'], ENT_QUOTES)."' />
+            <input style='width:650px;' type='text' name='headline' size='50' value='".htmlentities($arr['headline'], ENT_QUOTES, 'UTF-8')."' />
           </td>
         </tr>
         <tr>

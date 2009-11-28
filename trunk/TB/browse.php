@@ -213,10 +213,9 @@ loggedinorreturn();
 
     //print out the tag cloud
     require_once "include/searchcloud_functions.php";
-    $HTMLOUT .= cloud();
+    $HTMLOUT .= cloud() . "</div><br /><br />";
 
-    $HTMLOUT .= "</div><br /><br />
-    <form method='get' action='browse.php'>
+    $HTMLOUT .= "<form method='get' action='browse.php'>
     <table class='bottom'>
     <tr>
     <td class='bottom'>
@@ -229,7 +228,7 @@ loggedinorreturn();
     {
       $catsperrow = 7;
       $HTMLOUT .= ($i && $i % $catsperrow == 0) ? "</tr><tr>" : "";
-      $HTMLOUT .= "<td class='bottom' style=\"padding-bottom: 2px;padding-left: 7px\">
+      $HTMLOUT .= "<td class='bottom' style='padding-bottom: 2px;padding-left: 7px;align:left;'>
       <input name='c".$cat['id']."' type=\"checkbox\" " . (in_array($cat['id'],$wherecatina) ? "checked='checked' " : "") . "value='1' /><a class='catlink' href='browse.php?cat={$cat['id']}'>" . htmlspecialchars($cat['name']) . "</a></td>\n";
       $i++;
     }

@@ -117,6 +117,9 @@ loggedinorreturn();
 
     if ($CURUSER)
     {
+      $byratio = 0; 
+      $byul = 0;
+      
       // ratio as a string
       function format_ratio($up,$down, $color = True)
       {

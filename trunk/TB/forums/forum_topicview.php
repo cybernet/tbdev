@@ -44,7 +44,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
     $subject = htmlentities($arr["subject"], ENT_QUOTES);
     $sticky = $arr["sticky"] == "yes";
     $forumid = $arr["forumid"];
-
+    $maypost = false;
 	//------ Update hits column
 
     @mysql_query("UPDATE topics SET views = views + 1 WHERE id=$topicid") or sqlerr(__FILE__, __LINE__);
@@ -247,7 +247,7 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
 
         $HTMLOUT .= begin_table(true);
 
-        $body = format_comment($arr["body"]);
+        $body = wordwrap( format_comment($arr["body"]), 80, "\n", true);
 
         if (is_valid_id($arr['editedby']))
         {
