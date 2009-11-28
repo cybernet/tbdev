@@ -49,7 +49,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
       
       if ($hits == 0)
       {
-        $HTMLOUT .= "{$lang['forum_search_not-found']}";
+        $HTMLOUT .= "{$lang['forum_search_not_found']}";
       }
       else
       {

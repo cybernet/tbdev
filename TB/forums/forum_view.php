@@ -262,7 +262,7 @@ if ( ! defined( 'IN_TBDEV_FORUM' ) )
         "</td><td class='embedded' style='align:left;'>\n" .
         "$subject</td></tr></table></td><td style='align:right;'>$replies</td>\n" .
         "<td style='align:right;'>$views</td><td style='align:left;'>$lpauthor</td>\n" .
-        "<td style='align:left;'>$lpadded<br />by&nbsp;$lpusername</td>\n";
+        "<td style='align:left;'>$lpadded<br />by&nbsp;$lpusername<br /><a href='forums.php?action=viewtopic&amp;topicid=$topicid&amp;page=p$lppostid#$lppostid'>Last Post</a></td>\n";
 
         $HTMLOUT .=  "</tr>\n";
       } // while

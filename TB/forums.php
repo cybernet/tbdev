@@ -96,6 +96,12 @@
       exit();
       break;
       
+    case 'catchup':
+      catch_up();
+      std_view();
+      exit();
+      break;
+    
     default:
       std_view();
       break;
