@@ -23,7 +23,6 @@ if ( ! defined( 'IN_TBDEV_ADMIN' ) )
 	exit();
 }
 
-require "include/user_functions.php";
 require "include/html_functions.php";
 
 
