@@ -16,7 +16,9 @@
 |   $URL$
 +------------------------------------------------
 */
-require_once("include/bittorrent.php");
+
+require_once "include/bittorrent.php";
+require_once "include/password_functions.php";
 
 dbconn();
 
@@ -139,8 +141,8 @@ function isproxy()
     // TIMEZONE STUFF END
 
     $secret = mksecret();
-    $wantpasshash = md5($secret . $wantpassword . $secret);
-    $editsecret = (!$arr[0]?"":mksecret());
+    $wantpasshash = make_passhash( $secret, md5($wantpassword) );
+    $editsecret = ( !$arr[0] ? "" : make_passhash_login_key() );
 
     $ret = mysql_query("INSERT INTO users (username, passhash, secret, editsecret, email, status, ". (!$arr[0]?"class, ":"") ."added, time_offset, dst_in_use) VALUES (" .
 		implode(",", array_map("sqlesc", array($wantusername, $wantpasshash, $secret, $editsecret, $email, (!$arr[0]?'confirmed':'pending')))).
@@ -157,7 +159,7 @@ function isproxy()
 
 //write_log("User account $id ($wantusername) was created");
 
-    $psecret = md5($editsecret);
+    $psecret = $editsecret; //md5($editsecret);
 
     $body = str_replace(array('<#SITENAME#>', '<#USEREMAIL#>', '<#IP_ADDRESS#>', '<#REG_LINK#>'),
                         array($TBDEV['site_name'], $email, $_SERVER['REMOTE_ADDR'], "{$TBDEV['baseurl']}/confirm.php?id=$id&secret=$psecret"),

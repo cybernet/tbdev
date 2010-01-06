@@ -195,7 +195,7 @@ if (strlen($GLOBALS[$x]) != 20) err("Invalid $x (" . strlen($GLOBALS[$x]) . " - 
 
 unset($x);
 
-
+$info_hash = bin2hex($info_hash);
 
 $ip = $_SERVER['REMOTE_ADDR'];
 

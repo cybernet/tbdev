@@ -121,11 +121,13 @@ if (!$row || ($row["banned"] == "yes" && !$moderator))
 //		tr("Name", $s, 1);
 
 		$HTMLOUT .= "<tr><td class='rowhead' width='1%'>{$lang['details_download']}</td><td width='99%' align='left'><a class='index' href='download.php?torrent=$id'>" . htmlspecialchars($row["filename"]) . "</a></td></tr>";
-
+/*
 		function hex_esc($matches) {
 			return sprintf("%02x", ord($matches[0]));
 		}
 		$HTMLOUT .= tr("{$lang['details_info_hash']}", preg_replace_callback('/./s', "hex_esc", hash_pad($row["info_hash"])));
+*/
+		$HTMLOUT .= tr("{$lang['details_info_hash']}", $row["info_hash"]);
 
 		if (!empty($row["descr"]))
 			$HTMLOUT .= "<tr><td style='vertical-align:top'>{$lang['details_description']}</td><td><div style='background-color:#d9e2ff;width:100%;height:150px;overflow: auto'>". str_replace(array("\n", "  "), array("<br />\n", "&nbsp; "), format_comment( $row["descr"] ))."</div></td></tr>";

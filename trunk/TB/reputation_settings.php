@@ -243,7 +243,7 @@ $HTMLOUT = '<div>
 				  </table>
 				  </div></div>
 
-<input type="submit" name="submit" value="Add Reply" class="btn" tabindex="2" accesskey="s" />
+<input type="submit" name="submit" value="Submit" class="btn" tabindex="2" accesskey="s" />
 </form>
 </div>';
 
