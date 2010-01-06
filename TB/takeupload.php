@@ -177,7 +177,8 @@ loggedinorreturn();
     }
 
 
-    $infohash = pack("H*", sha1($info["string"]));
+    //$infohash = pack("H*", sha1($info["string"]));
+    $infohash = sha1($info["string"]);
 
     unset($info);
     // Replace punctuation characters with spaces

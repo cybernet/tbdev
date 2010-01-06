@@ -35,19 +35,22 @@ loggedinorreturn();
     $updateset = array();
     $changedemail = 0;
 
-    if ($chpassword != "") {
+    if ($chpassword != "") 
+    {
       if (strlen($chpassword) > 40)
         bark("Sorry, password is too long (max is 40 chars)");
       if ($chpassword != $passagain)
         bark("The passwords didn't match. Try again.");
+      
+      require_once "include/password_functions.php";
+      
+      $secret = mksecret();
 
-      $sec = mksecret();
-
-      $passhash = md5($sec . $chpassword . $sec);
+      $passhash = make_passhash( $secret, md5($chpassword) );
 
       $updateset[] = "secret = " . sqlesc($sec);
       $updateset[] = "passhash = " . sqlesc($passhash);
-      logincookie($CURUSER["id"], $passhash);
+      logincookie($CURUSER['id'], $passhash);
     }
 
     if ($email != $CURUSER["email"]) {

@@ -47,8 +47,9 @@ require_once "include/user_functions.php";
       exit();
     }
 
-    $sec = hash_pad($row['editsecret']);
-    if ($md5 != md5($sec))
+    //$sec = hash_pad($row['editsecret']);
+    $sec = $row['editsecret'];
+    if ($md5 != $sec)
       stderr("{$lang['confirm_user_error']}", "{$lang['confirm_cannot_confirm']}");
 
     @mysql_query("UPDATE users SET status='confirmed', editsecret='' WHERE id=$id AND status='pending'");

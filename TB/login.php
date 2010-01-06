@@ -59,7 +59,7 @@ require_once "include/bittorrent.php" ;
         <td>
           <div id='captchaimage'>
           <a href='login.php' onclick=\"refreshimg(); return false;\" title='{$lang['login_refresh']}'>
-          <img class='cimage' src='captcha/GD_Security_image.php?<?php echo time(); ?>' alt='{$lang['login_captcha']}' />
+          <img class='cimage' src='captcha/GD_Security_image.php?".TIME_NOW."' alt='{$lang['login_captcha']}' />
           </a>
           </div>
          </td>

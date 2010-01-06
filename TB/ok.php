@@ -24,6 +24,8 @@ dbconn();
     $lang = array_merge( load_language('global'), load_language('ok') );
     
     $type = isset($_GET['type']) ? $_GET['type'] : '';
+    
+    $HTMLOUT = '';
 
     if ( $type == "signup" && isset($_GET['email']) ) 
     {
