@@ -249,23 +249,8 @@ function sqlesc($x) {
 function sqlwildcardesc($x) {
     return str_replace(array("%","_"), array("\\%","\\_"), mysql_real_escape_string($x));
 }
-/*
-function urlparse($m) {
-    $t = $m[0];
-    if (preg_match(',^\w+://,', $t))
-        return "<a href=\"$t\">$t</a>";
-    return "<a href=\"http://$t\">$t</a>";
-}
 
-function parsedescr($d, $html) {
-    if (!$html)
-    {
-      $d = htmlspecialchars($d);
-      $d = str_replace("\n", "\n<br>", $d);
-    }
-    return $d;
-}
-*/
+
 function stdhead($title = "", $msgalert = true) {
     global $CURUSER, $TBDEV, $lang;
 
@@ -405,13 +390,13 @@ function genbark($x,$y) {
     stdfoot();
     exit();
 }
-
-function mksecret($len = 20) {
-    $ret = "";
-    for ($i = 0; $i < $len; $i++)
-        $ret .= chr(mt_rand(0, 255));
-    return $ret;
+/*
+function mksecret()
+{
+   $ret = substr(md5(uniqid(mt_rand())), 0, 20);
+   return $ret;
 }
+*/
 
 function httperr($code = 404) {
     header("HTTP/1.0 404 Not found");

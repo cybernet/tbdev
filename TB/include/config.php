@@ -87,7 +87,7 @@ if ($_SERVER["HTTP_HOST"] == "")
 $TBDEV['baseurl'] = "http://" . $_SERVER["HTTP_HOST"]."/TB_ALPHA";
 
 /*
-* DO NOT UNCOMMENT THIS: IT'S FOR LATER USE!
+## DO NOT UNCOMMENT THIS: IT'S FOR LATER USE!
 $host = getenv( 'SERVER_NAME' );
 $script = getenv( 'SCRIPT_NAME' );
 $script = str_replace( "\\", "/", $script );
@@ -99,6 +99,7 @@ $script = str_replace( "\\", "/", $script );
     $TBDEV['baseurl'] = "http://{$host}{$script}";
   }
 */
+
 //set this to true to make this a tracker that only registered users may use
 //$TBDEV['membersonly'] = 1; //deprecated no longer needed
 
