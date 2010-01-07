@@ -18,7 +18,9 @@
 */
 require_once "include/bittorrent.php";
 require_once "include/user_functions.php";
- 	
+require_once "include/password_functions.php";
+
+
 ini_set('session.use_trans_sid', '0');
 
 // Begin the session
@@ -75,23 +77,23 @@ $body = sprintf($lang['email_request'], $email, $_SERVER["REMOTE_ADDR"], $TBDEV[
     $arr = mysql_fetch_assoc($res) or httperr();
 
     $email = $arr["email"];
-
-    $sec = hash_pad($arr["editsecret"]);
-    if (preg_match('/^ *$/s', $sec))
-      httperr();
+    $sec = $arr['editsecret'];
+    //$sec = hash_pad($arr["editsecret"]);
+    //if (preg_match('/^ *$/s', $sec))
+      //httperr();
     if ($md5 != md5($sec . $email . $arr["passhash"] . $sec))
       httperr();
 
     // generate new password;
-    $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    /* $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     $newpassword = "";
     for ($i = 0; $i < 10; $i++)
-      $newpassword .= $chars[mt_rand(0, strlen($chars) - 1)];
-
+      $newpassword .= $chars[mt_rand(0, strlen($chars) - 1)]; */
+    $newpassword = make_password();
     $sec = mksecret();
 
-    $newpasshash = md5($sec . $newpassword . $sec);
+    $newpasshash = make_passhash( $sec, md5($newpassword) );
 
     @mysql_query("UPDATE users SET secret=" . sqlesc($sec) . ", editsecret='', passhash=" . sqlesc($newpasshash) . " WHERE id=$id AND editsecret=" . sqlesc($arr["editsecret"]));
 
