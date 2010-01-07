@@ -24,6 +24,7 @@ if ( ! defined( 'IN_TBDEV_ADMIN' ) )
 }
 
 require_once "include/user_functions.php";
+require_once "include/password_functions.php";
 
     $lang = array_merge( $lang, load_language('ad_adduser') );
     
@@ -44,7 +45,7 @@ require_once "include/user_functions.php";
       $password = $_POST["password"];
       $email = sqlesc($_POST["email"]);
       $secret = mksecret();
-      $passhash = sqlesc(md5($secret . $password . $secret));
+      $passhash = sqlesc( make_passhash( $secret, md5($password) ) );
       $secret = sqlesc($secret);
       $time_now = time();
       
