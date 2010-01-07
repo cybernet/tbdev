@@ -17,6 +17,7 @@
 +------------------------------------------------
 */
 require_once 'include/bittorrent.php';
+require_once "include/password_functions.php";
 
     if (!mkglobal('username:password:captcha'))
       die();
@@ -42,8 +43,9 @@ require_once 'include/bittorrent.php';
 
     if (!$row)
       bark();
-
-    if ($row['passhash'] != md5($row['secret'] . $password . $row['secret']))
+    
+    if ($row['passhash'] != make_passhash( $row['secret'], md5($password) ) )
+    //if ($row['passhash'] != md5($row['secret'] . $password))
       bark();
 
     if ($row['enabled'] == 'no')
