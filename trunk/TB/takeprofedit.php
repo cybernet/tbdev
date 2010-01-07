@@ -18,6 +18,7 @@
 */
 require_once "include/bittorrent.php";
 require_once "include/user_functions.php";
+require_once "include/password_functions.php";
 
 function bark($msg) {
 	genbark($msg, "Update failed!");
@@ -42,13 +43,11 @@ loggedinorreturn();
       if ($chpassword != $passagain)
         bark("The passwords didn't match. Try again.");
       
-      require_once "include/password_functions.php";
-      
       $secret = mksecret();
 
       $passhash = make_passhash( $secret, md5($chpassword) );
 
-      $updateset[] = "secret = " . sqlesc($sec);
+      $updateset[] = "secret = " . sqlesc($secret);
       $updateset[] = "passhash = " . sqlesc($passhash);
       logincookie($CURUSER['id'], $passhash);
     }
@@ -57,7 +56,7 @@ loggedinorreturn();
       if (!validemail($email))
         bark("That doesn't look like a valid email address.");
       $r = mysql_query("SELECT id FROM users WHERE email=" . sqlesc($email)) or sqlerr();
-      if ( mysql_num_rows($r) > 0 || ($CURUSER["passhash"] != md5($CURUSER["secret"] . $chmailpass . $CURUSER["secret"])) )
+      if ( mysql_num_rows($r) > 0 || ($CURUSER["passhash"] != make_passhash( $CURUSER['secret'], md5($chpassword) ) ) )
         bark("Could not change email, address already taken or password mismatch.");
       $changedemail = 1;
     }
