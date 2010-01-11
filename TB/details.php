@@ -111,7 +111,7 @@ if (!$row || ($row["banned"] == "yes" && !$moderator))
 		if (isset($_GET["returnto"])) {
 			$addthis = "&amp;returnto=" . urlencode($_GET["returnto"]);
 			$url .= $addthis;
-			$keepget .= $addthis;
+			$keepget = $addthis;
 		}
 		$editlink = "a href=\"$url\" class=\"sublink\"";
 
@@ -211,7 +211,7 @@ if (!empty($xrow))
 		$HTMLOUT .= tr("{$lang['details_hits']}", $row["hits"]);
 		$HTMLOUT .= tr("{$lang['details_snatched']}", $row["times_completed"] . "{$lang['details_times']}");
 
-		$keepget = "";
+		//$keepget = "";
 		$uprow = (isset($row["username"]) ? ("<a href='userdetails.php?id=" . $row["owner"] . "'><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>{$lang['details_unknown']}</i>");
 		if ($owned)
 			$uprow .= " $spacer<$editlink><b>{$lang['details_edit']}</b></a>";
