@@ -74,7 +74,7 @@ loggedinorreturn();
       <textarea name='text' rows='10' cols='60'></textarea></p>
       <p><input type='submit' class='btn' value='{$lang['comment_doit']}' /></p></form>";
 
-      $res = mysql_query("SELECT comments.id, text, comments.added, comments.editedby, comments.editedat, username, users.id as user, users.title, users.avatar, users.class, users.donor, users.warned FROM comments LEFT JOIN users ON comments.user = users.id WHERE torrent = $torrentid ORDER BY comments.id DESC LIMIT 5");
+      $res = mysql_query("SELECT comments.id, text, comments.added, comments.editedby, comments.editedat, username, users.id as user, users.title, users.avatar, users.av_w, users.av_h, users.class, users.donor, users.warned FROM comments LEFT JOIN users ON comments.user = users.id WHERE torrent = $torrentid ORDER BY comments.id DESC LIMIT 5");
 
       $allrows = array();
       while ($row = mysql_fetch_assoc($res))
