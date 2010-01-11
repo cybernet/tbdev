@@ -49,7 +49,7 @@ loggedinorreturn();
     if (isset($_GET["hit"])) 
     {
       mysql_query("UPDATE torrents SET views = views + 1 WHERE id = $id");
-      if ($_GET["tocomm"])
+      /* if ($_GET["tocomm"])
         header("Location: {$TBDEV['baseurl']}/details.php?id=$id&page=0#startcomments");
       elseif ($_GET["filelist"])
         header("Location: {$TBDEV['baseurl']}/details.php?id=$id&filelist=1#filelist");
@@ -57,7 +57,7 @@ loggedinorreturn();
         header("Location: {$TBDEV['baseurl']}/peerlist.php?id=$id#seeders");
       elseif ($_GET["todlers"])
         header("Location: {$TBDEV['baseurl']}/peerlist.php?id=$id#leechers");
-      else
+      else */
         header("Location: {$TBDEV['baseurl']}/details.php?id=$id");
       exit();
     }

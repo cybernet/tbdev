@@ -206,7 +206,7 @@ mysql_query("INSERT INTO readposts (userid, topicid) VALUES($userid, $topicid)")
 
           $by = "<a href='userdetails.php?id=$posterid'><b>$postername</b></a>" 
           . ($arr["donor"] == "yes" ? "<img src='{$TBDEV['pic_base_url']}star.gif' alt='{$lang['forum_topic_view_donor']}' />" : "") 
-          . ($arr["enabled"] == "no" ? "<img src='{$TBDEV['pic_base_url']}disabled.gif' alt='{$lang['forum_topic_view_disabled']}' style='margin-left: 2px' />" : ($arr["warned"] == "yes" ? "<a href='rules.php#warning' class='altlink'><img src='{$pic_base_url}warned.gif' alt='{$lang['forum_topic_view_warned']}' border='0' /></a>" : "")) . " ($title)";
+          . ($arr["enabled"] == "no" ? "<img src='{$TBDEV['pic_base_url']}disabled.gif' alt='{$lang['forum_topic_view_disabled']}' style='margin-left: 2px' />" : ($arr["warned"] == "yes" ? "<a href='rules.php#warning' class='altlink'><img src='{$TBDEV['pic_base_url']}warned.gif' alt='{$lang['forum_topic_view_warned']}' border='0' /></a>" : "")) . " ($title)";
         }
 
         if ($CURUSER["avatars"] == "yes")
