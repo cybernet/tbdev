@@ -28,8 +28,10 @@ dbconn();
 
 loggedinorreturn();
 
+    $lang = array_merge( load_language('global'), load_language('takeprofedit') );
+    
     if (!mkglobal("email:chpassword:passagain:chmailpass"))
-      bark("missing form data");
+      bark($lang['takeprofedit_no_data']);
 
     // $set = array();
 
@@ -39,9 +41,9 @@ loggedinorreturn();
     if ($chpassword != "") 
     {
       if (strlen($chpassword) > 40)
-        bark("Sorry, password is too long (max is 40 chars)");
+        bark($lang['takeprofedit_pass_long']);
       if ($chpassword != $passagain)
-        bark("The passwords didn't match. Try again.");
+        bark($lang['takeprofedit_pass_not_match']);
       
       $secret = mksecret();
 
@@ -52,12 +54,13 @@ loggedinorreturn();
       logincookie($CURUSER['id'], $passhash);
     }
 
-    if ($email != $CURUSER["email"]) {
+    if ($email != $CURUSER["email"]) 
+    {
       if (!validemail($email))
-        bark("That doesn't look like a valid email address.");
+        bark($lang['takeprofedit_not_valid_email']);
       $r = mysql_query("SELECT id FROM users WHERE email=" . sqlesc($email)) or sqlerr();
-      if ( mysql_num_rows($r) > 0 || ($CURUSER["passhash"] != make_passhash( $CURUSER['secret'], md5($chpassword) ) ) )
-        bark("Could not change email, address already taken or password mismatch.");
+      if ( mysql_num_rows($r) > 0 || ($CURUSER["passhash"] != make_passhash( $CURUSER['secret'], md5($chmailpass) ) ) )
+        bark($lang['takeprofedit_address_taken']);
       $changedemail = 1;
     }
 
@@ -96,10 +99,10 @@ loggedinorreturn();
         $img_size = @GetImageSize( $avatar );
 
         if($img_size == FALSE || !in_array($img_size['mime'], $TBDEV['allowed_ext']))
-          stderr('USER ERROR', 'Not an image or unsupported image!');
+          stderr($lang['takeprofedit_user_error'], $lang['takeprofedit_image_error']);
 
         if($img_size[0] < 5 || $img_size[1] < 5)
-          stderr('USER ERROR', 'Image is too small');
+          stderr($lang['takeprofedit_user_error'], $lang['takeprofedit_small_image']);
       
         if ( ( $img_size[0] > $TBDEV['av_img_width'] ) OR ( $img_size[1] > $TBDEV['av_img_height'] ) )
         { 
@@ -169,26 +172,15 @@ loggedinorreturn();
       $hash = md5($sec . $email . $sec);
       $obemail = urlencode($email);
       $updateset[] = "editsecret = " . sqlesc($sec);
-      $thishost = $_SERVER["HTTP_HOST"];
-      $thisdomain = preg_replace('/^www\./is', "", $thishost);
+      //$thishost = $_SERVER["HTTP_HOST"];
+      //$thisdomain = preg_replace('/^www\./is', "", $thishost);
       
-      $body = <<<EOD
-You have requested that your user profile (username {$CURUSER["username"]})
-on $thisdomain should be updated with this email address ($email) as
-user contact.
-
-If you did not do this, please ignore this email. The person who entered your
-email address had the IP address {$_SERVER["REMOTE_ADDR"]}. Please do not reply.
-
-To complete the update of your user profile, please follow this link:
-
-{$TBDEV['baseurl']}/confirmemail.php?uid={$CURUSER["id"]}&key=$hash&email=$obemail
-
-Your new email address will appear in your profile after you do this. Otherwise
-your profile will remain unchanged.
-EOD;
-
-      mail($email, "$thisdomain profile change confirmation", $body, "From: {$TBDEV['site_email']}");
+      $body = str_replace(array('<#USERNAME#>', '<#SITENAME#>', '<#USEREMAIL#>', '<#IP_ADDRESS#>', '<#CHANGE_LINK#>'),
+                        array($CURUSER['username'], $TBDEV['site_name'], $email, $_SERVER['REMOTE_ADDR'], "{$TBDEV['baseurl']}/confirmemail.php?uid={$CURUSER['id']}&key=$hash&email=$obemail"),
+                        $lang['takeprofedit_email_body']);
+      
+      
+      mail($email, "$thisdomain {$lang['takeprofedit_confirm']}", $body, "From: {$TBDEV['site_email']}");
 
       $urladd .= "&mailsent=1";
     }

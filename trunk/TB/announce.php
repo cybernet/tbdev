@@ -15,7 +15,7 @@
 |   $Author$
 |   $URL$
 +------------------------------------------------
-*/
+*/error_reporting(0);
 ////////////////// GLOBAL VARIABLES ////////////////////////////	
 $TBDEV['baseurl'] = 'http://localhost/TB_ALPHA/';
 $TBDEV['announce_interval'] = 60 * 30;

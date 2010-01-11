@@ -27,7 +27,7 @@ dbconn(false);
 loggedinorreturn();
 
     $lang = array_merge( load_language('global'), load_language('mytorrents') );
-    
+    $lang = array_merge( $lang, load_language( 'torrenttable_functions' ));
     $HTMLOUT = '';
 
     $where = "WHERE owner = " . $CURUSER["id"] . " AND banned != 'yes'";
