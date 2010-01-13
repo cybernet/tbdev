@@ -73,8 +73,8 @@ require_once "include/user_functions.php";
     mysql_query($query) or sqlerr(__FILE__, __LINE__);
     $n = mysql_affected_rows();
 
-    $comment = $_POST['comment'];
-    $snapshot = $_POST['snap'];
+    $comment = isset($_POST['comment']) ? $_POST['comment'] : '';
+    $snapshot = isset($_POST['snap']) ? $_POST['snap'] : '';
 
     // add a custom text or stats snapshot to comments in profile
     if ($comment || $snapshot)
