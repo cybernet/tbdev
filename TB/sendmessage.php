@@ -154,7 +154,7 @@ $mm_template[3] = array( $lang['sendmessage_mm_template3_sub'], $lang['sendmessa
           die;
         $res = mysql_query("SELECT username FROM users WHERE id={$msga['sender']}") or sqlerr();
         $usra = mysql_fetch_assoc($res);
-        $body .= sprintf( $lang['sendmessage_user_wrote'], $usra['username'], $msga['msg'] );
+        $body = sprintf( $lang['sendmessage_user_wrote'], $usra['username'], $msga['msg'] );
         $subject = "{$lang['sendmessage_re']}" . htmlspecialchars($msga['subject']);
       }
 

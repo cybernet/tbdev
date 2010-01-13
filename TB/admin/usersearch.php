@@ -847,10 +847,10 @@ if (count($_POST) > 0 );//&& isset($_POST['n']))
       $pul = $array['pul'];
       $pdl = $array['pdl'];
       if ($pdl > 0)
-      	$partial = ratios($pul,$pdl)." (".mksizemb($pul)."/".mksizemb($pdl).")";
+      	$partial = ratios($pul,$pdl)." (".mksize($pul)."/".mksize($pdl).")";
       else
       	if ($pul > 0)
-      		$partial = "Inf. ".mksizemb($pul)."/".mksizemb($pdl).")";
+      		$partial = "Inf. ".mksize($pul)."/".mksize($pdl).")";
       	else
       		$partial = "---";
 

@@ -33,7 +33,8 @@ $lang = array(
 'takemessage_comment' => "profile comment",
 'takemessage_s_were' => "s were",
 'takemessage_was' => "was",
-'takemessage_updated' => "updated!"
+'takemessage_updated' => "updated!",
+'takemessage_sent' => " successfully sent!"
 );
 
 ?>

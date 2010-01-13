@@ -88,7 +88,7 @@ function bark($msg) {
 
     mysql_query("UPDATE torrents SET " . join(",", $updateset) . " WHERE id = $id");
 
-    write_log($lang['takedit_log'], $id, $name, $CURUSER['username']);
+    write_log(sprintf($lang['takedit_log'], $id, $name, $CURUSER['username']));
     
     $returnto = "{$TBDEV['baseurl']}/details.php?id=$id&amp;edited=1";
     
