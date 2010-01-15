@@ -358,7 +358,7 @@ function takedeleteForum() {
         @mysql_query("DELETE FROM forums WHERE id=$id");
       
       (mysql_affected_rows() > 0) ? 
-    stderr("{$lang['stderr_success']}", "{$lang['text_forumdeleted']}") : stderr("{$lang['stderr_error']}", "{$lang['text_nowheretomove']}");
+    stderr("{$lang['stderr_success']}", "{$lang['text_forumdeleted']} <a href='admin.php?action=forummanage'>{$lang['text_deleted_text']}</a>" ) : stderr("{$lang['stderr_error']}", "{$lang['text_nowheretomove']}");
     }
     else
     {
