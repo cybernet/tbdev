@@ -428,7 +428,7 @@ CREATE TABLE `users` (
   `username` varchar(40) COLLATE utf8_unicode_ci NOT NULL,
   `passhash` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `secret` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
-  `passkey` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `passkey` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `email` varchar(80) COLLATE utf8_unicode_ci NOT NULL,
   `status` enum('pending','confirmed') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'pending',
   `added` int(11) NOT NULL,
