@@ -568,7 +568,7 @@ function show_categories() {
    
     if( false == mysql_num_rows($query) ) 
     {
-      $htmlout = '<h1>Ooops!!</h1>';
+      $htmlout .= "<tr><td colspan='7'><h1>No categories defined.</h1></td></tr>";
     } 
     else 
     {
