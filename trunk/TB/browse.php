@@ -224,9 +224,9 @@ loggedinorreturn();
 
 
     $i = 0;
+    $catsperrow = 7;
     foreach ($cats as $cat)
     {
-      $catsperrow = 7;
       $HTMLOUT .= ($i && $i % $catsperrow == 0) ? "</tr><tr>" : "";
       $HTMLOUT .= "<td class='bottom' style='padding-bottom: 2px;padding-left: 7px;align:left;border:1px solid;'>
       <input name='c".$cat['id']."' type=\"checkbox\" " . (in_array($cat['id'],$wherecatina) ? "checked='checked' " : "") . "value='1' /><a class='catlink' href='browse.php?cat={$cat['id']}'>" . htmlspecialchars($cat['name']) . "</a></td>\n";
