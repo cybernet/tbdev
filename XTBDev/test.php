@@ -1,1 +1,0 @@
-<? print($_SERVER["HTTP_HOST"]); ?>
