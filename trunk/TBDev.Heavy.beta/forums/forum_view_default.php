@@ -35,32 +35,53 @@
 
             if ($TBDEV['forums_online'] == 0)
             $HTMLOUT .= stdmsg('Warning', 'Forums are currently in maintainance mode');
-            $HTMLOUT .= begin_main_frame();
+            //$HTMLOUT .= begin_main_frame();
 
-           $HTMLOUT .="<h1 align='center'><b>{$TBDEV['site_name']} - Forum</b></h1>
-	<br />
-	<table border='1' cellspacing='0' cellpadding='5' width='{$forum_width}'>";
+  $fnav = "<div class='fnav'>{$lang['forums_title']}</div>\n";
+  
+  $buttons = "<div style='text-align:right;margin:10px 0px 10px 0px;'>
+  <span class='fbtn'><a href='forums.php?action=search'>{$lang['forums_search']}</a></span>
+  &nbsp;<span class='fbtn'><a href='forums.php?action=viewunread'>{$lang['forums_view_unread']}</a></span>
+  &nbsp;<span class='fbtn'><a href='forums.php?action=catchup'>{$lang['forums_catchup']}</a></span>
+  </div>";
+  
+  $HTMLOUT .="<div class='tb_table_outer_wrap'>{$fnav}$buttons";
+  
 	$ovf_res = mysql_query("SELECT id, name, minclassview FROM forum_parents ORDER BY sort ASC") or sqlerr(__FILE__, __LINE__);
+	
 	while ($ovf_arr = mysql_fetch_assoc($ovf_res))
-	{
-	if ($CURUSER['class'] < $ovf_arr["minclassview"])
-	continue;
-  $ovfid = (int)$ovf_arr["id"];
-  $ovfname = $ovf_arr["name"];
-	$HTMLOUT .="<tr>
-      <td align='left' class='colhead' width='100%'><a href='".$_SERVER['PHP_SELF']."?action=forumview&amp;forid=".$ovfid."'>
-      <b>".htmlspecialchars($ovfname)."</b></a></td>
-			<td align='right' class='colhead'><b>Topics</b></td>
-			<td align='right' class='colhead'><b>Posts</b></td>
-			<td align='left' class='colhead'><b>Last post</b></td>
-		</tr>";
+  {
+    if ($CURUSER['class'] < $ovf_arr["minclassview"])
+    continue;
     
+    $ovfid = (int)$ovf_arr["id"];
+    $ovfname = $ovf_arr["name"];
+    $HTMLOUT .="
+    <div class='tb_table_inner_wrap'>
+    <span style='color:#ffffff;'><a href='{$_SERVER['PHP_SELF']}?action=forumview&amp;forid=$ovfid'>
+    ".htmlspecialchars($ovfname)."</a></span>
+    </div>
+    
+    <table class='tb_table'>\n
+    <tr class='header'>
+    <th class='col_c_icon'>&nbsp;</th>
+    <th class='col_c_forum left'>{$lang['forums_forum_heading']}</th>
+    <th class='col_c_stats right'>{$lang['forums_topic_heading']}</th>
+    <th class='col_c_stats right'>{$lang['forums_posts_heading']}</th>
+    <th class='col_c_post left'>{$lang['forums_lastpost_heading']}</th>
+    </tr>\n";
+      
     $HTMLOUT .= show_forums($ovfid, false, $forums, $f_mod, true);
-    }
-    $HTMLOUT .= end_table();
+    
+    $HTMLOUT .="</table><br />";
+      
+  }
+    
+  $HTMLOUT .= "$buttons</div><br />\n";  
+    //$HTMLOUT .= end_table();
 
-            if ($use_forum_stats_mod)
-                $HTMLOUT .= forum_stats();
+  if ($use_forum_stats_mod)
+      $HTMLOUT .= forum_stats();
 
 	$HTMLOUT .="<p align='center'>
 	<a href='". $_SERVER['PHP_SELF']."?action=search'><b>Search Forums</b></a> | 
@@ -68,7 +89,8 @@
 	<a href='". $_SERVER['PHP_SELF']."?action=getdaily'><b>Todays Posts (Last 24 h.)</b></a> | 
 	<a href='". $_SERVER['PHP_SELF']."?action=catchup'><b>Mark all as read</b></a>";
 	$HTMLOUT .="</p>";
-	$HTMLOUT .= end_main_frame(); 
+	 
+	
 print stdhead("Forum") . $HTMLOUT . stdfoot();
 
 
