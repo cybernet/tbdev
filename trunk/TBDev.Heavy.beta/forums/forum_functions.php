@@ -44,6 +44,8 @@ function catch_up($id = 0)
     mysql_free_result($res);
 }
 
+
+
   //-------- Returns the minimum read/write class levels of a forum
 function get_forum_access_levels($forumid)
 {
@@ -56,6 +58,22 @@ function get_forum_access_levels($forumid)
 
     return array("read" => $arr["minclassread"], "write" => $arr["minclasswrite"], "create" => $arr["minclasscreate"]);
 }
+
+
+
+// -------- Returns the forum ID of a topic, or false on error
+function get_topic_forum($topicid)
+{
+    $res = mysql_query("SELECT forumid FROM topics WHERE id = " . sqlesc($topicid)) or sqlerr(__FILE__, __LINE__);
+
+    if (mysql_num_rows($res) != 1)
+        return false;
+
+    $arr = mysql_fetch_assoc($res);
+
+    return (int)$arr['forumid'];
+}
+
 
 
 // -------- Returns the ID of the last post of a forum
@@ -277,7 +295,7 @@ function show_forums($forid, $subforums = false, $sfa = "", $mods_array = "", $s
 			<td align='left'>
 				<table border='0' cellspacing='0' cellpadding='0' style='border:none;'>
 					<tr>
-						<td class='embedded' style='padding-right: 5px'><img src='".$TBDEV['pic_base_url'].$img.".gif' alt='' /></td>
+						<td class='embedded' style='padding-right: 5px'><img src='".$TBDEV['forum_pic_url'].$img.".gif' alt='' /></td>
 						<td class='embedded'>
 							<a href='".$_SERVER['PHP_SELF']."?action=viewforum&amp;forumid=".$forumid."'><b>". htmlspecialchars($forums_arr["name"])."</b></a>";
              if ($CURUSER['class'] >= UC_ADMINISTRATOR || isMod($forumid)) {
