@@ -120,6 +120,7 @@ $HTMLOUT='';
 /**
 * Change the pics to the ones you use
 */
+$TBDEV['forum_pic_url'] = "./pic/forumicons/";
 $forum_pics = array('default_avatar' => 'default_avatar.gif', 'arrow_up' => 'p_up.gif', 'online_btn' => 'user_online.gif',
     'offline_btn' => 'user_offline.gif', 'pm_btn' => 'pm.gif', 'p_report_btn' => 'report.gif',
     'p_quote_btn' => 'p_quote.gif', 'p_delete_btn' => 'p_delete.gif', 'p_edit_btn' => 'p_edit.gif');
@@ -235,6 +236,7 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       break;
           
     case 'viewforum':
+      require_once "forums/forum_post_functions.php";
       require_once "forums/forum_functions.php";
       require_once "forums/forum_view.php";
       exit();
@@ -260,7 +262,14 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       require_once "forums/forum_parent_view.php";
       exit();
       break;
-    
+      
+    case 'catchup':
+      require_once "forums/forum_functions.php";
+      catch_up();
+      header('Location: ' . $_SERVER['PHP_SELF']);
+      exit();
+      break;
+      
     default:
       require_once "forums/forum_functions.php";
       require_once "forums/forum_view_default.php";
