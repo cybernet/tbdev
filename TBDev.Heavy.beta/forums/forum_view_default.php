@@ -1,14 +1,10 @@
 <?php
 
 // -------- Default action: View forums
-            if (isset($_GET["catchup"])) {
-                catch_up();
-
-                header('Location: ' . $_SERVER['PHP_SELF']);
-                exit();
-            }
+            
             $f_mod='';
             mysql_query("UPDATE users SET forum_access = '" . time() . "' WHERE id={$CURUSER['id']}") or sqlerr(__FILE__, __LINE__);
+            
             $sub_forums = mysql_query(" SELECT f.id, f2.name, f2.id AS subid,f2.postcount,f2.topiccount, p.added, p.anonymous, p.userid, p.id AS pid, u.username, t.subject,t.id as tid,r.lastpostread,t.lastpost
 									FROM forums AS f
 									LEFT JOIN forums AS f2 ON f2.place = f.id AND f2.minclassread<=" . sqlesc($CURUSER["class"]) . "
@@ -53,10 +49,10 @@
   $ovfname = $ovf_arr["name"];
 	$HTMLOUT .="<tr>
       <td align='left' class='colhead' width='100%'><a href='".$_SERVER['PHP_SELF']."?action=forumview&amp;forid=".$ovfid."'>
-      <b><font color='white'>".htmlspecialchars($ovfname)."</font></b></a></td>
-			<td align='right' class='colhead'><font color='white'><b>Topics</b></font></td>
-			<td align='right' class='colhead'><font color='white'><b>Posts</b></font></td>
-			<td align='left' class='colhead'><font color='white'><b>Last post</b></font></td>
+      <b>".htmlspecialchars($ovfname)."</b></a></td>
+			<td align='right' class='colhead'><b>Topics</b></td>
+			<td align='right' class='colhead'><b>Posts</b></td>
+			<td align='left' class='colhead'><b>Last post</b></td>
 		</tr>";
     
     $HTMLOUT .= show_forums($ovfid, false, $forums, $f_mod, true);
@@ -70,7 +66,7 @@
 	<a href='". $_SERVER['PHP_SELF']."?action=search'><b>Search Forums</b></a> | 
 	<a href='". $_SERVER['PHP_SELF']."?action=viewunread'><b>New Posts</b></a> | 
 	<a href='". $_SERVER['PHP_SELF']."?action=getdaily'><b>Todays Posts (Last 24 h.)</b></a> | 
-	<a href='". $_SERVER['PHP_SELF']."?catchup'><b>Mark all as read</b></a>";
+	<a href='". $_SERVER['PHP_SELF']."?action=catchup'><b>Mark all as read</b></a>";
 	$HTMLOUT .="</p>";
 	$HTMLOUT .= end_main_frame(); 
 print stdhead("Forum") . $HTMLOUT . stdfoot();
