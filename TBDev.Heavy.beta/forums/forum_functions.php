@@ -291,37 +291,33 @@ function show_forums($forid, $subforums = false, $sfa = "", $mods_array = "", $s
             $posts = $forums_arr["postcount"];
         }
 
-      $htmlout.="<tr>
-			<td align='left'>
-				<table border='0' cellspacing='0' cellpadding='0' style='border:none;'>
-					<tr>
-						<td class='embedded' style='padding-right: 5px'><img src='".$TBDEV['forum_pic_url'].$img.".gif' alt='' /></td>
-						<td class='embedded'>
-							<a href='".$_SERVER['PHP_SELF']."?action=viewforum&amp;forumid=".$forumid."'><b>". htmlspecialchars($forums_arr["name"])."</b></a>";
-             if ($CURUSER['class'] >= UC_ADMINISTRATOR || isMod($forumid)) {
-           
-            $htmlout.="&nbsp;<font class='small'>[<a class='altlink' href='".$_SERVER['PHP_SELF']."?action=editforum&amp;forumid=".$forumid."'>Edit</a>][<a class='altlink' href='".$_SERVER['PHP_SELF']."?action=deleteforum&amp;forumid=".$forumid."'>Delete</a>]</font>";
-        }
+      $htmlout.="<tr class='row1'>
+			<td class='altrow'><img src='".$TBDEV['forum_pic_url'].$img.".gif' alt='' /></td>
+      <td class='noborder'><a href='".$_SERVER['PHP_SELF']."?action=viewforum&amp;forumid=".$forumid."'><b>". htmlspecialchars($forums_arr["name"])."</b></a>";
+      
+      if ($CURUSER['class'] >= UC_ADMINISTRATOR || isMod($forumid)) 
+      {
+        $htmlout.="&nbsp;<font class='small'>[<a class='altlink' href='".$_SERVER['PHP_SELF']."?action=editforum&amp;forumid=".$forumid."'>Edit</a>][<a class='altlink' href='".$_SERVER['PHP_SELF']."?action=deleteforum&amp;forumid=".$forumid."'>Delete</a>]</font>";
+      }
 
-        if (!empty($forums_arr["description"])) {
-
+      if (!empty($forums_arr["description"])) 
+      {
         $htmlout.="<br />". htmlspecialchars($forums_arr["description"]);
-        }
-        if ($subforums == false && !empty($sfa[$forumid]))
-            $htmlout.="<br/>" . subforums($sfa[$forumid]["topics"]);
-        if ($show_mods == true && isset($mods_array[$forumid]))
-            $htmlout.="<br/>" . showMods($mods_array[$forumid]);
+      }
+      if ($subforums == false && !empty($sfa[$forumid]))
+          $htmlout.="<br/>" . subforums($sfa[$forumid]["topics"]);
+      if ($show_mods == true && isset($mods_array[$forumid]))
+          $htmlout.="<br/>" . showMods($mods_array[$forumid]);
 
-        $htmlout.="</td>
-					</tr>
-				</table>
-			</td>
-			<td align='center'>". number_format($topics)."</td>
-			<td align='center'>". number_format($posts)."</td>
-			<td align='left' nowrap='nowrap'>".$lastpost."</td>
-		</tr>";
+      $htmlout.="</td>
+      <td class='altrow stats'>". number_format($topics)."</td>
+      <td class='altrow stats'>". number_format($posts)."</td>
+      <td class='last_post noborder'>$lastpost</td>
+      </tr>";
     }
+    
 return $htmlout;
+
 }
 
 if (!function_exists('highlight')) {
