@@ -110,7 +110,7 @@
 			
 			if ($tpages > 1)
 			{
-				$topicpages = "&nbsp;(<img src='".$TBDEV['pic_base_url']."multipage.gif' alt='Multiple pages' title='Multiple pages' />";
+				$topicpages = "&nbsp;(<img src='".$TBDEV['forum_pic_url']."multipage.gif' alt='Multiple pages' title='Multiple pages' />";
 				$split = ($tpages > 10) ? true : false;
 				$flag = false;
 				
@@ -150,14 +150,14 @@
       $lpauthor = (is_valid_id($topic_arr['userid']) && !empty($topic_arr['username']) ? "<a href='{$TBDEV['baseurl']}/userdetails.php?id=$topic_userid'><b>".$topic_arr['username']."</b></a>" : "unknown[$topic_userid]");
 			$new = ($topic_arr["p_added"] > (time() - $TBDEV['readpost_expiry'])) ? ((int)$topic_arr['p_id'] > $topic_arr['lastpostread']) : 0;
 			$topicpic = ($topic_arr['locked'] == "yes" ? ($new ? "lockednew" : "locked") : ($new ? "unlockednew" : "unlocked"));
-			$post_icon = ($sticky ? "<img src=\"pic/sticky.gif\" alt=\"Sticky topic\" title=\"Sticky topic\"/>" : ($topic_arr["posticon"] > 0 ? "<img src=\"pic/post_icons/icon".$topic_arr["posticon"].".gif\" alt=\"post icon\" title=\"post icon\" />" : "&nbsp;"));
+			$post_icon = ($sticky ? "<img src='{$TBDEV['forum_pic_url']}sticky.gif' alt='Sticky topic' title='Sticky topic' />" : ($topic_arr["posticon"] > 0 ? "<img src='{$TBDEV['forum_pic_url']}post_icons/icon{$topic_arr["posticon"]}.gif' alt='post icon' title='post icon' />" : "&nbsp;"));
 
       $HTMLOUT .="<tr>
 				<td align='left' width='100%'>
 				<table border='0' cellspacing='0' cellpadding='0'>
 				<tr>
-				<td class='embedded' style='padding-right: 5px'><img src='".$TBDEV['pic_base_url'].$topicpic.".gif' alt='' /></td>
-				<td align='center' nowrap='nowrap' style='padding-right: 5px;border:none'>". ($pollim ? "<img src='{$TBDEV['pic_base_url']}poll.gif' alt='Topic Poll' title='Topic Poll' />&nbsp;" : '')."".$post_icon."</td>
+				<td class='embedded' style='padding-right: 5px'><img src='".$TBDEV['forum_pic_url'].$topicpic.".gif' alt='' /></td>
+				<td align='center' nowrap='nowrap' style='padding-right: 5px;border:none'>". ($pollim ? "<img src='{$TBDEV['forum_pic_url']}poll.gif' alt='Topic Poll' title='Topic Poll' />&nbsp;" : '')."".$post_icon."</td>
 				<td class='embedded' align='left'>". ($sticky ? 'Sticky:&nbsp;' : '')."<a href='".$_SERVER['PHP_SELF']."?action=viewtopic&amp;topicid=".$topicid."'>".htmlspecialchars($topic_arr['subject'])."</a>{$topicpages}</td>
 				</tr>
 				</table>
@@ -179,9 +179,9 @@
 
 	$HTMLOUT .="<table class='main' border='0' cellspacing='0' cellpadding='0' align='center'>
 	<tr align='center'>
-		<td class='embedded'><img src='".$TBDEV['pic_base_url']."unlockednew.gif' alt='New Unlocked' style='margin-right: 5px' /></td>
+		<td class='embedded'><img src='{$TBDEV['forum_pic_url']}unlockednew.gif' alt='New Unlocked' style='margin-right: 5px' /></td>
 		<td class='embedded'>New posts</td>
-		<td class='embedded'><img src='".$TBDEV['pic_base_url']."locked.gif' alt='Locked' style='margin-left: 10px; margin-right: 5px' /></td>
+		<td class='embedded'><img src='{$TBDEV['forum_pic_url']}locked.gif' alt='Locked' style='margin-left: 10px; margin-right: 5px' /></td>
 		<td class='embedded'>Locked topic</td>
 	</tr>
 	</table>";
@@ -196,14 +196,14 @@
 	}
 	$HTMLOUT .="<table border='0' class='main' cellspacing='0' cellpadding='0' align='center'>
 	<tr>
-	<td class='embedded'><form method='get' action='".$_SERVER['PHP_SELF']."'>
+	<td class='embedded'><form method='get' action='{$_SERVER['PHP_SELF']}'>
 	<input type='hidden' name='action' value='viewunread' />
 	<input type='submit' value='View unread' class='gobutton' /></form></td>";
 
 	if ($maypost)
 	{
 	$HTMLOUT .="<td class='embedded'>
-	<form method='get' action='".$_SERVER['PHP_SELF']."'>
+	<form method='get' action='{$_SERVER['PHP_SELF']}'>
 	<input type='hidden' name='action' value='newtopic' />
 	<input type='hidden' name='forumid' value='".$forumid."' />
 	<input type='submit' value='New topic' class='gobutton' style='margin-left: 10px' /></form></td>";

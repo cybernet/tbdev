@@ -284,8 +284,8 @@ function confirm_att(id)
         }
         foreach($mood as $key => $value)
         $change[$value['id']] = array('id' => $value['id'], 'name' => $value['name'], 'image' => $value['image']);
-        $mooduname = $change[$arr['mood']]['name'];
-        $moodupic = $change[$arr['mood']]['image'];
+        $mooduname = isset($change[$arr['mood']]['name']) ? $change[$arr['mood']]['name'] : '';
+        $moodupic = isset($change[$arr['mood']]['image']) ? $change[$arr['mood']]['image'] : '';
         $title = $arr["title"];
         //$signature = ($CURUSER['signatures'] == 'yes' ? format_comment($arr['signature']) : '');
         $signature = ($CURUSER['signature'] !== NULL ? format_comment($arr['signature']) : '');
