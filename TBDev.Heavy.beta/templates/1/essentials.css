@@ -98,6 +98,7 @@ p.sub { margin-bottom: 4pt; }
 /* - Table and TD information - */
 
 table {
+    border-collapse: collapse;           
     border: none;
     margin:0 auto;
 }
