@@ -615,7 +615,7 @@ p#statusred { font-size: 1.2em; background-color: #fff; color: #a00; }
 
 /* - Table Styles - */
 
-table.tb_table { line-height: 120%; border-bottom: 4px solid #d5dde5; }
+table.tb_table { border-collapse: collapse; line-height: 120%; border-bottom: 4px solid #d5dde5; }
 table.tb_table a { text-decoration: none; }
 table.tb_table a:hover, body table.tb_table th a {  text-decoration: underline; }
 table.tb_table caption span.desc {  font-size: 0.6em; }
