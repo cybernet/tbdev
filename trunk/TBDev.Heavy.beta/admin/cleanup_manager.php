@@ -68,9 +68,9 @@ function cleanup_show_main()
 
     $htmlout = "
                      <div class='cblock'>
-                         <div class='cblock-header'>Current Cleanup Tasks<div style='float:right;'><span class='btn'><a href='./admin.php?action=cleanup_manager&amp;mode=new'>Add New</a></span></div></div>
+                         <div class='cblock-header'>Current Cleanup Tasks<div style='float:right; padding:3px;'><span class='btn'><a href='./admin.php?action=cleanup_manager&amp;mode=new'>Add New</a></span></div></div>
                          <div class='cblock-content'>
-                             <table style='background:#cecece; width:80%;' cellpadding='5px'>
+                             <table style='width:80%;' cellpadding='5'>
                                    <tr>
                                       <td class='colhead'>Cleanup Title&nbsp;&amp;&nbsp;Description</td>
                                       <td class='colhead' style='width:150px;'>Next Clean Time</td>
@@ -96,9 +96,9 @@ function cleanup_show_main()
 
 			$row['_clean_time'] = gmdate( 'j M Y - G:i', $row['clean_time'] );
 
-			$row['_class']    = $row['clean_on'] != 1 ? " style='color:red'" : '';
+			$row['_class']    = $row['clean_on'] != 1 ? " style='color:#000'" : '';
 			$row['_title']    = $row['clean_on'] != 1 ? " (Locked)" : '';
-			$row['_clean_time'] = $row['clean_on'] != 1 ? "<span style='color:red'>{$row['_clean_time']}</span>" : $row['_clean_time'];
+			$row['_clean_time'] = $row['clean_on'] != 1 ? "<span style='color:#000'>{$row['_clean_time']}</span>" : $row['_clean_time'];
 
 			$htmlout .= "          <tr>
                                       <td{$row['_class']}><strong>{$row['clean_title']}{$row['_title']}</strong><br />{$row['clean_desc']}</td>
