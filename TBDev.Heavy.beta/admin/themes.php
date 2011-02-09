@@ -13,13 +13,6 @@ require_once "include/user_functions.php";
 
         $HTML="";
 
-        if(!function_exists("html")){
-                function html($VAL){
-                        //return htmlentities($VAL, ENT_QUOTES);
-                        return htmlspecialchars($VAL);
-                }
-        }
-
         if(isset($_GET['act'])){
                 $ACT=$_GET['act'];
                 if(!is_valid_id($ACT))stderr("{$lang['themes_error']}", "{$lang['themes_inv_act']}");
@@ -41,7 +34,7 @@ require_once "include/user_functions.php";
                                         <tr><td class='rowhead'>{$lang['themes_name']}</td><td><input type='text' value='{$TEM['name']}' name='title' /></td></tr>
                                         <tr>
                                            <td class='rowhead'>{$lang['themes_is_folder']}</td>
-                                           <td><b>".(file_exists("templates/".$TEM['id']."/template.php")?"{$lang['themes_file_exists']}":"{$lang['themes_not_exists']}")."</b></td>
+                                           <td><b>".(file_exists(ROOT_PATH."/templates/{$TEM['uri']}/template.php")?"{$lang['themes_file_exists']}":"{$lang['themes_not_exists']}")."</b></td>
                                         </tr>
                                         <tr><td class='colhead' colspan='2' align='center'><input type='submit' value='{$lang['themes_save']}' /></td></tr>
                                   </table>
@@ -59,7 +52,7 @@ require_once "include/user_functions.php";
                 if($ACT==3){//--ADD NEW
                         $IDS=mysql_query("SELECT id FROM stylesheets");
                         while($ID=mysql_fetch_array($IDS)){
-                                if(file_exists("templates/".$ID['id']."/template.php"))$TAKEN[]="<font color='green'>$ID[id]</font>";
+                                if(file_exists(ROOT_PATH."/templates/{$ID['uril']}/template.php"))$TAKEN[]="<font color='green'>$ID[id]</font>";
                                 else $TAKEN[]="<font color='red'>$ID[id]</font>";
                         }
                         $HTML.="
@@ -113,8 +106,8 @@ require_once "include/user_functions.php";
                 if($ACT==6){//--ADD NEW SAVE
                         if(!isset($_POST['id']))stderr("{$lang['themes_error']}", "{$lang['themes_inv_id']}");
                         if(!isset($_POST['name']))stderr("{$lang['themes_error']}", "{$lang['themes_inv_name']}");
-                        if(!file_exists("templates/".$_POST['id']."/template.php"))stderr("{$lang['themes_nofile']}",
-                        "{$lang['themes_inv_file']}<a href='{$TBDEV['baseurl']}/admin.php?action=themes&amp;act=7&amp;amp;id=$_POST[id]&amp;name=$_POST[name]'>{$lang['themes_file_exists']}</a>/
+                        if(!file_exists(ROOT_PATH."/templates/".intval($_POST['id'])."/template.php"))stderr("{$lang['themes_nofile']}",
+                        "{$lang['themes_inv_file']}<a href='{$TBDEV['baseurl']}/admin.php?action=themes&amp;act=7&amp;amp;id=".intval($_POST['id'])."&amp;name={$_POST['name']}'>{$lang['themes_file_exists']}</a>/
                         <a href='{$TBDEV['baseurl']}/admin.php?action=themes'>{$lang['themes_not_exists']}</a>");
                         @mysql_query("INSERT INTO stylesheets(id, uri, name)VALUES(".sqlesc($_POST['id']).", '', ".sqlesc($_POST['name']).")");
                         header("Location: {$TBDEV['baseurl']}/admin.php?action=themes&msg=3");
@@ -154,8 +147,8 @@ require_once "include/user_functions.php";
                         $HTML.="
                                    <tr>
                                       <td class='rowhead'>$TE[id]</td>
-                                      <td>".html($TE['name'])."</td>
-                                      <td><b>".(file_exists("templates/".$TE['id']."/template.php")?"{$lang['themes_file_exists']}":"{$lang['themes_not_exists']}")."</b></td>
+                                      <td>".htmlsafechars($TE['name'])."</td>
+                                      <td><b>".(file_exists(ROOT_PATH."/templates/{$TE['uri']}/template.php")?"{$lang['themes_file_exists']}":"{$lang['themes_not_exists']}")."</b></td>
                                       <td>
                                          <a href='{$TBDEV['baseurl']}/admin.php?action=themes&amp;act=1&amp;id=$TE[id]'>[{$lang['themes_edit']}]</a>
                                          <a href='{$TBDEV['baseurl']}/admin.php?action=themes&amp;act=2&amp;id=$TE[id]'>[{$lang['themes_delete']}]</a>
