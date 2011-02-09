@@ -245,9 +245,9 @@
         
         $forumposts = (!empty($postername) ? ($arr['posts_count'] != 0 ? $arr['posts_count'] : 'N/A') : 'N/A');
         
-        $on_offline = "<img src='".$TBDEV['pic_base_url'].$forum_pics[($last_access > (time()-360) || $posterid == $CURUSER['id'] ? 'on' : 'off').'line_btn']."' border='0' alt='on/off' />";
+        $on_offline = "<img src='{$TBDEV['forum_pic_url']}".($last_access > (time()-360) || $posterid == $CURUSER['id'] ? 'on' : 'off')."line.gif' border='0' alt='on/off' />";
         
-        $pm = "<a href='{$TBDEV['baseurl']}/sendmessage.php?receiver={$posterid}'><img src='{$TBDEV['pic_base_url']}/pm.gif' border='0' alt='Pm ".htmlsafechars($postername)."' /></a>";
+        $pm = "<a href='{$TBDEV['baseurl']}/sendmessage.php?receiver={$posterid}'><img src='{$TBDEV['forum_pic_url']}/pm.gif' border='0' alt='Pm ".htmlsafechars($postername)."' /></a>";
         
         
         /////// this section is post head bar /////////
