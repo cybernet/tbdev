@@ -123,16 +123,17 @@ function bbcode2textarea( $submit='', $body='', $title='' ) {
   global $TBDEV;
   
   $htmlout = '';
+  $body = htmlsafechars($body);
   $emot_dir = $TBDEV['pic_base_url'].'smilies/';
-  $htmlout = "
-    <table cellspacing='0' cellpadding='0'>";
+  $htmlout = "<table cellspacing='0' cellpadding='0'>";
 
   if( $title != '' )
   {
+    $title = htmlsafechars($title);
     $htmlout .= "
           <tr>
              <td align='center'>
-                <input style='width:615px;' type='text' name='title' size='50' onfocus=\"if(this.value == '{$title}') { this.value = ''; }\" value='{$title}' />
+                <input style='width:615px;' type='text' name='subject' size='50' onfocus=\"if(this.value == '{$title}') { this.value = ''; }\" value='{$title}' />
              </td>
           </tr>";
   }
