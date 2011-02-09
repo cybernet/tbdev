@@ -239,17 +239,17 @@ function get_template() {
         
   if(isset($CURUSER))
   {
-    if(file_exists("{$TBDEV['baseurl']}/templates/{$CURUSER['stylesheet']}/template.php"))
+    if(file_exists(ROOT_PATH."/templates/{$CURUSER['stylesheet']}/template.php"))
     {
-      require_once("{$TBDEV['baseurl']}/templates/{$CURUSER['stylesheet']}/template.php");
+      require_once(ROOT_PATH."/templates/{$CURUSER['stylesheet']}/template.php");
     }
     else
     {
       if(isset($TBDEV))
       {
-        if(file_exists("templates/{$TBDEV['stylesheet']}/template.php"))
+        if(file_exists(ROOT_PATH."/templates/{$TBDEV['stylesheet']}/template.php"))
         {
-          require_once("templates/{$TBDEV['stylesheet']}/template.php");
+          require_once(ROOT_PATH."/templates/{$TBDEV['stylesheet']}/template.php");
         }
         else
         {
@@ -258,9 +258,9 @@ function get_template() {
       }
       else
       {
-        if(file_exists("{$TBDEV['baseurl']}/templates/{$TBDEV['stylesheet']}/template.php"))
+        if(file_exists(ROOT_PATH."/templates/{$TBDEV['stylesheet']}/template.php"))
         {
-          require_once("{$TBDEV['baseurl']}/templates/{$TBDEV['stylesheet']}/template.php");
+          require_once(ROOT_PATH."/templates/{$TBDEV['stylesheet']}/template.php");
         }
         else
         {
@@ -271,9 +271,9 @@ function get_template() {
   }
   else
   {
-    if(file_exists("templates/{$TBDEV['stylesheet']}/template.php"))
+    if(file_exists(ROOT_PATH."/templates/{$TBDEV['stylesheet']}/template.php"))
     {
-      require_once("templates/{$TBDEV['stylesheet']}/template.php");
+      require_once(ROOT_PATH."/templates/{$TBDEV['stylesheet']}/template.php");
     }
     else
     {
