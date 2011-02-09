@@ -34,7 +34,9 @@
 
   if ($TBDEV['forums_online'] == 0 AND $CURUSER['class'] < UC_MODERATOR)
   stderr('Information', 'The forums are currently offline for maintainance work');
-
+  
+  $TBDEV['last_10_posts'] = false; // shows last ten posts on post screens true=on, false=off
+  
 //if (function_exists('parked'))
 //parked();
 /**
@@ -118,12 +120,10 @@ $use_forum_stats_mod = true;
 $HTMLOUT='';
 
 /**
-* Change the pics to the ones you use
+* Define image url
 */
-$TBDEV['forum_pic_url'] = "./pic/forumicons/";
-$forum_pics = array('default_avatar' => 'default_avatar.gif', 'arrow_up' => 'p_up.gif', 'online_btn' => 'user_online.gif',
-    'offline_btn' => 'user_offline.gif', 'pm_btn' => 'pm.gif', 'p_report_btn' => 'report.gif',
-    'p_quote_btn' => 'p_quote.gif', 'p_delete_btn' => 'p_delete.gif', 'p_edit_btn' => 'p_edit.gif');
+$TBDEV['forum_pic_url'] = $CURUSER['stylesheet']? "{$TBDEV['baseurl']}/templates/{$CURUSER['stylesheet']}/images/forums/" :"{$TBDEV['baseurl']}/templates/{$TBDEV['stylesheet']}/images/forums/";
+
 /**
 * Configs End
 */
@@ -154,7 +154,6 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       break;
       
     case 'newtopic':
-    case 'preview':
       require_once "include/bbcode_functions.php";
       require_once "forums/forum_post_functions.php";
       require_once "forums/forum_new_topic.php";
@@ -188,6 +187,8 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       break;
       
     case 'quotepost':
+      require_once "include/bbcode_functions.php";
+      require_once "forums/forum_post_functions.php";
       require_once "forums/forum_quote_post.php";
       exit();
       break;
@@ -198,8 +199,9 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       require_once "forums/forum_reply.php";
       exit();
       break;
-          
+    
     case 'editpost':
+      require_once "forums/forum_post_functions.php";
       require_once "forums/forum_edit_post.php";
       exit();
       break;
