@@ -46,7 +46,7 @@
 
             $lastspace = true;
         } else {
-            $menu2 .= "<a href=" . $_SERVER['PHP_SELF'] . "?action=viewforum&amp;forumid=$forumid&amp;page=$i><b>$i</b></a>\n";
+            $menu2 .= "<a href='" . $_SERVER['PHP_SELF'] . "?action=viewforum&amp;forumid=$forumid&amp;page=$i'><b>$i</b></a>\n";
 
             $lastspace = false;
         }
@@ -55,9 +55,9 @@
             $menu2 .= "<b>|</b>";
     }
 
-    $menu1 .= ($page == 1 ? "<b>&lt;&lt;&nbsp;Prev</b>" : "<a href=" . $_SERVER['PHP_SELF'] . "?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page - 1) . "><b>&lt;&lt;&nbsp;Prev</b></a>");
+    $menu1 .= ($page == 1 ? "<b>&lt;&lt;&nbsp;Prev</b>" : "<a href='{$_SERVER['PHP_SELF']}?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page - 1) . "'><b>&lt;&lt;&nbsp;Prev</b></a>");
     $mlb = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-    $menu3 = ($last == $num ? "<b>Next&nbsp;&gt;&gt;</b></p>" : "<a href=" . $_SERVER['PHP_SELF'] . "?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page + 1) . "><b>Next&nbsp;&gt;&gt;</b></a></p>");
+    $menu3 = ($last == $num ? "<b>Next&nbsp;&gt;&gt;</b></p>" : "<a href='{$_SERVER['PHP_SELF']}?action=viewforum&amp;forumid=$forumid&amp;page=" . ($page + 1) . "'><b>Next&nbsp;&gt;&gt;</b></a></p>");
 
     $offset = $first - 1;
 
@@ -65,37 +65,53 @@
     // subforums
     $r_subforums = mysql_query("SELECT id FROM forums where place=" . $forumid);
     $subforums = mysql_num_rows($r_subforums);
-    $HTMLOUT .= begin_main_frame();
+    //$HTMLOUT .= begin_main_frame();
     if ($TBDEV['forums_online'] == 0)
     $HTMLOUT .= stdmsg('Warning', 'Forums are currently in maintainance mode');
+    
+    $fnav = "<div class='fnav'><a href='{$_SERVER['PHP_SELF']}'>{$lang['forums_title']}</a></div>\n";
+  
+    $buttons = "<div style='text-align:right;margin:10px 0px 10px 0px;'>
+    <span class='fbtn'><a href='forums.php?action=search'>{$lang['forums_search']}</a></span>
+    &nbsp;<span class='fbtn'><a href='forums.php?action=viewunread'>{$lang['forums_view_unread']}</a></span>
+    &nbsp;<span class='fbtn'><a href='forums.php?action=catchup'>{$lang['forums_catchup']}</a></span>
+    </div>";
+  
+    $HTMLOUT .="<div class='tb_table_outer_wrap'>{$fnav}$buttons
+    <div class='tb_table_inner_wrap'>
+      <span style='color:#ffffff;'>".htmlspecialchars($arr["forum_name"])." : Forums</span>
+      </div>";
+    
+    if ($subforums > 0) 
+    {
+      $HTMLOUT .="
+      <table class='tb_table'>
+      <tr class='header'>
+      <th class='col_c_icon'>&nbsp;</th>
+      <th class='col_c_forum left'>{$lang['forums_forum_heading']}</th>
+      <th class='col_c_stats right'>{$lang['forums_topic_heading']}</th>
+      <th class='col_c_stats right'>{$lang['forums_posts_heading']}</th>
+      <th class='col_c_post left'>{$lang['forums_lastpost_heading']}</th>
+      </tr>\n";
 
-    if ($subforums > 0) {
-	  $HTMLOUT .="<table border='1' cellspacing='0' cellpadding='5' width='{$forum_width}'>
-		<tr><td colspan='4' class='colhead' align='left'>".htmlspecialchars($arr["forum_name"])." : SubForums</td></tr>
-		<tr>
-    <td align='left'>Forums</td>
-    <td  align='right'>Topics</td>
-		<td  align='right'>Posts</td>
-		<td  align='left'>Last post</td>
-	</tr>";
-
-        $HTMLOUT .= show_forums($forumid, true);
-        $HTMLOUT .= end_table();
+      $HTMLOUT .= show_forums($forumid, true);
+      $HTMLOUT .= "</table>";
     }
 
-    if (mysql_num_rows($topics_res) > 0) {
-    $HTMLOUT .="<br /><table border='1' cellspacing='0' cellpadding='5' width='{$forum_width}'>
-		<tr>
-		<td colspan='7' class='colhead' align='left'>". htmlspecialchars($arr["forum_name"])." : Forums</td></tr>
-		<tr>
-			<td  align='left'>Topic</td>
-			<td >Replies</td>
-			<td >Views</td>
-			<td  align='left'>Author</td>
-			<td  align='left'>Last&nbsp;post</td>
-		</tr>";
+    if (mysql_num_rows($topics_res) > 0) 
+    {
+      $HTMLOUT .="<div class='header'>". htmlspecialchars($arr["forum_name"])." : Forums</div>
+      <table class='tb_table'>
+      <tr class='header'>
+      <th class='col_c_icon'>&nbsp;</th>
+      <th class='col_c_icon'>&nbsp;</th>
+      <th class='col_c_forum left'>{$lang['forums_forum_heading']}</th>
+      <th class='col_c_stats right'>{$lang['forums_topic_heading']}</th>
+      <th class='col_c_stats right'>{$lang['forums_posts_heading']}</th>
+      <th class='col_c_post left'>{$lang['forums_lastpost_heading']}</th>
+      </tr>\n";
 		
-        while ($topic_arr = mysql_fetch_assoc($topics_res))
+    while ($topic_arr = mysql_fetch_assoc($topics_res))
 		{
 			$topicid = (int)$topic_arr['id'];
 			$topic_userid = (int)$topic_arr['userid'];
@@ -150,33 +166,33 @@
       $lpauthor = (is_valid_id($topic_arr['userid']) && !empty($topic_arr['username']) ? "<a href='{$TBDEV['baseurl']}/userdetails.php?id=$topic_userid'><b>".$topic_arr['username']."</b></a>" : "unknown[$topic_userid]");
 			$new = ($topic_arr["p_added"] > (time() - $TBDEV['readpost_expiry'])) ? ((int)$topic_arr['p_id'] > $topic_arr['lastpostread']) : 0;
 			$topicpic = ($topic_arr['locked'] == "yes" ? ($new ? "lockednew" : "locked") : ($new ? "unlockednew" : "unlocked"));
-			$post_icon = ($sticky ? "<img src='{$TBDEV['forum_pic_url']}sticky.gif' alt='Sticky topic' title='Sticky topic' />" : ($topic_arr["posticon"] > 0 ? "<img src='{$TBDEV['forum_pic_url']}post_icons/icon{$topic_arr["posticon"]}.gif' alt='post icon' title='post icon' />" : "&nbsp;"));
+			$post_icon = ($sticky ? "<img src='{$TBDEV['forum_pic_url']}f_pinned.gif' alt='Sticky topic' title='Sticky topic' />" : ($topic_arr["posticon"] > 0 ? "<img src='{$TBDEV['forum_pic_url']}post_icons/icon{$topic_arr["posticon"]}.gif' alt='post icon' title='post icon' />" : "&nbsp;"));
 
-      $HTMLOUT .="<tr>
-				<td align='left' width='100%'>
-				<table border='0' cellspacing='0' cellpadding='0'>
-				<tr>
-				<td class='embedded' style='padding-right: 5px'><img src='".$TBDEV['forum_pic_url'].$topicpic.".gif' alt='' /></td>
-				<td align='center' nowrap='nowrap' style='padding-right: 5px;border:none'>". ($pollim ? "<img src='{$TBDEV['forum_pic_url']}poll.gif' alt='Topic Poll' title='Topic Poll' />&nbsp;" : '')."".$post_icon."</td>
-				<td class='embedded' align='left'>". ($sticky ? 'Sticky:&nbsp;' : '')."<a href='".$_SERVER['PHP_SELF']."?action=viewtopic&amp;topicid=".$topicid."'>".htmlspecialchars($topic_arr['subject'])."</a>{$topicpages}</td>
-				</tr>
-				</table>
-				</td>
-				<td align='center'>". max(0, $topic_arr['p_count'] - 1)."</td>
-				<td align='center'>". number_format($topic_arr['views'])."</td>
-				<td align='center'>". $lpauthor ."</td>
-				<td align='left' style='white-space: nowrap;'>".get_date($topic_arr["p_added"],'DATE',1,0)."<br />by&nbsp;". $lpusername."</td></tr>";
+      $HTMLOUT .="<tr class='row1'>
+      <td class='altrow'><img src='".$TBDEV['forum_pic_url'].$topicpic.".gif' alt='' /></td>
+      <td class='altrow'>$post_icon</td>
+			<td class='noborder'>". ($pollim ? "<img src='{$TBDEV['forum_pic_url']}poll.gif' alt='Topic Poll' title='Topic Poll' />&nbsp;" : '').
+			($sticky ? 'Sticky:&nbsp;' : '')."<a href='".$_SERVER['PHP_SELF']."?action=viewtopic&amp;topicid=".$topicid."'>".htmlspecialchars($topic_arr['subject'])."</a>{$topicpages}</td>
+      <td class='altrow stats'>". max(0, $topic_arr['p_count'] - 1)."</td>
+      <td class='altrow stats'>". number_format($topic_arr['views'])."</td>
+      <td class='last_post noborder'>$lpauthor&nbsp;<span style='white-space:nowrap;'>".get_date($topic_arr["p_added"],'DATE',1,0)."</span><br />by&nbsp;$lpusername</td>
+      </tr>";
 		    }
 		
-		$HTMLOUT .= end_table();
-	  }
-	  else
-	  {
-		$HTMLOUT .="<p align='center'>No topics found</p>";
-	  }
+		$HTMLOUT .= "</table>";
+  }
+  else
+  {
+  $HTMLOUT .="<p align='center'>No topics found</p>";
+  }
 	
 	$HTMLOUT .= $menu1.$mlb.$menu2.$mlb.$menu3;
 
+
+	$HTMLOUT .= "$buttons</div><br />\n"; 
+	
+	
+	
 	$HTMLOUT .="<table class='main' border='0' cellspacing='0' cellpadding='0' align='center'>
 	<tr align='center'>
 		<td class='embedded'><img src='{$TBDEV['forum_pic_url']}unlockednew.gif' alt='New Unlocked' style='margin-right: 5px' /></td>
@@ -210,9 +226,11 @@
 	}
 	
 	$HTMLOUT .="</tr></table>";
+	
 	$HTMLOUT .= insert_quick_jump_menu($forumid);
-	$HTMLOUT .= end_main_frame(); 
+	
 	print stdhead("New Topic") . $HTMLOUT . stdfoot();
+	
 	exit();
 
 

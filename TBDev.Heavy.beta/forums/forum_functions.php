@@ -249,7 +249,7 @@ function show_forums($forid, $subforums = false, $sfa = "", $mods_array = "", $s
         elseif ($sfa[$forumid]['lastpost']["anonymous"] == "no") { 
         $lastpost1 = "<a href='{$TBDEV['baseurl']}/userdetails.php?id=" . (int)$sfa[$forumid]['lastpost']['userid'] . "'><b>" . htmlspecialchars($sfa[$forumid]['lastpost']['user']) . "</b></a><br />";
         }
-        $lastpost = "" . get_date($sfa[$forumid]['lastpost']['added'], 'LONG',1,0) . "<br />" . "by $lastpost1" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$sfa[$forumid]['lastpost']['topic'] . "&amp;page=p" . $sfa[$forumid]['lastpost']['postid'] . "#p" . $sfa[$forumid]['lastpost']['postid'] . "'><b>" . htmlspecialchars($sfa[$forumid]['lastpost']['tname']) . "</b></a>";
+        $lastpost = "<span style='white-space:nowrap;'>" . get_date($sfa[$forumid]['lastpost']['added'], 'LONG',1,0) . "</span><br />" . "by $lastpost1" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$sfa[$forumid]['lastpost']['topic'] . "&amp;page=p" . $sfa[$forumid]['lastpost']['postid'] . "#p" . $sfa[$forumid]['lastpost']['postid'] . "'><b>" . htmlspecialchars($sfa[$forumid]['lastpost']['tname']) . "</b></a>";
         }
         elseif (($sfa[$forumid]['lastpost']['postid'] < $forums_arr['pid'])) {
         if ($forums_arr["anonymous"] == "yes") {
@@ -261,19 +261,19 @@ function show_forums($forid, $subforums = false, $sfa = "", $mods_array = "", $s
         elseif ($forums_arr["anonymous"] == "no") { 
         $lastpost2 = "<a href='{$TBDEV['baseurl']}/userdetails.php?id=" . (int)$forums_arr["userid"] . "'><b>" . htmlspecialchars($forums_arr['username']) . "</b></a><br />";
         }
-        $lastpost = "" .get_date($forums_arr["added"], 'LONG',1,0) . "<br />" . "by $lastpost2" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$forums_arr["topicid"] . "&amp;page=p$lastpostid#p$lastpostid'><b>" . htmlspecialchars($forums_arr['subject']) . "</b></a>";
+        $lastpost = "<span style='white-space:nowrap;'>" .get_date($forums_arr["added"], 'LONG',1,0) . "</span><br />" . "by $lastpost2" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$forums_arr["topicid"] . "&amp;page=p$lastpostid#p$lastpostid'><b>" . htmlspecialchars($forums_arr['subject']) . "</b></a>";
         } else
         $lastpost = "N/A";
         } else {
         if (is_valid_id($forums_arr['pid']))
         if ($forums_arr["anonymous"] == "yes") {
         if($CURUSER['class'] < UC_MODERATOR && $forums_arr["userid"] != $CURUSER["id"])
-        $lastpost ="" .get_date($forums_arr["added"], 'LONG',1,0) . "<br />" . "by <i>Anonymous</i><br />" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$forums_arr["topicid"] . "&amp;page=p$lastpostid#p$lastpostid'><b>" . htmlspecialchars($forums_arr['subject']) . "</b></a>"; 
+        $lastpost ="<span style='white-space:nowrap;'>" .get_date($forums_arr["added"], 'LONG',1,0) . "</span><br />" . "by <i>Anonymous</i><br />" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$forums_arr["topicid"] . "&amp;page=p$lastpostid#p$lastpostid'><b>" . htmlspecialchars($forums_arr['subject']) . "</b></a>"; 
         else
-        $lastpost ="" .get_date($forums_arr["added"], 'LONG',1,0) . "<br />" . "by <i>Anonymous</i>(<a href='{$TBDEV['baseurl']}/userdetails.php?id=" . (int)$forums_arr["userid"] . "'><b>" . htmlspecialchars($forums_arr['username']) . "</b></a>)<br />" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$forums_arr["topicid"] . "&amp;page=p$lastpostid#p$lastpostid'><b>" . htmlspecialchars($forums_arr['subject']) . "</b></a>";
+        $lastpost ="<span style='white-space:nowrap;'>" .get_date($forums_arr["added"], 'LONG',1,0) . "</span><br />" . "by <i>Anonymous</i>(<a href='{$TBDEV['baseurl']}/userdetails.php?id=" . (int)$forums_arr["userid"] . "'><b>" . htmlspecialchars($forums_arr['username']) . "</b></a>)<br />" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$forums_arr["topicid"] . "&amp;page=p$lastpostid#p$lastpostid'><b>" . htmlspecialchars($forums_arr['subject']) . "</b></a>";
         }
         else 
-        $lastpost = "" .get_date($forums_arr["added"], 'LONG',1,0) . "<br />" . "by <a href='{$TBDEV['baseurl']}/userdetails.php?id=" . (int)$forums_arr["userid"] . "'><b>" . htmlspecialchars($forums_arr['username']) . "</b></a><br />" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$forums_arr["topicid"] . "&amp;page=p$lastpostid#p$lastpostid'><b>" . htmlspecialchars($forums_arr['subject']) . "</b></a>";
+        $lastpost = "<span style='white-space:nowrap;'>" .get_date($forums_arr["added"], 'LONG',1,0) . "</span><br />" . "by <a href='{$TBDEV['baseurl']}/userdetails.php?id=" . (int)$forums_arr["userid"] . "'><b>" . htmlspecialchars($forums_arr['username']) . "</b></a><br />" . "in <a href='" . $_SERVER['PHP_SELF'] . "?action=viewtopic&amp;topicid=" . (int)$forums_arr["topicid"] . "&amp;page=p$lastpostid#p$lastpostid'><b>" . htmlspecialchars($forums_arr['subject']) . "</b></a>";
         else
         $lastpost = "N/A";
         }
