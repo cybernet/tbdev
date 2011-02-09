@@ -193,6 +193,8 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       break;
       
     case 'reply':
+      require_once "include/bbcode_functions.php";
+      require_once "forums/forum_post_functions.php";
       require_once "forums/forum_reply.php";
       exit();
       break;
