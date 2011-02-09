@@ -108,10 +108,13 @@ loggedinorreturn();
     ****************/
     $stylesheets ='';
     $TEMPLATES=mysql_query("SELECT * FROM stylesheets");
-        while($TEMPL=mysql_fetch_array($TEMPLATES)){
-                if(file_exists("templates/$TEMPL[id]/template.php"))
-                        $stylesheets .="<option value='$TEMPL[id]'".($TEMPL['id']==$CURUSER['stylesheet']?" selected='selected'":"").">$TEMPL[name]</option>";
-        }
+    while($TEMPL=mysql_fetch_assoc($TEMPLATES))
+    {
+      if(file_exists("templates/{$TEMPL['uri']}/template.php"))
+      {
+        $stylesheets .="<option value='{$TEMPL['uri']}'".($TEMPL['uri']==$CURUSER['stylesheet']?" selected='selected'":"").">{$TEMPL['name']}</option>";
+      }
+    }
 
     $countries = "<option value='0'>---- {$lang['my_none']} ----</option>\n";
     $ct_r = mysql_query("SELECT id,name FROM countries ORDER BY name") or sqlerr(__FILE__,__LINE__);
@@ -207,13 +210,24 @@ loggedinorreturn();
       $categories .= "</tr></table>\n";
     }
 
-    $HTMLOUT .= "<fieldset><legend><strong>{$lang['my_email_notif']}</strong></legend>
-    <label><input type='checkbox' name='pmnotif'" . (strpos($CURUSER['notifs'], "[pm]") !== false ? " checked='checked'" : "") . " value='yes' /> {$lang['my_notify_pm']}</label><br />
-       <label><input type='checkbox' name='emailnotif'" . (strpos($CURUSER['notifs'], "[email]") !== false ? " checked='checked'" : "") . " value='yes' /> {$lang['my_notify_torrent']}</label></fieldset>
-    <fieldset><legend><strong>{$lang['my_browse']}</strong></legend>$categories</fieldset>
-    <fieldset><legend><strong>{$lang['my_stylesheet']}</strong></legend><select name='stylesheet'>\n$stylesheets\n</select></fieldset>
+    $HTMLOUT .= "<fieldset>
+    <legend><strong>{$lang['my_email_notif']}</strong></legend>
+    <label>
+    <input type='checkbox' name='pmnotif'" . (strpos($CURUSER['notifs'], "[pm]") !== false ? " checked='checked'" : "") . " value='yes' /> {$lang['my_notify_pm']}</label><br />
+    <label><input type='checkbox' name='emailnotif'" . (strpos($CURUSER['notifs'], "[email]") !== false ? " checked='checked'" : "") . " value='yes' /> {$lang['my_notify_torrent']}</label>
+    </fieldset>
+    
+    <fieldset>
+    <legend>
+    <strong>{$lang['my_browse']}</strong></legend>
+    $categories
+    </fieldset>
+    <fieldset>
+    <legend><strong>{$lang['my_stylesheet']}</strong></legend>
+    <select name='stylesheet'>$stylesheets</select></fieldset>
     <fieldset><legend><strong>{$lang['my_language']}</strong></legend>Engrish</fieldset>
-    <fieldset><legend><strong>{$lang['my_country']}</strong></legend><select name='country'>\n$countries\n</select></fieldset>
+    <fieldset><legend><strong>{$lang['my_country']}</strong></legend>
+    <select name='country'>\n$countries\n</select></fieldset>
 
     <!-- Timezone stuff -->
     <fieldset><legend><strong>{$lang['my_tz']}</strong></legend>$time_select</fieldset>
