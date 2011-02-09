@@ -2,18 +2,21 @@
 
 function post_icons($s = 0)
 {
-    $body = "<table width=\"100%\" cellspacing=\"0\" cellpadding=\"8\" >
-				<tr><td width=\"20%\" valign=\"top\" align=\"right\"><strong>Post Icons</strong> <br/>
-				<font class=\"small\">(Optional)</font></td>\n";
-    $body .= "<td width=\"80%\" align=\"left\">\n";
+    global $TBDEV;
+    
+    $body = "<table width='100%' cellspacing='0' cellpadding='8' >
+				<tr><td width='20%' valign='top' align='right'><strong>Post Icons</strong> <br/>
+				<font class='small'>(Optional)</font></td>\n";
+    $body .= "<td width='80%' align='left'>\n";
 
-    for($i = 1; $i < 15;$i++) {
-        $body .= "<input type=\"radio\" value=\"" . $i . "\" name=\"iconid\" " . ($s == $i ? "checked=\"checked\"" : "") . " />\n<img align=\"middle\" alt=\"\" src=\"pic/post_icons/icon" . $i . ".gif\"/>\n";
+    for($i = 1; $i < 15;$i++) 
+    {
+        $body .= "<input type='radio' value='" . $i . "' name='iconid' " . ($s == $i ? "checked='checked'" : "") . " />\n<img align='middle' alt='' src='{$TBDEV['forum_pic_url']}post_icons/icon" . $i . ".gif'/>\n";
         if ($i == 7)
             $body .= "<br/>";
     }
 
-    $body .= "<br/><input type=\"radio\" value=\"0\" name=\"iconid\"  " . ($s == 0 ? "checked=\"checked\"" : "") . " />[Use None]\n";
+    $body .= "<br/><input type='radio' value='0' name='iconid'  " . ($s == 0 ? "checked='checked'" : "") . " />[Use None]\n";
     $body .= "</td></tr></table>\n";
 
     return $body;
@@ -45,9 +48,11 @@ function insert_quick_jump_menu($currentforum = 0){
 //-------- Inserts a compose frame
 function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment = false) {
 
-    global $maxsubjectlength, $CURUSER, $TBDEV, $maxfilesize,  $use_attachment_mod, $forum_pics;
+    global $maxsubjectlength, $CURUSER, $TBDEV, $maxfilesize,  $use_attachment_mod, $lang;
     
     $htmlout='';
+    $title = '';
+    
     if ($newtopic) 
     {
         $res = mysql_query("SELECT name FROM forums WHERE id = " . sqlesc($id)) or sqlerr(__FILE__, __LINE__);
@@ -92,9 +97,9 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
     /*<![CDATA[*/
     function Preview()
     {
-    document.compose.action = './forums.php?action=preview&forumid=$id'
-    //document.compose.target = '_blank';
-    document.compose.submit();
+    document.bbcode2text.action = './forums.php?action=reply&topicid=$id'
+    //document.bbcode2text.target = '_blank';
+    document.bbcode2text.submit();
     return true;
     }
     /*]]>*/
@@ -140,7 +145,7 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
     }
 
     
-		$qbody = ($quote ? "[quote=".htmlspecialchars($arr["username"])."]".htmlspecialchars(unesc($arr["body"]))."[/quote]" : "");
+		$body = ($quote ? "[quote=".htmlsafechars($arr["username"])."]".htmlsafechars(unesc($arr["body"]))."[/quote]" : "");
 		
 		$htmlout .= bbcode2textarea( $lang['forum_functions_submit'], $body, $title );
 		
@@ -156,11 +161,9 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 			</tr>";
     }
 		 */
-		  $htmlout .="<tr>
-   	  <td align='center' colspan='2'>".(post_icons())."</td>
- 	    </tr><tr>
- 		  <td colspan='2' align='center'>
- 	    <input type='submit' value='Submit' /><input type='button' value='Preview' name='button2' onclick='return Preview();' />\n";
+		  $htmlout .="<div>".(post_icons())."</div>
+ 		  <div>
+ 	    <input type='button' value='Preview' name='button2' onclick='return Preview();' />\n";
       
       if ($newtopic)
       {
@@ -170,17 +173,18 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
       {
       $htmlout .= "Anonymous Post<input type='checkbox' name='anonymous' value='yes'/>\n";
       }
-      $htmlout .= "</td></tr>\n";
+      $htmlout .= "</div>\n";
 
 
-    $htmlout .= end_table();
+    //$htmlout .= end_table();
 
     $htmlout .="</form>";
     
     $htmlout .= end_frame();
     // ------ Get 10 last posts if this is a reply
     
-    if (!$newtopic) {
+    if (!$newtopic && $TBDEV['last_10_posts']) 
+    {
         $postres = mysql_query("SELECT p.id, p.added, p.body, p.anonymous, u.id AS uid, u.username, u.avatar FROM posts AS p LEFT JOIN users AS u ON u.id = p.userid WHERE p.topicid = " . sqlesc($id) . " " . "ORDER BY p.id DESC LIMIT 10") or sqlerr(__FILE__, __LINE__);
         if (mysql_num_rows($postres) > 0) 
         {
@@ -189,17 +193,17 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
             $htmlout .= begin_frame("10 last posts, in reverse order");
 
             while ($post = mysql_fetch_assoc($postres)) {
-                $avatar = ($CURUSER["avatars"] == "all" ? htmlspecialchars($post["avatar"]) : ($CURUSER["avatars"] == "some" && $post["offavatar"] == "no" ? htmlspecialchars($post["avatar"]) : ""));
+                $avatar = ($CURUSER["avatars"] == "all" ? htmlsafechars($post["avatar"]) : ($CURUSER["avatars"] == "some" && $post["offavatar"] == "no" ? htmlsafechars($post["avatar"]) : ""));
              
              if ($post['anonymous'] == 'yes') {
-             $avatar = $TBDEV['pic_base_url'] . $forum_pics['default_avatar'];
+             $avatar = $TBDEV['forum_pic_url'].'default_avatar.gif';
              }
              else {
-             $avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($post["avatar"]) : '');
+             $avatar = ($CURUSER["avatars"] == "yes" ? htmlsafechars($post["avatar"]) : '');
              }
 
              if (empty($avatar))
-             $avatar = $TBDEV['pic_base_url'] . $forum_pics['default_avatar'];
+             $avatar = $TBDEV['forum_pic_url'].'default_avatar.gif';
 
              if ($post["anonymous"] == "yes")
              if($CURUSER['class'] < UC_MODERATOR && $post["uid"] != $CURUSER["id"]){	
@@ -248,7 +252,9 @@ function insert_fastreply($ids, $pkey = '') {
         $htmlout .= "<input type='hidden' name='postkey' value='$pkey' />\n";
     }
     
-    $htmlout .= "<input type='hidden' name='topicid' value='{$ids['topicid']}' />
+    $htmlout .= "<input type='hidden' name='fastreply' value='true' />
+    
+    <input type='hidden' name='topicid' value='{$ids['topicid']}' />
     
     <input type='hidden' name='forumid' value='{$ids['forumid']}' />
     
