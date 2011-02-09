@@ -48,16 +48,22 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
     global $maxsubjectlength, $CURUSER, $TBDEV, $maxfilesize,  $use_attachment_mod, $forum_pics;
     
     $htmlout='';
-    if ($newtopic) {
+    if ($newtopic) 
+    {
         $res = mysql_query("SELECT name FROM forums WHERE id = " . sqlesc($id)) or sqlerr(__FILE__, __LINE__);
         $arr = mysql_fetch_assoc($res) or die("Bad forum ID!");
 
-        $htmlout .="<h3>New topic in <a href='". $_SERVER['PHP_SELF']."?action=viewforum&amp;forumid=".$id."'>".htmlspecialchars($arr["name"])."</a> forum</h3>";
-        } else {
+        $forumname = htmlsafechars($arr["name"]);
+        
+        $htmlout .="<p style='text-align:center;'>{$lang['forum_functions_newtopic']}<a href='forums.php?action=viewforum&amp;forumid=$id'>$forumname</a>{$lang['forum_functions_forum']}</p>\n";
+    } 
+    else 
+    {
         $res = mysql_query("SELECT t.forumid, t.subject, t.locked, f.minclassread FROM topics AS t LEFT JOIN forums AS f ON f.id = t.forumid WHERE t.id = ".sqlesc($id)) or sqlerr(__FILE__, __LINE__);
-        $arr = mysql_fetch_assoc($res) or die("Forum error, Topic not found.");
+        $arr = mysql_fetch_assoc($res) or stderr($lang['forum_functions_error'], $lang['forum_functions_topic']);
   
-        if ($arr['locked'] == 'yes') {
+        if ($arr['locked'] == 'yes') 
+        {
             stderr("Sorry", "The topic is locked.");
 
             $htmlout .= end_table();
@@ -66,14 +72,18 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
             exit();
         }
         
-        if($CURUSER["class"] < $arr["minclassread"]){
+        if($CURUSER["class"] < $arr["minclassread"])
+        {
 		    $htmlout .= stdmsg("Sorry", "You are not allowed in here.");
 				$htmlout .= end_table(); 
 				$htmlout .= end_main_frame(); 
 				print stdhead("Compose") . $htmlout . stdfoot();
 		    exit();
 		    }
-        $htmlout .="<h3 align='center'>Reply to topic: <a href='".$_SERVER['PHP_SELF']."action=viewtopic&amp;topicid=".$id."'>". htmlspecialchars($arr["subject"])."</a></h3>";
+		    
+        $subject = htmlsafechars($arr["subject"]);
+
+      $htmlout .= "<p style='text-align:center;'>{$lang['forum_functions_reply']}<a href='forums.php?action=viewtopic&amp;topicid=$id'>$subject</a></p>";
 
     }
      
@@ -91,24 +101,20 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
     </script>";
       
     $htmlout .= begin_frame("Compose", true);
-    $htmlout .="<form method='post' name='compose' action='".$_SERVER['PHP_SELF']."' enctype='multipart/form-data'>
+    $htmlout .="<form name='bbcode2text' method='post' action='forums.php?action=post' enctype='multipart/form-data'>
 	  <input type='hidden' name='action' value='post' />
 	  <input type='hidden' name='". ($newtopic ? 'forumid' : 'topicid')."' value='".$id."' />";
 
-    $htmlout .= begin_table(true);
+    //$htmlout .= begin_table(true);
 
-    if ($newtopic) {
-
+    if ($newtopic) 
+    {
        
-		$htmlout .="<tr>
-			<td class='rowhead' width='10%'>Subject</td>
-			<td align='left'>
-				<input type='text' size='100' maxlength='".$maxsubjectlength."' name='subject' style='height: 19px' />
-			</td>
-		</tr>";
+		$title .="your title here";
     }
 
-    if ($quote) {
+    if ($quote) 
+    {
         $postid = (int)$_GET["postid"];
         if (!is_valid_id($postid)) {
             stderr("Error", "Invalid ID!");
@@ -133,17 +139,12 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
         $arr = mysql_fetch_assoc($res);
     }
 
-    $htmlout .="<tr>
-		<td class='rowhead' width='10%'>Body</td>
-		<td>";
+    
 		$qbody = ($quote ? "[quote=".htmlspecialchars($arr["username"])."]".htmlspecialchars(unesc($arr["body"]))."[/quote]" : "");
-		if (function_exists('textbbcode'))
-		$htmlout .= textbbcode("compose", "body", $qbody);
-		else
-		{
-		$htmlout .="<textarea name='body' style='width:99%' rows='7'>{$qbody}</textarea>";
-		}
-		$htmlout .="</td></tr>";
+		
+		$htmlout .= bbcode2textarea( $lang['forum_functions_submit'], $body, $title );
+		
+		/*
 		if ($use_attachment_mod && $attachment)
 		{
 		$htmlout .="<tr>
@@ -153,14 +154,16 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
         <div class='error'>Allowed Files: rar, zip<br />Size Limit ".mksize($maxfilesize)."</div></fieldset>
 				</td>
 			</tr>";
-		  }
-		  
+    }
+		 */
 		  $htmlout .="<tr>
    	  <td align='center' colspan='2'>".(post_icons())."</td>
  	    </tr><tr>
  		  <td colspan='2' align='center'>
  	    <input type='submit' value='Submit' /><input type='button' value='Preview' name='button2' onclick='return Preview();' />\n";
-      if ($newtopic){
+      
+      if ($newtopic)
+      {
       $htmlout .= "Anonymous Topic<input type='checkbox' name='anonymous' value='yes'/>\n";
       }
       else
@@ -178,8 +181,9 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
     // ------ Get 10 last posts if this is a reply
     
     if (!$newtopic) {
-        $postres = mysql_query("SELECT p.id, p.added, p.body, p.anonymous, u.id AS uid, u.username, u.avatar, u.offavatar " . "FROM posts AS p " . "LEFT JOIN users AS u ON u.id = p.userid " . "WHERE p.topicid = " . sqlesc($id) . " " . "ORDER BY p.id DESC LIMIT 10") or sqlerr(__FILE__, __LINE__);
-        if (mysql_num_rows($postres) > 0) {
+        $postres = mysql_query("SELECT p.id, p.added, p.body, p.anonymous, u.id AS uid, u.username, u.avatar FROM posts AS p LEFT JOIN users AS u ON u.id = p.userid WHERE p.topicid = " . sqlesc($id) . " " . "ORDER BY p.id DESC LIMIT 10") or sqlerr(__FILE__, __LINE__);
+        if (mysql_num_rows($postres) > 0) 
+        {
 
             $htmlout .="<br />";
             $htmlout .= begin_frame("10 last posts, in reverse order");
@@ -230,7 +234,7 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
   
 function insert_fastreply($ids, $pkey = '') {
 	
-    global $TBDEV;
+    global $TBDEV, $CURUSER;
     
     $htmlout = "<div style='display: none;' id='fastreply'>
     <div class='tb_table_inner_wrap'>
@@ -252,6 +256,8 @@ function insert_fastreply($ids, $pkey = '') {
 
     <br /><input type='submit' class='btn' value='Submit' />
     
+    Anonymous<input type='checkbox' name='anonymous' value='yes' ".($CURUSER['anonymous'] == 'yes' ? "checked='checked'":'')." />
+    
     <input onclick=\"showhide('fastreply'); return(false);\" value='Close Fast Reply' type='button' class='btn' />
 
     </form>
@@ -259,5 +265,7 @@ function insert_fastreply($ids, $pkey = '') {
     
     return $htmlout;
 }
+
+
 
 ?>

@@ -58,11 +58,10 @@
     $ovfname = $ovf_arr["name"];
     $HTMLOUT .="
     <div class='tb_table_inner_wrap'>
-    <span style='color:#ffffff;'><a href='{$_SERVER['PHP_SELF']}?action=forumview&amp;forid=$ovfid'>
-    ".htmlspecialchars($ovfname)."</a></span>
+    <span style='color:#ffffff;'><a href='{$_SERVER['PHP_SELF']}?action=forumview&amp;forid=$ovfid'>".htmlspecialchars($ovfname)."</a></span>
     </div>
     
-    <table class='tb_table'>\n
+    <table class='tb_table'>
     <tr class='header'>
     <th class='col_c_icon'>&nbsp;</th>
     <th class='col_c_forum left'>{$lang['forums_forum_heading']}</th>
