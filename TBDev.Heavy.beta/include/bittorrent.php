@@ -235,57 +235,81 @@ function sqlwildcardesc($x) {
 }
 
 function get_template() {
-        global $CURUSER, $TBDEV;
-        if(isset($CURUSER)){
-                if(file_exists("{$TBDEV['baseurl']}/templates/".$CURUSER['stylesheet']."/template.php")){
-                        require_once("{$TBDEV['baseurl']}/templates/".$CURUSER['stylesheet']."/template.php");
-                }else{
-                        if(isset($TBDEV)){
-                                if(file_exists("templates/".$TBDEV['stylesheet']."/template.php")){
-                                        require_once("templates/".$TBDEV['stylesheet']."/template.php");
-                                }else{
-                                        print("Sorry, Templates do not seem to be working properly and missing some code. Please report this to the programmers/owners.");
-                                }
-                        }else{
-                                if(file_exists("{$TBDEV['baseurl']}/templates/".$TBDEV['stylesheet']."/template.php")){
-                                        require_once("{$TBDEV['baseurl']}/templates/".$TBDEV['stylesheet']."/template.php");
-                                }else{
-                                        print("Sorry, Templates do not seem to be working properly and missing some code. Please report this to the programmers/owners.");
-                                }
-                        }
-                }
-        }else{
-                if(file_exists("templates/".$TBDEV['stylesheet']."/template.php")){
-                        require_once("templates/".$TBDEV['stylesheet']."/template.php");
-                }else{
-                        print("Sorry, Templates do not seem to be working properly and missing some code. Please report this to the programmers/owners.");
-                }
+  global $CURUSER, $TBDEV;
+        
+  if(isset($CURUSER))
+  {
+    if(file_exists("{$TBDEV['baseurl']}/templates/{$CURUSER['stylesheet']}/template.php"))
+    {
+      require_once("{$TBDEV['baseurl']}/templates/{$CURUSER['stylesheet']}/template.php");
+    }
+    else
+    {
+      if(isset($TBDEV))
+      {
+        if(file_exists("templates/{$TBDEV['stylesheet']}/template.php"))
+        {
+          require_once("templates/{$TBDEV['stylesheet']}/template.php");
         }
-        if(!function_exists("stdhead")){
-                print("stdhead function missing");
-                function stdhead($title="", $message=true){
-                        return "<html><head><title>$title</title></head><body>";
-                }
+        else
+        {
+          print("Sorry, Templates do not seem to be working properly and missing some code. Please report this to the programmers/owners.");
         }
-        if(!function_exists("stdfoot")){
-                print("stdfoot function missing");
-                function stdfoot(){
-                        return "</body></html>";
-                }
+      }
+      else
+      {
+        if(file_exists("{$TBDEV['baseurl']}/templates/{$TBDEV['stylesheet']}/template.php"))
+        {
+          require_once("{$TBDEV['baseurl']}/templates/{$TBDEV['stylesheet']}/template.php");
         }
-        if(!function_exists("stdmsg")){
-                print("stdmgs function missing");
-                function stdmsg($TITLE, $MSG){
-                        return "<b>".$TITLE."</b><br />$MSG";
-                }
+        else
+        {
+          print("Sorry, Templates do not seem to be working properly and missing some code. Please report this to the programmers/owners.");
         }
-        if(!function_exists("StatusBar")){
-                print("StatusBar function missing");
-                function StatusBar(){
-                        global $CURUSER, $lang;
-                        return "{$lang['gl_msg_welcome']}, $CURUSER[username]";
-                }
-        }
+      }
+    }
+  }
+  else
+  {
+    if(file_exists("templates/{$TBDEV['stylesheet']}/template.php"))
+    {
+      require_once("templates/{$TBDEV['stylesheet']}/template.php");
+    }
+    else
+    {
+      print("Sorry, Templates do not seem to be working properly and missing some code. Please report this to the programmers/owners.");
+    }
+  }
+  
+  if(!function_exists("stdhead"))
+  {
+    print("stdhead function missing");
+    function stdhead($title="", $message=true){
+      return "<html><head><title>$title</title></head><body>";
+    }
+  }
+  
+  if(!function_exists("stdfoot")){
+    print("stdfoot function missing");
+    function stdfoot(){
+      return "</body></html>";
+    }
+  }
+  
+  if(!function_exists("stdmsg")){
+    print("stdmgs function missing");
+    function stdmsg($TITLE, $MSG){
+      return "<b>".$TITLE."</b><br />$MSG";
+    }
+  }
+  
+  if(!function_exists("StatusBar")){
+    print("StatusBar function missing");
+    function StatusBar(){
+      global $CURUSER, $lang;
+      return "{$lang['gl_msg_welcome']}, $CURUSER[username]";
+    }
+  }
 }
 
 function httperr($code = 404) {
