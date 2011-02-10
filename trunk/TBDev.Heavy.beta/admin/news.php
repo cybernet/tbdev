@@ -143,7 +143,7 @@ require_once "include/html_functions.php";
         if ($body == "" OR strlen($_POST['body']) < 4)
           stderr($lang['news_error'], $lang['news_add_body']);
 
-        $headline = (isset($input['headline']) AND !empty($input['headline'])) ? sqlesc($input['headline']) : sqlesc('TBDev.net News');
+        $headline = (isset($input['subject']) AND !empty($input['subject'])) ? sqlesc($input['subject']) : sqlesc('TBDev.net News');
         
         $body = sqlesc($body);
 
@@ -175,7 +175,7 @@ require_once "include/html_functions.php";
         
         <input type='hidden' name='mode' value='edit' />";
         
-        $HTMLOUT .= bbcode2textarea( 'Edit', htmlsafechars($arr['body']), htmlsafechars($arr['headline']) );
+        $HTMLOUT .= bbcode2textarea( 'Edit', $arr['body'], $arr['headline'] );
           
         
         $HTMLOUT .= "</form>\n";
@@ -207,7 +207,7 @@ require_once "include/html_functions.php";
     
     $js = "<script type='text/javascript' src='scripts/bbcode2text.js'></script>";
         
-    $HTMLOUT .= bbcode2textarea( 'Add' );
+    $HTMLOUT .= bbcode2textarea( 'Add', '', 'TBDev.net News' );
     $HTMLOUT .= "</form><br /><br />";
 
     $res = @mysql_query("SELECT * FROM news ORDER BY added DESC") or sqlerr(__FILE__, __LINE__);
