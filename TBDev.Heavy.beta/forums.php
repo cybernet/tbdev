@@ -134,7 +134,8 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
   switch($action) {
   
     case 'updatetopic':
-      require_once "forums/forums_update_topic.php";
+      require_once "forums/forum_functions.php";
+      require_once "forums/forum_update_topic.php";
       exit();
       break;
       
