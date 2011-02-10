@@ -1,3 +1,25 @@
+-- phpMyAdmin SQL Dump
+-- version 3.2.4
+-- http://www.phpmyadmin.net
+--
+-- Host: localhost
+-- Generation Time: Feb 10, 2011 at 01:38 AM
+-- Server version: 5.1.41
+-- PHP Version: 5.3.1
+
+SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+
+--
+-- Database: 'bobtest'
+--
+
+-- --------------------------------------------------------
 
 --
 -- Table structure for table 'attachmentdownloads'
@@ -201,7 +223,6 @@ CREATE TABLE forums (
 
 -- --------------------------------------------------------
 
-
 --
 -- Table structure for table 'forum_mods'
 --
@@ -330,7 +351,6 @@ CREATE TABLE messages (
 
 -- --------------------------------------------------------
 
-
 --
 -- Table structure for table 'news'
 --
@@ -421,7 +441,6 @@ CREATE TABLE posts (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
-
 
 --
 -- Table structure for table 'readposts'
@@ -581,7 +600,6 @@ CREATE TABLE topics (
 
 -- --------------------------------------------------------
 
-
 --
 -- Table structure for table 'torrents'
 --
@@ -645,6 +663,7 @@ CREATE TABLE users (
   stylesheet int(10) DEFAULT '1',
   info text COLLATE utf8_unicode_ci,
   signature text COLLATE utf8_unicode_ci,
+  signatures enum('yes','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   acceptpms enum('yes','friends','no') COLLATE utf8_unicode_ci NOT NULL DEFAULT 'yes',
   ip varchar(15) COLLATE utf8_unicode_ci NOT NULL,
   class tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -689,3 +708,7 @@ CREATE TABLE users (
   KEY warned (warned),
   KEY pkey (passkey)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

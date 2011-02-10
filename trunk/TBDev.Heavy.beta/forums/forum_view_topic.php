@@ -266,7 +266,7 @@
         
         
         if (empty($avatar))
-            $avatar = $TBDEV['pic_base_url'].$forum_pics['default_avatar'];
+            $avatar = $TBDEV['forum_pic_url'].'default_avatar.gif';
             
         $last ="". ($pn == $pc ? '<a name=\'last\'></a>' : '');
         
