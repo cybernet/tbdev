@@ -16,12 +16,53 @@
 |   $URL$
 +------------------------------------------------
 */
-require_once("include/config.php");
+error_reporting(E_ALL);
+
+define('SQL_DEBUG', 2);
+
+/* Compare php version for date/time stuff etc! */
+	if (version_compare(PHP_VERSION, "5.1.0RC1", ">="))
+		date_default_timezone_set('Europe/London');
+
+
+define('TIME_NOW', time());
+
+if ( strtoupper( substr(PHP_OS, 0, 3) ) == 'WIN' )
+  {
+    $file_path = str_replace( "\\", "/", dirname(__FILE__) );
+    $file_path = str_replace( "/include", "", $file_path );
+  }
+  else
+  {
+    $file_path = dirname(__FILE__);
+    $file_path = str_replace( "/include", "", $file_path );
+  }
+
+define('ROOT_PATH', $file_path);
+
+
+require_once(ROOT_PATH."/include/config.php");
 //require_once("cleanup.php");
+
+if (ini_get('default_charset') != $TBDEV['char_set']) 
+{
+  ini_set('default_charset',$TBDEV['char_set']);
+}
+
+define ('UC_USER', 0);
+define ('UC_POWER_USER', 1);
+define ('UC_VIP', 2);
+define ('UC_UPLOADER', 3);
+define ('UC_MODERATOR', 4);
+define ('UC_ADMINISTRATOR', 5);
+define ('UC_SYSOP', 6);
+
+//Do not modify -- versioning system
+//This will help identify code for support issues at tbdev.net
+define ('TBVERSION','TBDev_2009_svn');
 
 
 /**** validip/getip courtesy of manolete <manolete@myway.com> ****/
-
 // IP Validation
 function validip($ip)
 {

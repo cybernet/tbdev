@@ -23,7 +23,7 @@ function docleanup( $data ) {
 	set_time_limit(0);
 	ignore_user_abort(1);
   
-	$stats = array();
+	$stats = array( 'seeders'=>0, 'leechers'=>0 );
 	
   // Update stats 
 	$sql = @mysql_query( "SELECT seeder, COUNT(*) as cnt FROM peers GROUP BY seeder" );
@@ -64,7 +64,7 @@ function docleanup( $data ) {
     $stats = serialize($stats);
   }
   
-  $value = '"'.addslashes( $stats ).'"';
+  $stats = '"'.addslashes( $stats ).'"';
   
   $file_content = "<?"."php\n\n".'$stats = '.$stats.";\n\n?".'>';
   

@@ -153,10 +153,10 @@ function format_comment($text, $strip_html = true)
 	$s = preg_replace( "#\(r\)#i", "&reg;" , $s );
 	
 	// [img]http://www/image.gif[/img]
-	$s = preg_replace("/\[img\](http:\/\/[^\s'\"<>]+(\.(jpg|gif|png)))\[\/img\]/i", "<img src=\"\\1\" alt='' />", $s);
+	$s = preg_replace("/\[img\](http:\/\/[^\s'\"<>]+(\.(jpg|gif|png)))\[\/img\]/i", "<a href='\\1' rel='facebox'><img src=\"\\1\" width='500px' alt='' /></a>", $s);
 
 	// [img=http://www/image.gif]
-	$s = preg_replace("/\[img=(http:\/\/[^\s'\"<>]+(\.(gif|jpg|png)))\]/i", "<img src=\"\\1\" alt='' />", $s);
+	//$s = preg_replace("/\[img=(http:\/\/[^\s'\"<>]+(\.(gif|jpg|png)))\]/i", "<img src=\"\\1\" alt='' />", $s);
 
 	// [color=blue]Text[/color]
 	$s = preg_replace("#\[color=([^\];\d\s]+)\](.+?)\[/color\]#is",
