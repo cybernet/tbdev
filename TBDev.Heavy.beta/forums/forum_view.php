@@ -106,8 +106,8 @@
       <th class='col_c_icon'>&nbsp;</th>
       <th class='col_c_icon'>&nbsp;</th>
       <th class='col_c_forum left'>{$lang['forums_forum_heading']}</th>
-      <th class='col_c_stats right'>{$lang['forums_topic_heading']}</th>
-      <th class='col_c_stats right'>{$lang['forums_posts_heading']}</th>
+      <th class='col_c_stats right'>{$lang['forum_view_replies']}</th>
+      <th class='col_c_stats right'>{$lang['forum_view_views']}</th>
       <th class='col_c_post left'>{$lang['forums_lastpost_heading']}</th>
       </tr>\n";
 		
