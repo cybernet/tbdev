@@ -432,7 +432,7 @@ p#statusred { font-size: 1.2em; background: #fff; color: #a00; }
 .tag_cloud:link  { color: #0099FF; text-decoration:none; }
 .tag_cloud:visited { color: #00CCFF; }
 .tag_cloud:hover { color: #0000FF; background: #00CCFF; }
-.tag_cloud:active { color: #0000FF; background: #FFFFFF; }
+.tag_cloud:active { color: #0000FF; background: #FFF; }
 
 .forumrules_title {
     background: #7192b2;
@@ -443,7 +443,6 @@ p#statusred { font-size: 1.2em; background: #fff; color: #a00; }
 }
 
 .forumrules_border, .forumrules_text_border { border:1px solid #e2e2e0; padding:4px; }
-
 
 .forumrules_text {
     background: #FFFF99;
@@ -465,13 +464,13 @@ p#statusred { font-size: 1.2em; background: #fff; color: #a00; }
 .popupmenu-item {
     padding: 5px;
 	border-bottom: 1px solid #C2CFDF;
-	color:  #000000;
+	color:  #000;
 	font-weight: normal;
 }
 
 .popupmenu-item-last {
 	padding: 5px;
-	color:  #000000;
+	color:  #000;
 	font-weight: normal;
 }
 
@@ -505,13 +504,6 @@ p#statusred { font-size: 1.2em; background: #fff; color: #a00; }
 	text-decoration:none;
 	font-weight:bold;
 	color: #000;
-}
-
-.roundedCorners {
-    border: 1px solid #000;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    border-radius: 6px;
 }
 
 /* - Forum styles - */
@@ -729,14 +721,14 @@ li.info_rep { text-align: center; }
 /* - Sexy Ass Div Table - */
 
 .base-layer {
-    color:#000000;
+    color:#000;
     padding:0;
     text-align:center;
     width:auto;
 }
 
 .table-row {
-    color:#000000;
+    color:#000;
     margin:0 auto 0 auto;
     padding:0;
     text-align:center;
