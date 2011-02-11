@@ -38,28 +38,17 @@ loggedinorreturn();
                   $latestuser = $a['username'];
     */
 
-    $registered = number_format(get_row_count("users"));
-    //$unverified = number_format(get_row_count("users", "WHERE status='pending'"));
-    $torrents = number_format(get_row_count("torrents"));
-    //$dead = number_format(get_row_count("torrents", "WHERE visible='no'"));
+  if( file_exists( ROOT_PATH.'/cache/stats.php' ) )
+  {
+    require ROOT_PATH.'/cache/stats.php';
+    
+    $stats = unserialize( stripslashes($stats) );
+  }
+  else
+  {
+    $stats = array ( 'seeders' => 0, 'leechers' => 0, 'usercnt' => 0, 'torrentcnt' => 0, 'peers' => 0, 'perc' => 0.00 );
+  }
 
-    $r = mysql_query("SELECT value_u FROM avps WHERE arg='seeders'") or sqlerr(__FILE__, __LINE__);
-    $a = mysql_fetch_row($r);
-    $seeders = 0 + $a[0];
-    $r = mysql_query("SELECT value_u FROM avps WHERE arg='leechers'") or sqlerr(__FILE__, __LINE__);
-    $a = mysql_fetch_row($r);
-    $leechers = 0 + $a[0];
-    if ($leechers == 0)
-      $ratio = 0;
-    else
-      $ratio = round($seeders / $leechers * 100);
-    $peers = number_format($seeders + $leechers);
-    $seeders = number_format($seeders);
-    $leechers = number_format($leechers);
-
-
-    //stdhead();
-    //$HTMLOUT .= "<div class='roundedCorners'><font class='small''>Welcome to our newest member, <b>$latestuser</b>!</font></div>\n";
 
     $adminbutton = '';
     
@@ -120,15 +109,15 @@ loggedinorreturn();
                      <div class='cblock-lb'></div>
                      <div class='cblock-content'>
                          <table class='main' border='1' cellspacing='0' cellpadding='10'>
-                               <tr><td class='rowhead'>{$lang['stats_regusers']}</td><td align='right'>{$registered}</td></tr>
-                               <tr><td class='rowhead'>{$lang['stats_torrents']}</td><td align='right'>{$torrents}</td></tr>";
+                               <tr><td class='rowhead'>{$lang['stats_regusers']}</td><td align='right'>{$stats['usercnt']}</td></tr>
+                               <tr><td class='rowhead'>{$lang['stats_torrents']}</td><td align='right'>{$stats['torrentcnt']}</td></tr>";
 
-    if (isset($peers))
+    if (isset($stats['peers']))
     {
-      $HTMLOUT .= "            <tr><td class='rowhead'>{$lang['stats_peers']}</td><td align='right'>{$peers}</td></tr>
-                               <tr><td class='rowhead'>{$lang['stats_seed']}</td><td align='right'>{$seeders}</td></tr>
-                               <tr><td class='rowhead'>{$lang['stats_leech']}</td><td align='right'>{$leechers}</td></tr>
-                               <tr><td class='rowhead'>{$lang['stats_sl_ratio']}</td><td align='right'>{$ratio}</td></tr>";
+      $HTMLOUT .= "            <tr><td class='rowhead'>{$lang['stats_peers']}</td><td align='right'>{$stats['peers']}</td></tr>
+                               <tr><td class='rowhead'>{$lang['stats_seed']}</td><td align='right'>{$stats['seeders']}</td></tr>
+                               <tr><td class='rowhead'>{$lang['stats_leech']}</td><td align='right'>{$stats['leechers']}</td></tr>
+                               <tr><td class='rowhead'>{$lang['stats_sl_ratio']}</td><td align='right'>{$stats['perc']}</td></tr>";
     }
 
       $HTMLOUT .= "</table>
