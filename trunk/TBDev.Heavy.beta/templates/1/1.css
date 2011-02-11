@@ -605,13 +605,25 @@ table.tb_table ul li { font-size: 0.95em; }
     border-right: 1px solid #e4ebf3;
     margin:15px auto;
     width: 140px;
-    padding-left: 40px;
+    padding-left: 5px;
 }
 
-.author_info ul { list-style:none; text-align:left;}
+
 li.avatar { text-align: center; }
 li.title { text-align:center; font-size: small; }
-li.info_rep { text-align: center; }
+
+.author_info ul.fields li {
+    clear:both;
+    font-size:0.9em;
+    color:#718a96;
+    padding-bottom:2px;
+    overflow:hidden
+}
+
+.author_info ul.fields { clear:both; }
+.author_info ul.fields li span.lu, .author_info ul.fields li span.ru { display:block; float:left; }
+.author_info ul.fields li span.lu { width:50%; text-align:right; font-weight:bold; padding:0 0 0 6px; }
+.author_info ul.fields li span.ru { padding:0 8px 0 8px; max-width:50%; word-wrap:break-word; }
 .fnav { text-align: left; font-weight: bold; }
 
 .post_body {
