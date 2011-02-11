@@ -331,29 +331,32 @@
         {
         $author_info ="
         <ul>
-        <li class='avatar'><img width='150' src='{$avatar}' alt='Avatar' /></li>
-        <li class='title'>{$title}</li>
-        <li>Posts:&nbsp;{$forumposts}</li>
-        <li>Ratio:&nbsp;{$ratio}</li>
-        <li>Uploaded:&nbsp;{$uploaded}</li>
-        <li>Downloaded:&nbsp;{$downloaded}</li>
+           <li class='avatar'><img width='100' height='100' src='{$avatar}' alt='Avatar' /></li>
+           <li class='title'>{$title}</li>
+        </ul>
+        <ul class='fields'>
+           <li><span class='lu'>Posts:</span>&nbsp;<span class='ru'>{$forumposts}</span></li>
+           <li><span class='lu'>Ratio:</span>&nbsp;<span class='ru'>{$ratio}</span></li>
+           <li><span class='lu'>Uploaded:</span>&nbsp;<span class='ru'>{$uploaded}</span></li>
+           <li><span class='lu'>Downloaded:</span>&nbsp;<span class='ru'>{$downloaded}</span></li>
         </ul>";
         }
       }
-      else 
+      else
       {
         $author_info ="
-        <ul>
-        <li class='avatar'><img width='150' src='{$avatar}' alt='Avatar' /></li>
-        <li class='title'>{$title}</li>
-        <li>Posts:&nbsp;{$forumposts}</li>
-        <li>Ratio:&nbsp;{$ratio}</li>
-        <li>Uploaded:&nbsp;{$uploaded}</li>
-        <li>Downloaded:&nbsp;{$downloaded}</li>
-        <li class='info_rep'>{$member_reputation}</li>
-        <li>PM:&nbsp;{$pm}</li>
-        <li>{$on_offline}</li>
-        </ul>";
+        <ul style='margin-left:20px;'>
+           <li><img width='100' height='100' src='{$avatar}' alt='Avatar' /></li>
+           <li class='title'>{$title}</li>
+        </ul>
+        <ul class='fields'>
+           <li><span class='lu'>Posts:</span>&nbsp;<span class='ru'>{$forumposts}</span></li>
+           <li><span class='lu'>Ratio:</span>&nbsp;<span class='ru'>{$ratio}</span></li>
+           <li><span class='lu'>Uploaded:</span>&nbsp;<span class='ru'>{$uploaded}</span></li>
+           <li><span class='lu'>Downloaded:</span>&nbsp;<span class='ru'>{$downloaded}</span></li>
+           <li class='center'>{$member_reputation}</li>
+           <li><span class='lu'>PM:</span>&nbsp;<span class='ru'>{$pm}</span></li>
+           <li class='center'>{$on_offline}&nbsp;";
       }
       //////////////////////////// end      
 		  
@@ -362,7 +365,7 @@
       $moodanon = ($arr['anonymous'] == 'yes' ? ($CURUSER['class'] < UC_MODERATOR && $arr['userid'] != $CURUSER['id'] ? '' : $mooduser.' - ')."Anonymous" : $mooduser);	
       
       $author_info .="<a href='{$TBDEV['baseurl']}/forums/usermood.php' onclick=\"return popitup('{$TBDEV['baseurl']}/forums/usermood.php')\">
-      <img border='0' src='{$TBDEV['pic_base_url']}smilies/".htmlsafechars($moodupic)."' alt='".htmlsafechars($mooduname)."' title='{$moodanon}&nbsp;".htmlsafechars($mooduname)."!' /></a>";
+      <img border='0' src='{$TBDEV['pic_base_url']}smilies/".htmlsafechars($moodupic)."' alt='".htmlsafechars($mooduname)."' title='{$moodanon}&nbsp;".htmlsafechars($mooduname)."!' /></a></li></ul>";
 		  
 		  
 		  $quotebtn = '';
