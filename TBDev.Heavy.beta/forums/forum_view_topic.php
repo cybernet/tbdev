@@ -331,32 +331,32 @@
         {
         $author_info ="
         <ul>
-           <li class='avatar'><img width='100' height='100' src='{$avatar}' alt='Avatar' /></li>
-           <li class='title'>{$title}</li>
+        <li class='avatar'><img width='100' height='100' src='{$avatar}' alt='Avatar' /></li>
+        <li class='title'>{$title}</li>
         </ul>
         <ul class='fields'>
-           <li><span class='lu'>Posts:</span>&nbsp;<span class='ru'>{$forumposts}</span></li>
-           <li><span class='lu'>Ratio:</span>&nbsp;<span class='ru'>{$ratio}</span></li>
-           <li><span class='lu'>Uploaded:</span>&nbsp;<span class='ru'>{$uploaded}</span></li>
-           <li><span class='lu'>Downloaded:</span>&nbsp;<span class='ru'>{$downloaded}</span></li>
+        <li><span class='lu'>Posts:</span>&nbsp;<span class='ru'>{$forumposts}</span></li>
+        <li><span class='lu'>Ratio:</span>&nbsp;<span class='ru'>{$ratio}</span></li>
+        <li><span class='lu'>Uploaded:</span>&nbsp;<span class='ru'>{$uploaded}</span></li>
+        <li><span class='lu'>Downloaded:</span>&nbsp;<span class='ru'>{$downloaded}</span></li>
         </ul>";
         }
       }
-      else
+      else 
       {
         $author_info ="
         <ul style='margin-left:20px;'>
-           <li><img width='100' height='100' src='{$avatar}' alt='Avatar' /></li>
-           <li class='title'>{$title}</li>
+        <li><img width='100' height='100' src='{$avatar}' alt='Avatar' /></li>
+        <li class='title'>{$title}</li>
         </ul>
         <ul class='fields'>
-           <li><span class='lu'>Posts:</span>&nbsp;<span class='ru'>{$forumposts}</span></li>
-           <li><span class='lu'>Ratio:</span>&nbsp;<span class='ru'>{$ratio}</span></li>
-           <li><span class='lu'>Uploaded:</span>&nbsp;<span class='ru'>{$uploaded}</span></li>
-           <li><span class='lu'>Downloaded:</span>&nbsp;<span class='ru'>{$downloaded}</span></li>
-           <li class='center'>{$member_reputation}</li>
-           <li><span class='lu'>PM:</span>&nbsp;<span class='ru'>{$pm}</span></li>
-           <li class='center'>{$on_offline}&nbsp;";
+        <li><span class='lu'>Posts:</span>&nbsp;<span class='ru'>{$forumposts}</span></li>
+        <li><span class='lu'>Ratio:</span>&nbsp;<span class='ru'>{$ratio}</span></li>
+        <li><span class='lu'>Uploaded:</span>&nbsp;<span class='ru'>{$uploaded}</span></li>
+        <li><span class='lu'>Downloaded:</span>&nbsp;<span class='ru'>{$downloaded}</span></li>
+        <li class='center'>{$member_reputation}</li>
+        <li><span class='lu'>PM:</span>&nbsp;<span class='ru'>{$pm}</span></li>
+        <li class='center'>{$on_offline}&nbsp;";
       }
       //////////////////////////// end      
 		  
@@ -364,7 +364,8 @@
 		  
       $moodanon = ($arr['anonymous'] == 'yes' ? ($CURUSER['class'] < UC_MODERATOR && $arr['userid'] != $CURUSER['id'] ? '' : $mooduser.' - ')."Anonymous" : $mooduser);	
       
-      $author_info .="<a href='{$TBDEV['baseurl']}/forums/usermood.php' onclick=\"return popitup('{$TBDEV['baseurl']}/forums/usermood.php')\">
+      //$author_info .="<a href='{$TBDEV['baseurl']}/forums/usermood.php' onclick=\"return popitup('{$TBDEV['baseurl']}/forums/usermood.php')\">
+      $author_info .="<a href='{$TBDEV['baseurl']}/forums/usermood.php?action=usermood' onclick=\"return popitup('{$TBDEV['baseurl']}/forums.php?action=usermood')\">
       <img border='0' src='{$TBDEV['pic_base_url']}smilies/".htmlsafechars($moodupic)."' alt='".htmlsafechars($mooduname)."' title='{$moodanon}&nbsp;".htmlsafechars($mooduname)."!' /></a></li></ul>";
 		  
 		  

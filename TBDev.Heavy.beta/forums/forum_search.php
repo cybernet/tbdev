@@ -9,14 +9,15 @@
 		$res = mysql_query("SELECT COUNT(id) AS c FROM posts WHERE body LIKE ".sqlesc("%".sqlwildcardesc($keywords)."%")) or sqlerr(__FILE__, __LINE__);
 		$arr = mysql_fetch_assoc($res);
 		$count = (int)$arr['c'];
-		$keywords = htmlspecialchars($keywords);
+		$keywords = htmlsafechars($keywords);
 		
 		if ($count == 0)
 			$error = true;
 		else
 		{
+			require_once ROOT_PATH."/include/pager_functions.php";
 			$perpage = 10;
-      $pager = pager($perpage, $count, $_SERVER['PHP_SELF'].'?action='.$action.'&keywords='.$keywords.'&');
+      $pager = pager($perpage, $count, $_SERVER['PHP_SELF'].'?action='.$action.'&amp;keywords='.$keywords.'&amp;');
 			$res = mysql_query(
 			"SELECT p.id, p.topicid, p.userid, p.added, t.forumid, t.subject, f.name, f.minclassread, u.username ".
 			"FROM posts AS p ".
@@ -31,7 +32,7 @@
 			
 		
             $HTMLOUT .="<table border='0' cellspacing='0' cellpadding='5' width='100%'>
-			       <tr align='left'>
+			       <tr>
             	<td class='colhead'>Post</td>
                 <td class='colhead'>Topic</td>
                 <td class='colhead'>Forum</td>
@@ -50,9 +51,9 @@
 	
 				$HTMLOUT .="<tr>".
 					 	"<td align='center'>".$post['id']."</td>".
-						"<td align=left width='100%'><a href='".$_SERVER['PHP_SELF']."?action=viewtopic&amp;highlight=$keywords&amp;topicid=".$post['topicid']."&amp;page=p".$post['id']."#".$post['id']."'><b>" . htmlspecialchars($post['subject']) . "</b></a></td>".
-						"<td align=left style='white-space: nowrap;'>".(empty($post['name']) ? 'unknown['.$post['forumid'].']' : "<a href='".$_SERVER['PHP_SELF']."?action=viewforum&amp;forumid=".$post['forumid']."'><b>" . htmlspecialchars($post['name']) . "</b></a>")."</td>".
-						"<td align=left style='white-space: nowrap;'>".(empty($post['username']) ? 'unknown['.$post['userid'].']' : "<b><a href='{$TBDEV['baseurl']}/userdetails.php?id=".$post['userid']."'>".$post['username']."</a></b>")."<br />at ".get_date($post['added'], 'DATE',1,0)."</td>".
+						"<td align='left' width='100%'><a href='".$_SERVER['PHP_SELF']."?action=viewtopic&amp;highlight=$keywords&amp;topicid=".$post['topicid']."&amp;page=p".$post['id']."#".$post['id']."'><b>" . htmlsafechars($post['subject']) . "</b></a></td>".
+						"<td align='left' style='white-space: nowrap;'>".(empty($post['name']) ? 'unknown['.$post['forumid'].']' : "<a href='".$_SERVER['PHP_SELF']."?action=viewforum&amp;forumid=".$post['forumid']."'><b>" . htmlsafechars($post['name']) . "</b></a>")."</td>".
+						"<td align='left' style='white-space: nowrap;'>".(empty($post['username']) ? 'unknown['.$post['userid'].']' : "<b><a href='{$TBDEV['baseurl']}/userdetails.php?id=".$post['userid']."'>".$post['username']."</a></b>")."<br />at ".get_date($post['added'], 'DATE',1,0)."</td>".
 					 "</tr>";
 			}
 			$HTMLOUT .= end_table();
