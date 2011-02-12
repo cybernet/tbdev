@@ -63,7 +63,7 @@ loggedinorreturn();
     if (@!is_uploaded_file($nfofilename))
       stderr($lang['takeupload_failed'], $lang['takeupload_nfo_failed']);
 
-    $nfo = sqlesc(str_replace("\x0d\x0d\x0a", "\x0d\x0a", @file_get_contents($nfofilename)));
+    $nfo = sqlesc(utf8_encode(str_replace("\x0d\x0d\x0a", "\x0d\x0a", @file_get_contents($nfofilename))));
     }
     /////////////////////// NFO FILE END /////////////////////
 

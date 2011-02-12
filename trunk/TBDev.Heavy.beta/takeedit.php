@@ -61,7 +61,7 @@ loggedinorreturn();
         stderr($lang['takedit_failed'], $lang['takedit_nfo_error']);
       $nfofilename = $nfofile['tmp_name'];
       if (@is_uploaded_file($nfofilename) && @filesize($nfofilename) > 0)
-        $updateset[] = "nfo = " . sqlesc(str_replace("\x0d\x0d\x0a", "\x0d\x0a", file_get_contents($nfofilename)));
+        $updateset[] = "nfo = " . sqlesc(utf8_encode(str_replace("\x0d\x0d\x0a", "\x0d\x0a", file_get_contents($nfofilename))));
     }
     else
       if ($nfoaction == 'remove')
