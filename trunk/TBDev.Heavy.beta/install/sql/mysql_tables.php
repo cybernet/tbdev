@@ -193,21 +193,6 @@ $TABLE[] = "CREATE TABLE forums (
   PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
 
-$TABLE[] = "CREATE TABLE forums_ (
-  sort tinyint(3) unsigned NOT NULL DEFAULT '0',
-  id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  forid tinyint(4) NOT NULL DEFAULT '0',
-  `name` varchar(150) COLLATE utf8_unicode_ci NOT NULL,
-  description text COLLATE utf8_unicode_ci,
-  minclassread tinyint(3) unsigned NOT NULL DEFAULT '0',
-  minclasswrite tinyint(3) unsigned NOT NULL DEFAULT '0',
-  postcount int(10) unsigned NOT NULL DEFAULT '0',
-  topiccount int(10) unsigned NOT NULL DEFAULT '0',
-  minclasscreate tinyint(3) unsigned NOT NULL DEFAULT '0',
-  place int(10) NOT NULL DEFAULT '-1',
-  PRIMARY KEY (id)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-
 $TABLE[] = "CREATE TABLE friends (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   userid int(10) unsigned NOT NULL DEFAULT '0',
@@ -285,7 +270,7 @@ $TABLE[] = "CREATE TABLE posts (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   topicid int(10) unsigned NOT NULL DEFAULT '0',
   userid int(10) unsigned NOT NULL DEFAULT '0',
-  added int(22) DEFAULT '0',
+  added int(11) DEFAULT '0',
   body mediumtext COLLATE utf8_unicode_ci,
   parsed_body mediumtext COLLATE utf8_unicode_ci,
   editedby int(10) unsigned NOT NULL DEFAULT '0',
