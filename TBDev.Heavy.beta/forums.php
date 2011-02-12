@@ -167,14 +167,9 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       exit();
       break;
       
-    case 'locktopic':
-    case 'unlocktopic':
-    case 'setlocked':
-    case 'renametopic':
-    case 'setsticky':
-    case 'deletetopic':
-    case 'movetopic':
-      require_once "forums/forum_mod_options.php";
+    case 'usermood':
+      require_once "forums/mood.php";
+      require_once "forums/usermood.php";
       exit();
       break;
       
