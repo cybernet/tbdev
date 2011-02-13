@@ -27,9 +27,9 @@
             if ($use_attachment_mod || $use_poll_mod) {
                 $res = mysql_query("SELECT " .
                     ($use_attachment_mod ? "COUNT(attachments.id) AS attachments " : "") .
-                    ($use_poll_mod ? ($use_attachment_mod ? ', ' : '') . "COUNT(postpolls.id) AS polls " : "") . "FROM topics " . "LEFT JOIN posts ON topics.id=posts.topicid " .
+                    ($use_poll_mod ? ($use_attachment_mod ? ', ' : '') . "COUNT(forum_polls.id) AS polls " : "") . "FROM topics " . "LEFT JOIN posts ON topics.id=posts.topicid " .
                     ($use_attachment_mod ? "LEFT JOIN attachments ON attachments.postid = posts.id " : "") .
-                    ($use_poll_mod ? "LEFT JOIN postpolls ON postpolls.id=topics.pollid " : "") . "WHERE topics.forumid=" . sqlesc($forumid)) or sqlerr(__FILE__, __LINE__);
+                    ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id=topics.pollid " : "") . "WHERE topics.forumid=" . sqlesc($forumid)) or sqlerr(__FILE__, __LINE__);
 
                 ($use_attachment_mod ? $attachments = 0 : null);
                 ($use_poll_mod ? $polls = 0 : null);
@@ -62,9 +62,9 @@
             }
         }
 
-        mysql_query("DELETE posts.*, topics.*, forums.* " . ($use_attachment_mod ? ", attachments.*, attachmentdownloads.* " : "") . ($use_poll_mod ? ", postpolls.*, postpollanswers.* " : "") . "FROM posts " .
+        mysql_query("DELETE posts.*, topics.*, forums.* " . ($use_attachment_mod ? ", attachments.*, attachmentdownloads.* " : "") . ($use_poll_mod ? ", forum_polls.*, postforum_poll_answers.* " : "") . "FROM posts " .
             ($use_attachment_mod ? "LEFT JOIN attachments ON attachments.postid = posts.id " . "LEFT JOIN attachmentdownloads ON attachmentdownloads.fileid = attachments.id " : "") . "LEFT JOIN topics ON topics.id = posts.topicid " . "LEFT JOIN forums ON forums.id = topics.forumid " .
-            ($use_poll_mod ? "LEFT JOIN postpolls ON postpolls.id = topics.pollid " . "LEFT JOIN postpollanswers ON postpollanswers.pollid = postpolls.id " : "") . "WHERE posts.topicid IN (" . join(', ', $tids) . ")") or sqlerr(__FILE__, __LINE__);
+            ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id = topics.pollid " . "LEFT JOIN postforum_poll_answers ON postforum_poll_answers.pollid = forum_polls.id " : "") . "WHERE posts.topicid IN (" . join(', ', $tids) . ")") or sqlerr(__FILE__, __LINE__);
 
         header("Location: {$_SERVER['PHP_SELF']}");
         exit();
