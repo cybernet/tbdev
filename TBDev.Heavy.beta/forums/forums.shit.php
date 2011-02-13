@@ -89,7 +89,7 @@ $use_attachment_mod = true;
 /**
 * Set to true if you want to use the forum poll mod
 *
-* Requires 2 extra tables(postpolls, postpollanswers), so efore enabling it, make sure you have them...
+* Requires 2 extra tables(forum_polls, postforum_poll_answers), so efore enabling it, make sure you have them...
 */
 $use_poll_mod = true;
 /**
@@ -676,9 +676,9 @@ if ($action == 'updatetopic') {
 
             mysql_query("DELETE posts, topics " .
                 ($use_attachment_mod ? ", attachments, attachmentdownloads " : "") .
-                ($use_poll_mod ? ", postpolls, postpollanswers " : "") . "FROM topics " . "LEFT JOIN posts ON posts.topicid = topics.id " .
+                ($use_poll_mod ? ", forum_polls, postforum_poll_answers " : "") . "FROM topics " . "LEFT JOIN posts ON posts.topicid = topics.id " .
                 ($use_attachment_mod ? "LEFT JOIN attachments ON attachments.postid = posts.id " . "LEFT JOIN attachmentdownloads ON attachmentdownloads.fileid = attachments.id " : "") .
-                ($use_poll_mod ? "LEFT JOIN postpolls ON postpolls.id = topics.pollid " . "LEFT JOIN postpollanswers ON postpollanswers.pollid = postpolls.id " : "") . "WHERE topics.id = " . sqlesc($topicid)) or sqlerr(__FILE__, __LINE__);
+                ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id = topics.pollid " . "LEFT JOIN postforum_poll_answers ON postforum_poll_answers.pollid = forum_polls.id " : "") . "WHERE topics.id = " . sqlesc($topicid)) or sqlerr(__FILE__, __LINE__);
 
             header('Location: ' . $_SERVER['PHP_SELF'] . '?action=viewforum&forumid=' . $forumid);
             exit();
@@ -826,9 +826,9 @@ if ($action == 'updatetopic') {
             if ($use_attachment_mod || $use_poll_mod) {
                 $res = mysql_query("SELECT " .
                     ($use_attachment_mod ? "COUNT(attachments.id) AS attachments " : "") .
-                    ($use_poll_mod ? ($use_attachment_mod ? ', ' : '') . "COUNT(postpolls.id) AS polls " : "") . "FROM topics " . "LEFT JOIN posts ON topics.id=posts.topicid " .
+                    ($use_poll_mod ? ($use_attachment_mod ? ', ' : '') . "COUNT(forum_polls.id) AS polls " : "") . "FROM topics " . "LEFT JOIN posts ON topics.id=posts.topicid " .
                     ($use_attachment_mod ? "LEFT JOIN attachments ON attachments.postid = posts.id " : "") .
-                    ($use_poll_mod ? "LEFT JOIN postpolls ON postpolls.id=topics.pollid " : "") . "WHERE topics.forumid=" . sqlesc($forumid)) or sqlerr(__FILE__, __LINE__);
+                    ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id=topics.pollid " : "") . "WHERE topics.forumid=" . sqlesc($forumid)) or sqlerr(__FILE__, __LINE__);
 
                 ($use_attachment_mod ? $attachments = 0 : null);
                 ($use_poll_mod ? $polls = 0 : null);
@@ -861,9 +861,9 @@ if ($action == 'updatetopic') {
             }
         }
 
-        mysql_query("DELETE posts.*, topics.*, forums.* " . ($use_attachment_mod ? ", attachments.*, attachmentdownloads.* " : "") . ($use_poll_mod ? ", postpolls.*, postpollanswers.* " : "") . "FROM posts " .
+        mysql_query("DELETE posts.*, topics.*, forums.* " . ($use_attachment_mod ? ", attachments.*, attachmentdownloads.* " : "") . ($use_poll_mod ? ", forum_polls.*, postforum_poll_answers.* " : "") . "FROM posts " .
             ($use_attachment_mod ? "LEFT JOIN attachments ON attachments.postid = posts.id " . "LEFT JOIN attachmentdownloads ON attachmentdownloads.fileid = attachments.id " : "") . "LEFT JOIN topics ON topics.id = posts.topicid " . "LEFT JOIN forums ON forums.id = topics.forumid " .
-            ($use_poll_mod ? "LEFT JOIN postpolls ON postpolls.id = topics.pollid " . "LEFT JOIN postpollanswers ON postpollanswers.pollid = postpolls.id " : "") . "WHERE posts.topicid IN (" . join(', ', $tids) . ")") or sqlerr(__FILE__, __LINE__);
+            ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id = topics.pollid " . "LEFT JOIN postforum_poll_answers ON postforum_poll_answers.pollid = forum_polls.id " : "") . "WHERE posts.topicid IN (" . join(', ', $tids) . ")") or sqlerr(__FILE__, __LINE__);
 
         header("Location: {$_SERVER['PHP_SELF']}");
         exit();
@@ -1071,13 +1071,13 @@ if ($action == 'updatetopic') {
         $choice = $_POST['choice'];
         $pollid = (int)$_POST["pollid"];
         if (ctype_digit($choice) && $choice < 256 && $choice == floor($choice)) {
-            $res = mysql_query("SELECT pa.id " . "FROM postpolls AS p " . "LEFT JOIN postpollanswers AS pa ON pa.pollid = p.id AND pa.userid = " . sqlesc($userid) . " " . "WHERE p.id = " . sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
+            $res = mysql_query("SELECT pa.id " . "FROM forum_polls AS p " . "LEFT JOIN postforum_poll_answers AS pa ON pa.pollid = p.id AND pa.userid = " . sqlesc($userid) . " " . "WHERE p.id = " . sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
             $arr = mysql_fetch_assoc($res) or stderr('Sorry', 'Inexistent poll!');
 
             if (is_valid_id($arr['id']))
                 stderr("Error...", "Dupe vote");
 
-            mysql_query("INSERT INTO postpollanswers VALUES(id, " . sqlesc($pollid) . ", " . sqlesc($userid) . ", " . sqlesc($choice) . ")") or sqlerr(__FILE__, __LINE__);
+            mysql_query("INSERT INTO postforum_poll_answers VALUES(id, " . sqlesc($pollid) . ", " . sqlesc($userid) . ", " . sqlesc($choice) . ")") or sqlerr(__FILE__, __LINE__);
 
             if (mysql_affected_rows() != 1)
                 stderr("Error...", "An error occured. Your vote has not been counted.");
@@ -1151,7 +1151,7 @@ if ($action == 'updatetopic') {
 
 	if ($use_poll_mod && is_valid_id($pollid))
 	{
-		$res = mysql_query("SELECT p.*, pa.id AS pa_id, pa.selection FROM postpolls AS p LEFT JOIN postpollanswers AS pa ON pa.pollid = p.id AND pa.userid = ".$CURUSER['id']." WHERE p.id = ".sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
+		$res = mysql_query("SELECT p.*, pa.id AS pa_id, pa.selection FROM forum_polls AS p LEFT JOIN postforum_poll_answers AS pa ON pa.pollid = p.id AND pa.userid = ".$CURUSER['id']." WHERE p.id = ".sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
 	
 		if (mysql_num_rows($res) > 0)
 		{
@@ -1190,7 +1190,7 @@ if ($action == 'updatetopic') {
 			{
 				$uservote = ($arr1["selection"] != '' ? (int)$arr1["selection"] : -1);
 				
-				$res3 = mysql_query("SELECT selection FROM postpollanswers WHERE pollid = ".sqlesc($pollid)." AND selection < 20");
+				$res3 = mysql_query("SELECT selection FROM postforum_poll_answers WHERE pollid = ".sqlesc($pollid)." AND selection < 20");
 				$tvotes = mysql_num_rows($res3);
 			   				
 			$vs = $os = array();
@@ -1262,7 +1262,7 @@ if ($action == 'updatetopic') {
 			    $HTMLOUT .="<a href='".$_SERVER['PHP_SELF']."?action=viewtopic&amp;topicid=$topicid&amp;listvotes'>List Voters</a>";
 				  else
 				  {
-				  $res4 = mysql_query("SELECT pa.userid, u.username, u.anonymous FROM postpollanswers AS pa LEFT JOIN users AS u ON u.id = pa.userid WHERE pa.pollid = ".sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
+				  $res4 = mysql_query("SELECT pa.userid, u.username, u.anonymous FROM postforum_poll_answers AS pa LEFT JOIN users AS u ON u.id = pa.userid WHERE pa.pollid = ".sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
 				  $voters = '';
 				  while ($arr4 = mysql_fetch_assoc($res4))
 				  {
@@ -1761,9 +1761,9 @@ function confirm_att(id)
 
             mysql_query("DELETE posts, topics " .
                 ($use_attachment_mod ? ", attachments, attachmentdownloads " : "") .
-                ($use_poll_mod ? ", postpolls, postpollanswers " : "") . "FROM topics " . "LEFT JOIN posts ON posts.topicid = topics.id " .
+                ($use_poll_mod ? ", forum_polls, postforum_poll_answers " : "") . "FROM topics " . "LEFT JOIN posts ON posts.topicid = topics.id " .
                 ($use_attachment_mod ? "LEFT JOIN attachments ON attachments.postid = posts.id " . "LEFT JOIN attachmentdownloads ON attachmentdownloads.fileid = attachments.id " : "") .
-                ($use_poll_mod ? "LEFT JOIN postpolls ON postpolls.id = topics.pollid " . "LEFT JOIN postpollanswers ON postpollanswers.pollid = postpolls.id " : "") . "WHERE topics.id = " . sqlesc($topicid)) or sqlerr(__FILE__, __LINE__);
+                ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id = topics.pollid " . "LEFT JOIN postforum_poll_answers ON postforum_poll_answers.pollid = forum_polls.id " : "") . "WHERE topics.id = " . sqlesc($topicid)) or sqlerr(__FILE__, __LINE__);
 
             header('Location: ' . $_SERVER['PHP_SELF'] . '?action=viewforum&forumid=' . $a["forumid"]);
             exit();
@@ -1808,7 +1808,7 @@ function confirm_att(id)
     if (!is_valid_id($pollid))
         stderr("Error", "Invalid ID!");
 
-    $res = mysql_query("SELECT pp.id, t.id AS tid FROM postpolls AS pp LEFT JOIN topics AS t ON t.pollid = pp.id WHERE pp.id = " . sqlesc($pollid));
+    $res = mysql_query("SELECT pp.id, t.id AS tid FROM forum_polls AS pp LEFT JOIN topics AS t ON t.pollid = pp.id WHERE pp.id = " . sqlesc($pollid));
     if (mysql_num_rows($res) == 0)
         stderr("Error", "No poll found with that ID.");
 
@@ -1818,7 +1818,7 @@ function confirm_att(id)
     if (!$sure || $sure != 1)
         stderr('Sanity check...', 'You are about to delete a poll. Click <a href=' . $_SERVER['PHP_SELF'] . '?action=' . htmlspecialchars($action) . '&amp;pollid=' . $arr['id'] . '&amp;sure=1>here</a> if you are sure.');
 
-    mysql_query("DELETE pp.*, ppa.* FROM postpolls AS pp LEFT JOIN postpollanswers AS ppa ON ppa.pollid = pp.id WHERE pp.id = " . sqlesc($pollid));
+    mysql_query("DELETE pp.*, ppa.* FROM forum_polls AS pp LEFT JOIN postforum_poll_answers AS ppa ON ppa.pollid = pp.id WHERE pp.id = " . sqlesc($pollid));
 
     if (mysql_affected_rows() == 0)
         stderr('Sorry...', 'There was an error while deleting the poll, please re-try.');
@@ -1837,7 +1837,7 @@ function confirm_att(id)
         if (!is_valid_id($pollid))
             stderr("Error", "Invalid ID!");
 
-        $res = mysql_query("SELECT pp.*, t.id AS tid FROM postpolls AS pp LEFT JOIN topics AS t ON t.pollid = pp.id WHERE pp.id = " . sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
+        $res = mysql_query("SELECT pp.*, t.id AS tid FROM forum_polls AS pp LEFT JOIN topics AS t ON t.pollid = pp.id WHERE pp.id = " . sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
 
         if (mysql_num_rows($res) == 0)
             stderr("Error", "No poll found with that ID.");
@@ -1875,7 +1875,7 @@ function confirm_att(id)
 			stderr("Error", "Missing form data!");
 	
 		if ($subaction == "edit" && is_valid_id($pollid))
-			mysql_query("UPDATE postpolls SET " .
+			mysql_query("UPDATE forum_polls SET " .
 							"question = " . sqlesc($question) . ", " .
 							"option0 = " . sqlesc($option0) . ", " .
 							"option1 = " . sqlesc($option1) . ", " .
@@ -1904,7 +1904,7 @@ function confirm_att(id)
 			if (!is_valid_id($topicid))
 				stderr('Error', 'Invalid topic ID!');
 	
-			mysql_query("INSERT INTO postpolls VALUES(id" .
+			mysql_query("INSERT INTO forum_polls VALUES(id" .
 							", " . sqlesc(time()) .
 							", " . sqlesc($question) .
 							", " . sqlesc($option0) .

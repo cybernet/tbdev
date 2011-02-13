@@ -282,7 +282,7 @@ function StatusBar() {
                 &nbsp;&nbsp;{$lang['gl_act_torrents']}:&nbsp;<img alt='{$lang['gl_seed_torrents']}' title='{$lang['gl_seed_torrents']}' src='pic/arrowup.gif' />&nbsp;{$seedleech['yes']}
                 &nbsp;&nbsp;<img alt='{$lang['gl_leech_torrents']}' title='{$lang['gl_leech_torrents']}' src='pic/arrowdown.gif' />&nbsp;{$seedleech['no']}
             </div>
-                <p style='text-align:right;'>".date(DATE_RFC822)."</p>";
+                <p style='text-align:right;'>".get_date(TIME_NOW, 'LONG', 1)."</p>";
 
 	return $StatusBar;
 

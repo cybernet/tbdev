@@ -10,7 +10,7 @@
         if (!is_valid_id($pollid))
             stderr("Error", "Invalid ID!");
 
-        $res = mysql_query("SELECT pp.*, t.id AS tid FROM postpolls AS pp LEFT JOIN topics AS t ON t.pollid = pp.id WHERE pp.id = " . sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
+        $res = mysql_query("SELECT pp.*, t.id AS tid FROM forum_polls AS pp LEFT JOIN topics AS t ON t.pollid = pp.id WHERE pp.id = " . sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
 
         if (mysql_num_rows($res) == 0)
             stderr("Error", "No poll found with that ID.");
@@ -48,7 +48,7 @@
 			stderr("Error", "Missing form data!");
 	
 		if ($subaction == "edit" && is_valid_id($pollid))
-			mysql_query("UPDATE postpolls SET " .
+			mysql_query("UPDATE forum_polls SET " .
 							"question = " . sqlesc($question) . ", " .
 							"option0 = " . sqlesc($option0) . ", " .
 							"option1 = " . sqlesc($option1) . ", " .
@@ -77,7 +77,7 @@
 			if (!is_valid_id($topicid))
 				stderr('Error', 'Invalid topic ID!');
 	
-			mysql_query("INSERT INTO postpolls VALUES(id" .
+			mysql_query("INSERT INTO forum_polls VALUES(id" .
 							", " . sqlesc(time()) .
 							", " . sqlesc($question) .
 							", " . sqlesc($option0) .

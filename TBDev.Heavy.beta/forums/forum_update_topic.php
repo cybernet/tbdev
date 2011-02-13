@@ -33,9 +33,9 @@
 
             mysql_query("DELETE posts, topics " .
                 ($use_attachment_mod ? ", attachments, attachmentdownloads " : "") .
-                ($use_poll_mod ? ", postpolls, postpollanswers " : "") . "FROM topics " . "LEFT JOIN posts ON posts.topicid = topics.id " .
+                ($use_poll_mod ? ", forum_polls, postforum_poll_answers " : "") . "FROM topics " . "LEFT JOIN posts ON posts.topicid = topics.id " .
                 ($use_attachment_mod ? "LEFT JOIN attachments ON attachments.postid = posts.id " . "LEFT JOIN attachmentdownloads ON attachmentdownloads.fileid = attachments.id " : "") .
-                ($use_poll_mod ? "LEFT JOIN postpolls ON postpolls.id = topics.pollid " . "LEFT JOIN postpollanswers ON postpollanswers.pollid = postpolls.id " : "") . "WHERE topics.id = " . sqlesc($topicid)) or sqlerr(__FILE__, __LINE__);
+                ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id = topics.pollid " . "LEFT JOIN postforum_poll_answers ON postforum_poll_answers.pollid = forum_polls.id " : "") . "WHERE topics.id = " . sqlesc($topicid)) or sqlerr(__FILE__, __LINE__);
 
             header('Location: ' . $_SERVER['PHP_SELF'] . '?action=viewforum&forumid=' . $forumid);
             exit();

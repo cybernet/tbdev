@@ -8,13 +8,13 @@
         $choice = $_POST['choice'];
         $pollid = (int)$_POST["pollid"];
         if (ctype_digit($choice) && $choice < 256 && $choice == floor($choice)) {
-            $res = mysql_query("SELECT pa.id " . "FROM postpolls AS p " . "LEFT JOIN postpollanswers AS pa ON pa.pollid = p.id AND pa.userid = " . sqlesc($userid) . " " . "WHERE p.id = " . sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
+            $res = mysql_query("SELECT pa.id " . "FROM forum_polls AS p " . "LEFT JOIN postforum_poll_answers AS pa ON pa.pollid = p.id AND pa.userid = " . sqlesc($userid) . " " . "WHERE p.id = " . sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
             $arr = mysql_fetch_assoc($res) or stderr('Sorry', 'Inexistent poll!');
 
             if (is_valid_id($arr['id']))
                 stderr("Error...", "Dupe vote");
 
-            mysql_query("INSERT INTO postpollanswers VALUES(id, " . sqlesc($pollid) . ", " . sqlesc($userid) . ", " . sqlesc($choice) . ")") or sqlerr(__FILE__, __LINE__);
+            mysql_query("INSERT INTO postforum_poll_answers VALUES(id, " . sqlesc($pollid) . ", " . sqlesc($userid) . ", " . sqlesc($choice) . ")") or sqlerr(__FILE__, __LINE__);
 
             if (mysql_affected_rows() != 1)
                 stderr("Error...", "An error occured. Your vote has not been counted.");
