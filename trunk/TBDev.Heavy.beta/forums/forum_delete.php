@@ -62,9 +62,9 @@
             }
         }
 
-        mysql_query("DELETE posts.*, topics.*, forums.* " . ($use_attachment_mod ? ", attachments.*, attachmentdownloads.* " : "") . ($use_poll_mod ? ", forum_polls.*, postforum_poll_answers.* " : "") . "FROM posts " .
+        mysql_query("DELETE posts.*, topics.*, forums.* " . ($use_attachment_mod ? ", attachments.*, attachmentdownloads.* " : "") . ($use_poll_mod ? ", forum_polls.*, forum_poll_answers.* " : "") . "FROM posts " .
             ($use_attachment_mod ? "LEFT JOIN attachments ON attachments.postid = posts.id " . "LEFT JOIN attachmentdownloads ON attachmentdownloads.fileid = attachments.id " : "") . "LEFT JOIN topics ON topics.id = posts.topicid " . "LEFT JOIN forums ON forums.id = topics.forumid " .
-            ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id = topics.pollid " . "LEFT JOIN postforum_poll_answers ON postforum_poll_answers.pollid = forum_polls.id " : "") . "WHERE posts.topicid IN (" . join(', ', $tids) . ")") or sqlerr(__FILE__, __LINE__);
+            ($use_poll_mod ? "LEFT JOIN forum_polls ON forum_polls.id = topics.pollid " . "LEFT JOIN forum_poll_answers ON forum_poll_answers.pollid = forum_polls.id " : "") . "WHERE posts.topicid IN (" . join(', ', $tids) . ")") or sqlerr(__FILE__, __LINE__);
 
         header("Location: {$_SERVER['PHP_SELF']}");
         exit();

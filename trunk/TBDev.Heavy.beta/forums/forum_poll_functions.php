@@ -1,7 +1,7 @@
 <?php
 
 
-		$res = mysql_query("SELECT p.*, pa.id AS pa_id, pa.selection FROM forum_polls AS p LEFT JOIN postforum_poll_answers AS pa ON pa.pollid = p.id AND pa.userid = ".$CURUSER['id']." WHERE p.id = ".sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
+		$res = mysql_query("SELECT p.*, pa.id AS pa_id, pa.selection FROM forum_polls AS p LEFT JOIN forum_poll_answers AS pa ON pa.pollid = p.id AND pa.userid = ".$CURUSER['id']." WHERE p.id = ".sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
 	
 		if (mysql_num_rows($res) > 0)
 		{
@@ -40,7 +40,7 @@
 			{
 				$uservote = ($arr1["selection"] != '' ? (int)$arr1["selection"] : -1);
 				
-				$res3 = mysql_query("SELECT selection FROM postforum_poll_answers WHERE pollid = ".sqlesc($pollid)." AND selection < 20");
+				$res3 = mysql_query("SELECT selection FROM forum_poll_answers WHERE pollid = ".sqlesc($pollid)." AND selection < 20");
 				$tvotes = mysql_num_rows($res3);
 			   				
 			$vs = $os = array();
@@ -112,7 +112,7 @@
 			    $HTMLOUT .="<a href='".$_SERVER['PHP_SELF']."?action=viewtopic&amp;topicid=$topicid&amp;listvotes'>List Voters</a>";
 				  else
 				  {
-				  $res4 = mysql_query("SELECT pa.userid, u.username, u.anonymous FROM postforum_poll_answers AS pa LEFT JOIN users AS u ON u.id = pa.userid WHERE pa.pollid = ".sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
+				  $res4 = mysql_query("SELECT pa.userid, u.username, u.anonymous FROM forum_poll_answers AS pa LEFT JOIN users AS u ON u.id = pa.userid WHERE pa.pollid = ".sqlesc($pollid)) or sqlerr(__FILE__, __LINE__);
 				  $voters = '';
 				  while ($arr4 = mysql_fetch_assoc($res4))
 				  {
