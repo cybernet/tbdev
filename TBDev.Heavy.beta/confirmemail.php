@@ -19,6 +19,8 @@
 require_once "include/bittorrent.php";
 require_once "include/user_functions.php";
 
+get_template();
+
 loggedinorreturn();
 
     $lang = array_merge( load_language('global'), load_language('confirmemail') );

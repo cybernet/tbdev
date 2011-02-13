@@ -41,7 +41,7 @@ dbconn();
       {
         if(empty($_POST['captcha']) || $_SESSION['captcha_id'] != strtoupper($_POST['captcha']))
         {
-          header('Location: recover.php');
+          header("Location: {$TBDEV['baseurl']}/recover.php");
           exit();
         }
       }
