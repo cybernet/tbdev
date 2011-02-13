@@ -15,7 +15,7 @@
     if (!$sure || $sure != 1)
         stderr('Sanity check...', 'You are about to delete a poll. Click <a href=' . $_SERVER['PHP_SELF'] . '?action=' . htmlspecialchars($action) . '&amp;pollid=' . $arr['id'] . '&amp;sure=1>here</a> if you are sure.');
 
-    mysql_query("DELETE pp.*, ppa.* FROM forum_polls AS pp LEFT JOIN postforum_poll_answers AS ppa ON ppa.pollid = pp.id WHERE pp.id = " . sqlesc($pollid));
+    mysql_query("DELETE pp.*, ppa.* FROM forum_polls AS pp LEFT JOIN forum_poll_answers AS ppa ON ppa.pollid = pp.id WHERE pp.id = " . sqlesc($pollid));
 
     if (mysql_affected_rows() == 0)
         stderr('Sorry...', 'There was an error while deleting the poll, please re-try.');
