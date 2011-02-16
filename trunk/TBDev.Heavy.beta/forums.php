@@ -145,7 +145,7 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       break;
       
     case 'updateforum':
-      require_once "forums/forum_update.php";
+      require_once "forums/forum_update_forum.php";
       exit();
       break;
       
