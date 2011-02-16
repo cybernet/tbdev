@@ -76,7 +76,7 @@ $TBDEV['captcha'] = 0; // turns captcha on/off
 
 $TBDEV['autoclean_interval'] = 900;
 $TBDEV['sql_error_log'] = ROOT_PATH.'/logs/sql_err_'.date("M_D_Y").'.log';
-$TBDEV['pic_base_url'] = "./pic/";
+$TBDEV['pic_base_url'] = "templates/1/images/";
 $TBDEV['stylesheet'] = "1";
 
 $TBDEV['forums_online'] = 1;
