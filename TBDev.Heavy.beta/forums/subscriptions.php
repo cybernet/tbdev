@@ -145,7 +145,7 @@ while ($arr = mysql_fetch_assoc($res)) {
     $body = format_comment($arr2["body"]);
 
     if ((is_valid_id(isset($arr['editedby'])))) {
-        $subres = sql_query("SELECT username FROM users WHERE id=$arr[editedby]");
+        $subres = mysql_query("SELECT username FROM users WHERE id=$arr[editedby]");
         if (mysql_num_rows($subres) == 1) {
             $subrow = mysql_fetch_assoc($subres);
             $body .= "<p><font size='1' class='small'>Last edited by <a href='{$TBDEV['baseurl']}/userdetails.php?id=$arr[editedby]'><b>$subrow[username]</b></a> at $arr[editedat] GMT</font></p>\n";

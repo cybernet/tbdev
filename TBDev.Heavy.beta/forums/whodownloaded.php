@@ -29,7 +29,7 @@ else {
     <td align='center'><a href=\"#\" onclick=\"opener.location=('userdetails.php?id=".$arr["userid"]."'); self.close();\">".$arr["username"]."</a></td>
     <td align='center'>".$arr["downloads"]."</td><td align='center'>".get_date($arr["date"], 'LONG',1,0)."</td></tr>";
     }
-    $res = sql_query("SELECT downloads FROM attachments WHERE id=" . sqlesc($fileid."")) or sqlerr(__FILE__, __LINE__);
+    $res = mysql_query("SELECT downloads FROM attachments WHERE id=" . sqlesc($fileid."")) or sqlerr(__FILE__, __LINE__);
     $arr = mysql_fetch_assoc($res);
     $HTMLOUT.="<tr><td colspan='5'><div class='error'><font color='blue'>Total Downloads: ".$arr["downloads"]."</font></div></td</tr>";
     $HTMLOUT.="</table>\n";
