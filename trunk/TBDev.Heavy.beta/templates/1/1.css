@@ -657,6 +657,7 @@ li.title { text-align:center; font-size: small; }
     font-size: tiny;
     line-height: 200%;
     padding: 5px;
+    margin-top: 10px;
 }
 
 .user_control_fbtn a {
