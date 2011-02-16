@@ -14,7 +14,7 @@ $HTMLOUT .="<table><tr><td class='embedded'>
 <small>You may select your mood by clicking on the smiley in the forum !</small></td></tr></table>";
 
 $query1 = "SELECT mood, COUNT(mood) as moodcount FROM users GROUP BY mood ORDER BY moodcount DESC";
-$res = sql_query($query1) or sqlerr(__FILE__, __LINE__);
+$res = mysql_query($query1) or sqlerr(__FILE__, __LINE__);
 
 $HTMLOUT = "<h2>Top Moods</h2>" . "    <table border='1' cellspacing='0' cellpadding='5'>" . "<tr><td class='colhead' align='center'>Count</td><td class='colhead' align='center'>Mood</td><td class='colhead' align='center'>Icon</td></tr>\n";
 while ($arr = mysql_fetch_assoc($res)) {

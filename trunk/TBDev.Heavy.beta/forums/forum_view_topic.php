@@ -284,7 +284,7 @@
 
        if (is_valid_id($arr['editedby']))
        {
-        $body .= "<br /><span class='fedited_by'>{$lang['forum_topic_view_edit_by']}<a href='{$TBDEV['baseurl']}/userdetails.php?id={$arr['editedby']}'><strong>{$arr['u2_username']}</strong></a> on ".get_date( $arr['editedat'],'')."</span>\n";
+        $body .= "<div class='fedited_by'>{$lang['forum_topic_view_edit_by']}<a href='{$TBDEV['baseurl']}/userdetails.php?id={$arr['editedby']}'><strong>{$arr['u2_username']}</strong></a> on ".get_date( $arr['editedat'],'')."</div>\n";
        }
 		
 /*		   if ($use_attachment_mod && ((!empty($arr['at_filename']) && is_valid_id($arr['at_id'])) && $arr['at_postid'] == $postid))
