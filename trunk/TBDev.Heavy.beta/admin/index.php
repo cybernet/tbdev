@@ -63,7 +63,7 @@ require_once "include/user_functions.php";
                          </div>
 			             <!-- row 4 -->
                          <div class='table-row'>
-                             <div class='left-layer'><p class='text'><a href='admin.php?action=forummanage'>{$lang['index_forummanage']}</a></p></div>
+                             <!--<div class='left-layer'><p class='text'><a href='admin.php?action=forummanage'>{$lang['index_forummanage']}</a></p></div>-->
                              <div class='left-layer'><p class='text'><a href='admin.php?action=categories'>{$lang['index_categories']}</a></p></div>
                              <div class='left-layer'><p class='text'><a href='admin.php?action=themes'>{$lang['index_themes']}</a></p></div>
                              <div class='space-line'></div>
