@@ -22,7 +22,7 @@ switch($do) {
 case 'delete' : 
 	if(!$id)
 	stderr('Err','Fool what are you doing!?');
-	if(sql_query('DELETE FROM forum_parents where id = '.$id)) {
+	if(mysql_query('DELETE FROM forum_parents where id = '.$id)) {
 		header('Refresh:2; url='.$this_url);
 		stderr('Success','Over Forum was deleted! wait till redirect');
 	} else 
