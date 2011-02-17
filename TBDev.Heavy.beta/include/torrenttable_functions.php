@@ -125,7 +125,7 @@ function torrenttable( $res ) {
       }
       else 
       {
-          $htmlout .= "<td align='right'><b><a href='filelist.php?id=$id'>" . $row["numfiles"] . "</a></b></td>\n";
+          $htmlout .= "<td align='right'><b><a href='filelist.php?id=$id'>{$row["numfiles"]}</a></b></td>\n";
           
           
       }

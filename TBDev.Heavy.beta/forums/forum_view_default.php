@@ -1,7 +1,7 @@
 <?php
 
 // -------- Default action: View forums
-            
+            $forums = array();
             $f_mod='';
             mysql_query("UPDATE users SET forum_access = '" . time() . "' WHERE id={$CURUSER['id']}") or sqlerr(__FILE__, __LINE__);
             
