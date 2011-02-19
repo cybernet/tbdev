@@ -21,11 +21,11 @@ $HTMLOUT .="<script type='text/javascript'>
     var text = document.getElementById(switchTextDiv);
     if(ele.style.display == 'block') {
           ele.style.display = 'none';
-          text.innerHTML = '<img src=\'pic/panel_on.gif\' alt=\'Read More\' />';
+          text.innerHTML = '<img src=\'{$TBDEV['pic_base_url']}panel_on.gif\' alt=\'Read More\' />';
       }
     else {
       ele.style.display = 'block';
-      text.innerHTML = '<img src=\'pic/panel_off.gif\' alt=\'Read Less\' />';
+      text.innerHTML = '<img src=\'{$TBDEV['pic_base_url']}panel_off.gif\' alt=\'Read Less\' />';
     }
   }
 /*]]>*/
@@ -48,7 +48,7 @@ $HTMLOUT .="<script type='text/javascript'>
       $arr['heading'] = htmlsafechars( $arr['heading'] );
       $arr['id'] = intval( $arr['id'] );
 
-      $updated = ($arr['updated'] == 1 ? "&nbsp;<img src='pic/updated.png' alt='Panel' />" : (($arr['updated'] == 2) ? "&nbsp;<img src='pic/new.png' alt='panel' />": ""));
+      $updated = ($arr['updated'] == 1 ? "&nbsp;<img src='{$TBDEV['pic_base_url']}updated.png' alt='Panel' />" : (($arr['updated'] == 2) ? "&nbsp;<img src='{$TBDEV['pic_base_url']}new.png' alt='panel' />": ""));
 
       if ($arr['cid'] != $cat_placeholder)
       $HTMLOUT .= "             <div style='background:#cecece;padding:5px;'>
@@ -56,7 +56,7 @@ $HTMLOUT .="<script type='text/javascript'>
                                 </div>";
       
       $HTMLOUT .= "             <div style='padding: 5px;'>
-                                    <span style='font-weight:bold;font-size:10pt;'>{$arr['heading']}</span>&nbsp;<a id='myHeader_{$arr['id']}' href=\"javascript:toggle2('myContent_{$arr['id']}','myHeader_{$arr['id']}');\" ><img src='pic/panel_on.gif' alt='Read More' /></a>
+                                    <span style='font-weight:bold;font-size:10pt;'>{$arr['heading']}</span>&nbsp;<a id='myHeader_{$arr['id']}' href=\"javascript:toggle2('myContent_{$arr['id']}','myHeader_{$arr['id']}');\" ><img src='{$TBDEV['pic_base_url']}panel_on.gif' alt='Read More' /></a>
                                 </div>
                                 <div id='myContent_{$arr['id']}' style='display: none;'>
                                     <div class='clear'></div>

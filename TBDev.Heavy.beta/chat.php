@@ -53,7 +53,7 @@ loggedinorreturn();
       <param name='pixx:highlight' value='true' />
       <param name='pixx:highlightnick' value='true' />
       <param name='pixx:nickfield' value='true' />
-      <param name='style:smiley1' value='~:) pic/smilies/sleep.gif' />
+      <param name='style:smiley1' value='~:) {$TBDEV['pic_base_url']}smilies/sleep.gif' />
     </applet>
     </div>
     </div>";

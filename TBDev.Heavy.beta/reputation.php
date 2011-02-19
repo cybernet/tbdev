@@ -258,7 +258,7 @@ require_once "cache/rep_settings_cache.php";
 						}
 
 						$reasonbits .= "<tr>
-	<td class='row2' width='1%'><img src='./pic/rep/reputation_$posneg.gif' border='0' alt='' /></td>
+	<td class='row2' width='1%'><img src='{$TBDEV['pic_base_url']}rep/reputation_$posneg.gif' border='0' alt='' /></td>
 	<td class='row2'>{$postrep['reason']}</td>
 </tr>";
 					}

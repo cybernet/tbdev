@@ -33,7 +33,7 @@ require_once "include/emoticons.php";
     
     print "<tr>
 	  <td align='center' class='row1' valign='middle'><a href=\"javascript:add_smilie('$k')\">$k</a></td>
-	  <td align='center' class='row2' valign='middle'><a href=\"javascript:add_smilie('$k')\"><img src='./pic/smilies/$v' border='0' style='vertical-align:middle;' alt='$v' title='$v' /></a></td>
+	  <td align='center' class='row2' valign='middle'><a href=\"javascript:add_smilie('$k')\"><img src='{$TBDEV['pic_base_url']}smilies/$v' border='0' style='vertical-align:middle;' alt='$v' title='$v' /></a></td>
    </tr>";
     }
 

@@ -43,7 +43,7 @@ dbconn();
     $HTMLOUT .= "<table border='0' cellspacing='0' cellpadding='0'>
     <tr valign='top'>
       <td class='embedded'>
-        <img src='pic/flag/uk.gif' style='margin-right: 10px' alt='' />
+        <img src='{$TBDEV['pic_base_url']}flag/uk.gif' style='margin-right: 10px' alt='' />
       </td>
       <td class='embedded'>
         <p>{$lang['donate_donating']}</p>
