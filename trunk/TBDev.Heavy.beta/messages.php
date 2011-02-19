@@ -109,7 +109,7 @@ if (!$action)
               </tr>
               <tr>
                 <td colspan='3' nowrap='nowrap' valign='middle'>
-                <img src='pic/$perc_image' alt='' align='middle' height='10' width='$image_width' />
+                <img src='{$TBDEV['pic_base_url']}$perc_image' alt='' align='middle' height='10' width='$image_width' />
                 </td>
               </tr>
               <tr>
@@ -211,11 +211,11 @@ if (!$action)
 
         if ($row['unread'] == 'yes'/* && $mailbox != PM_SENTBOX*/)
         {
-          $HTMLOUT .= "<tr>\n<td align='center'><img src=\"pic/unreadpm.gif\" title='{$lang['messages_unread']}' alt=\"{$lang['messages_unread_title']}\" /></td>\n";
+          $HTMLOUT .= "<tr>\n<td align='center'><img src='{$TBDEV['pic_base_url']}unreadpm.gif' title='{$lang['messages_unread']}' alt=\"{$lang['messages_unread_title']}\" /></td>\n";
         }
         else
         {
-          $HTMLOUT .= "<tr>\n<td align='center'><img src='pic/readpm.gif' title='{$lang['messages_read']}e' alt='{$lang['messages_read_title']}' /></td>\n";
+          $HTMLOUT .= "<tr>\n<td align='center'><img src='{$TBDEV['pic_base_url']}readpm.gif' title='{$lang['messages_read']}e' alt='{$lang['messages_read_title']}' /></td>\n";
         }
         
         $HTMLOUT .= "<td align='left'>
@@ -249,8 +249,8 @@ if (!$action)
        </table>
       </form>
       <table border='0' cellpadding='4' cellspacing='0' width='737'><tr><td colspan='5'>
-    <div align='left'><img src='pic/unreadpm.gif' title='{$lang['messages_unread_msg']}' alt='{$lang['messages_unread_title']}' /> {$lang['messages_unread_msg']}<br />
-    <img src='pic/readpm.gif' title='{$lang['messages_read_msg']}' alt='{$lang['messages_read_title']}' /> {$lang['messages_read_msg']}</div>
+    <div align='left'><img src='{$TBDEV['pic_base_url']}unreadpm.gif' title='{$lang['messages_unread_msg']}' alt='{$lang['messages_unread_title']}' /> {$lang['messages_unread_msg']}<br />
+    <img src='{$TBDEV['pic_base_url']}readpm.gif' title='{$lang['messages_read_msg']}' alt='{$lang['messages_read_title']}' /> {$lang['messages_read_msg']}</div>
     <div align='right'>
     <a href='messages.php'>{$lang['messages_return']}</a>
     </div></td></tr></table>";
