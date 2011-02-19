@@ -324,7 +324,7 @@
         {
         $author_info ="
         <ul>
-        <li><img width='150' src='pic/default_avatar.gif' alt='Avatar' /></li>
+        <li><img width='150' src='{$TBDEV['forum_pic_url']}default_avatar.gif' alt='Avatar' /></li>
         </ul>";
         }
         else

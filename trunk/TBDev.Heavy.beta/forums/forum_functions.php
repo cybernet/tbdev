@@ -103,7 +103,7 @@ function subforums($arr)
     $sub = "<font class=\"small\"><b>Subforums:</b>";
     $i = 0;
     foreach($arr as $k) {
-        $sub .= "&nbsp;<img src=\"pic/bullet_" . ($k["new"] == 1 ? "green.png" : "white.png") . "\" width=\"8\" title=\"" . ($k["new"] == 1 ? "New posts" : "Not new post") . "\" border=\"0\" alt='Subforum' /><a href=\"forums.php?action=viewforum&amp;forumid=" . $k["id"] . "\">" . $k["name"] . "</a>" . ((count($arr)-1) == $i ? "" : ",");
+        $sub .= "&nbsp;<img src='{$TBDEV['forum_pic_url']}bullet_" . ($k["new"] == 1 ? "green.png" : "white.png") . "' width=\"8\" title=\"" . ($k["new"] == 1 ? "New posts" : "Not new post") . "\" border=\"0\" alt='Subforum' /><a href=\"forums.php?action=viewforum&amp;forumid=" . $k["id"] . "\">" . $k["name"] . "</a>" . ((count($arr)-1) == $i ? "" : ",");
         $i++;
     }
     $sub .= "</font>";
@@ -292,8 +292,8 @@ function show_forums($forid, $subforums = false, $sfa = "", $mods_array = "", $s
         }
 
       $htmlout.="<tr class='row1'>
-			<td class='altrow'><img src='".$TBDEV['forum_pic_url'].$img.".gif' alt='' /></td>
-      <td class='noborder'><a href='".$_SERVER['PHP_SELF']."?action=viewforum&amp;forumid=".$forumid."'><b>". htmlspecialchars($forums_arr["name"])."</b></a>";
+			<td class='altrow'><img src='{$TBDEV['forum_pic_url']}{$img}.gif' alt='' /></td>
+      <td class='noborder'><a href='{$_SERVER['PHP_SELF']}?action=viewforum&amp;forumid=".$forumid."'><b>". htmlspecialchars($forums_arr["name"])."</b></a>";
       
       if ($CURUSER['class'] >= UC_ADMINISTRATOR || isMod($forumid)) 
       {

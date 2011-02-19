@@ -100,18 +100,18 @@ function get_reputation($user, $mode = 0, $rep_is_on = TRUE)
 				{
 					if( $i >= 5 )
 					{
-						$posneg .= "<img src='pic/rep/reputation_$rep_img_2.gif' alt=\"Reputation Power $rep_power\n{$user['username']} $rep_level\" title=\"Reputation Power $rep_power {$user['username']} $rep_level\" />";
+						$posneg .= "<img src='{$TBDEV['pic_base_url']}rep/reputation_$rep_img_2.gif' alt=\"Reputation Power $rep_power\n{$user['username']} $rep_level\" title=\"Reputation Power $rep_power {$user['username']} $rep_level\" />";
 					}
 					else
 					{
-						$posneg .= "<img src='pic/rep/reputation_$rep_img.gif'  alt=\"Reputation Power $rep_power\n{$user['username']} $rep_level\" title=\"Reputation Power $rep_power {$user['username']} $rep_level\" />";
+						$posneg .= "<img src='{$TBDEV['pic_base_url']}rep/reputation_$rep_img.gif'  alt=\"Reputation Power $rep_power\n{$user['username']} $rep_level\" title=\"Reputation Power $rep_power {$user['username']} $rep_level\" />";
 					}
 				}
 			}
 			
 			// now decide if we in a forum or statusbar?
 			if( $mode === 0 )
-			return "Rep: ".$posneg . "&nbsp;<a href='javascript:;' onclick=\"PopUp('{$TBDEV['baseurl']}/reputation.php?pid={$user['id']}','Reputation',400,241,1,1);\"><img src='./pic/aff_tick.gif' alt='Add reputation:: {$user['username']}' title='Add reputation:: {$user['username']}' /></a>";
+			return "Rep: ".$posneg . "&nbsp;<a href='javascript:;' onclick=\"PopUp('{$TBDEV['baseurl']}/reputation.php?pid={$user['id']}','Reputation',400,241,1,1);\"><img src='{$TBDEV['pic_base_url']}aff_tick.gif' alt='Add reputation:: {$user['username']}' title='Add reputation:: {$user['username']}' /></a>";
 			else
 			return "Rep: ".$posneg;
 			

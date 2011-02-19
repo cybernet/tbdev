@@ -894,8 +894,8 @@ if (count($_POST) > 0 );//&& isset($_POST['n']))
       $n_comments = $n[0];
       $ids .= $user['id'].':';
     	$HTMLOUT .= "<tr><td><b><a href='userdetails.php?id={$user['id']}'>{$user['username']}</a></b>" .
-      		($user["donor"] == "yes" ? "<img src='pic/star.gif' alt='Donor' />" : "") .
-					($user["warned"] == "yes" ? "<img src='pic/warned.gif' alt='Warned' />" : "") . "</td>
+      		($user["donor"] == "yes" ? "<img src='{$TBDEV['pic_base_url']}star.gif' alt='Donor' />" : "") .
+					($user["warned"] == "yes" ? "<img src='{$TBDEV['pic_base_url']}warned.gif' alt='Warned' />" : "") . "</td>
           <td>" . ratios($user['uploaded'], $user['downloaded']) . "</td>
           <td>" . $ipstr . "</td><td>" . $user['email'] . "</td>
           <td><div align='center'>" . get_date($user['added'], '') . "</div></td>

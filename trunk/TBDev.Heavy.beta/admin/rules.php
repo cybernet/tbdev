@@ -464,7 +464,7 @@ function New_rules_Form()
 
 function Do_Info($text)
 {
-    $info = "<div class='infohead'><img src='pic/warned0.gif' alt='Info' title='Info' /> Info</div><div class='infobody'>\n";
+    $info = "<div class='infohead'><img src='{$TBDEV['pic_base_url']}warned0.gif' alt='Info' title='Info' /> Info</div><div class='infobody'>\n";
     $info .= $text;
     $info .= "</div>";
     $info .= "<a href='admin.php?action=rules'>Go Back To Admin</a> OR Add another?";
@@ -475,7 +475,7 @@ function Do_Error($heading, $text)
 {
     $htmlout='';
     global $TBDEV;
-    $htmlout .= "<div class='errorhead'><img src='pic/warned.gif' alt='Warned' /> $heading</div><div class='errorbody'>\n";
+    $htmlout .= "<div class='errorhead'><img src='{$TBDEV['pic_base_url']}warned.gif' alt='Warned' /> $heading</div><div class='errorbody'>\n";
     $htmlout .=  "$text\n";
     $htmlout .= "</div>";
     return $htmlout;
