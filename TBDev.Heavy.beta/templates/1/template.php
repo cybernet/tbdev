@@ -246,13 +246,13 @@ function StatusBar() {
 	$IsDonor = '';
 	if ($CURUSER['donor'] == "yes")
 
-	$IsDonor = "<img src='pic/star.gif' alt='donor' title='donor' />";
+	$IsDonor = "<img src='{$TBDEV['pic_base_url']}star.gif' alt='donor' title='donor' />";
 
 
 	$warn = '';
 	if ($CURUSER['warned'] == "yes")
 
-	$warn = "<img src='pic/warned.gif' alt='warned' title='warned' />";
+	$warn = "<img src='{$TBDEV['pic_base_url']}warned.gif' alt='warned' title='warned' />";
 
 	$res2 = @mysql_query("SELECT seeder, COUNT(*) AS pCount FROM peers WHERE userid=".$CURUSER['id']." GROUP BY seeder") or sqlerr(__LINE__,__FILE__);
 
@@ -279,8 +279,8 @@ function StatusBar() {
                 $IsDonor$warn&nbsp;
                 $member_reputation, {$lang['gl_ratio']}:&nbsp;$ratio &nbsp;&nbsp;{$lang['gl_uploaded']}:&nbsp;$upped
 		        &nbsp;&nbsp;{$lang['gl_downloaded']}:&nbsp;$downed
-                &nbsp;&nbsp;{$lang['gl_act_torrents']}:&nbsp;<img alt='{$lang['gl_seed_torrents']}' title='{$lang['gl_seed_torrents']}' src='pic/arrowup.gif' />&nbsp;{$seedleech['yes']}
-                &nbsp;&nbsp;<img alt='{$lang['gl_leech_torrents']}' title='{$lang['gl_leech_torrents']}' src='pic/arrowdown.gif' />&nbsp;{$seedleech['no']}
+                &nbsp;&nbsp;{$lang['gl_act_torrents']}:&nbsp;<img alt='{$lang['gl_seed_torrents']}' title='{$lang['gl_seed_torrents']}' src='{$TBDEV['pic_base_url']}arrowup.gif' />&nbsp;{$seedleech['yes']}
+                &nbsp;&nbsp;<img alt='{$lang['gl_leech_torrents']}' title='{$lang['gl_leech_torrents']}' src='{$TBDEV['pic_base_url']}arrowdown.gif' />&nbsp;{$seedleech['no']}
             </div>
                 <p style='text-align:right;'>".get_date(TIME_NOW, 'LONG', 1)."</p>";
 
