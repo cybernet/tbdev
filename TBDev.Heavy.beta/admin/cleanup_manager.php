@@ -105,15 +105,15 @@ function cleanup_show_main()
                                       <td>{$row['_clean_time']}</td>
                                       <td align='center'>
                                          <a href='admin.php?action=cleanup_manager&amp;mode=edit&amp;cid={$row['clean_id']}'>
-                                         <img src='./pic/aff_tick.gif' alt='Edit Cleanup' title='Edit' height='12' width='12' /></a>
+                                         <img src='{$TBDEV['pic_base_url']}aff_tick.gif' alt='Edit Cleanup' title='Edit' height='12' width='12' /></a>
                                       </td>
                                       <td align='center'>
                                          <a href='admin.php?action=cleanup_manager&amp;mode=delete&amp;cid={$row['clean_id']}'>
-                                         <img src='./pic/aff_cross.gif' alt='Delete Cleanup' title='Delete' height='12' width='12' /></a>
+                                         <img src='{$TBDEV['pic_base_url']}aff_cross.gif' alt='Delete Cleanup' title='Delete' height='12' width='12' /></a>
                                       </td>
                                       <td align='center'>
                                          <a href='admin.php?action=cleanup_manager&amp;mode=unlock&amp;cid={$row['clean_id']}&amp;clean_on={$row['clean_on']}'>
-                                         <img src='./pic/warnedbig.gif' alt='On/Off Cleanup' title='on/off' height='12' width='12' /></a>
+                                         <img src='{$TBDEV['pic_base_url']}warnedbig.gif' alt='On/Off Cleanup' title='on/off' height='12' width='12' /></a>
                                       </td>
                                    </tr>";
 		}

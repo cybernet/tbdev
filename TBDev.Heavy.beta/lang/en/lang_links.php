@@ -79,7 +79,7 @@ $lang = array(
     It will look like this:<br />
     <br />
     <a href='http://www.tbdev.net/'>
-    <img src='./pic/tbdev_btn_red.png'  alt='TBDev - The best!' /></a>
+    <img src='{$TBDEV['pic_base_url']}tbdev_btn_red.png'  alt='TBDev - The best!' /></a>
     <br />"
 );
 

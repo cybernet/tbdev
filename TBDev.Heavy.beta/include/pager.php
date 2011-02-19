@@ -63,7 +63,7 @@ function pager($data)
 		{
 			if ( isset($data['mini']) )
 			{
-        $pager['first_page'] = "<img src='pic/multipage.gif' alt='' title='' />";
+        $pager['first_page'] = "<img src='{$TBDEV['pic_base_url']}multipage.gif' alt='' title='' />";
 			}
 			else
 			{

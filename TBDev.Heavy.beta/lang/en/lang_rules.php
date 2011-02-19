@@ -66,7 +66,7 @@ $lang = array(
         25 GB and have a share ratio above 1.05. Moderator changes of status last only until the next execution of the script.</td>
       </tr>
       <tr>
-        <td class='embedded' bgcolor='#F5F4EA' valign='top'>&nbsp; <b><img src='pic/star.gif' alt='' /></b></td>
+        <td class='embedded' bgcolor='#F5F4EA' valign='top'>&nbsp; <b><img src='{$TBDEV['pic_base_url']}star.gif' alt='' /></b></td>
         <td class='embedded' width='5'>&nbsp;</td>
         <td class='embedded'>This status is given ONLY by Redbeard since he is the only one who can verify that they actually donated something.</td>
       </tr>
