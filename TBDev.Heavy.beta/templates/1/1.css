@@ -301,14 +301,13 @@ img { border: 0; vertical-align: middle; }
 /* - Footer - */
 
 #footer {
-    width: 912px;
-    height:40px;
-    padding:5px;
+    width: 922px;
+    height:50px;
     color: #fff;
     background:#fff url('images/fb_gradient.png') repeat-x;
 }
 
-.footerbg { text-align:center; }
+.footerbg { text-align:center; padding:5px; }
 
 /* - News Block - */
 
