@@ -47,6 +47,11 @@ $lang = array (
 'gl_leech_torrents'		=>	"Leeching",
 'gl_user_error'		    =>	"User Error",
 'gl_perm_denied'		=>	"Permission Denied",
-'gl_time_date'          => ""
+'gl_time_date'          => "",
+
+#footer copyright
+
+'gl_copyright'          => "Remember, if you see any specific instance of this software running publicly, it's within your rights under gpl to garner a copy of that derivative from the person responsible for that webserver."
+
 );
 ?>
