@@ -765,6 +765,15 @@ function hash_pad($hash) {
     return str_pad($hash, 20);
 }
 
+function itsawrap( $txt=NULL ) {
+  
+  if( !$txt )
+    return '';
+    
+  $txt = ( (strlen($txt) -33 ) < 3 ? $txt : substr( $txt , 0, 15 ).'...'.substr( $txt, -12   ) );
+  return $txt;
+}
+
 function load_language($file='') {
 
     global $TBDEV;

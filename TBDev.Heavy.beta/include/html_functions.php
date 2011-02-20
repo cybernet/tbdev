@@ -225,4 +225,5 @@ function bbcode2textarea( $submit='', $body='', $title='' ) {
     return $htmlout;
 }
 
+
 ?>
