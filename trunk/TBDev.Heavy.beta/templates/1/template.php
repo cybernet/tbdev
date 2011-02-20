@@ -184,7 +184,7 @@ function stdhead( $title = "", $js='', $css='' ) {
 } // stdhead
 
 function stdfoot() {
-  global $TBDEV;
+  global $TBDEV, $lang;
 
     $htmlout = '';
     $htmlout .= "
@@ -198,8 +198,10 @@ function stdfoot() {
         <!-- Begin Footer -->
         <div id='footer'>
             <div class='footerbg'>
-                <p>Remember, if you see any specific instance of this software running publicly, it's within your rights under gpl to garner a copy of that derivative from the person responsible for that webserver.<br />
-    <a href='http://www.tbdev.net'><img src='{$TBDEV['pic_base_url']}tbdev_btn_red.png' border='0' alt='Powered By TBDev &copy;2010' title='Powered By TBDev &copy;2010' /></a></p>
+                <p>{$lang['gl_copyright']}<br />
+                   <a href='http://www.tbdev.net'><img src='{$TBDEV['pic_base_url']}tbdev_btn_red.png' alt='Powered By TBDev &copy;2010' title='Powered By TBDev &copy;2010' /></a>
+                   <a href='http://www.tbdev.net'><img src='{$TBDEV['pic_base_url']}dorks_btn_red.png' alt='Dorksville &copy;2010' title='Dorksville &copy;2010' /></a>
+                </p>
             </div>
         </div>
         <!-- End Footer -->
