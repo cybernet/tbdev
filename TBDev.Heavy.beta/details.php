@@ -79,11 +79,7 @@ if (!$row || ($row["banned"] == "yes" && !$moderator))
     $HTMLOUT = '';
 		
     $HTMLOUT = "
-                     <div class='cblock'>
-                         <div class='cblock-header'>";
-
-
-
+                     <div class='cblock'>";
 
 		if ($CURUSER["id"] == $row["owner"] || get_user_class() >= UC_MODERATOR)
 			$owned = 1;
@@ -93,28 +89,28 @@ if (!$row || ($row["banned"] == "yes" && !$moderator))
 		$spacer = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 		if (isset($_GET["uploaded"])) {
-			$HTMLOUT .= "<h2>{$lang['details_success']}</h2>\n";
-			$HTMLOUT .= "<p>{$lang['details_start_seeding']}</p>\n";
+			$HTMLOUT .= "<div class='info'><h2>{$lang['details_success']}</h2>\n";
+			$HTMLOUT .= "<p>{$lang['details_start_seeding']}</p></div>\n";
 		}
 		elseif (isset($_GET["edited"])) {
-			$HTMLOUT .= "<h2>{$lang['details_success_edit']}</h2>\n";
+			$HTMLOUT .= "<div class='info'><h2>{$lang['details_success_edit']}</h2>\n";
 			if (isset($_GET["returnto"]))
-				$HTMLOUT .= "<p><b>{$lang['details_go_back']}<a href='" . htmlsafechars($_GET["returnto"]) . "'>{$lang['details_whence']}</a>.</b></p>\n";
+				$HTMLOUT .= "<p><b>{$lang['details_go_back']}<a href='" . htmlsafechars($_GET["returnto"]) . "'>{$lang['details_whence']}</a>.</b></p></div>\n";
 		}
 		/* elseif (isset($_GET["searched"])) {
 			print("<h2>Your search for \"" . htmlsafechars($_GET["searched"]) . "\" gave a single result:</h2>\n");
 		} */
 		elseif (isset($_GET["rated"]))
-			$HTMLOUT .= "<h2>{$lang['details_rating_added']}</h2>\n";
+			$HTMLOUT .= "<div class='info'><h2>{$lang['details_rating_added']}</h2></div>\n";
 
 
 
 
 
-
+    $HTMLOUT .= "<div class='cblock-header'>";
     $s = htmlsafechars( $row["name"] );
 	$HTMLOUT .= "$s";
-    $HTMLOUT .= "        </div>";
+    $HTMLOUT .= "</div>";
     $HTMLOUT .= "        <div class='cblock-content'>";
 
     $HTMLOUT .= "<table width='100%' border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n";
