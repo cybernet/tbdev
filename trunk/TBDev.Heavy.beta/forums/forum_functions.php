@@ -100,6 +100,8 @@ function get_forum_last_post($forumid)
 //==Putyns subforums
 function subforums($arr)
 {
+    global $TBDEV;
+    
     $sub = "<font class=\"small\"><b>Subforums:</b>";
     $i = 0;
     foreach($arr as $k) {
