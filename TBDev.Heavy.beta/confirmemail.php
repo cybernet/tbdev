@@ -21,7 +21,7 @@ require_once "include/user_functions.php";
 
 get_template();
 
-loggedinorreturn();
+
 
     $lang = array_merge( load_language('global'), load_language('confirmemail') );
     
@@ -47,7 +47,7 @@ loggedinorreturn();
 
 dbconn();
 
-
+loggedinorreturn();
     $res = mysql_query("SELECT editsecret FROM users WHERE id = $id");
     $row = mysql_fetch_assoc($res);
 
