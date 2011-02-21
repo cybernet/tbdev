@@ -209,7 +209,10 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
           
     case 'deletepost':
       if( $CURUSER['class'] >= UC_MODERATOR )
-      require_once "forums/forum_delete_post.php";
+      {
+        require_once "forums/forum_functions.php";
+        require_once "forums/forum_delete_post.php";
+      }
       exit();
       break;
           

@@ -104,13 +104,10 @@ require_once "include/html_functions.php";
       
       $body = sqlesc($body);
       
-      $added = isset($input['added']) ? $input['added'] : 0;
+      $added = isset($input['added']) ? $input['added'] : TIME_NOW;
       
-      $headline = (isset($input['headline']) AND !empty($input['headline'])) ? sqlesc($input['headline']) : sqlesc('TBDev.net News');
+      $headline = (isset($input['subject']) AND !empty($input['subject'])) ? sqlesc($input['subject']) : sqlesc('TBDev.net News');
       
-      if (!$added)
-        $added = TIME_NOW;
-
       @mysql_query("INSERT INTO news (userid, added, body, headline) VALUES ({$CURUSER['id']}, $added, $body, $headline)") or sqlerr(__FILE__, __LINE__);
         
       if (mysql_affected_rows() == 1)

@@ -131,11 +131,11 @@ function bbcode2textarea( $submit='', $body='', $title='' ) {
   {
     $title = htmlsafechars($title);
     $htmlout .= "
-          <tr>
-             <td align='center'>
-                <input style='width:615px;' type='text' name='subject' size='50' onfocus=\"if(this.value == '{$title}') { this.value = ''; }\" value='{$title}' />
-             </td>
-          </tr>";
+    <tr>
+       <td align='center'>
+       <input style='width:615px;' type='text' name='subject' size='50' value='{$title}' />
+       </td>
+    </tr>";
   }
 
   $htmlout .= "
