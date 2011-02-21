@@ -89,4 +89,6 @@ $TBDEV['av_img_height'] = 100;
 $TBDEV['av_img_width'] = 100;
 $TBDEV['allowed_ext'] = array('image/gif', 'image/png', 'image/jpeg');
 
+
+$TBDEV['version'] = 'TBDev.Heavy.beta.v1.0';
 ?>
