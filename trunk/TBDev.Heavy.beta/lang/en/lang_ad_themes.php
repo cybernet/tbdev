@@ -6,7 +6,8 @@ $lang = array(
 
 
 #Main table
-'themes_id'                             => 'ID',
+'themes_id'                     => 'ID',
+'themes_location'               => 'Location',
 'themes_name'                   => 'Name',
 'themes_is_folder'              => 'Folder Exists ?',
 'themes_e_d'                    => 'Edit/Delete',
@@ -21,6 +22,7 @@ $lang = array(
 'themes_edit_tem'               => 'Edit Template', //---' <Template Name>' added in source
 'themes_save'                   => 'Save',
 'themes_add'                    => 'Add',
+'themes_cancel'                 => 'Cancel',
 'themes_some_wrong'             => 'Something Went Wrong',
 'themes_delete_sure_q'  => 'Are you sure you want to delete this template ??',
 'themes_delete_sure_q2' => 'Click here',
@@ -53,6 +55,7 @@ $lang = array(
 'themes_error'                  => 'Error',
 'themes_inv_act'                => 'Invalid Action',
 'themes_inv_id'                 => 'Invalid ID',
+'themes_inv_uri'                 => 'Invalid uri location',
 'themes_inv_name'               => 'Invalid Name',
 'themes_nofile'                 => 'Template file does not exist',
 'themes_inv_file'               => 'Continue ?',

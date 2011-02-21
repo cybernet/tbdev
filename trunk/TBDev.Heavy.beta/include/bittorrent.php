@@ -59,7 +59,7 @@ define ('UC_SYSOP', 6);
 
 //Do not modify -- versioning system
 //This will help identify code for support issues at tbdev.net
-define ('TBVERSION','TBDev_2009_svn');
+define ('TBVERSION', $TBDEV['version']);
 
 
 /**** validip/getip courtesy of manolete <manolete@myway.com> ****/
