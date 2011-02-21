@@ -1,3 +1,686 @@
+Revision: 406
+Author: tbdevnet
+Date: 15:32:56, 21 February 2011
+Message:
+21st feb 2011 minor update for bug fixes, typos and added short torrentname function
+----
+Modified : /trunk/TBDev.Heavy.beta/confirmemail.php
+
+Revision: 405
+Author: dorksville
+Date: 20:08:52, 20 February 2011
+Message:
+Small various fixes
+----
+Modified : /trunk/TBDev.Heavy.beta/details.php
+
+Revision: 404
+Author: dorksville
+Date: 17:04:00, 20 February 2011
+Message:
+Added various fixes and new image
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+Modified : /trunk/TBDev.Heavy.beta/templates/1/images.rar
+Modified : /trunk/TBDev.Heavy.beta/templates/1/template.php
+
+Revision: 403
+Author: dorksville
+Date: 17:03:22, 20 February 2011
+Message:
+Added copyright
+----
+Modified : /trunk/TBDev.Heavy.beta/lang/en/lang_global.php
+
+Revision: 402
+Author: tbdevnet
+Date: 17:02:41, 20 February 2011
+Message:
+20th feb 2011 minor update for bug fixes, typos and added short torrentname function
+----
+Modified : /trunk/TBDev.Heavy.beta/announce.php
+Modified : /trunk/TBDev.Heavy.beta/emoticonloader.php
+Modified : /trunk/TBDev.Heavy.beta/include/bittorrent.php
+Modified : /trunk/TBDev.Heavy.beta/include/config.php
+Modified : /trunk/TBDev.Heavy.beta/include/html_functions.php
+Modified : /trunk/TBDev.Heavy.beta/include/my_torrenttable_functions.php
+Modified : /trunk/TBDev.Heavy.beta/include/torrenttable_functions.php
+Modified : /trunk/TBDev.Heavy.beta/install/announce_dist.php
+Modified : /trunk/TBDev.Heavy.beta/takelogin.php
+
+Revision: 401
+Author: tbdevnet
+Date: 00:15:31, 19 February 2011
+Message:
+19th feb 2011 minor update to move images and corect some paths
+----
+Modified : /trunk/TBDev.Heavy.beta/chat.php
+Modified : /trunk/TBDev.Heavy.beta/donate.php
+Modified : /trunk/TBDev.Heavy.beta/emoticonloader.php
+Modified : /trunk/TBDev.Heavy.beta/messages.php
+Modified : /trunk/TBDev.Heavy.beta/reputation.php
+Modified : /trunk/TBDev.Heavy.beta/rules.php
+
+Revision: 400
+Author: tbdevnet
+Date: 00:14:37, 19 February 2011
+Message:
+19th feb 2011 minor update to move images and corect some paths
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/template.php
+
+Revision: 399
+Author: tbdevnet
+Date: 00:14:03, 19 February 2011
+Message:
+19th feb 2011 minor update to move images and corect some paths
+----
+Modified : /trunk/TBDev.Heavy.beta/admin/cleanup_manager.php
+Modified : /trunk/TBDev.Heavy.beta/admin/rules.php
+Modified : /trunk/TBDev.Heavy.beta/admin/usersearch.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_functions.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+Modified : /trunk/TBDev.Heavy.beta/include/pager.php
+Modified : /trunk/TBDev.Heavy.beta/include/user_functions.php
+Modified : /trunk/TBDev.Heavy.beta/lang/en/lang_links.php
+Modified : /trunk/TBDev.Heavy.beta/lang/en/lang_rules.php
+Modified : /trunk/TBDev.Heavy.beta/lang/en/lang_tags.php
+
+Revision: 398
+Author: tbdevnet
+Date: 23:19:39, 17 February 2011
+Message:
+17th feb 2011 minor update to forum_view_default.php & torrenttable_functions.php
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_default.php
+Modified : /trunk/TBDev.Heavy.beta/include/torrenttable_functions.php
+
+Revision: 392
+Author: tbdevnet
+Date: 17:43:54, 16 February 2011
+Message:
+16th feb 2011 various fixes and bugs squashed
+----
+Modified : /trunk/TBDev.Heavy.beta/mytorrents.php
+
+Revision: 391
+Author: tbdevnet
+Date: 17:42:33, 16 February 2011
+Message:
+16th feb 2011 removed images
+----
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images
+
+Revision: 390
+Author: tbdevnet
+Date: 17:41:50, 16 February 2011
+Message:
+16th feb 2011 various fixes and bugs squashed
+----
+Modified : /trunk/TBDev.Heavy.beta/comment.php
+Modified : /trunk/TBDev.Heavy.beta/details.php
+Modified : /trunk/TBDev.Heavy.beta/forums.php
+Modified : /trunk/TBDev.Heavy.beta/modtask.php
+Modified : /trunk/TBDev.Heavy.beta/recover.php
+Modified : /trunk/TBDev.Heavy.beta/topten.php
+
+Revision: 389
+Author: tbdevnet
+Date: 17:39:53, 16 February 2011
+Message:
+16th feb 2011 various fixes and bugs squashed
+----
+Modified : /trunk/TBDev.Heavy.beta/include/bittorrent.php
+Added : /trunk/TBDev.Heavy.beta/include/comment_functions.php
+Modified : /trunk/TBDev.Heavy.beta/include/config.php
+Added : /trunk/TBDev.Heavy.beta/include/my_torrenttable_functions.php
+Modified : /trunk/TBDev.Heavy.beta/include/torrenttable_functions.php
+Modified : /trunk/TBDev.Heavy.beta/install/config_dist.php
+
+Revision: 388
+Author: tbdevnet
+Date: 17:39:03, 16 February 2011
+Message:
+16th feb 2011 various fixes and bugs squashed
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/subscriptions.php
+Modified : /trunk/TBDev.Heavy.beta/forums/topmoods.php
+Modified : /trunk/TBDev.Heavy.beta/forums/whodownloaded.php
+
+Revision: 387
+Author: tbdevnet
+Date: 17:38:34, 16 February 2011
+Message:
+16th feb 2011 various fixes and bugs squashed
+----
+Modified : /trunk/TBDev.Heavy.beta/admin/index.php
+Modified : /trunk/TBDev.Heavy.beta/admin/moforums.php
+Modified : /trunk/TBDev.Heavy.beta/admin/msubforums.php
+
+Revision: 386
+Author: tbdevnet
+Date: 16:44:44, 16 February 2011
+Message:
+16th feb 2011 removed images added archive
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+Added : /trunk/TBDev.Heavy.beta/templates/1/images.rar
+
+Revision: 385
+Author: tbdevnet
+Date: 16:21:19, 16 February 2011
+Message:
+16th feb 2011 removed images
+----
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/branding_bg.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/button.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/default_thumb.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/error.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/fb_gradient.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/forumicons
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/forums
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/gradient_bg.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/gradient_bp.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/help.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/info.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/key.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/logo.jpg
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/primarynav_bg.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/staff_thumb.gif
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/user_green.png
+Deleted : /trunk/TBDev.Heavy.beta/templates/1/images/user_off.png
+
+Revision: 384
+Author: tbdevnet
+Date: 18:44:04, 13 February 2011
+Message:
+13th feb 2011 some forum changes & added images/forum & template changes
+----
+Modified : /trunk/TBDev.Heavy.beta/confirmemail.php
+Modified : /trunk/TBDev.Heavy.beta/recover.php
+Modified : /trunk/TBDev.Heavy.beta/reputation.php
+Modified : /trunk/TBDev.Heavy.beta/takeprofedit.php
+
+Revision: 383
+Author: tbdevnet
+Date: 18:37:41, 13 February 2011
+Message:
+13th feb 2011 some forum changes & added images/forum & template changes
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_delete.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_delete_poll.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_delete_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_poll_functions.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_update_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forums.shit.php
+
+Revision: 382
+Author: tbdevnet
+Date: 18:08:14, 13 February 2011
+Message:
+13th feb 2011 some forum changes & added images/forum & template changes
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_delete.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_delete_poll.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_delete_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_make_poll.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_poll_functions.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_update_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forums.shit.php
+Added : /trunk/TBDev.Heavy.beta/templates/1/images/forums
+Modified : /trunk/TBDev.Heavy.beta/templates/1/template.php
+
+Revision: 381
+Author: tbdevnet
+Date: 19:49:54, 12 February 2011
+Message:
+12th feb 2011 nfo changes
+----
+Modified : /trunk/TBDev.Heavy.beta/takeedit.php
+Modified : /trunk/TBDev.Heavy.beta/takeupload.php
+
+Revision: 380
+Author: tbdevnet
+Date: 16:39:54, 12 February 2011
+Message:
+12th feb 2011 continuing forum fixes and style changes
+----
+Modified : /trunk/TBDev.Heavy.beta/install/sql/mysql_tables.php
+
+Revision: 379
+Author: tbdevnet
+Date: 15:59:23, 12 February 2011
+Message:
+12th feb 2011 continuing forum fixes and style changes
+----
+Modified : /trunk/TBDev.Heavy.beta/forums.php
+
+Revision: 378
+Author: tbdevnet
+Date: 15:58:45, 12 February 2011
+Message:
+12th feb 2011 continuing forum fixes and style changes
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+
+Revision: 377
+Author: tbdevnet
+Date: 15:57:07, 12 February 2011
+Message:
+12th feb 2011 continuing forum fixes and style changes
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_search.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/usermood.php
+
+Revision: 376
+Author: tbdevnet
+Date: 15:24:16, 12 February 2011
+Message:
+
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+
+Revision: 375
+Author: tbdevnet
+Date: 15:16:43, 12 February 2011
+Message:
+
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+
+Revision: 374
+Author: tbdevnet
+Date: 01:27:20, 12 February 2011
+Message:
+12th feb 2011 commited first run of install directory
+----
+Added : /trunk/TBDev.Heavy.beta/install
+Added : /trunk/TBDev.Heavy.beta/install/1.css
+Added : /trunk/TBDev.Heavy.beta/install/announce_dist.php
+Added : /trunk/TBDev.Heavy.beta/install/config_dist.php
+Added : /trunk/TBDev.Heavy.beta/install/img
+Added : /trunk/TBDev.Heavy.beta/install/img/tbdev_btn_red.png
+Added : /trunk/TBDev.Heavy.beta/install/index.php
+Added : /trunk/TBDev.Heavy.beta/install/sql
+Added : /trunk/TBDev.Heavy.beta/install/sql/mysql_inserts.php
+Added : /trunk/TBDev.Heavy.beta/install/sql/mysql_tables.php
+
+Revision: 373
+Author: dorksville
+Date: 21:07:37, 11 February 2011
+Message:
+11th Feb - Couple of fixes
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+
+Revision: 372
+Author: dorksville
+Date: 21:07:14, 11 February 2011
+Message:
+11th Feb - Couple of fixes
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+
+Revision: 371
+Author: dorksville
+Date: 18:38:17, 11 February 2011
+Message:
+Moved roundedCorners
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/essentials.css
+
+Revision: 370
+Author: dorksville
+Date: 18:35:56, 11 February 2011
+Message:
+Couple more changes
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+
+Revision: 369
+Author: dorksville
+Date: 17:48:02, 11 February 2011
+Message:
+11th Feb - Optimized a little 
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+
+Revision: 368
+Author: dorksville
+Date: 17:08:39, 11 February 2011
+Message:
+Tidied up a little
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/facebox.css
+
+Revision: 367
+Author: tbdevnet
+Date: 00:26:33, 11 February 2011
+Message:
+10th feb 2011 small fixes and updates etc forums & frontpage stats etc
+----
+Modified : /trunk/TBDev.Heavy.beta/index.php
+
+Revision: 366
+Author: tbdevnet
+Date: 00:26:03, 11 February 2011
+Message:
+
+----
+Added : /trunk/TBDev.Heavy.beta/templates/1/facebox.css
+
+Revision: 365
+Author: tbdevnet
+Date: 00:25:25, 11 February 2011
+Message:
+10th feb 2011 small fixes and updates etc forums & frontpage stats etc
+----
+Added : /trunk/TBDev.Heavy.beta/templates/1/images/forumicons/closelabel.png
+Added : /trunk/TBDev.Heavy.beta/templates/1/images/forumicons/loading.gif
+Added : /trunk/TBDev.Heavy.beta/templates/1/images/forumicons/offline.gif
+Added : /trunk/TBDev.Heavy.beta/templates/1/images/forumicons/online.gif
+
+Revision: 364
+Author: tbdevnet
+Date: 00:18:59, 11 February 2011
+Message:
+10th feb 2011 small fixes and updates etc forums & frontpage stats etc
+----
+Modified : /trunk/TBDev.Heavy.beta/cache
+Deleted : /trunk/TBDev.Heavy.beta/cache/forum.txt
+Deleted : /trunk/TBDev.Heavy.beta/cache/stats.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+Modified : /trunk/TBDev.Heavy.beta/include/bbcode_functions.php
+Modified : /trunk/TBDev.Heavy.beta/include/bittorrent.php
+Modified : /trunk/TBDev.Heavy.beta/include/cleanup/frontpage_stats.php
+Modified : /trunk/TBDev.Heavy.beta/include/config.php
+Added : /trunk/TBDev.Heavy.beta/scripts/facebox.js
+Added : /trunk/TBDev.Heavy.beta/scripts/jquery.js
+
+Revision: 363
+Author: dorksville
+Date: 20:56:47, 10 February 2011
+Message:
+Couple of changes more to come
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+
+Revision: 362
+Author: tbdevnet
+Date: 19:33:07, 10 February 2011
+Message:
+10th feb 2011 little fixes
+----
+Modified : /trunk/TBDev.Heavy.beta/forums.php
+
+Revision: 361
+Author: tbdevnet
+Date: 17:38:25, 10 February 2011
+Message:
+10th feb 2011 little fixes
+----
+Modified : /trunk/TBDev.Heavy.beta/SQL/full_table_structure.sql
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+
+Revision: 360
+Author: tbdevnet
+Date: 00:32:57, 10 February 2011
+Message:
+9th feb 2011 little fixes for theme / news.php
+----
+Modified : /trunk/TBDev.Heavy.beta/admin/news.php
+Modified : /trunk/TBDev.Heavy.beta/admin/themes.php
+
+Revision: 359
+Author: tbdevnet
+Date: 23:05:21, 09 February 2011
+Message:
+9th feb 2011 little fixes for theme manager
+----
+Modified : /trunk/TBDev.Heavy.beta/admin/themes.php
+
+Revision: 358
+Author: tbdevnet
+Date: 22:45:04, 09 February 2011
+Message:
+9th feb 2011 many, many, many forum fixes (too many to mention)
+----
+Modified : /trunk/TBDev.Heavy.beta/include/bittorrent.php
+
+Revision: 357
+Author: tbdevnet
+Date: 22:10:20, 09 February 2011
+Message:
+
+----
+Added : /trunk/TBDev.Heavy.beta/templates/1/images/forumicons
+
+Revision: 356
+Author: tbdevnet
+Date: 21:58:44, 09 February 2011
+Message:
+9th feb 2011 many, many, many forum fixes (too many to mention)
+----
+Modified : /trunk/TBDev.Heavy.beta/forums.php
+Modified : /trunk/TBDev.Heavy.beta/include/html_functions.php
+
+Revision: 355
+Author: tbdevnet
+Date: 21:55:00, 09 February 2011
+Message:
+9th feb 2011 many, many, many forum fixes (too many to mention)
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_edit_post.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_new_topic.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_post.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_post_functions.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_reply.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+
+Revision: 354
+Author: tbdevnet
+Date: 14:56:28, 09 February 2011
+Message:
+9th feb 2011 template & style fixes, continued forum rework
+----
+Modified : /trunk/TBDev.Heavy.beta/forums.php
+Modified : /trunk/TBDev.Heavy.beta/my.php
+Modified : /trunk/TBDev.Heavy.beta/pic.rar
+
+Revision: 353
+Author: tbdevnet
+Date: 14:50:18, 09 February 2011
+Message:
+9th feb 2011 template & style fixes, continued forum rework
+----
+Modified : /trunk/TBDev.Heavy.beta/include/bittorrent.php
+Modified : /trunk/TBDev.Heavy.beta/include/config.php
+
+Revision: 352
+Author: tbdevnet
+Date: 14:49:16, 09 February 2011
+Message:
+
+----
+Deleted : /trunk/TBDev.Heavy.beta/images
+
+Revision: 351
+Author: tbdevnet
+Date: 14:48:14, 09 February 2011
+Message:
+9th feb 2011 template & style fixes, continued forum rework
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_functions.php
+Added : /trunk/TBDev.Heavy.beta/forums/forum_mod_panel.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_parent_view.php
+Added : /trunk/TBDev.Heavy.beta/forums/forum_poll_functions.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_post_functions.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_default.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+Added : /trunk/TBDev.Heavy.beta/forums/forum_whodownloaded.php
+Added : /trunk/TBDev.Heavy.beta/forums/forums.shit.php
+Deleted : /trunk/TBDev.Heavy.beta/forums/forums_whodownloaded.php
+
+Revision: 350
+Author: tbdevnet
+Date: 14:41:39, 09 February 2011
+Message:
+
+----
+Deleted : /trunk/TBDev.Heavy.beta/pic
+
+Revision: 349
+Author: dorksville
+Date: 17:39:39, 08 February 2011
+Message:
+Updated the grey
+----
+Modified : /trunk/TBDev.Heavy.beta/admin/cleanup_manager.php
+
+Revision: 348
+Author: tbdevnet
+Date: 17:17:37, 08 February 2011
+Message:
+
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/1.css
+
+Revision: 347
+Author: dorksville
+Date: 17:13:06, 08 February 2011
+Message:
+Re-added table
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/essentials.css
+
+Revision: 346
+Author: dorksville
+Date: 17:05:59, 08 February 2011
+Message:
+
+----
+Modified : /trunk/TBDev.Heavy.beta/templates/1/essentials.css
+
+Revision: 342
+Author: dorksville
+Date: 18:31:20, 07 February 2011
+Message:
+
+----
+Deleted : /trunk/TBDev.Heavy.beta/lang_topten.php
+
+Revision: 341
+Author: tbdevnet
+Date: 18:19:08, 07 February 2011
+Message:
+moved sql to sql dir
+----
+Added : /trunk/TBDev.Heavy.beta/SQL/full_table_structure.sql (Copy from path: /trunk/TBDev.Heavy.beta/forums/full_table_structure.sql, Revision, 340)
+Deleted : /trunk/TBDev.Heavy.beta/forums/full_table_structure.sql
+
+Revision: 340
+Author: tbdevnet
+Date: 18:03:26, 07 February 2011
+Message:
+removed installer temporarily
+----
+Deleted : /trunk/TBDev.Heavy.beta/install
+
+Revision: 339
+Author: tbdevnet
+Date: 18:02:00, 07 February 2011
+Message:
+updated forums and added tracker complete structure as-is
+----
+Modified : /trunk/TBDev.Heavy.beta/forums.php
+
+Revision: 338
+Author: tbdevnet
+Date: 18:01:22, 07 February 2011
+Message:
+updated forums and added tracker complete structure as-is
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_functions.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_default.php
+Added : /trunk/TBDev.Heavy.beta/forums/full_table_structure.sql
+
+Revision: 337
+Author: tbdevnet
+Date: 17:28:48, 07 February 2011
+Message:
+updated
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_functions.php
+
+Revision: 336
+Author: tbdevnet
+Date: 17:03:17, 07 February 2011
+Message:
+updated
+----
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_default.php
+Modified : /trunk/TBDev.Heavy.beta/forums/forum_view_topic.php
+
+Revision: 334
+Author: tbdevnet
+Date: 15:24:41, 07 February 2011
+Message:
+moved
+----
+Deleted : /tags/TBDev.Heavy.beta
+Added : /trunk/TBDev.Heavy.beta (Copy from path: /tags/TBDev.Heavy.beta, Revision, 333)
+
+Revision: 332
+Author: dorksville
+Date: 10:32:37, 07 February 2011
+Message:
+
+----
+Deleted : /tags/TBDev.Heavy.beta/essentials.css
+
+Revision: 331
+Author: dorksville
+Date: 10:31:45, 07 February 2011
+Message:
+Countries re-aligned
+----
+Modified : /tags/TBDev.Heavy.beta/topten.php
+
+Revision: 330
+Author: dorksville
+Date: 10:29:58, 07 February 2011
+Message:
+Altered CSS 
+----
+Modified : /tags/TBDev.Heavy.beta/templates/1/essentials.css
+
+
+Revision: 325
+Author: tbdevnet
+Date: 15:00:06, 06 February 2011
+Message:
+
+----
+Added : /tags/TBDev.Heavy.beta/index.php
+
+Revision: 324
+Author: tbdevnet
+Date: 14:50:01, 06 February 2011
+Message:
+Tag Created
+----
+Added : /tags/TBDev.Heavy.beta
+
+
+
 Revision: 306
 Author: tbdevnet
 Date: 01:50:09, 10 January 2011
