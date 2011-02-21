@@ -47,7 +47,7 @@
     {
       session_start();
       
-      if(!isset($_POST['captcha']) || empty($captcha) || $_SESSION['captcha_id'] != strtoupper($captcha))
+      if(!isset($_POST['captcha']) || empty($_POST['captcha']) || $_SESSION['captcha_id'] != strtoupper($_POST['captcha']))
       {
           header('Location: signup.php');
           exit();
