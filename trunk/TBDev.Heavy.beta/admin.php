@@ -48,7 +48,7 @@
                         'categories'      => 'categories', 
                         'newusers'        => 'newusers', 
                         'resetpassword'   => 'resetpassword',
-                        'docleanup'       => 'docleanup',
+                        //'docleanup'       => 'docleanup',
                         'log'             => 'log',
                         'news'            => 'news',
                         'forummanage'     => 'forummanage',

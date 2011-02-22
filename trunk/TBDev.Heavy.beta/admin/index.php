@@ -41,7 +41,7 @@ require_once "include/user_functions.php";
                              <div class='left-layer'><p class='text'><a href='admin.php?action=bans'>{$lang['index_bans']}</a></p></div>
                              <div class='left-layer'><p class='text'><a href='admin.php?action=adduser'>{$lang['index_new_user']}</a></p></div>
                              <div class='left-layer'><p class='text'><a href='admin.php?action=log'>{$lang['index_log']}</a></p></div>
-                             <div class='left-layer'><p class='text'><a href='admin.php?action=docleanup'>{$lang['index_mcleanup']}</a></p></div>
+                             <!--<div class='left-layer'><p class='text'><a href='admin.php?action=docleanup'>{$lang['index_mcleanup']}</a></p></div>-->
                              <div class='left-layer'><p class='text'><a href='users.php'>{$lang['index_user_list']}</a></p></div>
                              <div class='space-line'></div>
                          </div>

@@ -17,7 +17,7 @@
 |   $URL$
 +------------------------------------------------
 */
-
+exit;
 if ( ! defined( 'IN_TBDEV_ADMIN' ) )
 {
 	print "<h1>{$lang['text_incorrect']}</h1>{$lang['text_cannot']}";
