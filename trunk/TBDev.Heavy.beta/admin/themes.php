@@ -103,22 +103,22 @@ if ( ! defined( 'IN_TBDEV_ADMIN' ) ){
     }
     if($ACT==5)
     {//--DELETE FINAL
-            if(!isset($_GET['id']))stderr("{$lang['themes_error']}", "{$lang['themes_inv_id']}");
+            if(!isset($_GET['id']))stderr($lang['themes_error'], $lang['themes_inv_id']);
             $ID=$_GET['id'];
-            if(!is_valid_id($ID))stderr("{$lang['themes_error']}", "{$lang['themes_inv_id']}");
-            if(!isset($_POST['sure']))header("Location: admin.php?action=themes");
-            if($_POST['sure']!="1")header("Location: admin.php?action=themes");
+            if(!is_valid_id($ID))stderr($lang['themes_error'], $lang['themes_inv_id']);
+            if(!isset($_GET['sure']))header("Location: admin.php?action=themes");
+            if($_GET['sure']!="1")header("Location: admin.php?action=themes");
             
             $sql = mysql_query("SELECT uri FROM stylesheets WHERE id=".sqlesc($ID));
             if(!mysql_num_rows($sql))
               stderr($lang['themes_error'], $lang['themes_inv_id']);
               
-            $uri = msql_fetch_row($sql);
+            $uri = mysql_fetch_row($sql);
             
-            mysql_query("DELETE FROM stylesheets WHERE id=".sqlesc($uri[0]));
+            mysql_query("DELETE FROM stylesheets WHERE id=".sqlesc($ID));
             
             $RANDSTYLE=mysql_fetch_array(mysql_query("SELECT id FROM stylesheets ORDER BY RAND() LIMIT 1"));
-            mysql_query("UPDATE users SET stylesheet=".sqlesc($RANDSTYLE['id'])." WHERE stylesheet=".sqlesc($ID));
+            mysql_query("UPDATE users SET stylesheet=".sqlesc($RANDSTYLE['id'])." WHERE stylesheet=".sqlesc($uri[0]));
             header("Location: {$TBDEV['baseurl']}/admin.php?action=themes&msg=2");
     }
     if($ACT==6)
@@ -153,10 +153,10 @@ if ( ! defined( 'IN_TBDEV_ADMIN' ) ){
 
                 $HTML .= "
                      <div class='cblock'>
-                         <div class='cblock-header'>Template Manager<div style='float:right;'><a href='{$TBDEV['baseurl']}/admin.php?action=themes&amp;act=3'><span class='btn'>{$lang['themes_addnew']}</span></div></div>
+                         <div class='cblock-header'>Template Manager<div style='float:right;'><a href='{$TBDEV['baseurl']}/admin.php?action=themes&amp;act=3'><span class='btn'>{$lang['themes_addnew']}</span></a></div></div>
                          <div class='cblock-content'>
                              <table width='100%'>
-                                   <tr><td colspan='5'></a></td></tr>
+                                   <tr><td colspan='5'></td></tr>
                                    <tr>
                                       <td class='colhead'>{$lang['themes_id']}</td>
                                       <td class='colhead'>{$lang['themes_location']}</td>
@@ -171,7 +171,7 @@ if ( ! defined( 'IN_TBDEV_ADMIN' ) ){
                         $HTML.="
                                    <tr>
                                       <td class='rowhead'>{$TE['id']}</td>
-                                      <td>{$TE['uri']}</td>
+                                      <td>templates/{$TE['uri']}/...</td>
                                       <td>".htmlsafechars($TE['name'])."</td>
                                       <td><strong>".(file_exists(ROOT_PATH."/templates/{$TE['uri']}/template.php")?"{$lang['themes_file_exists']}":"{$lang['themes_not_exists']}")."</strong></td>
                                       <td>
