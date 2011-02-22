@@ -1,8 +1,21 @@
 <?php
-
 /*
-**Template Mod By AronTh for TBDEV.NET source code 2009, theme made by AronTh
-**Special Thanks to CoLdFuSiOn for providing the source code and KiD for the motivation to me(AronTh) to make themes for TbDev.net
++------------------------------------------------
+|   TBDev.net BitTorrent Tracker PHP
+|   =============================================
+|   by CoLdFuSiOn
+|   (c) 2003 - 2009 TBDev.Net
+|   http://www.tbdev.net
+|   =============================================
+|   svn: http://sourceforge.net/projects/tbdevnet/
+|   Licence Info: GPL
++------------------------------------------------
+|   $Date$
+|   $Revision$
+|   Author: CoLdFuSiOn, Dorksville, AronTh
+|   Theme Designed by : Dorksville
+|   $URL$
++------------------------------------------------
 */
 
 function stdhead( $title = "", $js='', $css='' ) {
@@ -51,6 +64,7 @@ function stdhead( $title = "", $js='', $css='' ) {
 
           <title>{$title}</title>
           <link rel='stylesheet' type='text/css' href='{$TBDEV['baseurl']}/templates/$FILE/{$FILE}.css' />
+          {$css}\n
           {$js}\n
     </head>
 
