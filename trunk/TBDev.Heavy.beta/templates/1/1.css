@@ -171,31 +171,17 @@ img { border: 0; vertical-align: middle; }
 #nav ul {
     margin:0;
     padding:0;
-    list-style-type:none;
     width:auto;
-    float:left;
 }
 
-#nav ul li {
-    display:block;
-    float:left;
-    margin:0 1px;
-}
+#nav ul li { display:inline; }
+#nav ul li a { display:block; padding:8px 18px 12px 18px; }
+#nav ul li, #nav ul li a { color:#9bb2c8; text-decoration:none; }
 
-#nav ul li a {
-    display:block;
-    color:#9bb2c8;
-    text-decoration:none;
-    padding-top:8px;
-    margin-left:10px;
-    height:27px;
-}
-
-#nav ul li a span { padding:0 8px 0 8px; }
-
-#nav ul li a:hover {
-    color:#fff;
+#nav ul li.active a  {
     background: url('images/button.png') repeat-x;
+    margin-left:3px;
+    display:block;
     -webkit-border-top-left-radius: 5px;
     -webkit-border-top-right-radius: 5px;
     -moz-border-radius-topleft: 5px;
@@ -204,15 +190,7 @@ img { border: 0; vertical-align: middle; }
     border-top-right-radius: 5px;
 }
 
-#nav ul li a:hover span { display:block; width:auto; }
-#nav ul li a.current,#nav ul li a.current:hover { color:#fff; }
-
-#nav ul li a.current  {
-    width:auto;
-    height:35px;
-    display:block;
-    padding:0 20px 0 0px;
-}
+#nav ul li.active, #nav ul li a:hover, #nav ul li.active a { text-decoration:none; color:#fff; }
 
 /* - Main Column - */
 

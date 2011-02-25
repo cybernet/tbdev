@@ -66,6 +66,7 @@ function stdhead( $title = "", $js='', $css='' ) {
           <link rel='stylesheet' type='text/css' href='{$TBDEV['baseurl']}/templates/$FILE/{$FILE}.css' />
           {$css}\n
           {$js}\n
+
     </head>
 
     <body>
@@ -142,29 +143,31 @@ function stdhead( $title = "", $js='', $css='' ) {
     if ($CURUSER)
     {
       $htmlout .= "
-                           <li><a href='index.php'><span>{$lang['gl_home']}</span></a></li>
-                           <li><a href='browse.php'><span>{$lang['gl_browse']}</span></a></li>
-                           <li><a href='upload.php'><span>{$lang['gl_upload']}</span></a></li>
-                           <li><a href='chat.php'><span>{$lang['gl_chat']}</span></a></li>
-                           <li><a href='forums.php'><span>{$lang['gl_forums']}</span></a></li>
-                           <li><a href='topten.php'><span>{$lang['gl_top_10']}</span></a></li>
-                           <li><a href='links.php'><span>{$lang['gl_links']}</span></a></li>
-                           <li><a href='faq.php'><span>{$lang['gl_faq']}</span></a></li>
-                           <li><a href='staff.php'><span>{$lang['gl_staff']}</span></a></li>";
+                           <li class='fleft'><a href='index.php'>{$lang['gl_home']}</a></li>
+                           <li class='fleft'><a href='browse.php'>{$lang['gl_browse']}</a></li>
+                           <li class='fleft'><a href='upload.php'>{$lang['gl_upload']}</a></li>
+                           <li class='fleft'><a href='chat.php'>{$lang['gl_chat']}</a></li>
+                           <li class='fleft active'><a href='forums.php'>{$lang['gl_forums']}</a></li>
+                           <li class='fleft'><a href='topten.php'>{$lang['gl_top_10']}</a></li>
+                           <li class='fleft'><a href='links.php'>{$lang['gl_links']}</a></li>
+                           <li class='fleft'><a href='faq.php'>{$lang['gl_faq']}</a></li>
+                           <li class='fleft'><a href='staff.php'>{$lang['gl_staff']}</a></li>";
 
       if( $CURUSER['class'] >= UC_MODERATOR )
       {
         $htmlout .= "
-                           <li><a href='admin.php'><span>{$lang['gl_admin']}</span></a></li>";
+                           <li class='fleft'><a href='admin.php'>{$lang['gl_admin']}</a></li>";
       }
+
+      $htmlout .= "        <li class='fright'><a href='search.php'>{$lang['gl_search']}</a></li>";
 
     }
     else
     {
       $htmlout .= "
-                           <li><a href='login.php'><span>{$lang['gl_login']}</span></a></li>
-                           <li><a href='signup.php'><span>{$lang['gl_signup']}</span></a></li>
-                           <li><a href='recover.php'><span>{$lang['gl_recover']}</span></a></li>";
+                           <li class='fleft'><a href='login.php'>{$lang['gl_login']}</a></li>
+                           <li class='fleft'><a href='signup.php'>{$lang['gl_signup']}</a></li>
+                           <li class='fleft'><a href='recover.php'>{$lang['gl_recover']}</a></li>";
     }
 
     $htmlout .= "
