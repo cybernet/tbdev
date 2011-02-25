@@ -62,7 +62,7 @@
   
   $js = "<script type='text/javascript' src='scripts/bbcode2text.js'></script>";
   
-  print stdhead($lang['forum_new_topic_newtopic'], $js) . $HTMLOUT . stdfoot();
+  print stdhead($lang['forum_new_topic_newtopic'], $js, $fcss) . $HTMLOUT . stdfoot();
   exit();
 
 ?>

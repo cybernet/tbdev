@@ -73,7 +73,7 @@
 	$HTMLOUT .= end_table();
 	$HTMLOUT .= $pager['pagerbottom'];
 	$HTMLOUT .= end_main_frame(); 
-	print stdhead('Today Posts (Last 24 Hours)') . $HTMLOUT . stdfoot();
+	print stdhead('Today Posts (Last 24 Hours)', '', $fcss) . $HTMLOUT . stdfoot();
 
 
 ?>

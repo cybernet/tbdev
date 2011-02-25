@@ -86,7 +86,7 @@
 	</form>
  </div>
 	</div>";
-	print stdhead("Forum Search") . $HTMLOUT . stdfoot();
+	print stdhead("Forum Search", '', $fcss) . $HTMLOUT . stdfoot();
 	exit();
 
 

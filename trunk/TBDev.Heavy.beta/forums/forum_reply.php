@@ -15,7 +15,7 @@
 
     $HTMLOUT .= end_table();
     $HTMLOUT .= end_main_frame();
-    print stdhead("Compose") . $HTMLOUT . stdfoot();
+    print stdhead("Compose", '', $fcss) . $HTMLOUT . stdfoot();
     exit();
   }
 
@@ -24,7 +24,7 @@
     $HTMLOUT .= stdmsg("Sorry", "You are not allowed in here.");
     $HTMLOUT .= end_table(); 
     $HTMLOUT .= end_main_frame(); 
-    print stdhead("Compose") . $HTMLOUT . stdfoot();
+    print stdhead("Compose", '', $fcss) . $HTMLOUT . stdfoot();
     exit();
   }
 
@@ -85,7 +85,7 @@
   
   $js = "<script type='text/javascript' src='scripts/bbcode2text.js'></script>";
   
-  print stdhead($lang['forum_reply_reply'], $js) . $HTMLOUT . stdfoot();
+  print stdhead($lang['forum_reply_reply'], $js, $fcss) . $HTMLOUT . stdfoot();
   exit();
 
 

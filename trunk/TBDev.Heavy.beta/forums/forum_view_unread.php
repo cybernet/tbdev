@@ -112,7 +112,7 @@
                 $HTMLOUT .= "<div align='center'><a href='" . $_SERVER['PHP_SELF'] . "?catchup'>Mark all posts as read</a></div>";
 
                 $HTMLOUT .= end_main_frame();
-                print stdhead("Catch Up") . $HTMLOUT . stdfoot();
+                print stdhead("Catch Up", '', $fcss) . $HTMLOUT . stdfoot();
                 die();
             } else
                 stderr("Sorry...", "There are no unread posts.<br /><br />Click <a href='" . $_SERVER['PHP_SELF'] . "?action=getdaily'>here</a> to get today's posts (last 24h).");

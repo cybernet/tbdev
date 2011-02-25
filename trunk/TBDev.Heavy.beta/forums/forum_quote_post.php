@@ -10,7 +10,7 @@
     $HTMLOUT .= stdmsg('Warning', 'Forums are currently in maintainance mode');
     $HTMLOUT .= insert_compose_frame($topicid, false, true);
     $HTMLOUT .= end_main_frame();
-    print stdhead("Post quote") . $HTMLOUT . stdfoot();
+    print stdhead("Post quote", '', $fcss) . $HTMLOUT . stdfoot();
     exit();
 
 

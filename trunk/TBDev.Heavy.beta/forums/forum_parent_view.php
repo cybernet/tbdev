@@ -43,7 +43,7 @@
 
     $HTMLOUT .="</table>$buttons</div><br />\n";
     
-    print stdhead("Forums") . $HTMLOUT . stdfoot();
+    print stdhead("Forums", '', $fcss) . $HTMLOUT . stdfoot();
     exit();
     
     

@@ -90,7 +90,7 @@
 	$HTMLOUT .="</p>";
 	 
 	
-print stdhead("Forum") . $HTMLOUT . stdfoot();
+print stdhead("Forum", '', $fcss) . $HTMLOUT . stdfoot();
 
 
 ?>
