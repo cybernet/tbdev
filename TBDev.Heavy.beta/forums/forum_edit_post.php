@@ -63,7 +63,7 @@
   
   $js = "<script type='text/javascript' src='scripts/bbcode2text.js'></script>";
   
-  print stdhead("Edit Post", $js) . $HTMLOUT . stdfoot();
+  print stdhead("Edit Post", $js, $fcss) . $HTMLOUT . stdfoot();
   exit();
 
 

@@ -38,7 +38,7 @@
 
         $HTMLOUT .= end_frame();
         $HTMLOUT .= end_main_frame();
-        print stdhead("{$lang['forums_title']}") . $HTMLOUT . stdfoot();
+        print stdhead($lang['forums_title'], '', $fcss) . $HTMLOUT . stdfoot();
         exit();
     }
 

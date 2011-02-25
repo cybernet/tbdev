@@ -158,7 +158,7 @@
 	</form>";
 
 	$HTMLOUT .= end_main_frame(); 
-	print stdhead("Polls") . $HTMLOUT . stdfoot();
+	print stdhead("Polls", '', $fcss) . $HTMLOUT . stdfoot();
 
 
 ?>

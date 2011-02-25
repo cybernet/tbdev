@@ -124,6 +124,8 @@ $HTMLOUT='';
 */
 $TBDEV['forum_pic_url'] = $CURUSER['stylesheet']? "{$TBDEV['baseurl']}/templates/{$CURUSER['stylesheet']}/images/forums/" :"{$TBDEV['baseurl']}/templates/{$TBDEV['stylesheet']}/images/forums/";
 
+
+$fcss = "<link rel='stylesheet' type='text/css' href='templates/{$CURUSER['stylesheet']}/forums.css' />";
 /**
 * Configs End
 */

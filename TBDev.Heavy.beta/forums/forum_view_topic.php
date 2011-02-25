@@ -454,7 +454,7 @@
   </script>
     ";
     
-    print stdhead($lang['forum_topic_view_view_topic'].$subject, $js) . $HTMLOUT . stdfoot();
+    print stdhead($lang['forum_topic_view_view_topic'].$subject, $js, $fcss) . $HTMLOUT . stdfoot();
 
     //$uploaderror = (isset($_GET['uploaderror']) ? htmlsafechars($_GET['uploaderror']) : '');
 /*

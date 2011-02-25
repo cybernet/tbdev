@@ -140,34 +140,54 @@ function stdhead( $title = "", $js='', $css='' ) {
                     <div id='nav'>
                         <ul>";
 
+    $tab = pathinfo( $_SERVER['SCRIPT_NAME'], PATHINFO_FILENAME );
+    
     if ($CURUSER)
     {
-      $htmlout .= "
-                           <li class='fleft'><a href='index.php'>{$lang['gl_home']}</a></li>
-                           <li class='fleft'><a href='browse.php'>{$lang['gl_browse']}</a></li>
-                           <li class='fleft'><a href='upload.php'>{$lang['gl_upload']}</a></li>
-                           <li class='fleft'><a href='chat.php'>{$lang['gl_chat']}</a></li>
-                           <li class='fleft active'><a href='forums.php'>{$lang['gl_forums']}</a></li>
-                           <li class='fleft'><a href='topten.php'>{$lang['gl_top_10']}</a></li>
-                           <li class='fleft'><a href='links.php'>{$lang['gl_links']}</a></li>
-                           <li class='fleft'><a href='faq.php'>{$lang['gl_faq']}</a></li>
-                           <li class='fleft'><a href='staff.php'>{$lang['gl_staff']}</a></li>";
-
+      $tabarray = array(
+				'index'   => "<li class='fleft'><a href='index.php'>{$lang['gl_home']}</a></li>",
+				'browse'  => "<li class='fleft'><a href='browse.php'>{$lang['gl_browse']}</a></li>",
+				'upload'  => "<li class='fleft'><a href='upload.php'>{$lang['gl_upload']}</a></li>",
+				'chat'    => "<li class='fleft'><a href='chat.php'>{$lang['gl_chat']}</a></li>",
+				'forums'  => "<li class='fleft'><a href='forums.php'>{$lang['gl_forums']}</a></li>",
+				'topten'  => "<li class='fleft'><a href='topten.php'>{$lang['gl_top_10']}</a></li>",
+				'links'   => "<li class='fleft'><a href='links.php'>{$lang['gl_links']}</a></li>",
+				'faq'     => "<li class='fleft'><a href='faq.php'>{$lang['gl_faq']}</a></li>",
+				'staff'   => "<li class='fleft'><a href='staff.php'>{$lang['gl_staff']}</a></li>"
+			);
+      
       if( $CURUSER['class'] >= UC_MODERATOR )
       {
-        $htmlout .= "
-                           <li class='fleft'><a href='admin.php'>{$lang['gl_admin']}</a></li>";
+      $tabarray['admin']= "<li class='fleft'><a href='admin.php'>{$lang['gl_admin']}</a></li>";
       }
 
-      $htmlout .= "        <li class='fright'><a href='search.php'>{$lang['gl_search']}</a></li>";
+      foreach($tabarray as $k => $v)
+			{
+        if( $tab == $k )
+        $htmlout .= str_replace("<li class='fleft'>", "<li class='fleft active'>", $v);
+        else
+        $htmlout .= $v;
+			}
 
+      $htmlout .= "<li class='fright'><a href='search.php'>{$lang['gl_search']}</a></li>";
+      unset($tabarray);
     }
     else
     {
-      $htmlout .= "
-                           <li class='fleft'><a href='login.php'>{$lang['gl_login']}</a></li>
-                           <li class='fleft'><a href='signup.php'>{$lang['gl_signup']}</a></li>
-                           <li class='fleft'><a href='recover.php'>{$lang['gl_recover']}</a></li>";
+      $tabarray = array(
+       'login'    => "<li class='fleft'><a href='login.php'>{$lang['gl_login']}</a></li>",
+       'signup'   => "<li class='fleft'><a href='signup.php'>{$lang['gl_signup']}</a></li>",
+       'recover'  => "<li class='fleft'><a href='recover.php'>{$lang['gl_recover']}</a></li>"
+       );
+    
+      foreach($tabarray as $k => $v)
+			{
+        if( $tab == $k )
+        $htmlout .= str_replace("<li class='fleft'>", "<li class='fleft active'>", $v);
+        else
+        $htmlout .= $v;
+			}
+			unset($tabarray);
     }
 
     $htmlout .= "

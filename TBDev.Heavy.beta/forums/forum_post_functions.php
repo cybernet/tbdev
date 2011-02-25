@@ -73,7 +73,7 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 
             $htmlout .= end_table();
             $htmlout .= end_main_frame();
-            print stdhead("Compose") . $htmlout . stdfoot();
+            print stdhead("Compose", '', $fcss) . $htmlout . stdfoot();
             exit();
         }
         
@@ -82,7 +82,7 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 		    $htmlout .= stdmsg("Sorry", "You are not allowed in here.");
 				$htmlout .= end_table(); 
 				$htmlout .= end_main_frame(); 
-				print stdhead("Compose") . $htmlout . stdfoot();
+				print stdhead("Compose", '', $fcss) . $htmlout . stdfoot();
 		    exit();
 		    }
 		    
@@ -126,7 +126,7 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 
             $htmlout .= end_table();
             $htmlout .= end_main_frame();
-            print stdhead("Compose") . $htmlout . stdfoot();
+            print stdhead("Compose", '', $css) . $htmlout . stdfoot();
             exit();
         }
 
@@ -137,7 +137,7 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 
             $htmlout .= end_table();
             $htmlout .= end_main_frame();
-            print stdhead("Error - No post with this ID") . $htmlout . stdfoot();
+            print stdhead("Error - No post with this ID", '', $fcss) . $htmlout . stdfoot();
             exit();
         }
 

@@ -229,7 +229,7 @@
 	
 	$HTMLOUT .= insert_quick_jump_menu($forumid);
 	
-	print stdhead("New Topic") . $HTMLOUT . stdfoot();
+	print stdhead("New Topic", '', $fcss) . $HTMLOUT . stdfoot();
 	
 	exit();
 
