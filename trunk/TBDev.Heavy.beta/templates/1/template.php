@@ -62,10 +62,23 @@ function stdhead( $title = "", $js='', $css='' ) {
 			<meta http-equiv='Content-Language' content='en-us' />
 			<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 
-          <title>{$title}</title>
-          <link rel='stylesheet' type='text/css' href='{$TBDEV['baseurl']}/templates/$FILE/{$FILE}.css' />
-          {$css}\n
-          {$js}\n
+      <title>{$title}</title>
+      
+      <link rel='stylesheet' type='text/css' href='{$TBDEV['baseurl']}/templates/$FILE/{$FILE}.css' />
+      {$css}\n
+      <!-- move all this stuff to footer asap -->
+      <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+      {$js}\n
+      <script type='text/javascript'>
+        $(document).ready(function(){
+        
+        $('#ff').click(function (event) { 
+        event.preventDefault();
+        $('#fastsearch').slideToggle('fast');
+        });
+        
+      });
+      </script>
 
     </head>
 
@@ -169,7 +182,7 @@ function stdhead( $title = "", $js='', $css='' ) {
         $htmlout .= $v;
 			}
 
-      $htmlout .= "<li class='fright'><a href='search.php'>{$lang['gl_search']}</a></li>";
+      $htmlout .= "<li class='fright'><a id='ff' href='search.php'>{$lang['gl_search']}</a></li>";
       unset($tabarray);
     }
     else
@@ -203,6 +216,18 @@ function stdhead( $title = "", $js='', $css='' ) {
 
         <!-- Start Container -->
         <div id='container'>
+
+            <!-- Start Search Box -->
+            <div class='fright' style='height:20px;'>
+                <div id='fastsearch' class='search-box' style='display:none;'>
+                    <strong>Torrent Search:</strong>
+                    <form method='get' action='browse.php'>
+                         <input name='search' size='40' value='' type='text' />
+                         <input value='Search!' class='btn' type='submit' />
+                    </form>
+                </div>
+            </div>
+            <!-- End Search Box -->
 
             <!-- Start Maincolumn -->
             <div id='maincolumn'>";
