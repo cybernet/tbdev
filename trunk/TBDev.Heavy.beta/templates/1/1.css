@@ -218,12 +218,12 @@ img { border: 0; vertical-align: middle; }
     position: relative;
     border: 3px solid #528f6c;
     background: #eef3f8;
-    top: 10px;
+    top: 5px;
     left: 0px;
     clip: rect(0pt, auto, auto, 0pt);
-    -webkit-borderradius: 5px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-bottom-left-radius: 5px;
 }
 
 /* - Message Alert - */
