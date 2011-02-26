@@ -218,7 +218,7 @@ function stdhead( $title = "", $js='', $css='' ) {
         <div id='container'>
 
             <!-- Start Search Box -->
-            <div class='fright' style='height:20px;'>
+            <div class='fright' style='height:0px;'>
                 <div id='fastsearch' class='search-box' style='display:none;'>
                     <strong>Torrent Search:</strong>
                     <form method='get' action='browse.php'>
