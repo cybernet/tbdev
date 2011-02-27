@@ -681,7 +681,7 @@ function do_end() {
 	
 		$txt = "Although the installer is now locked (to re-install, remove the file 'install.lock'), for added security, please remove the index.php file before continuing.
 			 <br /><br />
-			 <div style='text-align: center;'><a href='../login.php'>Log into tracker</a></div>";
+			 <div style='text-align: center;'><a href='../members.php?action=login'>Log into tracker</a></div>";
 	}
 	else
 	{
@@ -690,7 +690,7 @@ function do_end() {
 		$txt = "PLEASE REMOVE THE INSTALLER ('index.php') BEFORE CONTINUING!<br />
 		Not doing this will open you up to a situation where anyone could delete your tracker &amp; data!
 				<br /><br />
-				<div style='text-align: center;'><a href='../login.php'>Log into tracker</a></div>";
+				<div style='text-align: center;'><a href='../members.php?action=login'>Log into tracker</a></div>";
 	}
 	
 	$warn = '';
