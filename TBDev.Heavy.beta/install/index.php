@@ -27,7 +27,7 @@ define( 'CACHE_PATH' , TBDEV_ROOT_PATH );
 
 define( 'REQ_PHP_VER' , '5.2.1' );
 
-define( 'TBDEV_REV' , 'TBDev 2009.rev.295' );
+define( 'TBDEV_REV' , 'TBDev 2009.rev.426' );
 
 $installer = new installer;
 
@@ -89,31 +89,32 @@ function installer() {
 
 
 
-function do_start() {
-	
-	
-	$this->stdhead('Welcome');
-	
-	$this->htmlout .= "<div class='box_content'>
 
-							<h2>Welcome to the TBDev Tracker Installer</h2><br /><br />
-							
-							<p>Before we go any further, please ensure that all the files have been uploaded, and that the file 'config.php' has suitable permissions to allow this script to write to it ( 0666 should be sufficient ).</p>
-							   <br /><br />
-							   <h3>".TBDEV_REV." requires PHP ".REQ_PHP_VER." or better and an MYSQL database.</h3>
-							   <br /><br />
-							   You will also need the following information:
-							   <ul>
-							   <li>Your mySQL database name</li>
-							   <li>Your mySQL username</li>
-							   <li>Your mySQL password</li>
-							   <li>Your mySQL host address (usually localhost)</li>
-							   </ul>
-							   <br />
-							   Once you have clicked on proceed, you will be taken to a form to enter information the installer needs to set up your tracker.
-							   <br /><br />
-							   <strong>PLEASE NOTE: USING THIS INSTALLER WILL DELETE ANY CURRENT TBDEV DATABASE AND OVERWRITE ANY CONFIG.PHP FILE</strong>
-							   ";
+function do_start() {
+
+
+    $this->stdhead('Welcome');
+	
+	$this->htmlout .= "
+                 <div class='box_wrapper'>
+                     <div class='box_header'><h2>Welcome to the TBDev Tracker Installer</h2></div>
+                     <div class='box_subhead'><div class='box_img'></div></div>
+                         <div class='box_content'>
+                             <p>Before we go any further, please ensure that all the files have been uploaded, and that the file 'config.php' has suitable permissions to allow this script to write to it ( 0666 should be sufficient ).</p>
+                             <br /><br />
+                             <h3>".TBDEV_REV." requires PHP ".REQ_PHP_VER." or better and an MYSQL database.</h3>
+                             <br /><br />
+                             <p>You will also need the following information:</p>
+							 <ul>
+							    <li>Your mySQL database name</li>
+							    <li>Your mySQL username</li>
+							    <li>Your mySQL password</li>
+							    <li>Your mySQL host address (usually localhost)</li>
+							 </ul>
+							 <br />
+                             <p>Once you have clicked on proceed, you will be taken to a form to enter information the installer needs to set up your tracker.</p>
+
+                             <p><strong>PLEASE NOTE: USING THIS INSTALLER WILL DELETE ANY CURRENT TBDEV DATABASE AND OVERWRITE ANY CONFIG.PHP FILE</strong></p>";
 	
 	$warnings   = array();
 	
@@ -196,8 +197,10 @@ function do_start() {
   }
 	
 	
-	
-	
+
+	$this->htmlout .= "</div></div>";
+
+
 	if ( count($warnings) > 0 )
 	{
 	
@@ -215,8 +218,8 @@ function do_start() {
 	{
 		$this->htmlout .= "<br /><br /><div class='proceed-btn-div'><a href='index.php?progress=1'><span class='btn'>PROCEED</span></a></div>";
 	}
-	
-	$this->htmlout .= "</div>";
+
+
 	
 	$this->htmlout();
 }
@@ -229,46 +232,39 @@ function do_step_one() {
 	$this->stdhead('Set Up form');
 	
 	$this->htmlout .= "
-	<div class='box_content'>
-	
-	<form action='index.php' method='post'>
-	<div>
-	<input type='hidden' name='progress' value='2' />
-	</div>
-	
-	<h2>Your Server Environment</h2>";
-	
-	$this->htmlout .= "
-	<p>This section requires you to enter your SQL information. If in doubt, please check with your webhost before asking for support. You may choose to enter an existing database name,if not - you must create a new database before continuing.</p>
-	
-	<fieldset>
-    <legend><strong>MySQL Host</strong></legend>
-      <input type='text' name='mysql_host' value='localhost' />
-      (localhost is usually sufficient)
-  </fieldset>
-	
-	<fieldset>
-	  <legend><strong>MySQL Database Name</strong></legend>
-	  <input type='text' name='mysql_db' value='' />
-	</fieldset>
-	
-	<fieldset>
-	  <legend><strong>SQL Username</strong></legend>
-	  <input type='text' name='mysql_user' value='' />
-	</fieldset>
-	
-	<fieldset>
-	  <legend><strong>SQL Password</strong></legend>
-	  <input type='text' name='mysql_pass' value='' />
-	</fieldset>
-	
-	<div class='proceed-btn-div'>
-	<input class='btn' type='submit' value='PROCEED' /></div>
-	
-	</form>
-	</div>";
+                 <div class='box_wrapper'>
+                     <div class='box_header'><h2>Step 1 : Set up form</h2></div>
+                     <div class='box_subhead'><div class='box_img'></div></div>
+                         <div class='box_content'>
+          	                 <form action='index.php' method='post'>
+                                  <div><input type='hidden' name='progress' value='2' /></div>
+                                  <h2>Your Server Environment</h2>";
 
-						 
+	$this->htmlout .= "
+                                  <p>This section requires you to enter your SQL information. If in doubt, please check with your webhost before asking for support. You may choose to enter an existing database name,if not - you must create a new database before continuing.</p>
+       	                          <fieldset>
+                                           <legend><strong>MySQL Host</strong></legend>
+                                           <input type='text' name='mysql_host' value='localhost' />
+                                           (localhost is usually sufficient)
+                                  </fieldset>
+                                  <fieldset>
+                                           <legend><strong>MySQL Database Name</strong></legend>
+                                           <input type='text' name='mysql_db' value='' />
+                                  </fieldset>
+   	                              <fieldset>
+                                           <legend><strong>SQL Username</strong></legend>
+                                           <input type='text' name='mysql_user' value='' />
+                                  </fieldset>
+                                  <fieldset>
+                                           <legend><strong>SQL Password</strong></legend>
+                                           <input type='text' name='mysql_pass' value='' />
+                                  </fieldset>
+
+                                  <div class='proceed-btn-div'><input class='btn' type='submit' value='PROCEED' /></div>
+                             </form>
+                         </div>
+                 </div>";
+
 	$this->htmlout();
 						 
 }
@@ -339,7 +335,7 @@ function do_step_two() {
 
 	
 	$this->stdhead('Database Success!');
-	
+
 	$this->htmlout .= "
 	<div class='box_content'>
 	
@@ -395,103 +391,86 @@ function do_step_three() {
 	$ann_url = $base_url.'/announce.php';
 	
 	$this->stdhead('Config Set Up form');
-	
-	$this->htmlout .= "
-	<div class='box_content'>
-	
-	<form action='index.php' method='post'>
-	<div>
-	<input type='hidden' name='progress' value='4' />
-	</div>
-	
-	<h2>Setting up your Config file</h2>";
-	
-	$this->htmlout .= "
-	<p>This section requires you to enter your all information. If in doubt, please check with your webhost before asking for support. Please note: Any settings you enter here will overwrite any settings in your config.php file!</p>
-	
-	<fieldset>
-    <legend><strong>MySQL Settings</strong></legend>
-    
-    <div class='form-field'>  
-    <label>MySQL Host</label>
-    <input type='text' name='mysql_host' value='{$this->VARS['mysql_host']}' /><br />
-    </div>
-    
-    <div class='form-field'>
-    <label>MySQL Database Name</label>
-	  <input type='text' name='mysql_db' value='{$this->VARS['mysql_db']}' /><br />
-    </div>
 
-	  <div class='form-field'>  
-    <label>SQL Username</label>
-	  <input type='text' name='mysql_user' value='{$this->VARS['mysql_user']}' /><br />
-    </div>
-	
-    <div class='form-field'>  
-    <label>SQL Password</label>
-	  <input type='text' name='mysql_pass' value='{$this->VARS['mysql_pass']}' /><br />
-	  </div>
-	</fieldset>
-	
-	<fieldset>
-	  <legend><strong>General Settings</strong></legend>
-	  
-	  <div class='form-field'>  
-    <label>Base URL</label>
-	  <input type='text' name='base_url' value='{$base_url}' />
-	  <br /><span class='form-field-info'>Check that this setting is correct, as it was automagic!</span>
-	  </div>
-	  
-	  <div class='form-field'>  
-    <label>Announce URL</label>
-	  <input type='text' name='ann_url' value='{$ann_url}' />
-	  <br /><span class='form-field-info'>Check that this setting is correct, as it was automagic!</span>
-	  </div>
-	  
-	  <div class='form-field'>  
-    <label>Cookie Prefix</label>
-	  <input type='text' name='cookie_prefix' value='_tbdev' />
-	  </div>
-	  
-	  <div class='form-field'>  
-    <label>Cookie Path</label>
-	  <input type='text' name='cookie_path' value='' />
-	  </div>
-	  
-	  <div class='form-field'>  
-    <label>Cookie Domain</label>
-	  <input type='text' name='cookie_domain' value='' />
-	  </div>
-	  
-	  <div class='form-field'>  
-    <label>Site Email</label>
-	  <input type='text' name='site_email' value='' />
-	  </div>
-	  
-	  <div class='form-field'>  
-    <label>Site Name</label>
-	  <input type='text' name='site_name' value='' />
-	  </div>
-	  
-	  <div class='form-field'>  
-    <label>Language</label>
-	  <input type='text' name='language' value='en' />
-	  </div>
-	  
-	  <div class='form-field'>  
-    <label>Character Set</label>
-	  <input type='text' name='char_set' value='UTF-8' />
-	  </div>
-	  
-	</fieldset>
-	
-	<div class='proceed-btn-div'>
-	<input class='btn' type='submit' value='PROCEED' /></div>
-	
-	</form>
-	</div>";
+	$this->htmlout .= "
+                 <div class='box_wrapper'>
+                     <div class='box_header'><h2>Step 3 : Config Setup form</h2></div>
+                     <div class='box_subhead'><div class='box_img'></div></div>
+                     <div class='box_content'>
+        	             <form action='index.php' method='post'>
+                              <div><input type='hidden' name='progress' value='4' /></div>
+                              <h2>Setting up your Config file</h2>";
 
-						 
+	$this->htmlout .= "
+                              <p>This section requires you to enter your all information. If in doubt, please check with your webhost before asking for support. Please note: Any settings you enter here will overwrite any settings in your config.php file!</p>
+
+                              <fieldset>
+                                       <legend><strong>MySQL Settings</strong></legend>
+                                       <div class='form-field'>
+                                           <label>MySQL Host</label>
+                                           <input type='text' name='mysql_host' value='{$this->VARS['mysql_host']}' /><br />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>MySQL Database Name</label>
+                                           <input type='text' name='mysql_db' value='{$this->VARS['mysql_db']}' /><br />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>SQL Username</label>
+                                           <input type='text' name='mysql_user' value='{$this->VARS['mysql_user']}' /><br />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>SQL Password</label>
+                                           <input type='text' name='mysql_pass' value='{$this->VARS['mysql_pass']}' /><br />
+                                       </div>
+                              </fieldset>
+
+                              <fieldset>
+                                       <legend><strong>General Settings</strong></legend>
+                                       <div class='form-field'>
+                                           <label>Base URL</label>
+                                           <input type='text' name='base_url' value='{$base_url}' />
+                                           <br /><span class='form-field-info'>Check that this setting is correct, as it was automagic!</span>
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Announce URL</label>
+                                           <input type='text' name='ann_url' value='{$ann_url}' />
+	                                       <br /><span class='form-field-info'>Check that this setting is correct, as it was automagic!</span>
+	                                   </div>
+                                       <div class='form-field'>
+                                           <label>Cookie Prefix</label>
+                                           <input type='text' name='cookie_prefix' value='_tbdev' />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Cookie Path</label>
+                                           <input type='text' name='cookie_path' value='' />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Cookie Domain</label>
+                                           <input type='text' name='cookie_domain' value='' />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Site Email</label>
+                                           <input type='text' name='site_email' value='' />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Site Name</label>
+                                           <input type='text' name='site_name' value='' />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Language</label>
+	                                       <input type='text' name='language' value='en' />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Character Set</label>
+                                           <input type='text' name='char_set' value='UTF-8' />
+                                       </div>
+                              </fieldset>
+
+                              <div class='proceed-btn-div'><input class='btn' type='submit' value='PROCEED' /></div>
+                         </form>
+	                 </div>
+                 </div>";
+
 	$this->htmlout();
 						 
 }
@@ -550,11 +529,11 @@ function do_step_four() {
 	
 	$this->htmlout .= "
 	<div class='box_content'>
-	<h2>Success! Your configuration file and Announce file was written successfully!</h2>
-	<br /><br />
-	The next step will create your Sysop account.
-	<br /><br />
-	<div class='proceed-btn-div'><a href='index.php?progress=5'><span class='btn'>CREATE ACCOUNT</span></a></div>
+	    <h2>Success! Your configuration file and Announce file was written successfully!</h2>
+	    <br /><br />
+	    The next step will create your Sysop account.
+	    <br /><br />
+	    <div class='proceed-btn-div'><a href='index.php?progress=5'><span class='btn'>CREATE ACCOUNT</span></a></div>
 	</div>";
 						 
 	$this->htmlout();
@@ -568,49 +547,40 @@ function do_step_five() {
 	$this->stdhead('Config Set Up form');
 	
 	$this->htmlout .= "
-	<div class='box_content'>
-	
-	<form action='index.php' method='post'>
-	<div>
-	<input type='hidden' name='progress' value='6' />
-	</div>
-	
-	<h2>Creating your sysop account</h2>";
-	
+                 <div class='box_wrapper'>
+                     <div class='box_header'><h2>Step 3 : Config Setup form</h2></div>
+                     <div class='box_subhead'><div class='box_img'></div></div>
+                     <div class='box_content'>
+  	                     <form action='index.php' method='post'>
+                              <div><input type='hidden' name='progress' value='6' /></div>
+                              <h2>Creating your sysop account</h2>";
+
 	$this->htmlout .= "
-	<p>This section requires you to enter all your information.</p>
-	
-	<fieldset>
-    <legend><strong>Sysop Account Details</strong></legend>
-    
-    <div class='form-field'>  
-    <label>User Name</label>
-    <input type='text' name='username' value='' /><br />
-    </div>
-    
-    <div class='form-field'>
-    <label>Password One</label>
-	  <input type='text' name='pass' value='' /><br />
-    </div>
+	                          <p>This section requires you to enter all your information.</p>
+                           	  <fieldset>
+                                       <legend><strong>Sysop Account Details</strong></legend>
+                                       <div class='form-field'>
+                                          <label>User Name</label>
+                                          <input type='text' name='username' value='' /><br />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Password One</label>
+	                                       <input type='text' name='pass' value='' /><br />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Password Two</label>
+	                                       <input type='text' name='pass2' value='' /><br />
+                                       </div>
+                                       <div class='form-field'>
+                                           <label>Email Address</label>
+	                                       <input type='text' name='email' value='' /><br />
+	                                   </div>
+	                          </fieldset>
+                              <div class='proceed-btn-div'><input class='btn' type='submit' value='PROCEED' /></div>
+	                     </form>
+	                 </div>
+                 </div>";
 
-	  <div class='form-field'>  
-    <label>Password Two</label>
-	  <input type='text' name='pass2' value='' /><br />
-    </div>
-	
-    <div class='form-field'>  
-    <label>Email Address</label>
-	  <input type='text' name='email' value='' /><br />
-	  </div>
-	</fieldset>
-	
-	<div class='proceed-btn-div'>
-	<input class='btn' type='submit' value='PROCEED' /></div>
-	
-	</form>
-	</div>";
-
-						 
 	$this->htmlout();
 }
 
@@ -684,13 +654,13 @@ function do_step_six() {
 	
 	$this->htmlout .= "
 	<div class='box_content'>
-	<h2>Success! Your sysop account was successfully created!</h2>
-	<br /><br />
-	The installation process is almost complete.
-  The next step will do some investigation into your system state and try to chmod the correct directories.
-	<br /><br />
-	You may however, have to manually chmod directories that the installer cannot!
-	<div class='proceed-btn-div'><a href='index.php?progress=end'><span class='btn'>FINISH INSTALL</span></a></div>
+	    <h2>Success! Your sysop account was successfully created!</h2>
+	    <br /><br />
+	    The installation process is almost complete.
+        The next step will do some investigation into your system state and try to chmod the correct directories.
+	    <br /><br />
+	    You may however, have to manually chmod directories that the installer cannot!
+	    <div class='proceed-btn-div'><a href='index.php?progress=end'><span class='btn'>FINISH INSTALL</span></a></div>
 	</div>";
 						 
 	$this->htmlout();
@@ -760,13 +730,13 @@ function install_error($msg="") {
 	$this->stdhead('Warning!');
 	
 	$this->htmlout .= "<div class='error-box'>
-						     <h2>Warning!</h2>
-						     <br /><br />
-						     <h3>The following errors must be rectified before continuing!</h3>
-						     <br />Please <a href='javascript:history.back()'><span class='btn'>go back</span></a> and try again!
-						     <br /><br />
-						     $msg
-						    </div>";
+	                       <h2>Warning!</h2>
+						   <br /><br />
+						   <h3>The following errors must be rectified before continuing!</h3>
+						   <br />Please <a href='javascript:history.back()'><span class='btn'>go back</span></a> and try again!
+						   <br /><br />
+						   $msg
+	                   </div>";
 	
 	
 	
@@ -778,44 +748,58 @@ function install_error($msg="") {
 function htmlout() {
 
 		echo $this->htmlout;
-		echo "</div>
-		<div id='siteInfo'><p class='center'>
-    <a href='http://www.tbdev.net'><img src='./img/tbdev_btn_red.png' alt='Powered By TBDev &copy;2010' title='Powered By TBDev &copy;2010' /></a></p>
-    </div>
+		echo "
+                 </div>
+             </div>
 
-    </body></html>";
+             <div id='siteInfo'>
+                 <p class='center'>
+                   <a href='http://www.tbdev.net'><img src='./img/tbdev_btn_red.png' alt='Powered By TBDev &copy;2010' title='Powered By TBDev &copy;2010' /></a>
+                   <a href='http://www.tbdev.net'><img src='./img/dorks_btn_red.png' alt='Powered By TBDev &copy;2010' title='Powered By TBDev &copy;2010' /></a>
+                 </p>
+             </div>
+         </div>
+    </body>
+</html>";
 		exit();
 }
-	
+
 
 
 function stdhead($title="") {
-	
-		$this->htmlout = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"
+
+        $this->htmlout = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"
         \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">
     <html xmlns=\"http://www.w3.org/1999/xhtml\">
-
-		<head>
-
-			<meta name='generator' content='TBDev.net' />
-			<meta http-equiv='Content-Language' content='en-us' />
-			<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
-			
-			<title>TBDEV.NET :: {$title}</title>
-			<link rel='stylesheet' href='1.css' type='text/css' />
-
-		</head>
-    
+        <head>
+             <meta name='generator' content='TBDev.net' />
+             <meta http-equiv='Content-Language' content='en-us' />
+             <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+             <title>TBDEV.NET :: {$title}</title>
+             <link rel='stylesheet' href='1.css' type='text/css' />
+        </head>
     <body>
+         <div id='outer_wrapper'>
+             <div id='header'>
+                 <div id='logostrip'>
+                     <div class='text-header'>
+                         <img src='img/install-icon.png' width='38' height='38' alt='' /><p>TBDev.net Installer</p>
+                     </div>
+                     <div class='steps_box'>
+                         <div class='active'><span>Start</span></div>
+                         <div class='inactive'><span>1</span></div>
+                         <div class='inactive'><span>2</span></div>
+                         <div class='inactive'><span>3</span></div>
+                         <div class='inactive'><span>4</span></div>
+                         <div class='inactive'><span>5</span></div>
+                         <div class='inactive'><span>6</span></div>
+                         <div class='inactive'><span>End</span></div>
+                     </div>
+                 </div>
+             </div>
+             <div id='inner_wrapper'>
+                 <div id='content'>";
 
-				 
-			<div id='masthead'>
-      <div id='logostrip'>
-      <div class='text-header'>TBDev.net Installer</div>
-      </div>
-      </div>
-			<div>";
-				  	   
 }
 
 
