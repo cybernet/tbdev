@@ -449,7 +449,7 @@ function logoutcookie() {
 function loggedinorreturn() {
     global $CURUSER, $TBDEV;
     if (!$CURUSER) {
-        header("Location: {$TBDEV['baseurl']}/login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]));
+        header("Location: {$TBDEV['baseurl']}/members.php?action=login?returnto=" . urlencode($_SERVER["REQUEST_URI"]));
         exit();
     }
 }
