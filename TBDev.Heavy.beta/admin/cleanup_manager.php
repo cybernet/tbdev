@@ -61,9 +61,10 @@ require_once "include/user_functions.php";
         break;
     }
 
-function cleanup_show_main()
-	{
+function cleanup_show_main() {
 
+    global $TBDEV;
+    
     $htmlout = '';
 
     $htmlout = "
