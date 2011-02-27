@@ -147,7 +147,7 @@ $lang = array(
     <br />
     <b>I've lost my user name or password! Can you send it to me?</b><a name='user2' id='user2'></a><br />
     <br />
-    Please use <a class='altlink' href='recover.php'>this form</a> to have the login details mailed back to you.<br />
+    Please use <a class='altlink' href='members.php?action=recover'>this form</a> to have the login details mailed back to you.<br />
     <br />
     <br />
     <b>Can you rename my account?</b><a name='user3' id='user3'></a><br />

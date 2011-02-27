@@ -16,9 +16,8 @@
 |   $URL$
 +------------------------------------------------
 */
-    require_once "include/bittorrent.php" ;
-
-    get_template();
+  if( !defined('IN_TBDEV_REG') )
+    header( "Location: {$TBDEV['baseurl']}/404.html" );
 
     ini_set('session.use_trans_sid', '0');
 
@@ -32,7 +31,7 @@
     // Begin the session
     session_start();
     if (isset($_SESSION['captcha_time']))
-    (TIME_NOW - $_SESSION['captcha_time'] < 10) ? exit("{$lang['login_spam']}") : NULL;
+    (TIME_NOW - $_SESSION['captcha_time'] < 5) ? exit("{$lang['login_spam']}") : NULL;
     
     $js = "<script type='text/javascript' src='captcha/captcha.js'></script>";
 
@@ -51,7 +50,7 @@
 
 
     $HTMLOUT .= "
-                <form method='post' action='takelogin.php'>
+                <form method='post' action='{$TBDEV['baseurl']}/members.php?action=takelogin'>
                      <div class='cblock'>
                          <div class='cblock-header'>Login</div>
                          <div class='cblock-lb'>Note: You need cookies enabled to log in.</div>

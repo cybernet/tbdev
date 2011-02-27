@@ -16,10 +16,9 @@
 |   $URL$
 +------------------------------------------------
 */
-  require_once "include/bittorrent.php";
-  get_template();
-
-  require_once "include/user_functions.php";
+  if( !defined('IN_TBDEV_REG') )
+    header( "Location: {$TBDEV['baseurl']}/404.html" );
+    
   require_once "include/password_functions.php";
 
 
@@ -41,7 +40,7 @@
     {
       if(empty($_POST['captcha']) || $_SESSION['captcha_id'] != strtoupper($_POST['captcha']))
       {
-        header("Location: {$TBDEV['baseurl']}/recover.php");
+        header("Location: {$TBDEV['baseurl']}/members.php");
         exit();
       }
     }
@@ -121,7 +120,8 @@
 
                            <div class='inner_header'>{$lang['recover_form']}</div>
 
-                           <form method='post' action='recover.php'>
+                           <form method='post' action='register.php'>
+                            <input type='hidden' name='action' value='recover' />
                                 <table border='1' cellspacing='0' cellpadding='10'>";
 
 
