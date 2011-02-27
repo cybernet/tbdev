@@ -16,10 +16,8 @@
 |   $URL$
 +------------------------------------------------
 */
-require_once "include/bittorrent.php";
-require_once "include/user_functions.php";
-
-get_template();
+  if( !defined('IN_TBDEV_REG') )
+    header( "Location: {$TBDEV['baseurl']}/404.html" );
 
 
 

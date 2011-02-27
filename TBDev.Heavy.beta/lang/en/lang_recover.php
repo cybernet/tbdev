@@ -34,7 +34,7 @@ If you did not do this ignore this email. Please do not reply.
 
 Should you wish to confirm this request, please follow this link:
 
-%s/register.php?action=recover&id=%u&secret=%s
+%s/members.php?action=recover&id=%u&secret=%s
 
 
 After you do this, your password will be reset and emailed back
@@ -49,7 +49,7 @@ Here is the information we now have on file for this account:
     User name: %s
     Password:  %s
 
-You may login at %s/login.php
+You may login at %s/members.php?action=login
 
 --",
 

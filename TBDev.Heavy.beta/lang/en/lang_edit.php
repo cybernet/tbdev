@@ -5,7 +5,7 @@ $lang = array(
 #edit errors
 'edit_user_error' => "USER ERROR",
 'edit_no_torrent' => "No torrent found",
-'edit_no_permission' => "<h1>Can't edit this torrent</h1><p>You're not the rightful owner, or you're not <a href='login.php?returnto=%s&amp;nowarn=1'>logged in</a> properly.</p>",
+'edit_no_permission' => "<h1>Can't edit this torrent</h1><p>You're not the rightful owner, or you're not <a href='members.php?action=login&amp;returnto=%s&amp;nowarn=1'>logged in</a> properly.</p>",
 
 #edit options
 'edit_torrent_name' => "Torrent name",

@@ -16,9 +16,9 @@
 |   $URL$
 +------------------------------------------------
 */
-    require_once 'include/bittorrent.php';
+  if( !defined('IN_TBDEV_REG') )
+    header( "Location: {$TBDEV['baseurl']}/404.html" );
 
-    get_template();
 
     require_once "include/password_functions.php";
 
@@ -30,7 +30,7 @@
       session_start();
       if(!isset($_POST['captcha']) || empty($_POST['captcha']) || $_SESSION['captcha_id'] != strtoupper($_POST['captcha']))
       {
-            header('Location: login.php');
+            header('Location: {$TBDEV['baseurl']}/members.php?action=login');
             exit();
       }
     }

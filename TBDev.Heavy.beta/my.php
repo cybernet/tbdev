@@ -79,7 +79,7 @@ loggedinorreturn();
 
     <table border='1' align='center'>
     <!--<tr>
-    <td align='center' width='33%'><a href='logout.php'><b>{$lang['my_logout']}</b></a></td>
+    <td align='center' width='33%'><a href='members.php?action=logout'><b>{$lang['my_logout']}</b></a></td>
     <td align='center' width='33%'><a href='mytorrents.php'><b>{$lang['my_torrents']}</b></a></td>
     <td align='center' width='33%'><a href='friends.php'><b>{$lang['my_users_lists']}</b></a></td>
     </tr>-->

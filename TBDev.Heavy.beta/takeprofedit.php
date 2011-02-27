@@ -175,7 +175,7 @@ loggedinorreturn();
       //$thisdomain = preg_replace('/^www\./is', "", $thishost);
       
       $body = str_replace(array('<#USERNAME#>', '<#SITENAME#>', '<#USEREMAIL#>', '<#IP_ADDRESS#>', '<#CHANGE_LINK#>'),
-                        array($CURUSER['username'], $TBDEV['site_name'], $email, $_SERVER['REMOTE_ADDR'], "{$TBDEV['baseurl']}/confirmemail.php?uid={$CURUSER['id']}&key=$hash&email=$obemail"),
+                        array($CURUSER['username'], $TBDEV['site_name'], $email, $_SERVER['REMOTE_ADDR'], "{$TBDEV['baseurl']}/members.php?action=confirmemail&uid={$CURUSER['id']}&key=$hash&email=$obemail"),
                         $lang['takeprofedit_email_body']);
       
       
