@@ -30,7 +30,7 @@
       session_start();
       if(!isset($_POST['captcha']) || empty($_POST['captcha']) || $_SESSION['captcha_id'] != strtoupper($_POST['captcha']))
       {
-            header('Location: {$TBDEV['baseurl']}/members.php?action=login');
+            header("Location: {$TBDEV['baseurl']}/members.php?action=login");
             exit();
       }
     }
