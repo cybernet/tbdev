@@ -82,7 +82,7 @@
                        <div class='cblock-header'>Signup</div>
                        <div class='cblock-lb'>    <p>{$lang['signup_cookies']}</p>  </div>
                        <div class='cblock-content'>
-                           <form name='signup' method='post' action='register.php'>
+                           <form name='signup' method='post' action='members.php'>
                             <input type='hidden' name='action' value='reg2' />
                                 <table border='1' cellspacing='0' cellpadding='10'>
                                       <tr><td align='right' class='heading'>{$lang['signup_uname']}</td><td align='left'><input type='text' size='40' name='wantusername' /><span class='namecheck'></span></td></tr>
