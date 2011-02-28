@@ -45,7 +45,7 @@ if( !defined('IN_TBDEV_REG') )
 
   if ($row['status'] != 'pending') 
   {
-    header("Location: {$TBDEV['baseurl']}/member.php?action=ok&type=confirmed");
+    header("Location: {$TBDEV['baseurl']}/members.php?action=ok&type=confirmed");
     exit();
   }
 
@@ -61,6 +61,6 @@ if( !defined('IN_TBDEV_REG') )
 
   logincookie($id, $row['passhash']);
 
-  header("Location: {$TBDEV['baseurl']}/member.php?action=ok&type=confirm");
+  header("Location: {$TBDEV['baseurl']}/members.php?action=ok&type=confirm");
 
 ?>
