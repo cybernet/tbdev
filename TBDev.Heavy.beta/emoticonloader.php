@@ -27,7 +27,7 @@ $htmlout ="
 <!--
 	function add_smilie(code)
 	{
-		opener.document.getElementById('bbcode2text').body.value += ' ' + code + ' ';
+		opener.document.forms['bbcode2text'].body.value += ' ' + code + ' ';
 		//return true;
 	}
 //-->
