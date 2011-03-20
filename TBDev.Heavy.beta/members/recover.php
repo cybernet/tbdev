@@ -120,7 +120,7 @@
 
                            <div class='inner_header'>{$lang['recover_form']}</div>
 
-                           <form method='post' action='register.php'>
+                           <form method='post' action='members.php'>
                             <input type='hidden' name='action' value='recover' />
                                 <table border='1' cellspacing='0' cellpadding='10'>";
 
