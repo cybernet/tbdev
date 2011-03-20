@@ -212,7 +212,7 @@ function maketable($res)
       else
         $s = "cry";
       $sr = floor($sr * 1000) / 1000;
-      $sr = "<table border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'><font color='" . get_ratio_color($sr) . "'>" . number_format($sr, 3) . "</font></td><td class='embedded'>&nbsp;&nbsp;<img src=\"{$TBDEV['pic_base_url']}smilies/{$s}.gif\" alt='' /></td></tr></table>";
+      $sr = "<table align='left' border='0' cellspacing='0' cellpadding='0'><tr><td class='embedded'><font color='" . get_ratio_color($sr) . "'>" . number_format($sr, 3) . "</font></td><td class='embedded'>&nbsp;&nbsp;<img src=\"{$TBDEV['pic_base_url']}smilies/{$s}.gif\" alt='' /></td></tr></table>";
       $HTMLOUT .= "<tr><td class='rowhead' style='vertical-align: middle'>Share ratio</td><td align='left' valign='middle' style='padding-top: 1px; padding-bottom: 0px'>$sr</td></tr>\n";
     }
     //}
