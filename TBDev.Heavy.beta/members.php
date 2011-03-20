@@ -23,7 +23,9 @@
   //require_once "include/html_functions.php";
   get_template();
   $TBDEV['register'] = 1; // for config
+  
   $params = array_merge($_GET, $_POST);
+  $params['action'] = isset($params['action']) ? $params['action'] : '';
   
   switch($params['action'])
   {

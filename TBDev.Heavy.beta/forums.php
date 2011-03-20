@@ -274,7 +274,14 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       header('Location: ' . $_SERVER['PHP_SELF']);
       exit();
       break;
-      
+     
+    case 'preview':
+      require_once "include/bbcode_functions.php";
+      //require_once "forums/forum_post_functions.php";
+      require_once "forums/preview.php";
+      exit();
+      break;
+    
     default:
       require_once "forums/forum_functions.php";
       require_once "forums/forum_view_default.php";
