@@ -1,10 +1,22 @@
 <?php
 
-$HTMLOUT ="";
+  if( !isset($_SERVER['HTTP_X_REQUESTED_WITH']) OR $_SERVER['HTTP_X_REQUESTED_WITH'] != 'XMLHttpRequest' )
+  exit('Can\'t process that request!');
+  
+  if( !isset($_POST['body']) OR strlen($_POST['body']) < 10 )
+  exit;
 
-$body = trim($_POST["body"]);
+  sleep(2);
 
-$HTMLOUT .= begin_main_frame();
+  $HTMLOUT ="";
+
+  $body = trim($_POST['body']);
+  echo "<p>".format_comment($body)."</p>";
+  exit();
+
+
+
+/*$HTMLOUT .= begin_main_frame();
 
 $HTMLOUT .= begin_frame("Preview Post", true);
 
@@ -24,5 +36,5 @@ $HTMLOUT .="<form method='post' action='preview.php'>
 $HTMLOUT .= end_frame();
 
 $HTMLOUT .= end_main_frame();
-print stdhead('Preview') . $HTMLOUT . stdfoot();
+print stdhead('Preview') . $HTMLOUT . stdfoot();*/
 ?>
