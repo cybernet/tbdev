@@ -92,9 +92,9 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 
     }
      
-    $htmlout .="
+    /*$htmlout .="
     <script  type='text/javascript'>
-    /*<![CDATA[*/
+    
     function Preview()
     {
     document.bbcode2text.action = './forums.php?action=reply&topicid=$id'
@@ -102,8 +102,9 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
     document.bbcode2text.submit();
     return true;
     }
-    /*]]>*/
-    </script>";
+    
+    </script>";*/
+    
       
     $htmlout .= begin_frame("Compose", true);
     $htmlout .="<form name='bbcode2text' method='post' action='forums.php?action=post' enctype='multipart/form-data'>
@@ -163,7 +164,8 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 		 */
 		  $htmlout .="<div>".(post_icons())."</div>
  		  <div>
- 	    <input type='button' value='Preview' name='button2' onclick='return Preview();' />\n";
+ 		  <input type='button' value='Preview' name='preview' />\n";
+ 	    //<input type='button' value='Preview' name='button2' onclick='return Preview();' />\n";
       
       if ($newtopic)
       {

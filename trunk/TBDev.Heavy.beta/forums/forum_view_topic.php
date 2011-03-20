@@ -188,6 +188,7 @@
         ($use_attachment_mod ? "LEFT JOIN attachments AS at ON at.postid = p.id " : "") . "LEFT JOIN users AS u2 ON u2.id = p.editedby " . "WHERE p.topicid = " . sqlesc($topicid) . " ORDER BY id LIMIT $offset, $perpage") or sqlerr(__FILE__, __LINE__);
     $pc = mysql_num_rows($res);
     $pn = 0;
+    $cboxelements = array();
 
     while ($arr = mysql_fetch_assoc($res)) 
     {
@@ -439,18 +440,22 @@
     {
       require_once "forum_mod_panel.php";
 	  }
-
-    $js = "<script src='./scripts/jquery.js' type='text/javascript'></script>
-    <script src='./scripts/facebox.js' type='text/javascript'></script>
+	  
+    //$fcss = "<link rel='stylesheet' type='text/css' href='templates/1/colorbox.css' />";
+    
+    $cbox = '';
+    foreach($cboxelement as $v )
+    {
+      $cbox .= "$(\"a[rel='{$v}']\").colorbox({transition:'fade'});";
+    }
+    
+    $js = "<script src='./scripts/jquery.colorbox.js' type='text/javascript'></script>
     <script type='text/javascript' src='./scripts/popup.js'></script>
     <script type='text/javascript' src='./scripts/show_hide.js'></script>
     <script type='text/javascript'>
-    jQuery(document).ready(function($) {
-      $('a[rel*=facebox]').facebox({
-        loadingImage : '{$TBDEV['forum_pic_url']}loading.gif',
-        closeImage   : '{$TBDEV['forum_pic_url']}closelabel.png'
-      })
-    })
+    $(document).ready(function(){
+			{$cbox}
+		});
   </script>
     ";
     

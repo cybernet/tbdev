@@ -52,7 +52,7 @@
   
   if ($TBDEV['forums_online'] == 0)
   $HTMLOUT .= stdmsg('Warning', 'Forums are currently in maintainance mode');
-  
+  // prolly no longer need this
   if( $body != '' )
   {
     $HTMLOUT .= begin_frame("Preview Post", true);
@@ -62,7 +62,7 @@
     </div>";
     $HTMLOUT .= end_frame();
   }
-  
+  // nope
   
   
   $HTMLOUT .= begin_frame("Compose", true);
