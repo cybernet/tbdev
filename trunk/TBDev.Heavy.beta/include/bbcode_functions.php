@@ -92,7 +92,7 @@ function format_quotes($s)
 
 function format_comment($text, $strip_html = true)
 {
-	global $smilies, $TBDEV;
+	global $smilies, $TBDEV, $pn, $cboxelement;
 
 	$s = $text;
   unset($text);
@@ -153,8 +153,12 @@ function format_comment($text, $strip_html = true)
 	$s = preg_replace( "#\(r\)#i", "&reg;" , $s );
 	
 	// [img]http://www/image.gif[/img]
-	$s = preg_replace("/\[img\](http:\/\/[^\s'\"<>]+(\.(jpg|gif|png)))\[\/img\]/i", "<a href='\\1' rel='facebox'><img src=\"\\1\" width='500px' alt='' /></a>", $s);
-
+	
+	while( preg_match( "#\[img\](.+?)\[/img\]#is" , $s ) )
+  {
+    $s = preg_replace("/\[img\](http:\/\/[^\s'\"<>]+(\.(jpg|gif|png)))\[\/img\]/i", "<a href='\\1' rel='colorbox-{$pn}'><img style='max-width:500px;' src=\"\\1\" title='' alt='' /></a>", $s);
+    $cboxelement[ $pn ] = "colorbox-{$pn}";
+  }
 	// [img=http://www/image.gif]
 	//$s = preg_replace("/\[img=(http:\/\/[^\s'\"<>]+(\.(gif|jpg|png)))\]/i", "<img src=\"\\1\" alt='' />", $s);
 

@@ -188,7 +188,7 @@
         ($use_attachment_mod ? "LEFT JOIN attachments AS at ON at.postid = p.id " : "") . "LEFT JOIN users AS u2 ON u2.id = p.editedby " . "WHERE p.topicid = " . sqlesc($topicid) . " ORDER BY id LIMIT $offset, $perpage") or sqlerr(__FILE__, __LINE__);
     $pc = mysql_num_rows($res);
     $pn = 0;
-    $cboxelements = array();
+    $cboxelement = array();
 
     while ($arr = mysql_fetch_assoc($res)) 
     {
