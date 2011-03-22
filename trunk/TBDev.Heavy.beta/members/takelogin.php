@@ -20,46 +20,46 @@
     header( "Location: {$TBDEV['baseurl']}/404.html" );
 
 
-    require_once "include/password_functions.php";
+  require_once "include/password_functions.php";
 
-    if (!mkglobal('username:password'))
-      die('wibble');
+  if (!mkglobal('username:password'))
+    die('wibble');
 
-    if( $TBDEV['captcha'] )
+  if( $TBDEV['captcha'] )
+  {
+    session_start();
+    if(!isset($_POST['captcha']) || empty($_POST['captcha']) || $_SESSION['captcha_id'] != strtoupper($_POST['captcha']))
     {
-      session_start();
-      if(!isset($_POST['captcha']) || empty($_POST['captcha']) || $_SESSION['captcha_id'] != strtoupper($_POST['captcha']))
-      {
-            header("Location: {$TBDEV['baseurl']}/members.php?action=login");
-            exit();
-      }
+          header("Location: {$TBDEV['baseurl']}/members.php?action=login");
+          exit();
     }
-    
-    dbconn();
+  }
 
-    $lang = array_merge( load_language('global'), load_language('takelogin') );
+  dbconn();
+
+  $lang = array_merge( load_language('global'), load_language('takelogin') );
 
 
-    $res = mysql_query("SELECT id, passhash, secret, enabled FROM users WHERE username = " . sqlesc($username) . " AND status = 'confirmed'");
-    $row = mysql_fetch_assoc($res);
+  $res = mysql_query("SELECT id, passhash, secret, enabled FROM users WHERE username = " . sqlesc($username) . " AND status = 'confirmed'");
+  $row = mysql_fetch_assoc($res);
 
-    if (!$row)
-      stderr($lang['tlogin_failed'], 'Username or password incorrect');
-    
-    if ($row['passhash'] != make_passhash( $row['secret'], md5($password) ) )
-    //if ($row['passhash'] != md5($row['secret'] . $password))
-      stderr($lang['tlogin_failed'], 'Username or password incorrect');
+  if (!$row)
+    stderr($lang['tlogin_failed'], 'Username or password incorrect');
 
-    if ($row['enabled'] == 'no')
-      stderr($lang['tlogin_failed'], $lang['tlogin_disabled']);
+  if ($row['passhash'] != make_passhash( $row['secret'], md5($password) ) )
+  //if ($row['passhash'] != md5($row['secret'] . $password))
+    stderr($lang['tlogin_failed'], 'Username or password incorrect');
 
-    logincookie($row['id'], $row['passhash']);
+  if ($row['enabled'] == 'no')
+    stderr($lang['tlogin_failed'], $lang['tlogin_disabled']);
 
-//$returnto = str_replace('&amp;', '&', htmlsafechars($_POST['returnto']));
-//$returnto = $_POST['returnto'];
-    //if (!empty($returnto))
-      //header("Location: ".$returnto);
-    //else
-      header("Location: {$TBDEV['baseurl']}/my.php");
+  logincookie($row['id'], $row['passhash']);
+
+  //$returnto = str_replace('&amp;', '&', htmlsafechars($_POST['returnto']));
+  //$returnto = $_POST['returnto'];
+  //if (!empty($returnto))
+    //header("Location: ".$returnto);
+  //else
+    header("Location: {$TBDEV['baseurl']}/my.php");
 
 ?>

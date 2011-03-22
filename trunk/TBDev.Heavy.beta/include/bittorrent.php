@@ -125,44 +125,63 @@ function dbconn($autoclean = false)
 
 
 function userlogin() {
-    global $TBDEV;
-    unset($GLOBALS["CURUSER"]);
+  global $TBDEV;
+  unset($GLOBALS["CURUSER"]);
 
-    $ip = getip();
-	$nip = ip2long($ip);
+  $ip = getip();
+  $nip = ip2long($ip);
 
-    require_once "cache/bans_cache.php";
-    if(count($bans) > 0)
+  require_once "cache/bans_cache.php";
+  if(count($bans) > 0)
+  {
+    foreach($bans as $k) 
     {
-      foreach($bans as $k) {
-        if($nip >= $k['first'] && $nip <= $k['last']) {
+      if($nip >= $k['first'] && $nip <= $k['last']) 
+      {
         header("HTTP/1.0 403 Forbidden");
         print "<html><body><h1>403 Forbidden</h1>Unauthorized IP address.</body></html>\n";
         exit();
-        }
       }
-      unset($bans);
     }
-    if ( !$TBDEV['site_online'] || !get_mycookie('uid') || !get_mycookie('pass') )
-        return;
-    $id = 0 + get_mycookie('uid');
-    if (!$id || strlen( get_mycookie('pass') ) != 32)
-        return;
-    $res = mysql_query("SELECT * FROM users WHERE id = $id AND enabled='yes' AND status = 'confirmed'");// or die(mysql_error());
-    $row = mysql_fetch_assoc($res);
-    if (!$row)
-        return;
-    //$sec = hash_pad($row["secret"]);
-    if (get_mycookie('pass') !== $row["passhash"])
-        return;
-    mysql_query("UPDATE users SET last_access='" . TIME_NOW . "', ip=".sqlesc($ip)." WHERE id=" . $row["id"]);// or die(mysql_error());
-    $row['ip'] = $ip;
-    $GLOBALS["CURUSER"] = $row;
-    
-    $TBDEV['pic_base_url'] = "templates/{$GLOBALS["CURUSER"]['stylesheet']}/images/";
-    //$GLOBALS['CURUSER']['group'] = $TBDEV['groups'][$row['class']];
-    //$GLOBALS['CURUSER']['ismod'] = ( $GLOBALS['CURUSER']['group']['g_is_mod'] OR $GLOBALS['CURUSER']['group']['g_is_supmod'] ) ? 1:0;
-    get_template();
+    unset($bans);
+  }
+  
+  if ( !$TBDEV['site_online'] || !get_mycookie('uid') || !get_mycookie('pass') )
+      return;
+      
+  $id = 0 + get_mycookie('uid');
+  
+  if (!$id || strlen( get_mycookie('pass') ) != 32)
+      return;
+      
+  $res = mysql_query("SELECT * FROM users WHERE id = $id AND enabled='yes' AND status = 'confirmed'");// or die(mysql_error());
+  
+  $row = mysql_fetch_assoc($res);
+  
+  if (!$row)
+      return;
+  
+  if( $TBDEV['IPcookieCheck'] )
+  {
+    $octet  = explode( ".", $ip );
+    $md5ip = md5($octet[0].$TBDEV['mysql_user'].$row['passhash'].$TBDEV['mysql_host'].$octet[1]);
+    if( !get_mycookie('ipcheck') OR (get_mycookie('ipcheck') !== $md5ip) )
+      return;
+  }
+  
+  if (get_mycookie('pass') !== $row["passhash"])
+    return;
+  
+  mysql_query("UPDATE users SET last_access='" . TIME_NOW . "', ip=".sqlesc($ip)." WHERE id=" . $row["id"]);
+  
+  $row['ip'] = $ip;
+  
+  $GLOBALS["CURUSER"] = $row;
+
+  $TBDEV['pic_base_url'] = "templates/{$GLOBALS["CURUSER"]['stylesheet']}/images/";
+  //$GLOBALS['CURUSER']['group'] = $TBDEV['groups'][$row['class']];
+  //$GLOBALS['CURUSER']['ismod'] = ( $GLOBALS['CURUSER']['group']['g_is_mod'] OR $GLOBALS['CURUSER']['group']['g_is_supmod'] ) ? 1:0;
+  get_template();
 }
 
 function autoclean() {
@@ -360,22 +379,17 @@ function httperr($code = 404) {
     print("<p>Sorry pal :(</p>\n");
     exit();
 }
-/*
-function gmTIME_NOW
-{
-    return strtotime(get_date_TIME_NOW);
-}
-*/
-/*
-function logincookie($id, $password, $secret, $updatedb = 1, $expires = 0x7fffffff) {
-    $md5 = md5($secret . $password . $secret);
-    setcookie("uid", $id, $expires, "/");
-    setcookie("pass", $md5, $expires, "/");
 
-    if ($updatedb)
-        mysql_query("UPDATE users SET last_login = NOW() WHERE id = $id");
+
+function loginIPcookie( $hash, $name='ipcheck' ) {
+  
+  global $TBDEV;
+  
+  $octet  = explode( ".", getip() );
+  $md5ip = md5($octet[0].$TBDEV['mysql_user'].$hash.$TBDEV['mysql_host'].$octet[1]);
+  
+  set_mycookie( $name, $md5ip, 365 );
 }
-*/
 
 function logincookie($id, $passhash, $updatedb = 1, $expires = 0x7fffffff)
 {
@@ -383,6 +397,7 @@ function logincookie($id, $passhash, $updatedb = 1, $expires = 0x7fffffff)
     //setcookie("pass", $passhash, $expires, "/");
     set_mycookie( "uid", $id, $expires );
     set_mycookie( "pass", $passhash, $expires );
+    loginIPcookie( $passhash );
     
     if ($updatedb)
       @mysql_query("UPDATE users SET last_login = ".TIME_NOW." WHERE id = $id");

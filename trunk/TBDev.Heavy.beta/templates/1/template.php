@@ -42,7 +42,7 @@ function stdhead( $title = "", $js='', $css='' ) {
 
     if ($CURUSER)
     {
-      $res1 = @mysql_query("SELECT COUNT(*) FROM messages WHERE receiver=" . $CURUSER["id"] . " AND unread='yes'") or sqlerr(__LINE__,__FILE__);
+      $res1 = @mysql_query("SELECT COUNT(*) FROM messages WHERE receiver={$CURUSER["id"]} AND unread='yes' AND location = 1") or sqlerr(__LINE__,__FILE__);
       $arr1 = mysql_fetch_row($res1);
 
       $unread = ($arr1[0] > 0 ? "<span class='msgalert'><small>{$arr1[0]}</small></span>" : $arr1[0]);

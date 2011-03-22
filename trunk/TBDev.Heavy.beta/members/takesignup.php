@@ -177,10 +177,14 @@
 
 
   if($arr[0])
+  {
     mail($email, "{$TBDEV['site_name']} {$lang['takesignup_confirm']}", $body, "{$lang['takesignup_from']} {$TBDEV['site_email']}");
-  else 
+  }
+  else
+  { 
     logincookie($id, $wantpasshash);
-
+  }
+  
   header("Location: {$TBDEV['baseurl']}/members.php?action=ok&type=". (!$arr[0]?"sysop":("signup&email=" . urlencode($email))));
 
 ?>
