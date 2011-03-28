@@ -1,8 +1,21 @@
 <?php
-
 /*
-**Template Mod By AronTh for TBDEV.NET source code 2009, theme made by AronTh
-**Special Thanks to CoLdFuSiOn for providing the source code and KiD for the motivation to me(AronTh) to make themes for TbDev.net
++------------------------------------------------
+|   TBDev.net BitTorrent Tracker PHP
+|   =============================================
+|   by CoLdFuSiOn
+|   (c) 2003 - 2009 TBDev.Net
+|   http://www.tbdev.net
+|   =============================================
+|   svn: http://sourceforge.net/projects/tbdevnet/
+|   Licence Info: GPL
++------------------------------------------------
+|   $Date$
+|   $Revision$
+|   Author: CoLdFuSiOn, Dorksville, AronTh
+|   Theme Designed by : Dorksville
+|   $URL$
++------------------------------------------------
 */
 
 function stdhead( $title = "", $js='', $css='' ) {
@@ -49,81 +62,191 @@ function stdhead( $title = "", $js='', $css='' ) {
 			<meta http-equiv='Content-Language' content='en-us' />
 			<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
 
-      <title>{$title}</title>
-      
-      <link rel='stylesheet' type='text/css' href='{$TBDEV['baseurl']}/templates/$FILE/{$FILE}.css' />
-      {$css}\n
+          <title>{$title}</title>
+          <link rel='stylesheet' type='text/css' href='{$TBDEV['baseurl']}/templates/$FILE/{$FILE}.css' />
+          {$css}\n
       <!-- move all this stuff to footer asap -->
       <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
       {$js}\n
       <script type='text/javascript'>
         $(document).ready(function(){
-        
-        $('#ff').click(function (event) { 
+
+        $('#ff').click(function (event) {
         event.preventDefault();
         $('#fastsearch').slideToggle('fast');
         });
-        
+
       });
       </script>
-
     </head>
-     <body>
 
-          <!-- Begin Wrapper -->
-          <div id='wrapper'>";
+    <body>
+         <div class='logo'></div>
 
+
+         <!-- Begin StatusBar -->
+         <div class='statusbar'>
+             <div class='bar-content'>";
     $htmlout .= StatusBar();
-
     $htmlout .= "
-              <!-- Begin Header -->
-              <div id='header'>
-                  <div id='menu'>
-                      <ul>";
+             </div>
+         </div>
+         <!-- End StatusBar -->
+
+    <!-- Begin Wrapper -->
+    <div id='wrapper'>
+
+        <!-- Begin Header -->
+        <div id='header'>
+            <div class='subheader'>";
 
     if ($CURUSER)
     {
       $htmlout .= "
-                         <li><a href='index.php'>{$lang['gl_home']}</a></li>
-                         <li><a href='browse.php'>{$lang['gl_browse']}</a></li>
-                         <li><a href='upload.php'>{$lang['gl_upload']}</a></li>
-                         <li><a href='chat.php'>{$lang['gl_chat']}</a></li>
-                         <li><a href='forums.php'>{$lang['gl_forums']}</a></li>
-                         <li><a href='topten.php'>{$lang['gl_top_10']}</a></li>
-                         <li><a href='links.php'>{$lang['gl_links']}</a></li>
-                         <li><a href='faq.php'>{$lang['gl_faq']}</a></li>
-                         <li><a href='staff.php'>{$lang['gl_staff']}</a></li>";
+                    <div class='profile'>
+                        <div class='status_avatar'>";
 
-      if( $CURUSER['class'] >= UC_MODERATOR )
-      {
-        $htmlout .= "
-                         <li><a href='admin.php'>{$lang['gl_admin']}</a></li>";
-      }
+    if (!empty($CURUSER['avatar']))
+    {
+      $avatar = "<a href='userdetails.php?id={$CURUSER['id']}'><img src='{$CURUSER['avatar']}' width='50' height='50' alt='' /></a>";
+    }
+    else
+    {
+      $avatar = "<a href='userdetails.php?id={$CURUSER['id']}'><img src='{$TBDEV['baseurl']}/templates/1/images/default_thumb.png' alt='' /></a>";
+    }
 
+    $htmlout .= $avatar;
+
+    $htmlout .= "
+                        </div>
+                            <div class='username'>
+                                <p><a href='userdetails.php?id={$CURUSER['id']}'>{$CURUSER['username']}</a></p>
+                            </div>
+                            <div class='messagesbox'>
+                                <p><a href='messages.php'>$inbox</a></p>
+                            </div>
+                            <ul>
+                               <li><a class='bold' href='logout.php'>{$lang['gl_logout']}</a></li>
+                            </ul>
+                            <div class='rlink'>
+                                <a class='bold' href='my.php'>{$lang['gl_profile']}</a>&nbsp;&nbsp;&nbsp;
+                                <a class='bold' href='rules.php'>{$lang['gl_rules']}</a>
+                            </div>
+                    </div>";
     }
     else
     {
       $htmlout .= "
-                         <li><a href='login.php'>{$lang['gl_login']}</a></li>
-                         <li><a href='signup.php'>{$lang['gl_signup']}</a></li>
-                         <li><a href='recover.php'>{$lang['gl_recover']}</a></li>";
+                    <div class='profile'>
+                        <div class='sign_in'>
+                            <div style='padding:8px 0 0 5px;'>
+                            <img src='{$TBDEV['baseurl']}/templates/1/images/key.png' alt='{$lang['gl_login']}' />&nbsp;<a style='color:#fff;' href='login.php'>Sign In »</a>
+                            </div>
+                        </div>
+	                   <ul>
+                          <li>New user?&nbsp;</li>
+                          <li><a class='bold' href='signup.php'>Register Now!</a></li>
+                       </ul>
+                    </div>";
     }
 
     $htmlout .= "
-                      </ul>
-                  </div>
-              </div>
-              <!-- End Header -->
 
-		      <!-- Begin Content -->
-		      <div id='content'>";
+            </div>
+        </div>
+        <!-- End Header -->
+
+        <div class='clear'></div>";
+
+    $htmlout .= "
+                <!-- Begin Navigation -->
+                <div id='navigation'>
+                    <div id='nav'>
+                        <ul>";
+
+    $tab = pathinfo( $_SERVER['SCRIPT_NAME'], PATHINFO_FILENAME );
+
+    if ($CURUSER)
+    {
+      $tabarray = array(
+				'index'   => "<li class='fleft'><a href='index.php'>{$lang['gl_home']}</a></li>",
+				'browse'  => "<li class='fleft'><a href='browse.php'>{$lang['gl_browse']}</a></li>",
+				'upload'  => "<li class='fleft'><a href='upload.php'>{$lang['gl_upload']}</a></li>",
+				'chat'    => "<li class='fleft'><a href='chat.php'>{$lang['gl_chat']}</a></li>",
+				'forums'  => "<li class='fleft'><a href='forums.php'>{$lang['gl_forums']}</a></li>",
+				'topten'  => "<li class='fleft'><a href='topten.php'>{$lang['gl_top_10']}</a></li>",
+				'links'   => "<li class='fleft'><a href='links.php'>{$lang['gl_links']}</a></li>",
+				'faq'     => "<li class='fleft'><a href='faq.php'>{$lang['gl_faq']}</a></li>",
+				'staff'   => "<li class='fleft'><a href='staff.php'>{$lang['gl_staff']}</a></li>"
+			);
+
+      if( $CURUSER['class'] >= UC_MODERATOR )
+      {
+      $tabarray['admin']= "<li class='fleft'><a href='admin.php'>{$lang['gl_admin']}</a></li>";
+      }
+
+      foreach($tabarray as $k => $v)
+			{
+        if( $tab == $k )
+        $htmlout .= str_replace("<li class='fleft'>", "<li class='fleft active'>", $v);
+        else
+        $htmlout .= $v;
+			}
+
+      $htmlout .= "<li class='fright'><a id='ff' href='search.php'>{$lang['gl_search']}</a></li>";
+      unset($tabarray);
+    }
+    else
+    {
+      $tabarray = array(
+       'login'    => "<li class='fleft'><a href='login.php'>{$lang['gl_login']}</a></li>",
+       'signup'   => "<li class='fleft'><a href='signup.php'>{$lang['gl_signup']}</a></li>",
+       'recover'  => "<li class='fleft'><a href='recover.php'>{$lang['gl_recover']}</a></li>"
+       );
+
+      foreach($tabarray as $k => $v)
+			{
+        if( $tab == $k )
+        $htmlout .= str_replace("<li class='fleft'>", "<li class='fleft active'>", $v);
+        else
+        $htmlout .= $v;
+			}
+			unset($tabarray);
+    }
+
+    $htmlout .= "
+                        </ul>
+                    </div>
+                </div>
+                <!-- End Navigation -->
+
+                <div class='clear'></div>
+
+
+        <!-- Start Container -->
+        <div id='container'>
+
+            <!-- Start Search Box -->
+            <div class='fright' style='height:0px;'>
+                <div id='fastsearch' class='search-box' style='display:none;'>
+                    <strong>Torrent Search:</strong>
+                    <form method='get' action='browse.php'>
+                         <input name='search' size='40' value='' type='text' />
+                         <input value='Search!' class='btn' type='submit' />
+                    </form>
+                </div>
+            </div>
+            <!-- End Search Box -->
+
+            <!-- Start Maincolumn -->
+            <div id='maincolumn'>";
 
             if ( $TBDEV['msg_alert'] && $msgalert )
             {
              $htmlout .= "
-                  <div class='alert'>
-                      <a href='messages.php'><span>".sprintf($lang['gl_msg_alert'], $msgalert) ."&nbsp;". ($msgalert > 1 ? $lang['gl_msg_plural'] : $lang['gl_msg_singular']) . "!</span></a>
-                  </div>\n";
+                <div class='alert'>
+                    <a href='messages.php'><span>".sprintf($lang['gl_msg_alert'], $msgalert) ."&nbsp;". ($msgalert > 1 ? $lang['gl_msg_plural'] : $lang['gl_msg_singular']) . "!</span></a>
+                </div>\n";
 }
 
 
@@ -132,36 +255,33 @@ function stdhead( $title = "", $js='', $css='' ) {
 } // stdhead
 
 function stdfoot() {
-  global $TBDEV;
+  global $TBDEV, $lang;
 
     $htmlout = '';
     $htmlout .= "
-              </div>
-		      <!-- End Content -->
+            </div>
+            <!-- End Maincolumn -->
 
-              <!-- Begin Footer -->
-		      <div id='footer'></div>
-		      <!-- End Footer -->
+            <div class='clear'></div>
+        </div>
+        <!-- End Container -->
 
-              <!-- Begin Ext-links -->
-              <div id='ext'>
-                  <div class='links'>
-                     <a href='#'>Home</a> |
-                     <a href='#'>Links</a> |
-                     <a href='#'>Faqs</a> |
-                     <a href='#'>Rules</a>
-                  </div>
-                  <div class='copyright'>
-                      Powered by&nbsp;<a href='http://www.templateworld.com'>Tbdev</a>
-                  </div>
-              </div>
-              <!-- End Ext-links -->
+        <!-- Begin Footer -->
+        <div id='footer'>
+                <p>{$lang['gl_copyright']}</p>
+        </div>
+        <!-- End Footer -->
+        <div class='footerbg'>
+            <p>
+              <a href='http://www.tbdev.net'><img src='{$TBDEV['pic_base_url']}tbdev_btn_red.png' alt='Powered By TBDev &copy;2010' title='Powered By TBDev &copy;2010' /></a>
+              <a href='http://www.tbdev.net'><img src='{$TBDEV['pic_base_url']}dorks_btn_red.png' alt='Dorksville &copy;2010' title='Dorksville &copy;2010' /></a>
+            </p>
+        </div>
+    </div>
+    <!-- End Wrapper -->
 
-          </div>
-          <!-- End Wrapper -->
-     </body>
-</html>
-";
+</body>
+</html>";
 
     return $htmlout;
 }
@@ -199,13 +319,13 @@ function StatusBar() {
 	$IsDonor = '';
 	if ($CURUSER['donor'] == "yes")
 
-	$IsDonor = "<img src='pic/star.gif' alt='donor' title='donor' />";
+	$IsDonor = "<img src='{$TBDEV['pic_base_url']}star.gif' alt='donor' title='donor' />";
 
 
 	$warn = '';
 	if ($CURUSER['warned'] == "yes")
 
-	$warn = "<img src='pic/warned.gif' alt='warned' title='warned' />";
+	$warn = "<img src='{$TBDEV['pic_base_url']}warned.gif' alt='warned' title='warned' />";
 
 	$res2 = @mysql_query("SELECT seeder, COUNT(*) AS pCount FROM peers WHERE userid=".$CURUSER['id']." GROUP BY seeder") or sqlerr(__LINE__,__FILE__);
 
@@ -228,18 +348,14 @@ function StatusBar() {
 	$StatusBar = '';
 
 		$StatusBar .= "
-              <!-- Begin Statusbar -->
-              <div id='statusbar'>
-                  <div style='float:left;'>
-                      $IsDonor$warn&nbsp;
-                      $member_reputation, {$lang['gl_ratio']}:&nbsp;$ratio &nbsp;&nbsp;{$lang['gl_uploaded']}:&nbsp;$upped
-		              &nbsp;&nbsp;{$lang['gl_downloaded']}:&nbsp;$downed
-                      &nbsp;&nbsp;{$lang['gl_act_torrents']}:&nbsp;<img alt='{$lang['gl_seed_torrents']}' title='{$lang['gl_seed_torrents']}' src='pic/arrowup.gif' />&nbsp;{$seedleech['yes']}
-                      &nbsp;&nbsp;<img alt='{$lang['gl_leech_torrents']}' title='{$lang['gl_leech_torrents']}' src='pic/arrowdown.gif' />&nbsp;{$seedleech['no']}
-                  </div>
-                  <p style='text-align:right;'>".date(DATE_RFC822)."</p>
-              </div>
-		      <!-- End Statusbar -->";
+            <div style='float:left;'>
+                $IsDonor$warn&nbsp;
+                $member_reputation, {$lang['gl_ratio']}:&nbsp;$ratio &nbsp;&nbsp;{$lang['gl_uploaded']}:&nbsp;$upped
+		        &nbsp;&nbsp;{$lang['gl_downloaded']}:&nbsp;$downed
+                &nbsp;&nbsp;{$lang['gl_act_torrents']}:&nbsp;<img alt='{$lang['gl_seed_torrents']}' title='{$lang['gl_seed_torrents']}' src='{$TBDEV['pic_base_url']}arrowup.gif' />&nbsp;{$seedleech['yes']}
+                &nbsp;&nbsp;<img alt='{$lang['gl_leech_torrents']}' title='{$lang['gl_leech_torrents']}' src='{$TBDEV['pic_base_url']}arrowdown.gif' />&nbsp;{$seedleech['no']}
+            </div>
+                <p style='text-align:right;'>".get_date(TIME_NOW, 'LONG', 1)."</p>";
 
 	return $StatusBar;
 
