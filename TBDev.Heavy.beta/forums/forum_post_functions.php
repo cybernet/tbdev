@@ -115,8 +115,9 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 
     if ($newtopic) 
     {
-       
-		$title .="your title here";
+       $htmlout .= "<div align='center'>
+       <input style='width:615px;' type='text' name='subject' size='50' value='' />
+       </div>";
     }
 
     if ($quote) 
@@ -148,7 +149,7 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
     
 		$body = ($quote ? "[quote=".htmlsafechars($arr["username"])."]".htmlsafechars(unesc($arr["body"]))."[/quote]" : "");
 		
-		$htmlout .= bbcode2textarea( $lang['forum_functions_submit'], $body, $title );
+		$htmlout .= bbcode2textarea( 'body', $body );
 		
 		/*
 		if ($use_attachment_mod && $attachment)
@@ -180,7 +181,10 @@ function insert_compose_frame($id, $newtopic = true, $quote = false, $attachment
 
     //$htmlout .= end_table();
 
-    $htmlout .="</form>";
+    $htmlout .="<div align='center'>
+                <input type='submit' name='postreply' value='{$lang['forum_functions_submit']}' class='' />
+             </div>
+             </form>";
     
     $htmlout .= end_frame();
     // ------ Get 10 last posts if this is a reply

@@ -63,7 +63,7 @@ loggedinorreturn();
                       <tr>
                          <td class='heading' valign='top' align='right'>{$lang['upload_description']}</td>
                          <td valign='top' align='left'>";
-    $HTMLOUT .= bbcode2textarea( '', '', 0 );
+    $HTMLOUT .= bbcode2textarea( 'body' );
     $HTMLOUT .= "<br />({$lang['upload_html_bbcode']})</td>
                       </tr>";
 

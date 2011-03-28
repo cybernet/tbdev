@@ -39,6 +39,7 @@ $TBDEV['mysql_db']   = "bobtest";
 $TBDEV['cookie_prefix']  = 'tbdev_t'; // This allows you to have multiple trackers, eg for demos, testing etc.
 $TBDEV['cookie_path']    = '/tbdevtheme'; // ATTENTION: You should never need this unless the above applies eg: /tbdev
 $TBDEV['cookie_domain']  = ''; // set to eg: .somedomain.com or is subdomain set to: .sub.somedomain.com
+$TBDEV['IPcookieCheck'] = 1;
 
 $TBDEV['site_online'] = 1;
 $TBDEV['tracker_post_key'] = 'changethisorelse';
@@ -49,7 +50,7 @@ $TBDEV['minvotes'] = 1;
 $TBDEV['max_dead_torrent_time'] = 6 * 3600;
 
 // Max users on site
-$TBDEV['maxusers'] = 5000; // LoL Who we kiddin' here?
+$TBDEV['maxusers'] = 15000; // LoL Who we kiddin' here?
 
 
 
@@ -63,7 +64,7 @@ $TBDEV['baseurl'] = "http://localhost/tbdevtheme";
 
 
 // Email for sender/return path.
-$TBDEV['site_email'] = "admin@localhost";
+$TBDEV['site_email'] = "secret@society.1337Eedjits.com";
 
 $TBDEV['site_name'] = "Tbdev";
 

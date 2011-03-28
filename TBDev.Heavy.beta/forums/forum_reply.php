@@ -70,12 +70,15 @@
   <input type='hidden' name='action' value='post' />
   <input type='hidden' name='topicid' value='{$topicid}' />";
   
-  $HTMLOUT .= bbcode2textarea( $lang['forum_functions_submit'], $body, $title );
+  $HTMLOUT .= bbcode2textarea( 'body', $body );
   
   $HTMLOUT .="<div>".(post_icons())."</div>
   <div>
   <input type='button' value='Preview' name='button2' onclick='return Preview();' />
   Anonymous Post<input type='checkbox' name='anonymous' value='yes'/>
+  </div>
+  <div align='center'>
+    <input type='submit' name='postquickreply' value='{$lang['forum_functions_submit']}' class='' />
   </div>
   </form>";
 

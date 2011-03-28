@@ -47,7 +47,7 @@
   <input type='hidden' name='action' value='editpost' />
   <input type='hidden' name='postid' value='{$postid}' />";
   
-  $HTMLOUT .= bbcode2textarea( $lang['forum_functions_submit'], $ebody);
+  $HTMLOUT .= bbcode2textarea( 'body', $ebody);
   
   if ($CURUSER["class"] >= UC_MODERATOR)
   {
@@ -56,6 +56,9 @@
   
   
   $HTMLOUT.="<div>".(post_icons())."</div>
+  <div align='center'>
+                <input type='submit' name='editpost' value='{$lang['forum_functions_submit']}' class='' />
+  </div>
   </form>";
 
   $HTMLOUT .= end_frame();
