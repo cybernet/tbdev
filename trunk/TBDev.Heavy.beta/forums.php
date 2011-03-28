@@ -142,6 +142,7 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       break;
       
     case 'editforum':
+      require_once "forums/forum_functions.php";
       require_once "forums/forum_edit.php";
       exit();
       break;
@@ -199,6 +200,7 @@ $action = (isset($_GET["action"]) ? $_GET["action"] : (isset($_POST["action"]) ?
       break;
     
     case 'editpost':
+      require_once "forums/forum_functions.php";
       require_once "forums/forum_post_functions.php";
       require_once "forums/forum_edit_post.php";
       exit();

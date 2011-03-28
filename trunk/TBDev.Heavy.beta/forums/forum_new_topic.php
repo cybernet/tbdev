@@ -45,14 +45,20 @@
   $HTMLOUT .= begin_frame("Compose", true);
   $HTMLOUT .="<form method='post' name='bbcode2text' action='{$_SERVER['PHP_SELF']}' enctype='multipart/form-data'>
   <input type='hidden' name='action' value='post' />
-  <input type='hidden' name='forumid' value='$forumid' />";
+  <input type='hidden' name='forumid' value='$forumid' />
+  <div align='center'>
+    <input style='width:615px;' type='text' name='subject' size='50' value='{$subject}' />
+  </div>";
 
-  $HTMLOUT .= bbcode2textarea( $lang['forum_functions_submit'], $body, $subject );
+  $HTMLOUT .= bbcode2textarea( 'body', $body );
 
   $HTMLOUT .="<div>".(post_icons())."</div>
   <div>
   <input type='button' value='Preview' name='button2' onclick='return Preview();' />
   Anonymous Topic<input type='checkbox' name='anonymous' value='yes'/>
+  </div>
+  <div align='center'>
+  <input type='submit' name='addpost' value='{$lang['forum_functions_submit']}' class='' />
   </div>
   </form>";
 
