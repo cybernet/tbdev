@@ -2,6 +2,7 @@ ul {
     list-style: none;
     margin: 0;
     padding: 0;
+    float: left;
 }
 
 * { padding: 0; margin: 0; }
@@ -102,21 +103,20 @@ table {
     margin:0 auto;
 }
 
-table.main, table.mainouter {}
+table.main, table.mainouter { background-color: #F5F4EA; }
 table.bottom { background: transparent; }
 
 table td { padding:5px; }
-td { font-size: 8pt; border:1px solid #8e5418; color:#000; }
+td { font-size: 8pt; border:1px solid #d5dde5; color:#000;  }
 td.embedded { border: none; padding: 0px; }
 td.bottom { border: none; }
-td.heading { font-weight: bold; color:#000; background:#e4ebf2; padding:5px; }
+td.heading { font-weight: bold; color:#000; background:#e4ebf2; padding:5px;}
 td.text { padding: 10pt; text-align: left; }
 
 td.comment {
     padding: 10pt;
     font-size: 8pt;
     text-align: left;
-    word-wrap: break-word;
 }
 
 td.colhead {
@@ -161,17 +161,3 @@ fieldset { padding: 1em; }
 	font-size: 7pt;
 	font-weight: normal;
 }
-
-.roundedCorners {
-    border: 1px solid #000;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    border-radius: 6px;
-}
-
-.right { text-align: right; }
-.left { text-align: left; }
-.center { text-align: center; }
-.fright { float: right; }
-.fleft { float: left; }
-.fclear { float: clear; }
