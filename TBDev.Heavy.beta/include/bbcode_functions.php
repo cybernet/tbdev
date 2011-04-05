@@ -4,7 +4,7 @@
 |   TBDev.net BitTorrent Tracker PHP
 |   =============================================
 |   by CoLdFuSiOn
-|   (c) 2003 - 2009 TBDev.Net
+|   (c) 2003 - 2011 TBDev.Net
 |   http://www.tbdev.net
 |   =============================================
 |   svn: http://sourceforge.net/projects/tbdevnet/
@@ -93,7 +93,8 @@ function format_quotes($s)
 function format_comment($text, $strip_html = true)
 {
 	global $smilies, $TBDEV, $pn, $cboxelement;
-
+  
+  $img_cnt = 0;
 	$s = $text;
   unset($text);
   // This fixes the extraneous ;) smilies problem. When there was an html escaped
@@ -154,13 +155,12 @@ function format_comment($text, $strip_html = true)
 	
 	// [img]http://www/image.gif[/img]
 	
-	while( preg_match( "#\[img\](.+?)\[/img\]#is" , $s ) )
+	if ($TBDEV['allow_images'])
   {
-    $s = preg_replace("/\[img\](http:\/\/[^\s'\"<>]+(\.(jpg|gif|png)))\[\/img\]/i", "<a href='\\1' rel='colorbox-{$pn}'><img style='max-width:500px;' src=\"\\1\" title='' alt='' /></a>", $s);
+    $s = preg_replace_callback( "#\[img\](.+?)\[/img\]#i", 'BB_check_image', $s, $TBDEV['max_images'] );
     $cboxelement[ $pn ] = "colorbox-{$pn}";
   }
-	// [img=http://www/image.gif]
-	//$s = preg_replace("/\[img=(http:\/\/[^\s'\"<>]+(\.(gif|jpg|png)))\]/i", "<img src=\"\\1\" alt='' />", $s);
+
 
 	// [color=blue]Text[/color]
 	$s = preg_replace("#\[color=([^\];\d\s]+)\](.+?)\[/color\]#is",
@@ -257,4 +257,24 @@ function BB_list_item($txt) {
 		
 		return str_replace( "\n</li>", "</li>", $txt."</li>" );
 }
+
+function BB_check_image($match) {	
+  
+  global $TBDEV, $img_cnt, $pn;
+
+  if( !is_array($match) ) return $match;
+  
+  if ( preg_match( "/^http:\/\/$/i", $match[1] ) 
+       OR preg_match( "/[?&;]/", $match[1] ) 
+       OR preg_match("#javascript:#is", $match[1] ) 
+       OR !preg_match("#^https?://(?:[^<>*\"]+|[a-z0-9/\._\-!]+)$#iU", $match[1] ) )
+  {
+    return $match[0];
+  }
+  
+  $img_cnt++;
+  
+  return "<a href='{$match[1]}' rel='colorbox-{$pn}'><img style='max-width:500px;' src='{$match[1]}' title='' alt='' /></a>";
+}
+
 ?>
