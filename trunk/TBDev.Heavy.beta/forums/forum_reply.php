@@ -32,37 +32,22 @@
 
   $HTMLOUT .= "<p style='text-align:center;'>{$lang['forum_functions_reply']}<a href='forums.php?action=viewtopic&amp;topicid=$topicid'>$subject</a></p>";
   
-  $HTMLOUT .="
-  <script  type='text/javascript'>
-  /*<![CDATA[*/
-  function Preview()
-  {
-  document.bbcode2text.action = './forums.php?action=reply&topicid=$topicid'
-  //document.bbcode2text.target = '_blank';
-  document.bbcode2text.submit();
-  return true;
-  }
-  /*]]>*/
-  </script>";
   
-  $body = isset($_POST["body"]) ? strip_tags( trim($_POST["body"]) ) : '';
+  //$body = isset($_POST["body"]) ? strip_tags( trim($_POST["body"]) ) : '';
   $title = '';
   
   $HTMLOUT .= begin_main_frame();
   
   if ($TBDEV['forums_online'] == 0)
   $HTMLOUT .= stdmsg('Warning', 'Forums are currently in maintainance mode');
-  // prolly no longer need this
-  if( $body != '' )
-  {
-    $HTMLOUT .= begin_frame("Preview Post", true);
-    $HTMLOUT .="
-    <div style='text-align:left;border: 0;'>
-    <p>".format_comment($body)."</p>
-    </div>";
-    $HTMLOUT .= end_frame();
-  }
-  // nope
+  
+  // Preview stuff
+  $HTMLOUT .= "<div id='prediv' style='margin-bottom:30px;'>" .
+  begin_frame('Preview Post', true) .
+  "<div id='preshow' style='text-align:left;border: 0;'>
+  Preview Here
+  </div>" . end_frame() . "</div>";
+  // preview end
   
   
   $HTMLOUT .= begin_frame("Compose", true);
@@ -70,11 +55,11 @@
   <input type='hidden' name='action' value='post' />
   <input type='hidden' name='topicid' value='{$topicid}' />";
   
-  $HTMLOUT .= bbcode2textarea( 'body', $body );
+  $HTMLOUT .= bbcode2textarea( 'body' );
   
   $HTMLOUT .="<div>".(post_icons())."</div>
   <div>
-  <input type='button' value='Preview' name='button2' onclick='return Preview();' />
+  <input type='button' value='Preview' name='preview' />
   Anonymous Post<input type='checkbox' name='anonymous' value='yes'/>
   </div>
   <div align='center'>
@@ -86,7 +71,32 @@
   
   $HTMLOUT .= end_main_frame();
   
-  $js = "<script type='text/javascript' src='scripts/bbcode2text.js'></script>";
+  $js = "<script type='text/javascript' src='scripts/bbcode2text.js'></script>\n";
+  $js .= "
+    <script type='text/javascript'>
+    /* <![CDATA[ */
+    $(document).ready(function() {
+     
+    $('#prediv').hide(); 
+    $('input[name=\"preview\"]').click(function(){
+    var body = $('textarea[name=\"body\"]').val(); 
+    var data = 'body=' + encodeURIComponent(body); 
+    alert(data);
+    $('#preshow').html('<span><img src=\'templates/1/images/ajax-loader.gif\' alt=\'\' /></span>');
+    $('#prediv').fadeIn('slow'); 
+    $.ajax({ 
+    type:'POST', 
+    data: data,
+    url: 'forums.php?action=preview',        
+    success: function (html) {                  
+      $('#preshow').html(html); 
+    }   
+    });
+    });
+     
+    });
+    /* ]]> */
+    </script>";
   
   print stdhead($lang['forum_reply_reply'], $js, $fcss) . $HTMLOUT . stdfoot();
   exit();

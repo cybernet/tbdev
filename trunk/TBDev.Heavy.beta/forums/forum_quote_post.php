@@ -31,7 +31,7 @@
     $('#prediv').hide(); 
     $('input[name=\"preview\"]').click(function(){
     var body = $('textarea[name=\"body\"]').val(); 
-    var data = 'body=' + body; 
+    var data = 'body=' + encodeURIComponent(body); 
     $('#preshow').html('<span><img src=\'templates/1/images/ajax-loader.gif\' alt=\'\' /></span>');
     $('#prediv').fadeIn('slow'); 
     $.ajax({ 

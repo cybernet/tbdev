@@ -84,6 +84,8 @@ $TBDEV['forums_online'] = 1;
 $TBDEV['forums_autoshout_on'] = 0;
 $TBDEV['forums_seedbonus_on'] = 0;
 $TBDEV['readpost_expiry'] = 14*86400; // 14 days
+$TBDEV['allow_images'] = 1;
+$TBDEV['max_images'] = 6;
 
 //set this to size of user avatars
 $TBDEV['av_img_height'] = 100;
