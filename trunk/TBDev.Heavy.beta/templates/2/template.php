@@ -126,7 +126,7 @@ function stdhead( $title = "", $js='', $css='' ) {
                                 <p><a href='messages.php'>$inbox</a></p>
                             </div>
                             <ul>
-                               <li><a class='bold' href='logout.php'>{$lang['gl_logout']}</a></li>
+                               <li><a class='bold' href='members.php?action=logout'>{$lang['gl_logout']}</a></li>
                             </ul>
                             <div class='rlink'>
                                 <a class='bold' href='my.php'>{$lang['gl_profile']}</a>&nbsp;&nbsp;&nbsp;
@@ -145,7 +145,7 @@ function stdhead( $title = "", $js='', $css='' ) {
                         </div>
 	                   <ul>
                           <li>New user?&nbsp;</li>
-                          <li><a class='bold' href='signup.php'>Register Now!</a></li>
+                          <li><a class='bold' href='members.php?action=reg'>Register Now!</a></li>
                        </ul>
                     </div>";
     }
@@ -199,9 +199,9 @@ function stdhead( $title = "", $js='', $css='' ) {
     else
     {
       $tabarray = array(
-       'login'    => "<li class='fleft'><a href='login.php'>{$lang['gl_login']}</a></li>",
-       'signup'   => "<li class='fleft'><a href='signup.php'>{$lang['gl_signup']}</a></li>",
-       'recover'  => "<li class='fleft'><a href='recover.php'>{$lang['gl_recover']}</a></li>"
+       'login'    => "<li class='fleft'><a href='members.php?action=login'>{$lang['gl_login']}</a></li>",
+       'signup'   => "<li class='fleft'><a href='members.php?action=reg'>{$lang['gl_signup']}</a></li>",
+       'recover'  => "<li class='fleft'><a href='members.php?action=recover'>{$lang['gl_recover']}</a></li>"
        );
 
       foreach($tabarray as $k => $v)
